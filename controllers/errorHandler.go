@@ -28,6 +28,9 @@ func errRet(err interface{}, c *gin.Context) {
 	case *TestError:
 		c.JSON(http.StatusBadRequest, err.(*TestError).Info())
 		break
+	case *ParamError:
+		c.JSON(http.StatusBadRequest, err.(*ParamError).Info())
+		break
 
 	case error:
 		c.JSON(http.StatusNotFound, gin.H{

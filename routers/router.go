@@ -13,6 +13,7 @@ func SetupRouters() *gin.Engine {
 	router.Use(middleware.CORS(middleware.CORSOptions{}))
 
 	setupTestGroup(router)
+	setupUserGroup(router)
 
 	// router.NoMethod(controllers.NoMethod)
 	router.NoRoute(controllers.NoRoute)
