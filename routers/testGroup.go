@@ -12,6 +12,5 @@ func setupTestGroup(router *gin.Engine) {
 	testGroup := router.Group("/test")
 	{
 		testGroup.GET("/", testCtrl.Test)
-		testGroup.GET("/error", testCtrl.Error)
 	}
 }

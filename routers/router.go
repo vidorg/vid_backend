@@ -1,8 +1,10 @@
 package routers
 
 import (
-	"vid/controllers"
+	"fmt"
+	"net/http"
 	"vid/middleware"
+	. "vid/models"
 
 	"github.com/gin-gonic/gin"
 )
@@ -16,7 +18,11 @@ func SetupRouters() *gin.Engine {
 	setupUserGroup(router)
 
 	// router.NoMethod(controllers.NoMethod)
-	router.NoRoute(controllers.NoRoute)
+	router.NoRoute(func(c *gin.Context) {
+		c.JSON(http.StatusNotFound, Message{
+			Message: fmt.Sprintf("Route %s %s is not found.", c.Request.Method, c.Request.URL.Path),
+		})
+	})
 
 	return router
 }

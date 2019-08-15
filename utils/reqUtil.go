@@ -6,7 +6,6 @@ import (
 	"io"
 	"strconv"
 
-	. "vid/exceptions"
 	. "vid/models"
 
 	"github.com/gin-gonic/gin"
@@ -14,42 +13,69 @@ import (
 
 type ReqUtil struct{}
 
+// 获得请求体
 func (b *ReqUtil) GetBody(body io.ReadCloser) string {
 	buf := new(bytes.Buffer)
 	buf.ReadFrom(body)
 	return buf.String()
 }
 
-func (b *ReqUtil) CheckJsonValid(bodyJson string, objPtr BaseModel, key string) {
+// 检查请求体的 Json 是否合法，需要实现 BaseModel 接口
+func (b *ReqUtil) CheckJsonValid(bodyJson string, objPtr BaseModel) bool {
 	err := json.Unmarshal([]byte(bodyJson), objPtr)
-	if err != nil || !(objPtr).CheckValid() {
-		var param = make([]string, 1, 1)
-		param = append(param, key)
-		panic(NewParamError(param, false))
+	if err != nil || !objPtr.CheckValid() {
+		return false
+	} else {
+		return true
 	}
 }
 
-func (b *ReqUtil) GetIntParam(param gin.Params, key string) int {
+// 获得 int 类型的路由参数
+//
+// @return (`int`, `ok`)
+func (b *ReqUtil) GetIntParam(param gin.Params, key string) (int, bool) {
 	valStr, ok := param.Get(key)
-
 	val, err := strconv.Atoi(valStr)
-
 	if !ok || err != nil {
-		var param = make([]string, 1, 1)
-		param = append(param, key)
-		panic(NewParamError(param, true))
+		return -1, false
 	} else {
-		return val
+		return val, true
 	}
 }
 
-func (b *ReqUtil) GetStrParam(param gin.Params, key string) string {
+// 获得 str 类型的路由参数
+//
+// @return (`str`, `ok`)
+func (b *ReqUtil) GetStrParam(param gin.Params, key string) (string, bool) {
 	val, ok := param.Get(key)
-	if !ok {
-		var param = make([]string, 1, 1)
-		param = append(param, key)
-		panic(NewParamError(param, true))
+	if !ok || val == "" {
+		return "", false
 	} else {
-		return val
+		return val, true
+	}
+}
+
+// 获得 int 类型的查询参数
+//
+// @return (`int`, `ok`)
+func (b *ReqUtil) GetIntQuery(c *gin.Context, key string) (int, bool) {
+	valStr, ok := c.GetQuery(key)
+	val, err := strconv.Atoi(valStr)
+	if !ok || valStr == "" || err != nil {
+		return -1, false
+	} else {
+		return val, true
+	}
+}
+
+// 获得 str 类型的查询参数
+//
+// @return (`str`, `ok`)
+func (b *ReqUtil) GetStrQuery(c *gin.Context, key string) (string, bool) {
+	val, ok := c.GetQuery(key)
+	if !ok || val == "" {
+		return "", false
+	} else {
+		return val, true
 	}
 }

@@ -17,97 +17,99 @@ var userDao = new(database.UserDao)
 
 // GET /all
 func (u *UserCtrl) QueryAllUsers(c *gin.Context) {
-	defer func() {
-		if err := recover(); err != nil {
-			errRet(err, c)
-		}
-	}()
 	c.JSON(http.StatusOK, userDao.QueryAllUsers())
 }
 
 // GET /one/:id
 func (u *UserCtrl) QueryUser(c *gin.Context) {
-	defer func() {
-		if err := recover(); err != nil {
-			errRet(err, c)
-		}
-	}()
-
-	id := reqUtil.GetIntParam(c.Params, "id")
-	query := userDao.QueryUser(id)
-	if query != nil {
+	id, ok := reqUtil.GetIntParam(c.Params, "id")
+	if !ok {
+		c.JSON(http.StatusBadRequest, Message{
+			Message: fmt.Sprintf("Route param '%s' not found or error", "id"),
+		})
+		return
+	}
+	query, ok := userDao.QueryUser(id)
+	if ok {
 		c.JSON(http.StatusOK, query)
 	} else {
 		c.JSON(http.StatusNotFound, Message{
 			Message: fmt.Sprintf("ID: %d Not Found", id),
 		})
 	}
+
 }
 
 // PUT /insert
 func (u *UserCtrl) InsertUser(c *gin.Context) {
-	defer func() {
-		if err := recover(); err != nil {
-			errRet(err, c)
-		}
-	}()
-
 	body := reqUtil.GetBody(c.Request.Body)
 	var user User
-	reqUtil.CheckJsonValid(body, &user, "user")
-
-	query := userDao.InsertUser(user)
-	if query != nil {
-		c.JSON(http.StatusOK, query)
-	} else {
-		c.JSON(http.StatusInternalServerError, Message{
-			Message: fmt.Sprintf("ID: %d Insert Failed", user.ID),
+	if !reqUtil.CheckJsonValid(body, &user) {
+		c.JSON(http.StatusBadRequest, Message{
+			Message: fmt.Sprintf("Request body error"),
 		})
+		return
+	}
+
+	query, isExist, ok := userDao.InsertUser(user)
+	if isExist {
+		c.JSON(http.StatusInternalServerError, Message{
+			Message: fmt.Sprintf("ID: %d already exist", user.ID),
+		})
+	} else if !ok {
+		c.JSON(http.StatusInternalServerError, Message{
+			Message: fmt.Sprintf("ID: %d insert failed", user.ID),
+		})
+	} else {
+		c.JSON(http.StatusOK, query)
 	}
 }
 
 // POST /update
 func (u *UserCtrl) UpdateUser(c *gin.Context) {
-	defer func() {
-		if err := recover(); err != nil {
-			errRet(err, c)
-		}
-	}()
-
 	body := reqUtil.GetBody(c.Request.Body)
 	var user User
-	reqUtil.CheckJsonValid(body, &user, "user")
-
-	query := userDao.UpdateUser(user)
-	if query != nil {
-		c.JSON(http.StatusOK, query)
-	} else {
-		c.JSON(http.StatusInternalServerError, Message{
-			Message: fmt.Sprintf("ID: %d Update Failed", user.ID),
+	if !reqUtil.CheckJsonValid(body, &user) {
+		c.JSON(http.StatusBadRequest, Message{
+			Message: fmt.Sprintf("Request body error"),
 		})
+		return
+	}
+
+	query, isExist, ok := userDao.UpdateUser(user)
+	if !isExist {
+		c.JSON(http.StatusInternalServerError, Message{
+			Message: fmt.Sprintf("ID: %d not exist", user.ID),
+		})
+	} else if !ok {
+		c.JSON(http.StatusInternalServerError, Message{
+			Message: fmt.Sprintf("ID: %d update failed", user.ID),
+		})
+	} else {
+		c.JSON(http.StatusOK, query)
 	}
 }
 
-// DELETE /delete
+// DELETE /delete?id
 func (u *UserCtrl) DeleteUser(c *gin.Context) {
-	defer func() {
-		if err := recover(); err != nil {
-			errRet(err, c)
-		}
-	}()
+	id, ok := reqUtil.GetIntQuery(c, "id")
+	if !ok {
+		c.JSON(http.StatusBadRequest, Message{
+			Message: fmt.Sprintf("Query param '%s' not found or error", "id"),
+		})
+		return
+	}
 
-	body := reqUtil.GetBody(c.Request.Body)
-	var user User
-	reqUtil.CheckJsonValid(body, &user, "user")
-	id := user.ID
-
-	if userDao.DeleteUser(id) {
-		c.JSON(http.StatusOK, Message{
-			Message: fmt.Sprintf("ID: %d Delete Success", id),
+	del, isExist, ok := userDao.DeleteUser(id)
+	if !isExist {
+		c.JSON(http.StatusInternalServerError, Message{
+			Message: fmt.Sprintf("ID: %d not exist", id),
+		})
+	} else if !ok {
+		c.JSON(http.StatusInternalServerError, Message{
+			Message: fmt.Sprintf("ID: %d delete failed", id),
 		})
 	} else {
-		c.JSON(http.StatusInternalServerError, Message{
-			Message: fmt.Sprintf("ID: %d Delete Failed", id),
-		})
+		c.JSON(http.StatusOK, del)
 	}
 }
