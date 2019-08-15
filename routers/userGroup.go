@@ -12,7 +12,7 @@ func setupUserGroup(router *gin.Engine) {
 	userGroup := router.Group("/user")
 	{
 		userGroup.GET("/all", userCtrl.QueryAllUsers)
-		userGroup.GET("/one/:id", userCtrl.QueryUser)
+		userGroup.GET("/one/:uid", userCtrl.QueryUser)
 		userGroup.PUT("/insert", userCtrl.InsertUser)
 		userGroup.POST("/update", userCtrl.UpdateUser)
 		userGroup.DELETE("/delete", userCtrl.DeleteUser)

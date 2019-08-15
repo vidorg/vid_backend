@@ -20,21 +20,21 @@ func (u *UserCtrl) QueryAllUsers(c *gin.Context) {
 	c.JSON(http.StatusOK, userDao.QueryAllUsers())
 }
 
-// GET /one/:id
+// GET /one/:uid
 func (u *UserCtrl) QueryUser(c *gin.Context) {
-	id, ok := reqUtil.GetIntParam(c.Params, "id")
+	uid, ok := reqUtil.GetIntParam(c.Params, "uid")
 	if !ok {
 		c.JSON(http.StatusBadRequest, Message{
-			Message: fmt.Sprintf("Route param '%s' not found or error", "id"),
+			Message: fmt.Sprintf("Route param '%s' not found or error", "uid"),
 		})
 		return
 	}
-	query, ok := userDao.QueryUser(id)
+	query, ok := userDao.QueryUser(uid)
 	if ok {
 		c.JSON(http.StatusOK, query)
 	} else {
 		c.JSON(http.StatusNotFound, Message{
-			Message: fmt.Sprintf("ID: %d Not Found", id),
+			Message: fmt.Sprintf("Uid: %d Not Found", uid),
 		})
 	}
 
@@ -54,11 +54,11 @@ func (u *UserCtrl) InsertUser(c *gin.Context) {
 	query, isExist, ok := userDao.InsertUser(user)
 	if isExist {
 		c.JSON(http.StatusInternalServerError, Message{
-			Message: fmt.Sprintf("ID: %d already exist", user.ID),
+			Message: fmt.Sprintf("Uid: %d already exist", user.Uid),
 		})
 	} else if !ok {
 		c.JSON(http.StatusInternalServerError, Message{
-			Message: fmt.Sprintf("ID: %d insert failed", user.ID),
+			Message: fmt.Sprintf("Uid: %d insert failed", user.Uid),
 		})
 	} else {
 		c.JSON(http.StatusOK, query)
@@ -79,35 +79,35 @@ func (u *UserCtrl) UpdateUser(c *gin.Context) {
 	query, isExist, ok := userDao.UpdateUser(user)
 	if !isExist {
 		c.JSON(http.StatusInternalServerError, Message{
-			Message: fmt.Sprintf("ID: %d not exist", user.ID),
+			Message: fmt.Sprintf("Uid: %d not exist", user.Uid),
 		})
 	} else if !ok {
 		c.JSON(http.StatusInternalServerError, Message{
-			Message: fmt.Sprintf("ID: %d update failed", user.ID),
+			Message: fmt.Sprintf("Uid: %d update failed", user.Uid),
 		})
 	} else {
 		c.JSON(http.StatusOK, query)
 	}
 }
 
-// DELETE /delete?id
+// DELETE /delete?uid
 func (u *UserCtrl) DeleteUser(c *gin.Context) {
-	id, ok := reqUtil.GetIntQuery(c, "id")
+	uid, ok := reqUtil.GetIntQuery(c, "uid")
 	if !ok {
 		c.JSON(http.StatusBadRequest, Message{
-			Message: fmt.Sprintf("Query param '%s' not found or error", "id"),
+			Message: fmt.Sprintf("Query param '%s' not found or error", "uid"),
 		})
 		return
 	}
 
-	del, isExist, ok := userDao.DeleteUser(id)
+	del, isExist, ok := userDao.DeleteUser(uid)
 	if !isExist {
 		c.JSON(http.StatusInternalServerError, Message{
-			Message: fmt.Sprintf("ID: %d not exist", id),
+			Message: fmt.Sprintf("Uid: %d not exist", uid),
 		})
 	} else if !ok {
 		c.JSON(http.StatusInternalServerError, Message{
-			Message: fmt.Sprintf("ID: %d delete failed", id),
+			Message: fmt.Sprintf("Uid: %d delete failed", uid),
 		})
 	} else {
 		c.JSON(http.StatusOK, del)

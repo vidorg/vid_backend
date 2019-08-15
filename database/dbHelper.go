@@ -26,6 +26,12 @@ func SetupDBConn(cfg config.Config) {
 	}
 
 	DB.LogMode(true)
+	DB.SingularTable(true) // 复数表名
+	gorm.DefaultTableNameHandler = func(db *gorm.DB, defaultTableName string) string {
+		return "tbl_" + defaultTableName
+	} // 表名前缀
 
 	DB.AutoMigrate(&models.User{})
+	DB.AutoMigrate(&models.Passrecord{})
+	DB.Model(&models.Passrecord{}).AddForeignKey("uid", "tbl_user(uid)", "RESTRICT", "RESTRICT")
 }
