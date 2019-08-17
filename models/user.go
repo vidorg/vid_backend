@@ -10,7 +10,8 @@ type User struct {
 	Username     string    `json:"username" gorm:"type:varchar(50);unique"`
 	Profile      string    `json:"profile" gorm:"type:varchar(120)"`
 	RegisterTime time.Time `json:"register_time" gorm:"type:datetime"`
-	Subscribers  []*User   `json:"-" gorm:"many2many:subscribe;association_jointable_foreignkey:subscriberUid"`
+	Subscribers  []*User   `json:"-" gorm:"many2many:subscribe;jointable_foreignkey:up_uid;association_jointable_foreignkey:subscriber_uid"`
+	Subscribings []*User   `json:"-" gorm:"many2many:subscribe;jointable_foreignkey:subscriber_uid;association_jointable_foreignkey:up_uid"`
 }
 
 // @override

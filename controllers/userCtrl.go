@@ -37,7 +37,6 @@ func (u *UserCtrl) QueryUser(c *gin.Context) {
 			Message: fmt.Sprintf("Uid: %d Not Found", uid),
 		})
 	}
-
 }
 
 // PUT /insert
@@ -51,14 +50,10 @@ func (u *UserCtrl) InsertUser(c *gin.Context) {
 		return
 	}
 
-	query, isExist, ok := userDao.InsertUser(user)
-	if isExist {
+	query, err := userDao.InsertUser(user)
+	if err != nil {
 		c.JSON(http.StatusInternalServerError, Message{
-			Message: fmt.Sprintf("Uid: %d already exist", user.Uid),
-		})
-	} else if !ok {
-		c.JSON(http.StatusInternalServerError, Message{
-			Message: fmt.Sprintf("Uid: %d insert failed", user.Uid),
+			Message: err.Error(),
 		})
 	} else {
 		c.JSON(http.StatusOK, query)
@@ -76,14 +71,10 @@ func (u *UserCtrl) UpdateUser(c *gin.Context) {
 		return
 	}
 
-	query, isExist, ok := userDao.UpdateUser(user)
-	if !isExist {
+	query, err := userDao.UpdateUser(user)
+	if err != nil {
 		c.JSON(http.StatusInternalServerError, Message{
-			Message: fmt.Sprintf("Uid: %d not exist", user.Uid),
-		})
-	} else if !ok {
-		c.JSON(http.StatusInternalServerError, Message{
-			Message: fmt.Sprintf("Uid: %d update failed", user.Uid),
+			Message: err.Error(),
 		})
 	} else {
 		c.JSON(http.StatusOK, query)
@@ -100,16 +91,79 @@ func (u *UserCtrl) DeleteUser(c *gin.Context) {
 		return
 	}
 
-	del, isExist, ok := userDao.DeleteUser(uid)
-	if !isExist {
+	del, err := userDao.DeleteUser(uid)
+	if err != nil {
 		c.JSON(http.StatusInternalServerError, Message{
-			Message: fmt.Sprintf("Uid: %d not exist", uid),
-		})
-	} else if !ok {
-		c.JSON(http.StatusInternalServerError, Message{
-			Message: fmt.Sprintf("Uid: %d delete failed", uid),
+			Message: err.Error(),
 		})
 	} else {
 		c.JSON(http.StatusOK, del)
+	}
+}
+
+// POST /sub?up_uid&subscriber_uid
+func (u *UserCtrl) SubscribeUser(c *gin.Context) {
+	up_uid, ok := reqUtil.GetIntQuery(c, "up_uid")
+	if !ok {
+		c.JSON(http.StatusBadRequest, Message{
+			Message: fmt.Sprintf("Query param '%s' not found or error", "up_uid"),
+		})
+		return
+	}
+	subscriber_uid, ok := reqUtil.GetIntQuery(c, "subscriber_uid")
+	if !ok {
+		c.JSON(http.StatusBadRequest, Message{
+			Message: fmt.Sprintf("Query param '%s' not found or error", "subscriber_uid"),
+		})
+		return
+	}
+
+	err := userDao.SubscribeUser(up_uid, subscriber_uid)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, Message{
+			Message: err.Error(),
+		})
+	} else {
+		c.JSON(http.StatusOK, Message{
+			Message: fmt.Sprintf("User ID: %d Subscribe User ID: %d Success", subscriber_uid, up_uid),
+		})
+	}
+}
+
+// GET /subscriber/:uid
+func (u *UserCtrl) QuerySubscriberUsers(c *gin.Context) {
+	uid, ok := reqUtil.GetIntParam(c.Params, "uid")
+	if !ok {
+		c.JSON(http.StatusBadRequest, Message{
+			Message: fmt.Sprintf("Route param '%s' not found or error", "uid"),
+		})
+		return
+	}
+	query, err := userDao.QuerySubscriberUsers(uid)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, Message{
+			Message: err.Error(),
+		})
+	} else {
+		c.JSON(http.StatusOK, query)
+	}
+}
+
+// GET /subscriber/:uid
+func (u *UserCtrl) QuerySubscribingUsers(c *gin.Context) {
+	uid, ok := reqUtil.GetIntParam(c.Params, "uid")
+	if !ok {
+		c.JSON(http.StatusBadRequest, Message{
+			Message: fmt.Sprintf("Route param '%s' not found or error", "uid"),
+		})
+		return
+	}
+	query, err := userDao.QuerySubscribingUsers(uid)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, Message{
+			Message: err.Error(),
+		})
+	} else {
+		c.JSON(http.StatusOK, query)
 	}
 }
