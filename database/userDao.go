@@ -12,12 +12,16 @@ type UserDao struct{}
 const col_uid string = "uid"
 const col_username string = "username"
 
+// db 查询所有用户
+//
 // @return `[]User`
 func (u *UserDao) QueryAllUsers() (users []User) {
 	DB.Find(&users)
 	return users
 }
 
+// db 查询 uid 用户
+//
 // @return `*user` `isUserExist`
 func (u *UserDao) QueryUser(uid int) (*User, bool) {
 	var user User
@@ -29,7 +33,11 @@ func (u *UserDao) QueryUser(uid int) (*User, bool) {
 	}
 }
 
+// db 插入用户
+//
 // @return `*user` `err`
+//
+// @error `Uid: %d already exist` `Uid: %d insert failed`
 func (u *UserDao) InsertUser(user User) (*User, error) {
 	if _, ok := u.QueryUser(user.Uid); ok {
 		return nil, errors.New(fmt.Sprintf("Uid: %d already exist", user.Uid))
@@ -44,7 +52,11 @@ func (u *UserDao) InsertUser(user User) (*User, error) {
 	}
 }
 
+// db 更新用户名和简介
+//
 // @return `*user` `err`
+//
+// @error `Uid: %d not exist` `Uid: %d update failed
 func (u *UserDao) UpdateUser(user User) (*User, error) {
 	// queryBefore, ok := u.QueryUser(user.Uid)
 	_, ok := u.QueryUser(user.Uid)
@@ -68,7 +80,11 @@ func (u *UserDao) UpdateUser(user User) (*User, error) {
 	}
 }
 
+// db 删除用户
+//
 // @return `*user` `err`
+//
+// @error `Uid: %d not exist` `Uid: %d delete failed`
 func (u *UserDao) DeleteUser(uid int) (*User, error) {
 	query, ok := u.QueryUser(uid)
 	if !ok {
@@ -76,13 +92,18 @@ func (u *UserDao) DeleteUser(uid int) (*User, error) {
 	}
 	DB.Delete(query)
 	_, ok = u.QueryUser(uid)
-	if !ok {
+	if ok {
 		return query, errors.New(fmt.Sprintf("Uid: %d delete failed", uid))
 	} else {
 		return query, nil
 	}
 }
 
+// db `suberUip` 关注 `upUid`
+//
+// @return `err`
+//
+// @error `Uid: %d not exist` `Cound not subscribe to oneself`
 func (u *UserDao) SubscribeUser(upUid int, suberUid int) error {
 	upUser, ok := u.QueryUser(upUid)
 	if !ok {
@@ -99,13 +120,38 @@ func (u *UserDao) SubscribeUser(upUid int, suberUid int) error {
 	return nil
 }
 
+// db `suberUip` 取消关注 `upUid`
+//
+// @return `err`
+//
+// @error `Uid: %d not exist` `Cound not subscribe to oneself`
+func (u *UserDao) UnSubscribeUser(upUid int, suberUid int) error {
+	upUser, ok := u.QueryUser(upUid)
+	if !ok {
+		return errors.New(fmt.Sprintf("Uid: %d not exist", upUid))
+	}
+	suberUser, ok := u.QueryUser(suberUid)
+	if !ok {
+		return errors.New(fmt.Sprintf("Uid: %d not exist", suberUid))
+	}
+	if upUid == suberUid {
+		return errors.New(fmt.Sprintf("Cound not subscribe to oneself"))
+	}
+	DB.Model(upUser).Association("Subscribers").Delete(suberUser)
+	return nil
+}
+
+// db 查询 uid 的粉丝
+//
+// @return `user[]` `err`
+//
+// error `Uid: %d not exist`
 func (u *UserDao) QuerySubscriberUsers(uid int) ([]User, error) {
 	user, ok := u.QueryUser(uid)
 	if !ok {
 		return nil, errors.New(fmt.Sprintf("Uid: %d not exist", uid))
 	}
 	var users []User
-	// DB.Preload("Subscribers").Find(&users, "uid = ?", uid)
 	DB.Model(user).Related(&users, "Subscribers")
 	// SELECT `tbl_user`.*
 	// 		FROM `tbl_user` INNER JOIN `tbl_subscribe`
@@ -114,9 +160,13 @@ func (u *UserDao) QuerySubscriberUsers(uid int) ([]User, error) {
 	return users, nil
 }
 
+// db 查询 uid 的关注
+//
+// @return `user[]` `err`
+//
+// @error `Uid: %d not exist`
 func (u *UserDao) QuerySubscribingUsers(uid int) ([]User, error) {
 	user, ok := u.QueryUser(uid)
-	// _, ok := u.QueryUser(uid)
 	if !ok {
 		return nil, errors.New(fmt.Sprintf("Uid: %d not exist", uid))
 	}

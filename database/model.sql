@@ -8,7 +8,7 @@ CREATE TABLE `tbl_user` (
   `register_time` datetime DEFAULT NULL,
   PRIMARY KEY (`uid`),
   UNIQUE KEY `username` (`username`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8
 
 -- tbl_passrecord
 
@@ -22,7 +22,7 @@ CREATE TABLE `tbl_passrecord` (
 -- tbl_subscribe
 
 CREATE TABLE `tbl_subscribe` (
-  `user_uid` int(11) NOT NULL,
-  `subscriberUid` int(11) NOT NULL,
-  PRIMARY KEY (`user_uid`,`subscriberUid`)
+  `up_uid` int(11) NOT NULL,
+  `subscriber_uid` int(11) NOT NULL,
+  PRIMARY KEY (`up_uid`,`subscriber_uid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8

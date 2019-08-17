@@ -7,6 +7,7 @@ import (
 )
 
 var userCtrl = new(controllers.UserCtrl)
+var subCtrl = new(controllers.SubCtrl)
 
 func setupUserGroup(router *gin.Engine) {
 	userGroup := router.Group("/user")
@@ -16,8 +17,10 @@ func setupUserGroup(router *gin.Engine) {
 		userGroup.PUT("/insert", userCtrl.InsertUser)
 		userGroup.POST("/update", userCtrl.UpdateUser)
 		userGroup.DELETE("/delete", userCtrl.DeleteUser)
-		userGroup.POST("/sub", userCtrl.SubscribeUser)
-		userGroup.GET("/subscriber/:uid", userCtrl.QuerySubscriberUsers)
-		userGroup.GET("/subscribing/:uid", userCtrl.QuerySubscribingUsers)
+
+		userGroup.POST("/sub", subCtrl.SubscribeUser)
+		userGroup.POST("/unsub", subCtrl.UnSubscribeUser)
+		userGroup.GET("/subscriber/:uid", subCtrl.QuerySubscriberUsers)
+		userGroup.GET("/subscribing/:uid", subCtrl.QuerySubscribingUsers)
 	}
 }
