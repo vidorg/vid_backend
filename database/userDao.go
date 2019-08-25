@@ -47,25 +47,6 @@ func (u *UserDao) QueryUserName(username string) (*User, bool) {
 	}
 }
 
-// // db 插入用户
-// //
-// // @return `*user` `err`
-// //
-// // @error `Uid: %d already exist` `Uid: %d insert failed`
-// func (u *UserDao) InsertUser(user User) (*User, error) {
-// 	if _, ok := u.QueryUser(user.Uid); ok {
-// 		return nil, errors.New(fmt.Sprintf("Uid: %d already exist", user.Uid))
-// 	}
-// 	user.RegisterTime = time.Now()
-// 	DB.Create(&user)
-// 	query, ok := u.QueryUser(user.Uid)
-// 	if !ok {
-// 		return nil, errors.New(fmt.Sprintf("Uid: %d insert failed", user.Uid))
-// 	} else {
-// 		return query, nil
-// 	}
-// }
-
 // db 更新用户名和简介
 //
 // @return `*user` `err`

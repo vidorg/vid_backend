@@ -39,27 +39,6 @@ func (u *UserCtrl) QueryUser(c *gin.Context) {
 	}
 }
 
-// // PUT /user/insert
-// func (u *UserCtrl) InsertUser(c *gin.Context) {
-// 	body := reqUtil.GetBody(c.Request.Body)
-// 	var user User
-// 	if !reqUtil.CheckJsonValid(body, &user) {
-// 		c.JSON(http.StatusBadRequest, Message{
-// 			Message: fmt.Sprintf("Request body error"),
-// 		})
-// 		return
-// 	}
-
-// 	query, err := userDao.InsertUser(user)
-// 	if err != nil {
-// 		c.JSON(http.StatusInternalServerError, Message{
-// 			Message: err.Error(),
-// 		})
-// 	} else {
-// 		c.JSON(http.StatusOK, query)
-// 	}
-// }
-
 // POST /user/update
 func (u *UserCtrl) UpdateUser(c *gin.Context) {
 	body := reqUtil.GetBody(c.Request.Body)

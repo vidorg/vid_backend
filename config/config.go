@@ -22,6 +22,11 @@ type Config struct {
 
 	JwtSecret      string
 	JwtTokenExpire int64
+
+	MinLen_Username int
+	MaxLen_Username int
+	MinLen_Password int
+	MaxLen_Password int
 }
 
 func LoagServerConfig() Config {
@@ -47,6 +52,11 @@ func LoagServerConfig() Config {
 		log.Fatal(2, "Fail to parse section 'jwt': %v", err)
 	}
 
+	register, err := cfg.GetSection("register")
+	if err != nil {
+		log.Fatal(2, "Fail to parse section 'register': %v", err)
+	}
+
 	ret := Config{
 		RunMode: cfg.Section("").Key("RUN_MODE").MustString("debug"),
 
@@ -62,6 +72,11 @@ func LoagServerConfig() Config {
 
 		JwtSecret:      jwt.Key("JWTSECRET").MustString(""),
 		JwtTokenExpire: jwt.Key("TOKEN_EXPIRE").MustInt64(0),
+
+		MinLen_Username: register.Key("MINLEN_USERNAME").MustInt(1),
+		MaxLen_Username: register.Key("MAXLEN_USERNAME").MustInt(20),
+		MinLen_Password: register.Key("MINLEN_PASSWORD").MustInt(1),
+		MaxLen_Password: register.Key("MAXLEN_PASSWORD").MustInt(20),
 	}
 
 	return ret

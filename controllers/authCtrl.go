@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"encoding/json"
 	"fmt"
 	"net/http"
 	"vid/database"
@@ -27,17 +26,16 @@ func (u *AuthCtrl) Login(c *gin.Context) {
 // POST /auth/register
 func (u *AuthCtrl) Register(c *gin.Context) {
 
-	type reqHead struct {
-		Username string
-		Password string
-	}
-
 	body := reqUtil.GetBody(c.Request.Body)
-	var regReq reqHead
-	err := json.Unmarshal([]byte(body), &regReq)
-	if err != nil || regReq.Username == "" || regReq.Password == "" {
+	var regReq RegLogHead
+	if !reqUtil.CheckJsonValid(body, &regReq) {
 		c.JSON(http.StatusBadRequest, Message{
 			Message: fmt.Sprintf("Request body error"),
+		})
+		return
+	} else if !regReq.CheckFormat() {
+		c.JSON(http.StatusBadRequest, Message{
+			Message: fmt.Sprintf("Register username or password format error"),
 		})
 		return
 	}

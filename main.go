@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"vid/config"
 	"vid/database"
+	"vid/models"
 	"vid/routers"
 	"vid/utils"
 
@@ -22,6 +23,12 @@ func main() {
 	// Jwt
 	utils.JwtSecret = []byte(cfg.JwtSecret)
 	utils.JwtTokenExpire = cfg.JwtTokenExpire
+
+	// range
+	models.MinLen_Username = cfg.MinLen_Username
+	models.MaxLen_Username = cfg.MaxLen_Username
+	models.MinLen_Password = cfg.MinLen_Password
+	models.MaxLen_Password = cfg.MaxLen_Password
 
 	// Router & Middleware
 	router := routers.SetupRouters()
