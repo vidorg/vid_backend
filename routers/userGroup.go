@@ -14,7 +14,7 @@ func setupUserGroup(router *gin.Engine) {
 	{
 		userGroup.GET("/all", userCtrl.QueryAllUsers)
 		userGroup.GET("/one/:uid", userCtrl.QueryUser)
-		userGroup.PUT("/insert", userCtrl.InsertUser)
+		// userGroup.PUT("/insert", userCtrl.InsertUser)
 		userGroup.POST("/update", userCtrl.UpdateUser)
 		userGroup.DELETE("/delete", userCtrl.DeleteUser)
 

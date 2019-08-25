@@ -3,14 +3,15 @@ package database
 import (
 	"errors"
 	"fmt"
-	"time"
 	. "vid/models"
 )
 
 type UserDao struct{}
 
-const col_uid string = "uid"
-const col_username string = "username"
+const col_user_uid string = "uid"
+const col_user_username string = "username"
+const col_user_profile string = "profile"
+const col_user_register_time string = "register_time"
 
 // db 查询所有用户
 //
@@ -25,7 +26,7 @@ func (u *UserDao) QueryAllUsers() (users []User) {
 // @return `*user` `isUserExist`
 func (u *UserDao) QueryUser(uid int) (*User, bool) {
 	var user User
-	DB.Where(col_uid+" = ?", uid).Find(&user)
+	DB.Where(col_user_uid+" = ?", uid).Find(&user)
 	if !user.CheckValid() { // PK is null (auto-increment)
 		return nil, false
 	} else {
@@ -33,24 +34,37 @@ func (u *UserDao) QueryUser(uid int) (*User, bool) {
 	}
 }
 
-// db 插入用户
+// db 查询 username 用户
 //
-// @return `*user` `err`
-//
-// @error `Uid: %d already exist` `Uid: %d insert failed`
-func (u *UserDao) InsertUser(user User) (*User, error) {
-	if _, ok := u.QueryUser(user.Uid); ok {
-		return nil, errors.New(fmt.Sprintf("Uid: %d already exist", user.Uid))
-	}
-	user.RegisterTime = time.Now()
-	DB.Create(&user)
-	query, ok := u.QueryUser(user.Uid)
-	if !ok {
-		return nil, errors.New(fmt.Sprintf("Uid: %d insert failed", user.Uid))
+// @return `*user` `isUserExist`
+func (u *UserDao) QueryUserName(username string) (*User, bool) {
+	var user User
+	DB.Where(col_user_username+" = ?", username).Find(&user)
+	if !user.CheckValid() { // PK is null (auto-increment)
+		return nil, false
 	} else {
-		return query, nil
+		return &user, true
 	}
 }
+
+// // db 插入用户
+// //
+// // @return `*user` `err`
+// //
+// // @error `Uid: %d already exist` `Uid: %d insert failed`
+// func (u *UserDao) InsertUser(user User) (*User, error) {
+// 	if _, ok := u.QueryUser(user.Uid); ok {
+// 		return nil, errors.New(fmt.Sprintf("Uid: %d already exist", user.Uid))
+// 	}
+// 	user.RegisterTime = time.Now()
+// 	DB.Create(&user)
+// 	query, ok := u.QueryUser(user.Uid)
+// 	if !ok {
+// 		return nil, errors.New(fmt.Sprintf("Uid: %d insert failed", user.Uid))
+// 	} else {
+// 		return query, nil
+// 	}
+// }
 
 // db 更新用户名和简介
 //
@@ -65,8 +79,8 @@ func (u *UserDao) UpdateUser(user User) (*User, error) {
 	}
 	// DB.Save(&user)
 	DB.Model(&user).Updates(map[string]interface{}{
-		"username": user.Username,
-		"profile":  user.Profile,
+		col_user_username: user.Username,
+		col_user_profile:  user.Profile,
 	})
 	query, ok := u.QueryUser(user.Uid)
 	if !ok {

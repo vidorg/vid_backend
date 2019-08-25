@@ -15,12 +15,12 @@ type UserCtrl struct{}
 var reqUtil = new(utils.ReqUtil)
 var userDao = new(database.UserDao)
 
-// GET /all
+// GET /user/all
 func (u *UserCtrl) QueryAllUsers(c *gin.Context) {
 	c.JSON(http.StatusOK, userDao.QueryAllUsers())
 }
 
-// GET /one/:uid
+// GET /user/one/:uid
 func (u *UserCtrl) QueryUser(c *gin.Context) {
 	uid, ok := reqUtil.GetIntParam(c.Params, "uid")
 	if !ok {
@@ -39,28 +39,28 @@ func (u *UserCtrl) QueryUser(c *gin.Context) {
 	}
 }
 
-// PUT /insert
-func (u *UserCtrl) InsertUser(c *gin.Context) {
-	body := reqUtil.GetBody(c.Request.Body)
-	var user User
-	if !reqUtil.CheckJsonValid(body, &user) {
-		c.JSON(http.StatusBadRequest, Message{
-			Message: fmt.Sprintf("Request body error"),
-		})
-		return
-	}
+// // PUT /user/insert
+// func (u *UserCtrl) InsertUser(c *gin.Context) {
+// 	body := reqUtil.GetBody(c.Request.Body)
+// 	var user User
+// 	if !reqUtil.CheckJsonValid(body, &user) {
+// 		c.JSON(http.StatusBadRequest, Message{
+// 			Message: fmt.Sprintf("Request body error"),
+// 		})
+// 		return
+// 	}
 
-	query, err := userDao.InsertUser(user)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, Message{
-			Message: err.Error(),
-		})
-	} else {
-		c.JSON(http.StatusOK, query)
-	}
-}
+// 	query, err := userDao.InsertUser(user)
+// 	if err != nil {
+// 		c.JSON(http.StatusInternalServerError, Message{
+// 			Message: err.Error(),
+// 		})
+// 	} else {
+// 		c.JSON(http.StatusOK, query)
+// 	}
+// }
 
-// POST /update
+// POST /user/update
 func (u *UserCtrl) UpdateUser(c *gin.Context) {
 	body := reqUtil.GetBody(c.Request.Body)
 	var user User
@@ -81,7 +81,7 @@ func (u *UserCtrl) UpdateUser(c *gin.Context) {
 	}
 }
 
-// DELETE /delete?uid
+// DELETE /user/delete?uid
 func (u *UserCtrl) DeleteUser(c *gin.Context) {
 	uid, ok := reqUtil.GetIntQuery(c, "uid")
 	if !ok {

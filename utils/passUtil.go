@@ -1,6 +1,10 @@
 package utils
 
 import (
+	"crypto/md5"
+	"encoding/hex"
+	"strings"
+
 	jwt "github.com/dgrijalva/jwt-go"
 )
 
@@ -12,6 +16,16 @@ var JwtTokenExpire int64
 type Claims struct {
 	UserID int `json:"user_id"`
 	jwt.StandardClaims
+}
+
+func (p *PassUtil) MD5Check(content string, encrypted string) bool {
+	return strings.EqualFold(p.MD5Encode(content), encrypted)
+}
+
+func (p *PassUtil) MD5Encode(data string) string {
+	h := md5.New()
+	h.Write([]byte(data))
+	return hex.EncodeToString(h.Sum(nil))
 }
 
 func (p *PassUtil) GenToken(id int) (string, error) {

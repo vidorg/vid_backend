@@ -10,7 +10,7 @@ import (
 
 type SubCtrl struct{}
 
-// POST /sub?up_uid&subscriber_uid
+// POST /user/sub?up_uid&subscriber_uid
 func (u *SubCtrl) SubscribeUser(c *gin.Context) {
 	up_uid, ok := reqUtil.GetIntQuery(c, "up_uid")
 	subscriber_uid, ok2 := reqUtil.GetIntQuery(c, "subscriber_uid")
@@ -42,7 +42,7 @@ func (u *SubCtrl) SubscribeUser(c *gin.Context) {
 	}
 }
 
-// POST /unsub?up_uid&subscriber_uid
+// POST /user/unsub?up_uid&subscriber_uid
 func (u *SubCtrl) UnSubscribeUser(c *gin.Context) {
 	up_uid, ok := reqUtil.GetIntQuery(c, "up_uid")
 	subscriber_uid, ok2 := reqUtil.GetIntQuery(c, "subscriber_uid")
@@ -74,7 +74,7 @@ func (u *SubCtrl) UnSubscribeUser(c *gin.Context) {
 	}
 }
 
-// GET /subscriber/:uid
+// GET /user/subscriber/:uid
 func (u *SubCtrl) QuerySubscriberUsers(c *gin.Context) {
 	uid, ok := reqUtil.GetIntParam(c.Params, "uid")
 	if !ok {
@@ -93,7 +93,7 @@ func (u *SubCtrl) QuerySubscriberUsers(c *gin.Context) {
 	}
 }
 
-// GET /subscriber/:uid
+// GET /user/subscriber/:uid
 func (u *SubCtrl) QuerySubscribingUsers(c *gin.Context) {
 	uid, ok := reqUtil.GetIntParam(c.Params, "uid")
 	if !ok {
