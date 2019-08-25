@@ -25,7 +25,7 @@ func (p *PassDao) queryPassRecord(uid int) (*Passrecord, bool) {
 	}
 }
 
-// db 注册 插入密码项
+// db 注册 插入用户和密码项
 //
 // @return `*user` `err`
 //

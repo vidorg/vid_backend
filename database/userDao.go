@@ -94,18 +94,24 @@ func (u *UserDao) UpdateUser(user User) (*User, error) {
 	}
 }
 
-// db 删除用户
+// db 删除用户和用户密码 (cascade)
 //
 // @return `*user` `err`
 //
 // @error `Uid: %d not exist` `Uid: %d delete failed`
 func (u *UserDao) DeleteUser(uid int) (*User, error) {
+
+	// var passDao = new(PassDao)
+
 	query, ok := u.QueryUser(uid)
 	if !ok {
 		return nil, errors.New(fmt.Sprintf("Uid: %d not exist", uid))
 	}
+
+	// _, err := passDao.DeletePass(uid)
 	DB.Delete(query)
 	_, ok = u.QueryUser(uid)
+
 	if ok {
 		return query, errors.New(fmt.Sprintf("Uid: %d delete failed", uid))
 	} else {
