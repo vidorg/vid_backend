@@ -3,6 +3,7 @@ package utils
 import (
 	"crypto/md5"
 	"encoding/hex"
+	"fmt"
 	"strings"
 
 	jwt "github.com/dgrijalva/jwt-go"
@@ -44,7 +45,7 @@ func (p *PassUtil) GenToken(id int) (string, error) {
 		return "", err
 	}
 
-	return tokenStr, nil
+	return fmt.Sprintf("Bearer %s", tokenStr), nil
 }
 
 func (p *PassUtil) ParseToken(tokenStr string) (*Claims, error) {

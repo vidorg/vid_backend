@@ -37,7 +37,7 @@ func (u *UserDao) QueryUser(uid int) (*User, bool) {
 // db 查询 username 用户
 //
 // @return `*user` `isUserExist`
-func (u *UserDao) QueryUserName(username string) (*User, bool) {
+func (u *UserDao) QueryUserByUserName(username string) (*User, bool) {
 	var user User
 	DB.Where(col_user_username+" = ?", username).Find(&user)
 	if !user.CheckValid() { // PK is null (auto-increment)
@@ -51,10 +51,10 @@ func (u *UserDao) QueryUserName(username string) (*User, bool) {
 //
 // @return `*user` `err`
 //
-// @error `Uid: %d not exist` `Uid: %d update failed
+// @error `Uid: %d not exist` `Uid: %d update failed` `Uid: %d not updated`
 func (u *UserDao) UpdateUser(user User) (*User, error) {
-	// queryBefore, ok := u.QueryUser(user.Uid)
-	_, ok := u.QueryUser(user.Uid)
+	queryBefore, ok := u.QueryUser(user.Uid)
+	// _, ok := u.QueryUser(user.Uid)
 	if !ok {
 		return nil, errors.New(fmt.Sprintf("Uid: %d not exist", user.Uid))
 	}
@@ -67,11 +67,11 @@ func (u *UserDao) UpdateUser(user User) (*User, error) {
 	if !ok {
 		return query, errors.New(fmt.Sprintf("Uid: %d update failed", user.Uid))
 	} else {
-		// if queryBefore.Equals(query) {
-		// 	return query, errors.New(fmt.Sprintf("Uid: %d not updated", user.Uid))
-		// } else {
-		return query, nil
-		// }
+		if queryBefore.Equals(query) {
+			return query, errors.New(fmt.Sprintf("Uid: %d not updated", user.Uid))
+		} else {
+			return query, nil
+		}
 	}
 }
 

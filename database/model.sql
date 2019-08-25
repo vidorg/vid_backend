@@ -14,7 +14,7 @@ CREATE TABLE `tbl_user` (
 
 CREATE TABLE `tbl_passrecord` (
   `uid` int(11) NOT NULL AUTO_INCREMENT,
-  `hash_pass` char(128) NOT NULL,
+  `encrypted_pass` char(128) NOT NULL,
   PRIMARY KEY (`uid`),
   CONSTRAINT `tbl_passrecord_uid_tbl_user_uid_foreign` FOREIGN KEY (`uid`) REFERENCES `tbl_user` (`uid`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8
