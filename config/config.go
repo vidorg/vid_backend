@@ -19,6 +19,9 @@ type Config struct {
 	DbUser     string
 	DbPassword string
 	DbName     string
+
+	JwtSecret      string
+	JwtTokenExpire int64
 }
 
 func LoagServerConfig() Config {
@@ -39,6 +42,11 @@ func LoagServerConfig() Config {
 		log.Fatal(2, "Fail to parse section 'database': %v", err)
 	}
 
+	jwt, err := cfg.GetSection("jwt")
+	if err != nil {
+		log.Fatal(2, "Fail to parse section 'jwt': %v", err)
+	}
+
 	ret := Config{
 		RunMode: cfg.Section("").Key("RUN_MODE").MustString("debug"),
 
@@ -51,6 +59,9 @@ func LoagServerConfig() Config {
 		DbUser:     database.Key("USER").MustString(""),
 		DbPassword: database.Key("PASSWORD").MustString(""),
 		DbName:     database.Key("NAME").MustString(""),
+
+		JwtSecret:      jwt.Key("JWTSECRET").MustString(""),
+		JwtTokenExpire: jwt.Key("TOKEN_EXPIRE").MustInt64(0),
 	}
 
 	return ret

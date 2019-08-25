@@ -6,6 +6,7 @@ import (
 	"vid/config"
 	"vid/database"
 	"vid/routers"
+	"vid/utils"
 
 	"github.com/gin-gonic/gin"
 )
@@ -17,6 +18,10 @@ func main() {
 
 	// Database
 	database.SetupDBConn(cfg)
+
+	// Jwt
+	utils.JwtSecret = []byte(cfg.JwtSecret)
+	utils.JwtTokenExpire = cfg.JwtTokenExpire
 
 	// Router & Middleware
 	router := routers.SetupRouters()
@@ -31,6 +36,6 @@ func main() {
 		Handler: router,
 	}
 
-	fmt.Println("Server init on port ", cfg.HTTPPort)
+	fmt.Printf("Server init on port :%d\n", cfg.HTTPPort)
 	s.ListenAndServe()
 }
