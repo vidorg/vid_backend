@@ -13,3 +13,10 @@ func (u *TestCtrl) Test(c *gin.Context) {
 		"msg": "Test",
 	})
 }
+
+func (u *TestCtrl) AuthTest(c *gin.Context) {
+	user, _ := c.Get("user")
+	c.JSON(http.StatusOK, gin.H{
+		"msg": user,
+	})
+}

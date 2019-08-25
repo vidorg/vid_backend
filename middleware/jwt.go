@@ -18,6 +18,7 @@ func jwtAbort(c *gin.Context, msg string) {
 	c.JSON(http.StatusUnauthorized, Message{
 		Message: msg,
 	})
+	c.Abort()
 }
 
 func JWTMiddleware() gin.HandlerFunc {
@@ -25,14 +26,14 @@ func JWTMiddleware() gin.HandlerFunc {
 		// No Head
 		authHeader := c.Request.Header.Get("Authorization")
 		if authHeader == "" {
-			jwtAbort(c, "Authorization fail")
+			jwtAbort(c, "Authorization failed")
 			return
 		}
 
-		// No Eoken Magic
+		// No Token Magic
 		parts := strings.SplitN(authHeader, " ", 2)
 		if !(len(parts) == 2 && parts[0] == "Bearer") {
-			jwtAbort(c, "Authorization fail")
+			jwtAbort(c, "Authorization failed")
 			return
 		}
 
@@ -43,7 +44,7 @@ func JWTMiddleware() gin.HandlerFunc {
 			return
 		}
 
-		// Token Expire
+		// Token Expired
 		if time.Now().Unix() > claims.ExpiresAt {
 			jwtAbort(c, "Token has expired")
 			return

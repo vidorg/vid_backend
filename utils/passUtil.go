@@ -5,6 +5,7 @@ import (
 	"encoding/hex"
 	"fmt"
 	"strings"
+	"time"
 
 	jwt "github.com/dgrijalva/jwt-go"
 )
@@ -33,7 +34,7 @@ func (p *PassUtil) GenToken(id int) (string, error) {
 	claims := Claims{
 		id,
 		jwt.StandardClaims{
-			ExpiresAt: JwtTokenExpire,
+			ExpiresAt: int64(time.Now().Unix() + JwtTokenExpire),
 			Issuer:    "",
 		},
 	}
