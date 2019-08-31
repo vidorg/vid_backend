@@ -7,6 +7,7 @@ import (
 	"github.com/go-ini/ini"
 )
 
+// App Global Config
 type Config struct {
 	RunMode string
 
@@ -23,6 +24,11 @@ type Config struct {
 	JwtSecret      string
 	JwtTokenExpire int64
 
+	FormatConfig _FormatConfig
+}
+
+// App Format Config
+type _FormatConfig struct {
 	MinLen_Username int
 	MaxLen_Username int
 	MinLen_Password int
@@ -57,7 +63,14 @@ func LoagServerConfig() Config {
 		log.Fatal(2, "Fail to parse section 'register': %v", err)
 	}
 
-	ret := Config{
+	formatConfig := _FormatConfig{
+		MinLen_Username: register.Key("MINLEN_USERNAME").MustInt(1),
+		MaxLen_Username: register.Key("MAXLEN_USERNAME").MustInt(20),
+		MinLen_Password: register.Key("MINLEN_PASSWORD").MustInt(1),
+		MaxLen_Password: register.Key("MAXLEN_PASSWORD").MustInt(20),
+	}
+
+	config := Config{
 		RunMode: cfg.Section("").Key("RUN_MODE").MustString("debug"),
 
 		HTTPPort:     server.Key("HTTP_PORT").MustInt(),
@@ -73,11 +86,8 @@ func LoagServerConfig() Config {
 		JwtSecret:      jwt.Key("JWTSECRET").MustString(""),
 		JwtTokenExpire: jwt.Key("TOKEN_EXPIRE").MustInt64(0),
 
-		MinLen_Username: register.Key("MINLEN_USERNAME").MustInt(1),
-		MaxLen_Username: register.Key("MAXLEN_USERNAME").MustInt(20),
-		MinLen_Password: register.Key("MINLEN_PASSWORD").MustInt(1),
-		MaxLen_Password: register.Key("MAXLEN_PASSWORD").MustInt(20),
+		FormatConfig: formatConfig,
 	}
 
-	return ret
+	return config
 }

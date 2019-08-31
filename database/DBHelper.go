@@ -32,6 +32,6 @@ func SetupDBConn(cfg config.Config) {
 	} // 表名前缀
 
 	DB.AutoMigrate(&models.User{})
-	DB.AutoMigrate(&models.Passrecord{})
-	DB.Model(&models.Passrecord{}).AddForeignKey("uid", "tbl_user(uid)", "cascade", "cascade")
+	DB.AutoMigrate(&models.PassRecord{})
+	DB.Model(&models.PassRecord{}).AddForeignKey("uid", "tbl_user(uid)", "cascade", "cascade")
 }

@@ -20,8 +20,8 @@ func (b *ReqUtil) GetBody(body io.ReadCloser) string {
 	return buf.String()
 }
 
-// 检查请求体的 Json 是否合法，需要实现 BaseModel 接口
-func (b *ReqUtil) CheckJsonValid(bodyJson string, objPtr BaseModel) bool {
+// 检查请求体的 Json 是否合法，需要实现 IBaseModel 接口
+func (b *ReqUtil) CheckJsonValid(bodyJson string, objPtr IBaseModel) bool {
 	err := json.Unmarshal([]byte(bodyJson), objPtr)
 	if err != nil || !objPtr.CheckValid() {
 		return false

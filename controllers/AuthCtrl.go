@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"vid/database"
 	. "vid/models"
+	"vid/models/head"
 	"vid/utils"
 
 	"github.com/gin-gonic/gin"
@@ -19,7 +20,7 @@ var passDao = new(database.PassDao)
 func (u *AuthCtrl) Login(c *gin.Context) {
 
 	body := reqUtil.GetBody(c.Request.Body)
-	var regReq RegLogHead
+	var regReq head.RegLogHead
 	if !reqUtil.CheckJsonValid(body, &regReq) {
 		c.JSON(http.StatusBadRequest, Message{
 			Message: fmt.Sprintf("Request body error"),
@@ -60,7 +61,7 @@ func (u *AuthCtrl) Login(c *gin.Context) {
 func (u *AuthCtrl) Register(c *gin.Context) {
 
 	body := reqUtil.GetBody(c.Request.Body)
-	var regReq RegLogHead
+	var regReq head.RegLogHead
 	if !reqUtil.CheckJsonValid(body, &regReq) {
 		c.JSON(http.StatusBadRequest, Message{
 			Message: fmt.Sprintf("Request body error"),

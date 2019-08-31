@@ -1,4 +1,4 @@
-package models
+package head
 
 var MinLen_Username int
 var MaxLen_Username int
@@ -15,7 +15,6 @@ func (r *RegLogHead) CheckValid() bool {
 	return r.Username != "" && r.Password != ""
 }
 
-// @override
 func (r *RegLogHead) CheckFormat() bool {
 	return len(r.Username) >= MinLen_Username &&
 		len(r.Username) <= MaxLen_Username &&

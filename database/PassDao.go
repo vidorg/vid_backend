@@ -15,8 +15,8 @@ const col_pass_encryptedPass string = "encrypted_pass"
 // db 内部使用 查询密码项
 //
 // @return `isExist`
-func (p *PassDao) queryPassRecord(uid int) (*Passrecord, bool) {
-	var pass Passrecord
+func (p *PassDao) queryPassRecord(uid int) (*PassRecord, bool) {
+	var pass PassRecord
 	DB.Where(col_pass_uid+" = ?", uid).Find(&pass)
 	if !pass.CheckValid() {
 		return nil, false
@@ -48,7 +48,7 @@ func (p *PassDao) InsertUserPassRecord(username string, encryptedPass string) (*
 		DB.Rollback()
 		return nil, errors.New(fmt.Sprintf("Uid: %d insert failed", queryUser.Uid))
 	}
-	DB.Create(&Passrecord{
+	DB.Create(&PassRecord{
 		Uid:      queryUser.Uid,
 		EncryptedPass: encryptedPass,
 	})
@@ -66,7 +66,7 @@ func (p *PassDao) InsertUserPassRecord(username string, encryptedPass string) (*
 // db 登录 查询密码项
 //
 // @return `*user` `*pass` `isExist`
-func (p *PassDao) QueryPassRecordByUsername(username string) (*User, *Passrecord, bool) {
+func (p *PassDao) QueryPassRecordByUsername(username string) (*User, *PassRecord, bool) {
 
 	var userDao = new(UserDao)
 	user, ok := userDao.QueryUserByUserName(username)
@@ -74,7 +74,7 @@ func (p *PassDao) QueryPassRecordByUsername(username string) (*User, *Passrecord
 		return nil, nil, false
 	}
 
-	var pass Passrecord
+	var pass PassRecord
 	DB.Where(col_pass_uid+" = ?", user.Uid).Find(&pass)
 	if !pass.CheckValid() {
 		return nil, nil, false
@@ -88,7 +88,7 @@ func (p *PassDao) QueryPassRecordByUsername(username string) (*User, *Passrecord
 // @return `uid` `err`
 //
 // @error `Uid: %d already exist` `Uid: %d update failed` `Uid: %d insert failed`
-func (p *PassDao) UpdatePass(pass Passrecord) (int, error) {
+func (p *PassDao) UpdatePass(pass PassRecord) (int, error) {
 	queryBefore, ok := p.queryPassRecord(pass.Uid)
 	if !ok {
 		return -1, errors.New(fmt.Sprintf("Uid: %d not exist", pass.Uid))

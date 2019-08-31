@@ -5,18 +5,15 @@ import (
 	"net/http"
 	"vid/config"
 	"vid/database"
-	"vid/models"
+	"vid/models/head"
 	"vid/routers"
 	"vid/utils"
 
 	"github.com/gin-gonic/gin"
 )
 
-func main() {
-	// Config
-	cfg := config.LoagServerConfig()
-	gin.SetMode(cfg.RunMode)
-
+// Setup app config
+func setupCfg(cfg config.Config) {
 	// Database
 	database.SetupDBConn(cfg)
 
@@ -24,11 +21,19 @@ func main() {
 	utils.JwtSecret = []byte(cfg.JwtSecret)
 	utils.JwtTokenExpire = cfg.JwtTokenExpire
 
-	// range
-	models.MinLen_Username = cfg.MinLen_Username
-	models.MaxLen_Username = cfg.MaxLen_Username
-	models.MinLen_Password = cfg.MinLen_Password
-	models.MaxLen_Password = cfg.MaxLen_Password
+	// Format
+	head.MinLen_Username = cfg.FormatConfig.MinLen_Username
+	head.MaxLen_Username = cfg.FormatConfig.MaxLen_Username
+	head.MinLen_Password = cfg.FormatConfig.MinLen_Password
+	head.MaxLen_Password = cfg.FormatConfig.MaxLen_Password
+}
+
+func main() {
+	// Config
+	cfg := config.LoagServerConfig()
+
+	gin.SetMode(cfg.RunMode)
+	setupCfg(cfg)
 
 	// Router & Middleware
 	router := routers.SetupRouters()
