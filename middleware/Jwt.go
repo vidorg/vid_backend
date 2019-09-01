@@ -3,8 +3,9 @@ package middleware
 import (
 	"net/http"
 	"strings"
-	"time"
+
 	"vid/database"
+	. "vid/exceptions"
 	. "vid/models"
 	"vid/utils"
 
@@ -12,11 +13,12 @@ import (
 )
 
 var passUtil = new(utils.PassUtil)
+var cmnCtrl = new(utils.CmnCtrl)
 var userDao = new(database.UserDao)
 
-func jwtAbort(c *gin.Context, msg string) {
+func jwtAbort(c *gin.Context, err error) {
 	c.JSON(http.StatusUnauthorized, Message{
-		Message: msg,
+		Message: cmnCtrl.Capitalize(err.Error()),
 	})
 	c.Abort()
 }
@@ -26,34 +28,37 @@ func JWTMiddleware() gin.HandlerFunc {
 		// No Head
 		authHeader := c.Request.Header.Get("Authorization")
 		if authHeader == "" {
-			jwtAbort(c, "Authorization failed")
+			jwtAbort(c, AuthorizationException)
 			return
 		}
 
 		// No Token Magic
-		parts := strings.SplitN(authHeader, " ", 2)
+		parts := strings.Split(authHeader, " ")
 		if !(len(parts) == 2 && parts[0] == "Bearer") {
-			jwtAbort(c, "Authorization failed")
+			jwtAbort(c, AuthorizationException)
 			return
 		}
 
 		// Token Parse Err
 		claims, err := passUtil.ParseToken(parts[1])
 		if err != nil {
-			jwtAbort(c, err.Error())
-			return
-		}
+			if strings.Index(err.Error(), "token is expired by") != -1 {
+				// Token Expired
+				jwtAbort(c, TokenExpiredException)
+			} else {
+				// Other Error
+				// Signature is invalid
+				// illegal base64 data at input byte
 
-		// Token Expired
-		if time.Now().Unix() > claims.ExpiresAt {
-			jwtAbort(c, "Token has expired")
+				jwtAbort(c, AuthorizationException)
+			}
 			return
 		}
 
 		// No User
 		user, ok := userDao.QueryUser(claims.UserID)
 		if !ok {
-			jwtAbort(c, "Token invalid")
+			jwtAbort(c, TokenInvalidException)
 		}
 
 		c.Set("user", *user)

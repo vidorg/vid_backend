@@ -1,12 +1,13 @@
 package controllers
 
 import (
-	"fmt"
 	"net/http"
+	
 	"vid/database"
-	. "vid/models"
-	"vid/models/head"
 	"vid/utils"
+	"vid/models/head"
+	. "vid/exceptions"
+	. "vid/models"
 
 	"github.com/gin-gonic/gin"
 )
@@ -23,12 +24,12 @@ func (u *AuthCtrl) Login(c *gin.Context) {
 	var regReq head.RegLogHead
 	if !reqUtil.CheckJsonValid(body, &regReq) {
 		c.JSON(http.StatusBadRequest, Message{
-			Message: fmt.Sprintf("Request body error"),
+			Message: RequestBodyError.Error(),
 		})
 		return
 	} else if !regReq.CheckFormat() {
 		c.JSON(http.StatusBadRequest, Message{
-			Message: fmt.Sprintf("Login username or password format error"),
+			Message: LoginFormatError.Error(),
 		})
 		return
 	}
@@ -36,14 +37,14 @@ func (u *AuthCtrl) Login(c *gin.Context) {
 	user, pass, ok := passDao.QueryPassRecordByUsername(regReq.Username)
 	if !ok {
 		c.JSON(http.StatusNotFound, Message{
-			Message: fmt.Sprintf("Username: %s not found", regReq.Username),
+			Message: UserNotExistException.Error(),
 		})
 		return
 	}
 
 	if !passUtil.MD5Check(regReq.Password, pass.EncryptedPass) {
 		c.JSON(http.StatusUnauthorized, Message{
-			Message: fmt.Sprintf("Username: %s password error", regReq.Username),
+			Message: PasswordError.Error(),
 		})
 		return
 	} else {
@@ -64,12 +65,12 @@ func (u *AuthCtrl) Register(c *gin.Context) {
 	var regReq head.RegLogHead
 	if !reqUtil.CheckJsonValid(body, &regReq) {
 		c.JSON(http.StatusBadRequest, Message{
-			Message: fmt.Sprintf("Request body error"),
+			Message: RequestBodyError.Error(),
 		})
 		return
 	} else if !regReq.CheckFormat() {
 		c.JSON(http.StatusBadRequest, Message{
-			Message: fmt.Sprintf("Register username or password format error"),
+			Message: RegisterFormatError.Error(),
 		})
 		return
 	}

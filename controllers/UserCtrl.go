@@ -3,9 +3,11 @@ package controllers
 import (
 	"fmt"
 	"net/http"
+
 	"vid/database"
-	. "vid/models"
 	"vid/utils"
+	. "vid/exceptions"
+	. "vid/models"
 
 	"github.com/gin-gonic/gin"
 )
@@ -25,7 +27,7 @@ func (u *UserCtrl) QueryUser(c *gin.Context) {
 	uid, ok := reqUtil.GetIntParam(c.Params, "uid")
 	if !ok {
 		c.JSON(http.StatusBadRequest, Message{
-			Message: fmt.Sprintf("Route param '%s' not found or error", "uid"),
+			Message: fmt.Sprintf(RouteParamError.Error(), "uid"),
 		})
 		return
 	}
@@ -34,7 +36,7 @@ func (u *UserCtrl) QueryUser(c *gin.Context) {
 		c.JSON(http.StatusOK, query)
 	} else {
 		c.JSON(http.StatusNotFound, Message{
-			Message: fmt.Sprintf("Uid: %d Not Found", uid),
+			Message: UserNotExistException.Error(),
 		})
 	}
 }
@@ -45,7 +47,7 @@ func (u *UserCtrl) UpdateUser(c *gin.Context) {
 	var user User
 	if !reqUtil.CheckJsonValid(body, &user) {
 		c.JSON(http.StatusBadRequest, Message{
-			Message: fmt.Sprintf("Request body error"),
+			Message: RequestBodyError.Error(),
 		})
 		return
 	}
@@ -65,7 +67,7 @@ func (u *UserCtrl) DeleteUser(c *gin.Context) {
 	uid, ok := reqUtil.GetIntQuery(c, "uid")
 	if !ok {
 		c.JSON(http.StatusBadRequest, Message{
-			Message: fmt.Sprintf("Query param '%s' not found or error", "uid"),
+			Message: fmt.Sprintf(QueryParamError.Error(), "uid"),
 		})
 		return
 	}

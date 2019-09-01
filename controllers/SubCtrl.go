@@ -3,6 +3,8 @@ package controllers
 import (
 	"fmt"
 	"net/http"
+	
+	. "vid/exceptions"
 	. "vid/models"
 
 	"github.com/gin-gonic/gin"
@@ -25,7 +27,7 @@ func (u *SubCtrl) SubscribeUser(c *gin.Context) {
 
 	if !ok || !ok2 {
 		c.JSON(http.StatusBadRequest, Message{
-			Message: fmt.Sprintf("Query param '%s' not found or error", lostParam),
+			Message: fmt.Sprintf(QueryParamError.Error(), lostParam),
 		})
 		return
 	}
@@ -57,7 +59,7 @@ func (u *SubCtrl) UnSubscribeUser(c *gin.Context) {
 
 	if !ok || !ok2 {
 		c.JSON(http.StatusBadRequest, Message{
-			Message: fmt.Sprintf("Query param '%s' not found or error", lostParam),
+			Message: fmt.Sprintf(QueryParamError.Error(), lostParam),
 		})
 		return
 	}
@@ -79,7 +81,7 @@ func (u *SubCtrl) QuerySubscriberUsers(c *gin.Context) {
 	uid, ok := reqUtil.GetIntParam(c.Params, "uid")
 	if !ok {
 		c.JSON(http.StatusBadRequest, Message{
-			Message: fmt.Sprintf("Route param '%s' not found or error", "uid"),
+			Message: fmt.Sprintf(RouteParamError.Error(), "uid"),
 		})
 		return
 	}
@@ -98,7 +100,7 @@ func (u *SubCtrl) QuerySubscribingUsers(c *gin.Context) {
 	uid, ok := reqUtil.GetIntParam(c.Params, "uid")
 	if !ok {
 		c.JSON(http.StatusBadRequest, Message{
-			Message: fmt.Sprintf("Route param '%s' not found or error", "uid"),
+			Message: fmt.Sprintf(RouteParamError.Error(), "uid"),
 		})
 		return
 	}

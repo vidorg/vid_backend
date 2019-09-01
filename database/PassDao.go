@@ -1,9 +1,8 @@
 package database
 
 import (
-	"errors"
-	"fmt"
 	"time"
+	. "vid/exceptions"
 	. "vid/models"
 )
 
@@ -29,13 +28,13 @@ func (p *PassDao) queryPassRecord(uid int) (*PassRecord, bool) {
 //
 // @return `*user` `err`
 //
-// @error `Username: %s already exist` `Uid: %d insert failed`
+// @error `UserExistException` `InsertException`
 func (p *PassDao) InsertUserPassRecord(username string, encryptedPass string) (*User, error) {
 
 	var userDao = new(UserDao)
 
 	if _, ok := userDao.QueryUserByUserName(username); ok {
-		return nil, errors.New(fmt.Sprintf("Username: %s already exist", username))
+		return nil, UserExistException
 	}
 
 	tx := DB.Begin()
@@ -46,17 +45,17 @@ func (p *PassDao) InsertUserPassRecord(username string, encryptedPass string) (*
 	queryUser, ok := userDao.QueryUserByUserName(username)
 	if !ok {
 		DB.Rollback()
-		return nil, errors.New(fmt.Sprintf("Uid: %d insert failed", queryUser.Uid))
+		return nil, InsertException
 	}
 	DB.Create(&PassRecord{
-		Uid:      queryUser.Uid,
+		Uid:           queryUser.Uid,
 		EncryptedPass: encryptedPass,
 	})
 
-	queryPass, ok := p.queryPassRecord(queryUser.Uid)
+	_, ok = p.queryPassRecord(queryUser.Uid)
 	if !ok {
 		tx.Rollback()
-		return nil, errors.New(fmt.Sprintf("Uid: %d insert failed", queryPass.Uid))
+		return nil, InsertException
 	} else {
 		tx.Commit()
 		return queryUser, nil
@@ -87,42 +86,23 @@ func (p *PassDao) QueryPassRecordByUsername(username string) (*User, *PassRecord
 //
 // @return `uid` `err`
 //
-// @error `Uid: %d already exist` `Uid: %d update failed` `Uid: %d insert failed`
+// @error `UserExistException` `UpdateException` `NotUpdateException`
 func (p *PassDao) UpdatePass(pass PassRecord) (int, error) {
 	queryBefore, ok := p.queryPassRecord(pass.Uid)
 	if !ok {
-		return -1, errors.New(fmt.Sprintf("Uid: %d not exist", pass.Uid))
+		return -1, UserExistException
 	}
 	DB.Model(&pass).Updates(map[string]interface{}{
 		col_pass_encryptedPass: pass.EncryptedPass,
 	})
 	query, ok := p.queryPassRecord(pass.Uid)
 	if !ok {
-		return -1, errors.New(fmt.Sprintf("Uid: %d update failed", pass.Uid))
+		return -1, UpdateException
 	} else {
 		if queryBefore.EncryptedPass == query.EncryptedPass {
-			return -1, errors.New(fmt.Sprintf("Uid: %d not updated", pass.Uid))
+			return -1, NotUpdateException
 		} else {
 			return pass.Uid, nil
 		}
 	}
 }
-
-// // db 登录 删除密码
-// //
-// // @return `uid` `err`
-// //
-// // @error `Uid: %d already exist` `Uid: %d update failed` `Uid: %d insert failed`
-// func (p *PassDao) DeletePass(uid int) (int, error) {
-// 	query, ok := p.queryPassRecord(uid)
-// 	if !ok {
-// 		return -1, errors.New(fmt.Sprintf("Uid: %d not exist", uid))
-// 	}
-// 	DB.Delete(query)
-// 	_, ok = p.queryPassRecord(uid)
-// 	if ok {
-// 		return -1, errors.New(fmt.Sprintf("Uid: %d delete failed", uid))
-// 	} else {
-// 		return uid, nil
-// 	}
-// }

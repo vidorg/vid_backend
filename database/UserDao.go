@@ -1,8 +1,7 @@
 package database
 
 import (
-	"errors"
-	"fmt"
+	. "vid/exceptions"
 	. "vid/models"
 )
 
@@ -51,12 +50,12 @@ func (u *UserDao) QueryUserByUserName(username string) (*User, bool) {
 //
 // @return `*user` `err`
 //
-// @error `Uid: %d not exist` `Uid: %d update failed` `Uid: %d not updated`
+// @error `UserNotExistException` `UpdateException` `NotUpdateException`
 func (u *UserDao) UpdateUser(user User) (*User, error) {
 	queryBefore, ok := u.QueryUser(user.Uid)
 	// _, ok := u.QueryUser(user.Uid)
 	if !ok {
-		return nil, errors.New(fmt.Sprintf("Uid: %d not exist", user.Uid))
+		return nil, UserNotExistException
 	}
 	// DB.Save(&user)
 	DB.Model(&user).Updates(map[string]interface{}{
@@ -65,10 +64,10 @@ func (u *UserDao) UpdateUser(user User) (*User, error) {
 	})
 	query, ok := u.QueryUser(user.Uid)
 	if !ok {
-		return query, errors.New(fmt.Sprintf("Uid: %d update failed", user.Uid))
+		return query, UpdateException
 	} else {
 		if queryBefore.Equals(query) {
-			return query, errors.New(fmt.Sprintf("Uid: %d not updated", user.Uid))
+			return query, NotUpdateException
 		} else {
 			return query, nil
 		}
@@ -79,14 +78,14 @@ func (u *UserDao) UpdateUser(user User) (*User, error) {
 //
 // @return `*user` `err`
 //
-// @error `Uid: %d not exist` `Uid: %d delete failed`
+// @error `UserNotExistException` `DeleteException`
 func (u *UserDao) DeleteUser(uid int) (*User, error) {
 
 	// var passDao = new(PassDao)
 
 	query, ok := u.QueryUser(uid)
 	if !ok {
-		return nil, errors.New(fmt.Sprintf("Uid: %d not exist", uid))
+		return nil, UserNotExistException
 	}
 
 	// _, err := passDao.DeletePass(uid)
@@ -94,7 +93,7 @@ func (u *UserDao) DeleteUser(uid int) (*User, error) {
 	_, ok = u.QueryUser(uid)
 
 	if ok {
-		return query, errors.New(fmt.Sprintf("Uid: %d delete failed", uid))
+		return query, DeleteException
 	} else {
 		return query, nil
 	}
@@ -104,18 +103,18 @@ func (u *UserDao) DeleteUser(uid int) (*User, error) {
 //
 // @return `err`
 //
-// @error `Uid: %d not exist` `Cound not subscribe to oneself`
+// @error `UserNotExistException` `SubscribeOneSelfException`
 func (u *UserDao) SubscribeUser(upUid int, suberUid int) error {
 	upUser, ok := u.QueryUser(upUid)
 	if !ok {
-		return errors.New(fmt.Sprintf("Uid: %d not exist", upUid))
+		return UserNotExistException
 	}
 	suberUser, ok := u.QueryUser(suberUid)
 	if !ok {
-		return errors.New(fmt.Sprintf("Uid: %d not exist", suberUid))
+		return UserNotExistException
 	}
 	if upUid == suberUid {
-		return errors.New(fmt.Sprintf("Cound not subscribe to oneself"))
+		return SubscribeOneSelfException
 	}
 	DB.Model(upUser).Association("Subscribers").Append(suberUser)
 	return nil
@@ -125,18 +124,18 @@ func (u *UserDao) SubscribeUser(upUid int, suberUid int) error {
 //
 // @return `err`
 //
-// @error `Uid: %d not exist` `Cound not subscribe to oneself`
+// @error `UserNotExistException` `SubscribeOneSelfException`
 func (u *UserDao) UnSubscribeUser(upUid int, suberUid int) error {
 	upUser, ok := u.QueryUser(upUid)
 	if !ok {
-		return errors.New(fmt.Sprintf("Uid: %d not exist", upUid))
+		return UserNotExistException
 	}
 	suberUser, ok := u.QueryUser(suberUid)
 	if !ok {
-		return errors.New(fmt.Sprintf("Uid: %d not exist", suberUid))
+		return UserNotExistException
 	}
 	if upUid == suberUid {
-		return errors.New(fmt.Sprintf("Cound not subscribe to oneself"))
+		return SubscribeOneSelfException
 	}
 	DB.Model(upUser).Association("Subscribers").Delete(suberUser)
 	return nil
@@ -146,11 +145,11 @@ func (u *UserDao) UnSubscribeUser(upUid int, suberUid int) error {
 //
 // @return `user[]` `err`
 //
-// error `Uid: %d not exist`
+// error `UserNotExistException`
 func (u *UserDao) QuerySubscriberUsers(uid int) ([]User, error) {
 	user, ok := u.QueryUser(uid)
 	if !ok {
-		return nil, errors.New(fmt.Sprintf("Uid: %d not exist", uid))
+		return nil, UserNotExistException
 	}
 	var users []User
 	DB.Model(user).Related(&users, "Subscribers")
@@ -165,11 +164,11 @@ func (u *UserDao) QuerySubscriberUsers(uid int) ([]User, error) {
 //
 // @return `user[]` `err`
 //
-// @error `Uid: %d not exist`
+// @error `UserNotExistException`
 func (u *UserDao) QuerySubscribingUsers(uid int) ([]User, error) {
 	user, ok := u.QueryUser(uid)
 	if !ok {
-		return nil, errors.New(fmt.Sprintf("Uid: %d not exist", uid))
+		return nil, UserNotExistException
 	}
 	var users []User
 	DB.Model(user).Related(&users, "Subscribings")
