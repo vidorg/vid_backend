@@ -16,6 +16,7 @@ import (
 type UserCtrl struct{}
 
 var reqUtil = new(utils.ReqUtil)
+var cmnCtrl = new(utils.CmnCtrl)
 var userDao = new(database.UserDao)
 
 // GET /user/all (Non-Auth)
@@ -34,7 +35,14 @@ func (u *UserCtrl) QueryUser(c *gin.Context) {
 	}
 	query, ok := userDao.QueryUserByUid(uid)
 	if ok {
-		c.JSON(http.StatusOK, query)
+		subing_cnt, suber_cnt, _ := userDao.QuerySubCnt(uid)
+		c.JSON(http.StatusOK, UserResp{
+			User: *query,
+			Info: UserExtraInfo{
+				Subscriber_cnt: suber_cnt,
+				Subscribing_cnt: subing_cnt,
+			},
+		})
 	} else {
 		c.JSON(http.StatusNotFound, Message{
 			Message: UserNotExistException.Error(),

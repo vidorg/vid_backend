@@ -85,14 +85,11 @@ func (u *UserDao) UpdateUser(user User) (*User, error) {
 // @error `UserNotExistException` `DeleteException`
 func (u *UserDao) DeleteUser(uid int) (*User, error) {
 
-	// var passDao = new(PassDao)
-
 	query, ok := u.QueryUserByUid(uid)
 	if !ok {
 		return nil, UserNotExistException
 	}
 
-	// _, err := passDao.DeletePass(uid)
 	DB.Delete(query)
 	_, ok = u.QueryUserByUid(uid)
 
@@ -181,4 +178,21 @@ func (u *UserDao) QuerySubscribingUsers(uid int) ([]User, error) {
 	// 		ON `tbl_subscribe`.`user_uid` = `tbl_user`.`uid`
 	// 		WHERE (`tbl_subscribe`.`subscriber_uid` IN (5))
 	return users, nil
+}
+
+// db 查询 uid 的关注和粉丝数
+//
+// @return `subing_cnt` `suber_cnt` `err`
+//
+// @error `UserNotExistException`
+func (u *UserDao) QuerySubCnt(uid int) (int, int, error) {
+	user, ok := u.QueryUserByUid(uid)
+	if !ok {
+		return 0, 0, UserNotExistException
+	}
+	var subing []User
+	DB.Model(user).Related(&subing, "Subscribings")
+	var suber []User
+	DB.Model(user).Related(&suber, "Subscribers")
+	return len(subing), len(suber), nil
 }

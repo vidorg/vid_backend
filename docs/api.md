@@ -105,7 +105,6 @@ Example:
 + `POST /auth/login` (Json)
 + `POST /auth/register` (Json)
 + `GET /user/all` (Array)
-+ `GET /user/one/:uid` (Json)
 + `POST /user/update` (Json)
 + `DELETE /user/delete` (Json)
 + `GET /user/subscriber/:uid` (Array)
@@ -126,6 +125,35 @@ Example:
     "username": "TestUser",
     "profile": "Test Profile",
     "register_time": "2019-09-01T14:48:08+08:00"
+}
+```
+
++ `GET /user/one/:uid` (Json)
+
+|Field|Type|Description|Remark|
+|--|--|--|--|
+|`user`|`User`|User basic information|See route `POST /auth/login` response body|
+|`info`|`UserExtraInfo`|User extra information|See the next chart|
+
+|Field|Type|Description|Remark|
+|--|--|--|--|
+|`subscriber_cnt`|`int`|User subscribers count||
+|`subscribing_cnt`|`int`|User subscribing count||
+
+Example:
+
+```json
+{
+    "user": {
+        "uid": 5,
+        "username": "TestUser",
+        "profile": "Test Profile",
+        "register_time": "2019-09-01T14:48:08+08:00"
+    },
+    "info": {
+        "subscriber_cnt": 2,
+        "subscribing_cnt": 3
+    }
 }
 ```
 
