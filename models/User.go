@@ -1,7 +1,9 @@
 package models
 
 import (
+	"strings"
 	"time"
+	"vid/config"
 )
 
 // http://gorm.io/docs/many_to_many.html#Self-Referencing
@@ -16,9 +18,15 @@ type User struct {
 
 // @override
 func (u *User) CheckValid() bool {
-	return u.Uid != 0 && u.Username != ""
+	return u.Username != "" && strings.Index(u.Username, " ") == -1
 }
 
 func (u *User) Equals(obj *User) bool {
 	return u.Uid == obj.Uid && u.Username == obj.Username && u.Profile == obj.Profile
+}
+
+func (u *User) CheckFormat() bool {
+	cfg := config.AppCfg
+	return len(u.Username) >= cfg.FormatConfig.MinLen_Username &&
+		len(u.Username) <= cfg.FormatConfig.MaxLen_Username
 }

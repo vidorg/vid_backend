@@ -1,4 +1,4 @@
-package models
+package resp
 
 type Message struct {
 	Message string `json:"message"`

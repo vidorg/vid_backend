@@ -1,9 +1,9 @@
 package head
 
-var MinLen_Username int
-var MaxLen_Username int
-var MinLen_Password int
-var MaxLen_Password int
+import (
+	"strings"
+	"vid/config"
+)
 
 type RegLogHead struct {
 	Username string `json:"username"`
@@ -12,12 +12,14 @@ type RegLogHead struct {
 
 // @override
 func (r *RegLogHead) CheckValid() bool {
-	return r.Username != "" && r.Password != ""
+	return r.Username != "" && r.Password != "" &&
+		strings.Index(r.Username, " ") == -1
 }
 
 func (r *RegLogHead) CheckFormat() bool {
-	return len(r.Username) >= MinLen_Username &&
-		len(r.Username) <= MaxLen_Username &&
-		len(r.Password) >= MinLen_Password &&
-		len(r.Password) <= MaxLen_Password
+	cfg := config.AppCfg
+	return len(r.Username) >= cfg.FormatConfig.MinLen_Username &&
+		len(r.Username) <= cfg.FormatConfig.MaxLen_Username &&
+		len(r.Password) >= cfg.FormatConfig.MinLen_Password &&
+		len(r.Password) <= cfg.FormatConfig.MaxLen_Password
 }

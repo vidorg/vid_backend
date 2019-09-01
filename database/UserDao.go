@@ -23,7 +23,7 @@ func (u *UserDao) QueryAllUsers() (users []User) {
 // db 查询 uid 用户
 //
 // @return `*user` `isUserExist`
-func (u *UserDao) QueryUser(uid int) (*User, bool) {
+func (u *UserDao) QueryUserByUid(uid int) (*User, bool) {
 	var user User
 	DB.Where(col_user_uid+" = ?", uid).Find(&user)
 	if !user.CheckValid() { // PK is null (auto-increment)
@@ -50,19 +50,23 @@ func (u *UserDao) QueryUserByUserName(username string) (*User, bool) {
 //
 // @return `*user` `err`
 //
-// @error `UserNotExistException` `UpdateException` `NotUpdateException`
+// @error `UserNotExistException` `UpdateInvalidException` `UserNameUsedException` `UpdateException` `NotUpdateException`
 func (u *UserDao) UpdateUser(user User) (*User, error) {
-	queryBefore, ok := u.QueryUser(user.Uid)
-	// _, ok := u.QueryUser(user.Uid)
+	queryBefore, ok := u.QueryUserByUid(user.Uid)
 	if !ok {
 		return nil, UserNotExistException
 	}
-	// DB.Save(&user)
+	if !user.CheckFormat() {
+		return nil, UpdateInvalidException
+	}
+	if _, ok = u.QueryUserByUserName(user.Username); ok && user.Username != queryBefore.Username {
+		return nil, UserNameUsedException
+	}
 	DB.Model(&user).Updates(map[string]interface{}{
 		col_user_username: user.Username,
 		col_user_profile:  user.Profile,
 	})
-	query, ok := u.QueryUser(user.Uid)
+	query, ok := u.QueryUserByUid(user.Uid)
 	if !ok {
 		return query, UpdateException
 	} else {
@@ -83,14 +87,14 @@ func (u *UserDao) DeleteUser(uid int) (*User, error) {
 
 	// var passDao = new(PassDao)
 
-	query, ok := u.QueryUser(uid)
+	query, ok := u.QueryUserByUid(uid)
 	if !ok {
 		return nil, UserNotExistException
 	}
 
 	// _, err := passDao.DeletePass(uid)
 	DB.Delete(query)
-	_, ok = u.QueryUser(uid)
+	_, ok = u.QueryUserByUid(uid)
 
 	if ok {
 		return query, DeleteException
@@ -104,12 +108,12 @@ func (u *UserDao) DeleteUser(uid int) (*User, error) {
 // @return `err`
 //
 // @error `UserNotExistException` `SubscribeOneSelfException`
-func (u *UserDao) SubscribeUser(upUid int, suberUid int) error {
-	upUser, ok := u.QueryUser(upUid)
+func (u *UserDao) SubscribeUser(suberUid int, upUid int) error {
+	upUser, ok := u.QueryUserByUid(upUid)
 	if !ok {
 		return UserNotExistException
 	}
-	suberUser, ok := u.QueryUser(suberUid)
+	suberUser, ok := u.QueryUserByUid(suberUid)
 	if !ok {
 		return UserNotExistException
 	}
@@ -125,12 +129,12 @@ func (u *UserDao) SubscribeUser(upUid int, suberUid int) error {
 // @return `err`
 //
 // @error `UserNotExistException` `SubscribeOneSelfException`
-func (u *UserDao) UnSubscribeUser(upUid int, suberUid int) error {
-	upUser, ok := u.QueryUser(upUid)
+func (u *UserDao) UnSubscribeUser(suberUid int, upUid int) error {
+	upUser, ok := u.QueryUserByUid(upUid)
 	if !ok {
 		return UserNotExistException
 	}
-	suberUser, ok := u.QueryUser(suberUid)
+	suberUser, ok := u.QueryUserByUid(suberUid)
 	if !ok {
 		return UserNotExistException
 	}
@@ -147,7 +151,7 @@ func (u *UserDao) UnSubscribeUser(upUid int, suberUid int) error {
 //
 // error `UserNotExistException`
 func (u *UserDao) QuerySubscriberUsers(uid int) ([]User, error) {
-	user, ok := u.QueryUser(uid)
+	user, ok := u.QueryUserByUid(uid)
 	if !ok {
 		return nil, UserNotExistException
 	}
@@ -166,7 +170,7 @@ func (u *UserDao) QuerySubscriberUsers(uid int) ([]User, error) {
 //
 // @error `UserNotExistException`
 func (u *UserDao) QuerySubscribingUsers(uid int) ([]User, error) {
-	user, ok := u.QueryUser(uid)
+	user, ok := u.QueryUserByUid(uid)
 	if !ok {
 		return nil, UserNotExistException
 	}

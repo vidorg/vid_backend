@@ -18,7 +18,9 @@ var (
 	UpdateException = errors.New("User update failed")
 	DeleteException = errors.New("User delete failed")
 
+	UserNameUsedException     = errors.New("Username has been used")
 	NotUpdateException        = errors.New("User information not updated")
+	UpdateInvalidException    = errors.New("User information invalid")
 	SubscribeOneSelfException = errors.New("Cound not subscribe to oneself")
 )
 
@@ -31,5 +33,6 @@ var (
 	LoginFormatError    = errors.New("Login username or password format error")
 	RegisterFormatError = errors.New("Register username or password format error")
 
-	PasswordError = errors.New("User password error")
+	NoAuthorizationException = errors.New("No authorization of this user")
+	PasswordError            = errors.New("User password error")
 )

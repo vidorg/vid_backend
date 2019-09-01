@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"vid/middleware"
-	. "vid/models"
+	. "vid/models/resp"
 
 	"github.com/gin-gonic/gin"
 )

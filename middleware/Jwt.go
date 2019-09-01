@@ -6,7 +6,7 @@ import (
 
 	"vid/database"
 	. "vid/exceptions"
-	. "vid/models"
+	. "vid/models/resp"
 	"vid/utils"
 
 	"github.com/gin-gonic/gin"
@@ -56,7 +56,7 @@ func JWTMiddleware() gin.HandlerFunc {
 		}
 
 		// No User
-		user, ok := userDao.QueryUser(claims.UserID)
+		user, ok := userDao.QueryUserByUid(claims.UserID)
 		if !ok {
 			jwtAbort(c, TokenInvalidException)
 		}

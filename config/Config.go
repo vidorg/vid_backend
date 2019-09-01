@@ -35,7 +35,9 @@ type _FormatConfig struct {
 	MaxLen_Password int
 }
 
-func LoagServerConfig() Config {
+var AppCfg Config
+
+func LoagServerConfig() {
 	var err error
 
 	cfg, err := ini.Load("./config/app.ini")
@@ -70,7 +72,7 @@ func LoagServerConfig() Config {
 		MaxLen_Password: register.Key("MAXLEN_PASSWORD").MustInt(20),
 	}
 
-	config := Config{
+	AppCfg = Config{
 		RunMode: cfg.Section("").Key("RUN_MODE").MustString("debug"),
 
 		HTTPPort:     server.Key("HTTP_PORT").MustInt(),
@@ -88,6 +90,4 @@ func LoagServerConfig() Config {
 
 		FormatConfig: formatConfig,
 	}
-
-	return config
 }

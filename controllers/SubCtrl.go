@@ -6,77 +6,70 @@ import (
 	
 	. "vid/exceptions"
 	. "vid/models"
+	. "vid/models/resp"
 
 	"github.com/gin-gonic/gin"
 )
 
 type SubCtrl struct{}
 
-// POST /user/sub?up_uid&subscriber_uid
+// POST /user/sub?uid (Auth)
 func (u *SubCtrl) SubscribeUser(c *gin.Context) {
-	up_uid, ok := reqUtil.GetIntQuery(c, "up_uid")
-	subscriber_uid, ok2 := reqUtil.GetIntQuery(c, "subscriber_uid")
+	authusr, _ := c.Get("user")
 
-	lostParam := make([]string, 1, 2)
+	me_uid := authusr.(User).Uid
+	up_uid, ok := reqUtil.GetIntQuery(c, "uid")
+
 	if !ok {
-		lostParam = append(lostParam, "up_uid")
-	}
-	if !ok2 {
-		lostParam = append(lostParam, "subscriber_uid")
-	}
-
-	if !ok || !ok2 {
 		c.JSON(http.StatusBadRequest, Message{
-			Message: fmt.Sprintf(QueryParamError.Error(), lostParam),
+			Message: fmt.Sprintf(QueryParamError.Error(), "uid"),
 		})
 		return
 	}
 
-	err := userDao.SubscribeUser(up_uid, subscriber_uid)
+	err := userDao.SubscribeUser(me_uid, up_uid)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, Message{
 			Message: err.Error(),
 		})
 	} else {
-		c.JSON(http.StatusOK, Message{
-			Message: fmt.Sprintf("User ID: %d Subscribe User ID: %d Success", subscriber_uid, up_uid),
+		c.JSON(http.StatusOK, SubResp{
+			Me: me_uid,
+			Up: up_uid,
+			Action: "Subscribe",
 		})
 	}
 }
 
-// POST /user/unsub?up_uid&subscriber_uid
+// POST /user/unsub?uid (Auth)
 func (u *SubCtrl) UnSubscribeUser(c *gin.Context) {
-	up_uid, ok := reqUtil.GetIntQuery(c, "up_uid")
-	subscriber_uid, ok2 := reqUtil.GetIntQuery(c, "subscriber_uid")
+	authusr, _ := c.Get("user")
 
-	lostParam := make([]string, 1, 2)
+	me_uid := authusr.(User).Uid
+	up_uid, ok := reqUtil.GetIntQuery(c, "uid")
+
 	if !ok {
-		lostParam = append(lostParam, "up_uid")
-	}
-	if !ok2 {
-		lostParam = append(lostParam, "subscriber_uid")
-	}
-
-	if !ok || !ok2 {
 		c.JSON(http.StatusBadRequest, Message{
-			Message: fmt.Sprintf(QueryParamError.Error(), lostParam),
+			Message: fmt.Sprintf(QueryParamError.Error(), "uid"),
 		})
 		return
 	}
 
-	err := userDao.UnSubscribeUser(up_uid, subscriber_uid)
+	err := userDao.UnSubscribeUser(me_uid, up_uid)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, Message{
 			Message: err.Error(),
 		})
 	} else {
-		c.JSON(http.StatusOK, Message{
-			Message: fmt.Sprintf("User ID: %d UnSubscribe User ID: %d Success", subscriber_uid, up_uid),
+		c.JSON(http.StatusOK, SubResp{
+			Me: me_uid,
+			Up: up_uid,
+			Action: "UnSubscribe",
 		})
 	}
 }
 
-// GET /user/subscriber/:uid
+// GET /user/subscriber/:uid (Non-Auth)
 func (u *SubCtrl) QuerySubscriberUsers(c *gin.Context) {
 	uid, ok := reqUtil.GetIntParam(c.Params, "uid")
 	if !ok {
@@ -95,7 +88,7 @@ func (u *SubCtrl) QuerySubscriberUsers(c *gin.Context) {
 	}
 }
 
-// GET /user/subscriber/:uid
+// GET /user/subscriber/:uid (Non-Auth)
 func (u *SubCtrl) QuerySubscribingUsers(c *gin.Context) {
 	uid, ok := reqUtil.GetIntParam(c.Params, "uid")
 	if !ok {
