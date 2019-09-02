@@ -46,35 +46,40 @@ func (u *UserDao) QueryUserByUserName(username string) (*User, bool) {
 	}
 }
 
+///////////////////////////////////////////////////////////////////////////////////////////
+
 // db 更新用户名和简介
 //
 // @return `*user` `err`
 //
 // @error `UserNotExistException` `UpdateInvalidException` `UserNameUsedException` `UpdateException` `NotUpdateException`
 func (u *UserDao) UpdateUser(user User) (*User, error) {
+	// 检查用户信息
 	queryBefore, ok := u.QueryUserByUid(user.Uid)
 	if !ok {
 		return nil, UserNotExistException
 	}
+	// 检查格式
 	if !user.CheckFormat() {
 		return nil, UpdateInvalidException
 	}
+	// 检查同名
 	if _, ok = u.QueryUserByUserName(user.Username); ok && user.Username != queryBefore.Username {
 		return nil, UserNameUsedException
 	}
+	// 更新信息
 	DB.Model(&user).Updates(map[string]interface{}{
 		col_user_username: user.Username,
 		col_user_profile:  user.Profile,
 	})
-	query, ok := u.QueryUserByUid(user.Uid)
-	if !ok {
-		return query, UpdateException
+	// 检查更新后
+	query, _ := u.QueryUserByUid(user.Uid)
+	if queryBefore.Equals(query) {
+		// 数据不变
+		return query, NotUpdateException
 	} else {
-		if queryBefore.Equals(query) {
-			return query, NotUpdateException
-		} else {
-			return query, nil
-		}
+		// 正常
+		return query, nil
 	}
 }
 
@@ -90,15 +95,14 @@ func (u *UserDao) DeleteUser(uid int) (*User, error) {
 		return nil, UserNotExistException
 	}
 
-	DB.Delete(query)
-	_, ok = u.QueryUserByUid(uid)
-
-	if ok {
+	if DB.Delete(query).RowsAffected != 1 {
 		return query, DeleteException
 	} else {
 		return query, nil
 	}
 }
+
+///////////////////////////////////////////////////////////////////////////////////////////
 
 // db `suberUip` 关注 `upUid`
 //

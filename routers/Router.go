@@ -17,6 +17,7 @@ func SetupRouters() *gin.Engine {
 	setupTestGroup(router)
 	setupUserGroup(router)
 	setupAuthGroup(router)
+	setupVideoGroup(router)
 
 	// router.NoMethod(controllers.NoMethod)
 	router.NoRoute(func(c *gin.Context) {

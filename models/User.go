@@ -14,6 +14,7 @@ type User struct {
 	RegisterTime time.Time `json:"register_time" gorm:"type:datetime"`
 	Subscribers  []*User   `json:"-" gorm:"many2many:subscribe;jointable_foreignkey:up_uid;association_jointable_foreignkey:subscriber_uid"`
 	Subscribings []*User   `json:"-" gorm:"many2many:subscribe;jointable_foreignkey:subscriber_uid;association_jointable_foreignkey:up_uid"`
+	Videos       []*Video  `json:"-" gorm:"ForeignKey:AuthorUid;AssociationForeignKey:Uid"`
 }
 
 // @override
