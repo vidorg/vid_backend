@@ -9,7 +9,7 @@ type Video struct {
 	VideoUrl    string    `json:"video_url"`                               // 255
 	UploadTime  time.Time `json:"upload_time"`
 	AuthorUid   int       `json:"-"`
-	Author      *User     `json:"author,omitempty" gorm:"-"`
+	Author      *User     `json:"author" gorm:"-"` // omitempty
 }
 
 // @override

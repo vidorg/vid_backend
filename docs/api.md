@@ -15,19 +15,22 @@
 |`POST`|`/auth/login`|Login as an exist user <sup>[1]</sup>|
 |`POST`|`/auth/register`|Register and create an unexist user <sup>[1]</sup>|
 |`GET`|`/user/all`|Query all users' information|
-|`GET`|`/user/one/:uid`|Query user's information <sup>[2]</sup>|
+|`GET`|`/user/uid/:uid`|Query user's information <sup>[2]</sup>|
 |`POST`|`/user/update`|Update user's information <sup>[1]</sup> <sup>[4]</sup>|
 |`DELETE`|`/user/delete`|Delete the current user <sup>[4]</sup>|
 |`GET`|`/user/subscriber/:uid`|Query user's subscribers <sup>[2]</sup>|
 |`GET`|`/user/subscribing/:uid`|Query user's subscribing users <sup>[2]</sup>|
 |`POST`|`/user/sub/?uid`|Subscribe the user <sup>[3]</sup> <sup>[4]</sup>|
 |`POST`|`/user/unsub/?uid`|Unsubscribe the user <sup>[3]</sup> <sup>[4]</sup>|
+|`GET`|`/video/all`|Query all videos|
+|`GET`|`/video/uid/:uid`|Query user upload video <sup>[2]</sup>|
+|`GET`|`/video/vid/:vid`|Query video <sup>[2]</sup>|
 
-+ [1] [Need request body](https://vid/blob/master/docs/api.md#request-body)
-+ [2] [Need route param](https://vid/blob/master/docs/api.md#request-route-param)
-+ [3] [Need query param](https://vid/blob/master/docs/api.md#request-query-param)
-+ [4] [Need authorization](https://vid/blob/master/docs/api.md#request-header)
-+ [Response](https://vid/blob/master/docs/api.md#response-header)
++ [1] [Need request body](https://github.com/vidorg/Vid_Backend/blob/master/docs/api.md#request-body)
++ [2] [Need route param](https://github.com/vidorg/Vid_Backend/blob/master/docs/api.md#request-route-param)
++ [3] [Need query param](https://github.com/vidorg/Vid_Backend/blob/master/docs/api.md#request-query-param)
++ [4] [Need authorization](https://github.com/vidorg/Vid_Backend/blob/master/docs/api.md#request-header)
++ [Response](https://github.com/vidorg/Vid_Backend/blob/master/docs/api.md#response-header)
 
 ---
 
@@ -50,13 +53,25 @@
 
 ## Request Route Param
 
-+ `GET /user/one/:uid`
++ `GET /user/uid/:uid`
 + `GET /user/subscriber/:uid`
 + `GET /user/subscribing/:uid`
 
 |Field|Type|Is Required|Description|Remark|
 |--|--|--|--|--|
 |`uid`|`int`|Required|Query user uid||
+
++ `GET /video/uid/:uid`
+
+|Field|Type|Is Required|Description|Remark|
+|--|--|--|--|--|
+|`uid`|`int`|Required|Query video author uid||
+
++ `GET /video/vid/:vid`
+
+|Field|Type|Is Required|Description|Remark|
+|--|--|--|--|--|
+|`uid`|`int`|Required|Query video vid||
 
 ## Request Body
 
@@ -82,7 +97,7 @@ Example:
 |Field|Type|Is Required|Description|Remark|
 |--|--|--|--|--|
 |`username`|`string`|Required|New username|Must in [4, 30], can't contain blankspace|
-|`profile`|`string`|Not required|User's profile||
+|`profile`|`string`|Not required|User's profile|Length must smaller than 255|
 
 ```json
 {
@@ -128,7 +143,7 @@ Example:
 }
 ```
 
-+ `GET /user/one/:uid` (Json)
++ `GET /user/uid/:uid` (Json)
 
 |Field|Type|Description|Remark|
 |--|--|--|--|
@@ -176,12 +191,43 @@ Example:
 }
 ```
 
++ `GET /video/all` (Array)
++ `GET /video/vid/:vid` (Json)
++ `GET /video/uid/:uid` (Array)
+
+|Field|Type|Description|Remark|
+|--|--|--|--|
+|`vid`|`int`|Video vid||
+|`title`|`int`|Video title||
+|`description`|`string`|Video description||
+|`video_url`|`string`|Video url||
+|`upload_time`|`datetime`|Video upload time||
+|`author`|`User`|Video author|When author is deleted, this field is `null`|
+
+Example:
+
+```json
+{
+    "vid": 1,
+    "title": "Title",
+    "description": "Desctiption",
+    "video_url": "",
+    "upload_time": "2019-09-02T17:05:00+08:00",
+    "author": {
+        "uid": 1,
+        "username": "Username",
+        "profile": "Profile",
+        "register_time": "2019-09-02T16:59:53+08:00"
+    }
+}
+```
+
 ---
 
 ## Error Type
 
-+ See [Exception.go](https://vid/blob/master/exceptions/Exception.go)
++ See [Exception.go](https://github.com/vidorg/Vid_Backend/blob/master/exceptions/Exception.go)
 
 ## Error Code
 
-+ See [controllers module](https://vid/tree/master/controllers)
++ See [controllers module](https://github.com/vidorg/Vid_Backend/tree/master/controllers)

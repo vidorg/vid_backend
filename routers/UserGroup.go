@@ -15,7 +15,7 @@ func setupUserGroup(router *gin.Engine) {
 	{
 		// public
 		userGroup.GET("/all", UserCtrl.QueryAllUsers)
-		userGroup.GET("/one/:uid", UserCtrl.QueryUser)
+		userGroup.GET("/uid/:uid", UserCtrl.QueryUser)
 
 		userGroup.GET("/subscriber/:uid", SubCtrl.QuerySubscriberUsers)
 		userGroup.GET("/subscribing/:uid", SubCtrl.QuerySubscribingUsers)

@@ -1,18 +1,19 @@
 package controllers
 
 import (
-	"net/http"
 	"fmt"
-	
+	"net/http"
+
 	. "vid/database"
-	. "vid/utils"
 	. "vid/exceptions"
 	. "vid/models/resp"
+	. "vid/utils"
 
 	"github.com/gin-gonic/gin"
 )
 
 type videoCtrl struct{}
+
 var VideoCtrl = new(videoCtrl)
 
 // GET /video/all (Non-Auth)
@@ -31,7 +32,7 @@ func (v *videoCtrl) GetVideosByUid(c *gin.Context) {
 	}
 	query, err := VideoDao.QueryVideosByUid(uid)
 	if err == nil {
-		c.JSON(http.StatusOK,query)
+		c.JSON(http.StatusOK, query)
 	} else {
 		c.JSON(http.StatusNotFound, Message{
 			Message: err.Error(),
@@ -50,11 +51,7 @@ func (v *videoCtrl) GetVideoByVid(c *gin.Context) {
 	}
 	query, ok := VideoDao.QueryVideoByVid(vid)
 	if ok {
-		user, ok := UserDao.QueryUserByUid(query.AuthorUid)
-		if ok {
-			query.Author = user
-		}
-		c.JSON(http.StatusOK,query)
+		c.JSON(http.StatusOK, query)
 	} else {
 		c.JSON(http.StatusNotFound, Message{
 			Message: VideoNotExistException.Error(),

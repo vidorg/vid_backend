@@ -22,7 +22,7 @@ func (u *userCtrl) QueryAllUsers(c *gin.Context) {
 	c.JSON(http.StatusOK, UserDao.QueryAllUsers())
 }
 
-// GET /user/one/:uid (Non-Auth)
+// GET /user/uid/:uid (Non-Auth)
 func (u *userCtrl) QueryUser(c *gin.Context) {
 	uid, ok := ReqUtil.GetIntParam(c.Params, "uid")
 	if !ok {
