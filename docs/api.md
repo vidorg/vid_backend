@@ -14,6 +14,7 @@
 |--|--|--|
 |`POST`|`/auth/login`|Login as an exist user <sup>[1]</sup>|
 |`POST`|`/auth/register`|Register and create an unexist user <sup>[1]</sup>|
+|`POST`|`/auth/modifypass`|Modify an exist user's password <sup>[1]</sup> <sup>[4]</sup>|
 |`GET`|`/user/all`|Query all users' information|
 |`GET`|`/user/uid/:uid`|Query user's information <sup>[2]</sup>|
 |`POST`|`/user/update`|Update user's information <sup>[1]</sup> <sup>[4]</sup>|
@@ -80,8 +81,8 @@
 
 |Field|Type|Is Required|Description|Remark|
 |--|--|--|--|--|
-|`username`|`string`|Required|User's username|Must in [4, 30], can't contain blankspace|
-|`password`|`string`|Required|User's password|Length must in [8, 20]|
+|`username`|`string`|Required|User's username|Must in `[4, 30]`, can't contain blankspace|
+|`password`|`string`|Required|User's password|Must in `[8, 20]`, can't contain blankspace|
 
 Example:
 
@@ -92,17 +93,35 @@ Example:
 }
 ```
 
++ `POST /auth/modifypass`
+
+|Field|Type|Is Required|Description|Remark|
+|--|--|--|--|--|
+|`password`|`string`|Required|User's password|Must in `[8, 20]`, can't contain blankspace|
+
+```json
+{
+    "password": "NewPassword"
+}
+```
+
 + `POST /user/update` (Raw-Json)
 
 |Field|Type|Is Required|Description|Remark|
 |--|--|--|--|--|
-|`username`|`string`|Required|New username|Must in [4, 30], can't contain blankspace|
-|`profile`|`string`|Not required|User's profile|Length must smaller than 255|
+|`username`|`string`|Required|New username|Must in `[4, 30]`, can't contain blankspace|
+|`profile`|`string`|Not Required|User's profile|Must in `[0, 255]`|
+|`sex`|`char`|Not Required|User sex|`M` or `F` or `X`|
+|`avatar_url`|`date`|Not Required|User avatar url||
+|`birth_time`|`date`|Not Required|User birth time||
 
 ```json
 {
     "username": "NewUsername",
-    "profile": "NewProfile"
+    "profile": "NewProfile",
+    "sex": "M",
+    "avatar_url": "xxxx",
+    "birth_time": "2008-01-01T00:00:00+08:00",
 }
 ```
 ---
@@ -113,12 +132,13 @@ Example:
 
 |Field|Type|Description|Remark|
 |--|--|--|--|
-|`Authorization`|`string`|User login token|Default expired time is 600s|
+|`Authorization`|`string`|User login token|Default expired time is `600s`|
 
 ## Response Body
 
 + `POST /auth/login` (Json)
 + `POST /auth/register` (Json)
++ `POST /auth/modifypass` (Json)
 + `GET /user/all` (Array)
 + `POST /user/update` (Json)
 + `DELETE /user/delete` (Json)
@@ -130,6 +150,9 @@ Example:
 |`uid`|`int`|User uid||
 |`username`|`string`|User name||
 |`profile`|`string`|User profile||
+|`sex`|`char`|User sex|`M` or `F` or `X`|
+|`avatar_url`|`date`|User avatar url||
+|`birth_time`|`date`|User birth time||
 |`register_time`|`date`|User register time||
 
 Example:
@@ -139,7 +162,10 @@ Example:
     "uid": 5,
     "username": "TestUser",
     "profile": "Test Profile",
-    "register_time": "2019-09-01T14:48:08+08:00"
+    "sex": "",
+    "avatar_url": "https://github.com/fluidicon.png",
+    "birth_time": "2000-01-01T00:00:00+08:00",
+    "register_time": "2019-09-02T19:30:10+08:00"
 }
 ```
 
@@ -202,7 +228,7 @@ Example:
 |`description`|`string`|Video description||
 |`video_url`|`string`|Video url||
 |`upload_time`|`datetime`|Video upload time||
-|`author`|`User`|Video author|When author is deleted, this field is `null`|
+|`author`|`User`|Video author|`null` for deleted author|
 
 Example:
 

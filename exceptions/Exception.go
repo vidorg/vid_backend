@@ -20,7 +20,7 @@ var (
 	// user action failed
 	ModifyPassException = errors.New("User password modify failed")
 	InsertUserException = errors.New("User insert failed")
-	UpdateUserException = errors.New("User update failed")
+	// UpdateUserException = errors.New("User update failed")
 	DeleteUserException = errors.New("User delete failed")
 
 	// user other exception

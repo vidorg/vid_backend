@@ -7,7 +7,7 @@ type Video struct {
 	Title       string    `json:"title" gorm:"type:varchar(100);not_null"` // 100
 	Description string    `json:"description"`                             // 255
 	VideoUrl    string    `json:"video_url"`                               // 255
-	UploadTime  time.Time `json:"upload_time"`
+	UploadTime  time.Time `json:"upload_time" gorm:"type:datetime;default:'2000-01-01'"`
 	AuthorUid   int       `json:"-"`
 	Author      *User     `json:"author" gorm:"-"` // omitempty
 }

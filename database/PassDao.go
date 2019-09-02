@@ -40,13 +40,14 @@ func (p *passDao) InsertUserPassRecord(username string, encryptedPass string) (*
 	}
 
 	tx := DB.Begin()
+
 	DB.Create(&User{
 		Username:     username,
 		RegisterTime: time.Now(),
 	})
 	queryUser, ok := UserDao.QueryUserByUserName(username)
 	if !ok {
-		DB.Rollback()
+		tx.Rollback()
 		return nil, InsertUserException
 	}
 	DB.Create(&PassRecord{
@@ -58,10 +59,10 @@ func (p *passDao) InsertUserPassRecord(username string, encryptedPass string) (*
 	if !ok {
 		tx.Rollback()
 		return nil, InsertUserException
-	} else {
-		tx.Commit()
-		return queryUser, nil
 	}
+
+	tx.Commit()
+	return queryUser, nil
 }
 
 // db 登录 查询密码项

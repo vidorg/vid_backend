@@ -1,6 +1,8 @@
 package database
 
 import (
+	"fmt"
+	"time"
 	. "vid/exceptions"
 	. "vid/models"
 )
@@ -13,6 +15,9 @@ const (
 	col_user_uid           = "uid"
 	col_user_username      = "username"
 	col_user_profile       = "profile"
+	col_user_sex           = "sex"
+	col_user_avatar_url    = "avatar_url"
+	col_user_birth_time    = "birth_time"
 	col_user_register_time = "register_time"
 )
 
@@ -43,6 +48,7 @@ func (u *userDao) QueryUserByUid(uid int) (*User, bool) {
 func (u *userDao) QueryUserByUserName(username string) (*User, bool) {
 	var user User
 	DB.Where(col_user_username+" = ?", username).Find(&user)
+	fmt.Println(user)
 	if !user.CheckValid() { // PK is null (auto-increment)
 		return nil, false
 	} else {
@@ -71,10 +77,30 @@ func (u *userDao) UpdateUser(user User) (*User, error) {
 	if _, ok = u.QueryUserByUserName(user.Username); ok && user.Username != queryBefore.Username {
 		return nil, UserNameUsedException
 	}
+
 	// 更新信息
+	if user.Profile == "" {
+		// TODO
+		user.Profile = queryBefore.Profile
+	}
+	if user.Sex == "" {
+		user.Sex = queryBefore.Sex
+	}
+	if user.AvatarUrl == "" {
+		user.AvatarUrl = queryBefore.AvatarUrl
+	}
+	if user.BirthTime == time.Date(1, 1, 1, 0, 0, 0, 0, time.UTC) {
+		// 0001-01-01 00:00:00 +0000 UTC
+		user.BirthTime = queryBefore.BirthTime
+	}
+	fmt.Println(user.BirthTime)
+
 	DB.Model(&user).Updates(map[string]interface{}{
-		col_user_username: user.Username,
-		col_user_profile:  user.Profile,
+		col_user_username:   user.Username,
+		col_user_profile:    user.Profile,
+		col_user_sex:        user.Sex,
+		col_user_avatar_url: user.AvatarUrl,
+		col_user_birth_time: user.BirthTime,
 	})
 	// 检查更新后
 	query, _ := u.QueryUserByUid(user.Uid)

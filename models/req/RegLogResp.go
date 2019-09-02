@@ -13,7 +13,7 @@ type RegLogReq struct {
 // @override
 func (r *RegLogReq) CheckValid() bool {
 	return r.Username != "" && r.Password != "" &&
-		strings.Index(r.Username, " ") == -1
+		strings.Index(r.Username, " ") == -1 && strings.Index(r.Password, " ") == -1
 }
 
 func (r *RegLogReq) CheckFormat() bool {
