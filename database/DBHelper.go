@@ -37,4 +37,5 @@ func SetupDBConn(cfg config.Config) {
 	DB.Model(&models.PassRecord{}).AddForeignKey("uid", "tbl_user(uid)", "cascade", "cascade")
 
 	DB.AutoMigrate(&models.Video{})
+	DB.Model(&models.Video{}).AddForeignKey("author_uid", "tbl_user(uid)", "set null", "cascade")
 }

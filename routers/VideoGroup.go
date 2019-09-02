@@ -11,7 +11,8 @@ var videoCtrl = new(controllers.VideoCtrl)
 func setupVideoGroup(router *gin.Engine) {
 	videoGroup := router.Group("/video")
 	{
-		videoGroup.GET("/1", videoCtrl.GetVideo)
-		videoGroup.GET("/2", videoCtrl.GetUserVideos)
+		videoGroup.GET("/all", videoCtrl.GetAllVideos)
+		videoGroup.GET("/uid/:uid", videoCtrl.GetVideosByUid)
+		videoGroup.GET("/vid/:vid", videoCtrl.GetVideoByVid)
 	}
 }

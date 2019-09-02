@@ -11,8 +11,9 @@ var (
 
 // Db
 var (
-	UserExistException    = errors.New("User already existed")
-	UserNotExistException = errors.New("User not found")
+	UserExistException     = errors.New("User already existed")
+	UserNotExistException  = errors.New("User not found")
+	VideoNotExistException = errors.New("Video not found")
 
 	InsertException = errors.New("User insert failed")
 	UpdateException = errors.New("User update failed")

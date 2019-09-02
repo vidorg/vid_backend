@@ -7,10 +7,12 @@ import (
 
 type UserDao struct{}
 
-const col_user_uid string = "uid"
-const col_user_username string = "username"
-const col_user_profile string = "profile"
-const col_user_register_time string = "register_time"
+const (
+	col_user_uid           = "uid"
+	col_user_username      = "username"
+	col_user_profile       = "profile"
+	col_user_register_time = "register_time"
+)
 
 // db 查询所有用户
 //

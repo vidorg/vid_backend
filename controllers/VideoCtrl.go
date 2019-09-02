@@ -2,50 +2,61 @@ package controllers
 
 import (
 	"net/http"
-	// "time"
+	"vid/database"
+	"fmt"
+	. "vid/exceptions"
+	. "vid/models/resp"
 
 	"github.com/gin-gonic/gin"
-
-	. "vid/models"
-	. "vid/database"
 )
 
 type VideoCtrl struct{}
 
-func (v *VideoCtrl) GetVideo(c *gin.Context) {
-	// user := User{
-	// 	Username: "12345678",
-	// 	RegisterTime: time.Now(),
-	// }
-	// DB.Create(&user)
-	// video := Video{
-	// 	UploadTime: time.Now(),
-	// 	Title: "123",
-	// 	AuthorUid: user.Uid,
-	// }
-	// DB.Create(&video)
-	// video = Video{
-	// 	UploadTime: time.Now(),
-	// 	Title: "456",
-	// 	AuthorUid: user.Uid,
-	// }
-	// DB.Create(&video)
+var videoDao = new(database.VideoDao)
 
-	/////////////////////////////////////
-
-	video := Video{
-		Vid : 1,
-	}
-	DB.Find(&video)
-	user , _:=userDao.QueryUserByUid(video.AuthorUid)
-	video.Author = user
-
-	c.JSON(http.StatusOK, video)
+// GET /video/all (Non-Auth)
+func (v *VideoCtrl) GetAllVideos(c *gin.Context) {
+	c.JSON(http.StatusOK, videoDao.QueryVideos())
 }
 
-func (v *VideoCtrl) GetUserVideos(c *gin.Context) {
-	quser, _ := userDao.QueryUserByUid(1)
-	videos := make([]*Video, 1, 1)
-	DB.Model(quser).Related(&videos, "Videos")
-	c.JSON(http.StatusOK, videos)
+// GET /video/uid/:uid (Non-Auth)
+func (v *VideoCtrl) GetVideosByUid(c *gin.Context) {
+	uid, ok := reqUtil.GetIntParam(c.Params, "uid")
+	if !ok {
+		c.JSON(http.StatusBadRequest, Message{
+			Message: fmt.Sprintf(RouteParamError.Error(), "uid"),
+		})
+		return
+	}
+	query, err := videoDao.QueryVideosByUid(uid)
+	if err == nil {
+		c.JSON(http.StatusOK,query)
+	} else {
+		c.JSON(http.StatusNotFound, Message{
+			Message: err.Error(),
+		})
+	}
+}
+
+// GET /video/vid/:vid (Non-Auth)
+func (v *VideoCtrl) GetVideoByVid(c *gin.Context) {
+	vid, ok := reqUtil.GetIntParam(c.Params, "vid")
+	if !ok {
+		c.JSON(http.StatusBadRequest, Message{
+			Message: fmt.Sprintf(RouteParamError.Error(), "vid"),
+		})
+		return
+	}
+	query, ok := videoDao.QueryVideoByVid(vid)
+	if ok {
+		user, ok := userDao.QueryUserByUid(query.AuthorUid)
+		if ok {
+			query.Author = user
+		}
+		c.JSON(http.StatusOK,query)
+	} else {
+		c.JSON(http.StatusNotFound, Message{
+			Message: VideoNotExistException.Error(),
+		})
+	}
 }

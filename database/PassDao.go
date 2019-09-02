@@ -8,8 +8,10 @@ import (
 
 type PassDao struct{}
 
-const col_pass_uid string = "uid"
-const col_pass_encryptedPass string = "encrypted_pass"
+const (
+	col_pass_uid           = "uid"
+	col_pass_encryptedPass = "encrypted_pass"
+)
 
 // db 内部使用 查询密码项
 //
