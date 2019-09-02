@@ -6,19 +6,23 @@ import (
 	
 	. "vid/exceptions"
 	. "vid/models"
+	. "vid/database"
+	. "vid/utils"
 	. "vid/models/resp"
 
 	"github.com/gin-gonic/gin"
 )
 
-type SubCtrl struct{}
+type subCtrl struct{}
+
+var SubCtrl = new(subCtrl)
 
 // POST /user/sub?uid (Auth)
-func (u *SubCtrl) SubscribeUser(c *gin.Context) {
+func (u *subCtrl) SubscribeUser(c *gin.Context) {
 	authusr, _ := c.Get("user")
 
 	me_uid := authusr.(User).Uid
-	up_uid, ok := reqUtil.GetIntQuery(c, "uid")
+	up_uid, ok := ReqUtil.GetIntQuery(c, "uid")
 
 	if !ok {
 		c.JSON(http.StatusBadRequest, Message{
@@ -27,7 +31,7 @@ func (u *SubCtrl) SubscribeUser(c *gin.Context) {
 		return
 	}
 
-	err := userDao.SubscribeUser(me_uid, up_uid)
+	err := UserDao.SubscribeUser(me_uid, up_uid)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, Message{
 			Message: err.Error(),
@@ -42,11 +46,11 @@ func (u *SubCtrl) SubscribeUser(c *gin.Context) {
 }
 
 // POST /user/unsub?uid (Auth)
-func (u *SubCtrl) UnSubscribeUser(c *gin.Context) {
+func (u *subCtrl) UnSubscribeUser(c *gin.Context) {
 	authusr, _ := c.Get("user")
 
 	me_uid := authusr.(User).Uid
-	up_uid, ok := reqUtil.GetIntQuery(c, "uid")
+	up_uid, ok := ReqUtil.GetIntQuery(c, "uid")
 
 	if !ok {
 		c.JSON(http.StatusBadRequest, Message{
@@ -55,7 +59,7 @@ func (u *SubCtrl) UnSubscribeUser(c *gin.Context) {
 		return
 	}
 
-	err := userDao.UnSubscribeUser(me_uid, up_uid)
+	err := UserDao.UnSubscribeUser(me_uid, up_uid)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, Message{
 			Message: err.Error(),
@@ -70,15 +74,15 @@ func (u *SubCtrl) UnSubscribeUser(c *gin.Context) {
 }
 
 // GET /user/subscriber/:uid (Non-Auth)
-func (u *SubCtrl) QuerySubscriberUsers(c *gin.Context) {
-	uid, ok := reqUtil.GetIntParam(c.Params, "uid")
+func (u *subCtrl) QuerySubscriberUsers(c *gin.Context) {
+	uid, ok := ReqUtil.GetIntParam(c.Params, "uid")
 	if !ok {
 		c.JSON(http.StatusBadRequest, Message{
 			Message: fmt.Sprintf(RouteParamError.Error(), "uid"),
 		})
 		return
 	}
-	query, err := userDao.QuerySubscriberUsers(uid)
+	query, err := UserDao.QuerySubscriberUsers(uid)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, Message{
 			Message: err.Error(),
@@ -89,15 +93,15 @@ func (u *SubCtrl) QuerySubscriberUsers(c *gin.Context) {
 }
 
 // GET /user/subscriber/:uid (Non-Auth)
-func (u *SubCtrl) QuerySubscribingUsers(c *gin.Context) {
-	uid, ok := reqUtil.GetIntParam(c.Params, "uid")
+func (u *subCtrl) QuerySubscribingUsers(c *gin.Context) {
+	uid, ok := ReqUtil.GetIntParam(c.Params, "uid")
 	if !ok {
 		c.JSON(http.StatusBadRequest, Message{
 			Message: fmt.Sprintf(RouteParamError.Error(), "uid"),
 		})
 		return
 	}
-	query, err := userDao.QuerySubscribingUsers(uid)
+	query, err := UserDao.QuerySubscribingUsers(uid)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, Message{
 			Message: err.Error(),

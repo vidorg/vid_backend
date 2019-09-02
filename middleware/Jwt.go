@@ -4,21 +4,17 @@ import (
 	"net/http"
 	"strings"
 
-	"vid/database"
+	. "vid/database"
 	. "vid/exceptions"
 	. "vid/models/resp"
-	"vid/utils"
+	. "vid/utils"
 
 	"github.com/gin-gonic/gin"
 )
 
-var passUtil = new(utils.PassUtil)
-var cmnCtrl = new(utils.CmnCtrl)
-var userDao = new(database.UserDao)
-
 func jwtAbort(c *gin.Context, err error) {
 	c.JSON(http.StatusUnauthorized, Message{
-		Message: cmnCtrl.Capitalize(err.Error()),
+		Message: CmnCtrl.Capitalize(err.Error()),
 	})
 	c.Abort()
 }
@@ -40,7 +36,7 @@ func JWTMiddleware() gin.HandlerFunc {
 		}
 
 		// Token Parse Err
-		claims, err := passUtil.ParseToken(parts[1])
+		claims, err := PassUtil.ParseToken(parts[1])
 		if err != nil {
 			if strings.Index(err.Error(), "token is expired by") != -1 {
 				// Token Expired
@@ -56,7 +52,7 @@ func JWTMiddleware() gin.HandlerFunc {
 		}
 
 		// No User
-		user, ok := userDao.QueryUserByUid(claims.UserID)
+		user, ok := UserDao.QueryUserByUid(claims.UserID)
 		if !ok {
 			jwtAbort(c, TokenInvalidException)
 		}

@@ -1,14 +1,11 @@
 package routers
 
 import (
-	"vid/controllers"
+	. "vid/controllers"
 	"vid/middleware"
 
 	"github.com/gin-gonic/gin"
 )
-
-var userCtrl = new(controllers.UserCtrl)
-var subCtrl = new(controllers.SubCtrl)
 
 func setupUserGroup(router *gin.Engine) {
 
@@ -17,17 +14,17 @@ func setupUserGroup(router *gin.Engine) {
 	userGroup := router.Group("/user")
 	{
 		// public
-		userGroup.GET("/all", userCtrl.QueryAllUsers)
-		userGroup.GET("/one/:uid", userCtrl.QueryUser)
+		userGroup.GET("/all", UserCtrl.QueryAllUsers)
+		userGroup.GET("/one/:uid", UserCtrl.QueryUser)
 
-		userGroup.GET("/subscriber/:uid", subCtrl.QuerySubscriberUsers)
-		userGroup.GET("/subscribing/:uid", subCtrl.QuerySubscribingUsers)
+		userGroup.GET("/subscriber/:uid", SubCtrl.QuerySubscriberUsers)
+		userGroup.GET("/subscribing/:uid", SubCtrl.QuerySubscribingUsers)
 
 		// user
-		userGroup.Use(jwt).POST("/update", userCtrl.UpdateUser)
-		userGroup.Use(jwt).DELETE("/delete", userCtrl.DeleteUser)
+		userGroup.Use(jwt).POST("/update", UserCtrl.UpdateUser)
+		userGroup.Use(jwt).DELETE("/delete", UserCtrl.DeleteUser)
 
-		userGroup.Use(jwt).POST("/sub", subCtrl.SubscribeUser)
-		userGroup.Use(jwt).POST("/unsub", subCtrl.UnSubscribeUser)
+		userGroup.Use(jwt).POST("/sub", SubCtrl.SubscribeUser)
+		userGroup.Use(jwt).POST("/unsub", SubCtrl.UnSubscribeUser)
 	}
 }

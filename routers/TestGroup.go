@@ -1,24 +1,21 @@
 package routers
 
 import (
-	"vid/controllers"
-
+	. "vid/controllers"
 	"vid/middleware"
 
 	"github.com/gin-gonic/gin"
 )
 
-var testCtrl = new(controllers.TestCtrl)
-
 func setupTestGroup(router *gin.Engine) {
 	testGroup := router.Group("/test")
 	{
-		testGroup.GET("/", testCtrl.Test)
+		testGroup.GET("/", TestCtrl.Test)
 	}
 
 	authTestGroup := router.Group("/authtest")
 	{
 		authTestGroup.Use(middleware.JWTMiddleware())
-		authTestGroup.GET("/", testCtrl.AuthTest)
+		authTestGroup.GET("/", TestCtrl.AuthTest)
 	}
 }

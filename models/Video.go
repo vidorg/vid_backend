@@ -4,9 +4,9 @@ import "time"
 
 type Video struct {
 	Vid         int       `json:"vid" gorm:"primary_key;AUTO_INCREMENT"`
-	Title       string    `json:"title" gorm:"type:varchar(80);not_null"`
-	Description string    `json:"description" gorm:"type:varchar(250)"`
-	VideoUrl    string    `json:"video_url"`
+	Title       string    `json:"title" gorm:"type:varchar(100);not_null"` // 100
+	Description string    `json:"description"`                             // 255
+	VideoUrl    string    `json:"video_url"`                               // 255
 	UploadTime  time.Time `json:"upload_time"`
 	AuthorUid   int       `json:"-"`
 	Author      *User     `json:"author,omitempty" gorm:"-"`

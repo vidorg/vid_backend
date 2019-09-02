@@ -5,7 +5,9 @@ import (
 	. "vid/models"
 )
 
-type UserDao struct{}
+type userDao struct{}
+
+var UserDao = new(userDao)
 
 const (
 	col_user_uid           = "uid"
@@ -17,7 +19,7 @@ const (
 // db 查询所有用户
 //
 // @return `[]User`
-func (u *UserDao) QueryAllUsers() (users []User) {
+func (u *userDao) QueryAllUsers() (users []User) {
 	DB.Find(&users)
 	return users
 }
@@ -25,7 +27,7 @@ func (u *UserDao) QueryAllUsers() (users []User) {
 // db 查询 uid 用户
 //
 // @return `*user` `isUserExist`
-func (u *UserDao) QueryUserByUid(uid int) (*User, bool) {
+func (u *userDao) QueryUserByUid(uid int) (*User, bool) {
 	var user User
 	DB.Where(col_user_uid+" = ?", uid).Find(&user)
 	if !user.CheckValid() { // PK is null (auto-increment)
@@ -38,7 +40,7 @@ func (u *UserDao) QueryUserByUid(uid int) (*User, bool) {
 // db 查询 username 用户
 //
 // @return `*user` `isUserExist`
-func (u *UserDao) QueryUserByUserName(username string) (*User, bool) {
+func (u *userDao) QueryUserByUserName(username string) (*User, bool) {
 	var user User
 	DB.Where(col_user_username+" = ?", username).Find(&user)
 	if !user.CheckValid() { // PK is null (auto-increment)
@@ -54,8 +56,8 @@ func (u *UserDao) QueryUserByUserName(username string) (*User, bool) {
 //
 // @return `*user` `err`
 //
-// @error `UserNotExistException` `UpdateInvalidException` `UserNameUsedException` `UpdateException` `NotUpdateException`
-func (u *UserDao) UpdateUser(user User) (*User, error) {
+// @error `UserNotExistException` `UpdateInvalidException` `UserNameUsedException` `NotUpdateUserException`
+func (u *userDao) UpdateUser(user User) (*User, error) {
 	// 检查用户信息
 	queryBefore, ok := u.QueryUserByUid(user.Uid)
 	if !ok {
@@ -78,7 +80,7 @@ func (u *UserDao) UpdateUser(user User) (*User, error) {
 	query, _ := u.QueryUserByUid(user.Uid)
 	if queryBefore.Equals(query) {
 		// 数据不变
-		return query, NotUpdateException
+		return query, NotUpdateUserException
 	} else {
 		// 正常
 		return query, nil
@@ -89,8 +91,8 @@ func (u *UserDao) UpdateUser(user User) (*User, error) {
 //
 // @return `*user` `err`
 //
-// @error `UserNotExistException` `DeleteException`
-func (u *UserDao) DeleteUser(uid int) (*User, error) {
+// @error `UserNotExistException` `DeleteUserException`
+func (u *userDao) DeleteUser(uid int) (*User, error) {
 
 	query, ok := u.QueryUserByUid(uid)
 	if !ok {
@@ -98,7 +100,7 @@ func (u *UserDao) DeleteUser(uid int) (*User, error) {
 	}
 
 	if DB.Delete(query).RowsAffected != 1 {
-		return query, DeleteException
+		return query, DeleteUserException
 	} else {
 		return query, nil
 	}
@@ -111,7 +113,7 @@ func (u *UserDao) DeleteUser(uid int) (*User, error) {
 // @return `err`
 //
 // @error `UserNotExistException` `SubscribeOneSelfException`
-func (u *UserDao) SubscribeUser(suberUid int, upUid int) error {
+func (u *userDao) SubscribeUser(suberUid int, upUid int) error {
 	upUser, ok := u.QueryUserByUid(upUid)
 	if !ok {
 		return UserNotExistException
@@ -132,7 +134,7 @@ func (u *UserDao) SubscribeUser(suberUid int, upUid int) error {
 // @return `err`
 //
 // @error `UserNotExistException` `SubscribeOneSelfException`
-func (u *UserDao) UnSubscribeUser(suberUid int, upUid int) error {
+func (u *userDao) UnSubscribeUser(suberUid int, upUid int) error {
 	upUser, ok := u.QueryUserByUid(upUid)
 	if !ok {
 		return UserNotExistException
@@ -153,7 +155,7 @@ func (u *UserDao) UnSubscribeUser(suberUid int, upUid int) error {
 // @return `user[]` `err`
 //
 // error `UserNotExistException`
-func (u *UserDao) QuerySubscriberUsers(uid int) ([]User, error) {
+func (u *userDao) QuerySubscriberUsers(uid int) ([]User, error) {
 	user, ok := u.QueryUserByUid(uid)
 	if !ok {
 		return nil, UserNotExistException
@@ -172,7 +174,7 @@ func (u *UserDao) QuerySubscriberUsers(uid int) ([]User, error) {
 // @return `user[]` `err`
 //
 // @error `UserNotExistException`
-func (u *UserDao) QuerySubscribingUsers(uid int) ([]User, error) {
+func (u *userDao) QuerySubscribingUsers(uid int) ([]User, error) {
 	user, ok := u.QueryUserByUid(uid)
 	if !ok {
 		return nil, UserNotExistException
@@ -191,7 +193,7 @@ func (u *UserDao) QuerySubscribingUsers(uid int) ([]User, error) {
 // @return `subing_cnt` `suber_cnt` `err`
 //
 // @error `UserNotExistException`
-func (u *UserDao) QuerySubCnt(uid int) (int, int, error) {
+func (u *userDao) QuerySubCnt(uid int) (int, int, error) {
 	user, ok := u.QueryUserByUid(uid)
 	if !ok {
 		return 0, 0, UserNotExistException

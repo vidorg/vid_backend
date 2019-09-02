@@ -5,7 +5,9 @@ import (
 	. "vid/models"
 )
 
-type VideoDao struct{}
+type videoDao struct{}
+
+var VideoDao = new(videoDao)
 
 const (
 	col_video_vid         = "vid"
@@ -19,7 +21,7 @@ const (
 // db 查询所有视频
 //
 // @return `[]Video`
-func (v *VideoDao) QueryVideos() (videos []Video) {
+func (v *videoDao) QueryVideos() (videos []Video) {
 	DB.Find(&videos)
 	return videos
 }
@@ -29,10 +31,9 @@ func (v *VideoDao) QueryVideos() (videos []Video) {
 // @return `[]Video` `err`
 //
 // @error `UserNotExistException`
-func (v *VideoDao) QueryVideosByUid(uid int) ([]Video, error) {
+func (v *videoDao) QueryVideosByUid(uid int) ([]Video, error) {
 	var videos []Video
-	var userDao UserDao
-	if _, ok := userDao.QueryUserByUid(uid); !ok {
+	if _, ok := UserDao.QueryUserByUid(uid); !ok {
 		return nil, UserNotExistException
 	}
 	DB.Where(col_video_author_uid+" = ?", uid).Find(&videos)
@@ -42,7 +43,7 @@ func (v *VideoDao) QueryVideosByUid(uid int) ([]Video, error) {
 // db 查询 vid 视频
 //
 // @return `*Video` `isExist`
-func (v *VideoDao) QueryVideoByVid(vid int) (*Video, bool) {
+func (v *videoDao) QueryVideoByVid(vid int) (*Video, bool) {
 	var video Video
 	DB.Where(col_video_vid+" = ?", vid).Find(&video)
 	if !video.CheckValid() {

@@ -1,17 +1,17 @@
 package routers
 
 import (
-	"vid/controllers"
+	. "vid/controllers"
+	"vid/middleware"
 
 	"github.com/gin-gonic/gin"
 )
 
-var authCtrl = new(controllers.AuthCtrl)
-
 func setupAuthGroup(router *gin.Engine) {
 	authGroup := router.Group("/auth")
 	{
-		authGroup.POST("/login", authCtrl.Login)
-		authGroup.POST("/register", authCtrl.Register)
+		authGroup.POST("/login", AuthCtrl.Login)
+		authGroup.POST("/register", AuthCtrl.Register)
+		authGroup.Use(middleware.JWTMiddleware()).POST("/modifypass", AuthCtrl.ModifyPass)
 	}
 }

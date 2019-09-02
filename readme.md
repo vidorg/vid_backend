@@ -10,7 +10,7 @@
 + [jwt-go](https://github.com/dgrijalva/jwt-go)
 
 ### Documents
-+ See [api.md](https://github.com/vidorg/Vid_Backend/tree/master/docs/api.md)
++ See [api.md](https://vid/tree/master/docs/api.md)
 
 ### References
 + [go_init](https://github.com/xiaobopang/go_init/)

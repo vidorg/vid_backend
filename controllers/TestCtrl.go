@@ -6,15 +6,17 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type TestCtrl struct{}
+type testCtrl struct{}
 
-func (u *TestCtrl) Test(c *gin.Context) {
+var TestCtrl = new(testCtrl)
+
+func (u *testCtrl) Test(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"msg": "Test",
 	})
 }
 
-func (u *TestCtrl) AuthTest(c *gin.Context) {
+func (u *testCtrl) AuthTest(c *gin.Context) {
 	user, _ := c.Get("user")
 	c.JSON(http.StatusOK, gin.H{
 		"msg": user,

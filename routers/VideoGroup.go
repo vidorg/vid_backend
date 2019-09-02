@@ -1,18 +1,16 @@
 package routers
 
 import (
-	"vid/controllers"
+	. "vid/controllers"
 
 	"github.com/gin-gonic/gin"
 )
 
-var videoCtrl = new(controllers.VideoCtrl)
-
 func setupVideoGroup(router *gin.Engine) {
 	videoGroup := router.Group("/video")
 	{
-		videoGroup.GET("/all", videoCtrl.GetAllVideos)
-		videoGroup.GET("/uid/:uid", videoCtrl.GetVideosByUid)
-		videoGroup.GET("/vid/:vid", videoCtrl.GetVideoByVid)
+		videoGroup.GET("/all", VideoCtrl.GetAllVideos)
+		videoGroup.GET("/uid/:uid", VideoCtrl.GetVideosByUid)
+		videoGroup.GET("/vid/:vid", VideoCtrl.GetVideoByVid)
 	}
 }

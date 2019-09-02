@@ -2,7 +2,7 @@ package models
 
 type PassRecord struct {
 	Uid           int    `gorm:"primary_key"`
-	EncryptedPass string `gorm:"type:char(128);not null"`
+	EncryptedPass string `gorm:"type:char(48);not null"`
 }
 
 // Rename Table

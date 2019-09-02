@@ -23,11 +23,11 @@
 |`POST`|`/user/sub/?uid`|Subscribe the user <sup>[3]</sup> <sup>[4]</sup>|
 |`POST`|`/user/unsub/?uid`|Unsubscribe the user <sup>[3]</sup> <sup>[4]</sup>|
 
-+ [1] [Need request body](https://github.com/vidorg/Vid_Backend/blob/master/docs/api.md#request-body)
-+ [2] [Need route param](https://github.com/vidorg/Vid_Backend/blob/master/docs/api.md#request-route-param)
-+ [3] [Need query param](https://github.com/vidorg/Vid_Backend/blob/master/docs/api.md#request-query-param)
-+ [4] [Need authorization](https://github.com/vidorg/Vid_Backend/blob/master/docs/api.md#request-header)
-+ [Response](https://github.com/vidorg/Vid_Backend/blob/master/docs/api.md#response-header)
++ [1] [Need request body](https://vid/blob/master/docs/api.md#request-body)
++ [2] [Need route param](https://vid/blob/master/docs/api.md#request-route-param)
++ [3] [Need query param](https://vid/blob/master/docs/api.md#request-query-param)
++ [4] [Need authorization](https://vid/blob/master/docs/api.md#request-header)
++ [Response](https://vid/blob/master/docs/api.md#response-header)
 
 ---
 
@@ -180,8 +180,8 @@ Example:
 
 ## Error Type
 
-+ See [Exception.go](https://github.com/vidorg/Vid_Backend/blob/master/exceptions/Exception.go)
++ See [Exception.go](https://vid/blob/master/exceptions/Exception.go)
 
 ## Error Code
 
-+ See [controllers module](https://github.com/vidorg/Vid_Backend/tree/master/controllers)
++ See [controllers module](https://vid/tree/master/controllers)

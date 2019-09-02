@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"net/http"
 
-	"vid/database"
-	"vid/utils"
+	. "vid/database"
+	. "vid/utils"
 	. "vid/exceptions"
 	. "vid/models"
 	. "vid/models/resp"
@@ -13,29 +13,27 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type UserCtrl struct{}
+type userCtrl struct{}
 
-var reqUtil = new(utils.ReqUtil)
-var cmnCtrl = new(utils.CmnCtrl)
-var userDao = new(database.UserDao)
+var UserCtrl = new(userCtrl)
 
 // GET /user/all (Non-Auth)
-func (u *UserCtrl) QueryAllUsers(c *gin.Context) {
-	c.JSON(http.StatusOK, userDao.QueryAllUsers())
+func (u *userCtrl) QueryAllUsers(c *gin.Context) {
+	c.JSON(http.StatusOK, UserDao.QueryAllUsers())
 }
 
 // GET /user/one/:uid (Non-Auth)
-func (u *UserCtrl) QueryUser(c *gin.Context) {
-	uid, ok := reqUtil.GetIntParam(c.Params, "uid")
+func (u *userCtrl) QueryUser(c *gin.Context) {
+	uid, ok := ReqUtil.GetIntParam(c.Params, "uid")
 	if !ok {
 		c.JSON(http.StatusBadRequest, Message{
 			Message: fmt.Sprintf(RouteParamError.Error(), "uid"),
 		})
 		return
 	}
-	query, ok := userDao.QueryUserByUid(uid)
+	query, ok := UserDao.QueryUserByUid(uid)
 	if ok {
-		subing_cnt, suber_cnt, _ := userDao.QuerySubCnt(uid)
+		subing_cnt, suber_cnt, _ := UserDao.QuerySubCnt(uid)
 		c.JSON(http.StatusOK, UserResp{
 			User: *query,
 			Info: UserExtraInfo{
@@ -51,10 +49,10 @@ func (u *UserCtrl) QueryUser(c *gin.Context) {
 }
 
 // POST /user/update (Auth)
-func (u *UserCtrl) UpdateUser(c *gin.Context) {
-	body := reqUtil.GetBody(c.Request.Body)
+func (u *userCtrl) UpdateUser(c *gin.Context) {
+	body := ReqUtil.GetBody(c.Request.Body)
 	var user User
-	if !reqUtil.CheckJsonValid(body, &user) {
+	if !ReqUtil.CheckJsonValid(body, &user) {
 		c.JSON(http.StatusBadRequest, Message{
 			Message: RequestBodyError.Error(),
 		})
@@ -64,7 +62,7 @@ func (u *UserCtrl) UpdateUser(c *gin.Context) {
 	authusr, _ := c.Get("user")
 	user.Uid = authusr.(User).Uid
 
-	query, err := userDao.UpdateUser(user)
+	query, err := UserDao.UpdateUser(user)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, Message{
 			Message: err.Error(),
@@ -75,7 +73,7 @@ func (u *UserCtrl) UpdateUser(c *gin.Context) {
 }
 
 // DELETE /user/delete (Auth)
-func (u *UserCtrl) DeleteUser(c *gin.Context) {
+func (u *userCtrl) DeleteUser(c *gin.Context) {
 	authusr, exist := c.Get("user")
 	if !exist {
 		c.JSON(http.StatusUnauthorized, Message{
@@ -85,7 +83,7 @@ func (u *UserCtrl) DeleteUser(c *gin.Context) {
 	}
 	uid := authusr.(User).Uid
 
-	del, err := userDao.DeleteUser(uid)
+	del, err := UserDao.DeleteUser(uid)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, Message{
 			Message: err.Error(),

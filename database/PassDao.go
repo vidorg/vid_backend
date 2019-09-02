@@ -6,7 +6,9 @@ import (
 	. "vid/models"
 )
 
-type PassDao struct{}
+type passDao struct{}
+
+var PassDao = new(passDao)
 
 const (
 	col_pass_uid           = "uid"
@@ -16,7 +18,7 @@ const (
 // db 内部使用 查询密码项
 //
 // @return `isExist`
-func (p *PassDao) queryPassRecord(uid int) (*PassRecord, bool) {
+func (p *passDao) queryPassRecord(uid int) (*PassRecord, bool) {
 	var pass PassRecord
 	DB.Where(col_pass_uid+" = ?", uid).Find(&pass)
 	if !pass.CheckValid() {
@@ -30,12 +32,10 @@ func (p *PassDao) queryPassRecord(uid int) (*PassRecord, bool) {
 //
 // @return `*user` `err`
 //
-// @error `UserExistException` `InsertException`
-func (p *PassDao) InsertUserPassRecord(username string, encryptedPass string) (*User, error) {
+// @error `UserExistException` `InsertUserException`
+func (p *passDao) InsertUserPassRecord(username string, encryptedPass string) (*User, error) {
 
-	var userDao = new(UserDao)
-
-	if _, ok := userDao.QueryUserByUserName(username); ok {
+	if _, ok := UserDao.QueryUserByUserName(username); ok {
 		return nil, UserExistException
 	}
 
@@ -44,10 +44,10 @@ func (p *PassDao) InsertUserPassRecord(username string, encryptedPass string) (*
 		Username:     username,
 		RegisterTime: time.Now(),
 	})
-	queryUser, ok := userDao.QueryUserByUserName(username)
+	queryUser, ok := UserDao.QueryUserByUserName(username)
 	if !ok {
 		DB.Rollback()
-		return nil, InsertException
+		return nil, InsertUserException
 	}
 	DB.Create(&PassRecord{
 		Uid:           queryUser.Uid,
@@ -57,7 +57,7 @@ func (p *PassDao) InsertUserPassRecord(username string, encryptedPass string) (*
 	_, ok = p.queryPassRecord(queryUser.Uid)
 	if !ok {
 		tx.Rollback()
-		return nil, InsertException
+		return nil, InsertUserException
 	} else {
 		tx.Commit()
 		return queryUser, nil
@@ -67,10 +67,9 @@ func (p *PassDao) InsertUserPassRecord(username string, encryptedPass string) (*
 // db 登录 查询密码项
 //
 // @return `*user` `*pass` `isExist`
-func (p *PassDao) QueryPassRecordByUsername(username string) (*User, *PassRecord, bool) {
+func (p *passDao) QueryPassRecordByUsername(username string) (*User, *PassRecord, bool) {
 
-	var userDao = new(UserDao)
-	user, ok := userDao.QueryUserByUserName(username)
+	user, ok := UserDao.QueryUserByUserName(username)
 	if !ok {
 		return nil, nil, false
 	}
@@ -88,8 +87,8 @@ func (p *PassDao) QueryPassRecordByUsername(username string) (*User, *PassRecord
 //
 // @return `uid` `err`
 //
-// @error `UserExistException` `UpdateException` `NotUpdateException`
-func (p *PassDao) UpdatePass(pass PassRecord) (int, error) {
+// @error `UserExistException` `ModifyPassException` `NotUpdateUserException`
+func (p *passDao) UpdatePass(pass PassRecord) (int, error) {
 	queryBefore, ok := p.queryPassRecord(pass.Uid)
 	if !ok {
 		return -1, UserExistException
@@ -99,10 +98,10 @@ func (p *PassDao) UpdatePass(pass PassRecord) (int, error) {
 	})
 	query, ok := p.queryPassRecord(pass.Uid)
 	if !ok {
-		return -1, UpdateException
+		return -1, ModifyPassException
 	} else {
 		if queryBefore.EncryptedPass == query.EncryptedPass {
-			return -1, NotUpdateException
+			return -1, NotUpdateUserException
 		} else {
 			return pass.Uid, nil
 		}

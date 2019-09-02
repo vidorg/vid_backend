@@ -10,7 +10,9 @@ import (
 	jwt "github.com/dgrijalva/jwt-go"
 )
 
-type PassUtil struct{}
+type passUtil struct{}
+
+var PassUtil = new(passUtil)
 
 var JwtSecret []byte
 var JwtTokenExpire int64
@@ -20,17 +22,17 @@ type Claims struct {
 	jwt.StandardClaims
 }
 
-func (p *PassUtil) MD5Check(content string, encrypted string) bool {
+func (p *passUtil) MD5Check(content string, encrypted string) bool {
 	return strings.EqualFold(p.MD5Encode(content), encrypted)
 }
 
-func (p *PassUtil) MD5Encode(data string) string {
+func (p *passUtil) MD5Encode(data string) string {
 	h := md5.New()
 	h.Write([]byte(data))
 	return hex.EncodeToString(h.Sum(nil))
 }
 
-func (p *PassUtil) GenToken(id int) (string, error) {
+func (p *passUtil) GenToken(id int) (string, error) {
 	claims := Claims{
 		id,
 		jwt.StandardClaims{
@@ -49,7 +51,7 @@ func (p *PassUtil) GenToken(id int) (string, error) {
 	return fmt.Sprintf("Bearer %s", tokenStr), nil
 }
 
-func (p *PassUtil) ParseToken(tokenStr string) (*Claims, error) {
+func (p *passUtil) ParseToken(tokenStr string) (*Claims, error) {
 	token, err := jwt.ParseWithClaims(tokenStr, &Claims{}, func(token *jwt.Token) (interface{}, error) {
 		return JwtSecret, nil
 	})
