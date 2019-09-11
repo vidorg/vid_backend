@@ -79,6 +79,9 @@ func (u *userDao) UpdateUser(user User) (*User, error) {
 	}
 
 	// 更新信息
+	if user.Username == "" {
+		user.Username = queryBefore.Username
+	}
 	if user.Profile == "" {
 		// TODO
 		user.Profile = queryBefore.Profile
@@ -93,7 +96,6 @@ func (u *userDao) UpdateUser(user User) (*User, error) {
 		// 0001-01-01 00:00:00 +0000 UTC
 		user.BirthTime = queryBefore.BirthTime
 	}
-	fmt.Println(user.BirthTime)
 
 	DB.Model(&user).Updates(map[string]interface{}{
 		col_user_username:   user.Username,
@@ -126,7 +128,7 @@ func (u *userDao) DeleteUser(uid int) (*User, error) {
 	}
 
 	if DB.Delete(query).RowsAffected != 1 {
-		return query, DeleteUserException
+		return nil, DeleteUserException
 	} else {
 		return query, nil
 	}

@@ -74,13 +74,7 @@ func (u *userCtrl) UpdateUser(c *gin.Context) {
 
 // DELETE /user/delete (Auth)
 func (u *userCtrl) DeleteUser(c *gin.Context) {
-	authusr, exist := c.Get("user")
-	if !exist {
-		c.JSON(http.StatusUnauthorized, Message{
-			Message: AuthorizationException.Error(),
-		})
-		return
-	}
+	authusr, _ := c.Get("user")
 	uid := authusr.(User).Uid
 
 	del, err := UserDao.DeleteUser(uid)

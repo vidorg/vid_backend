@@ -68,3 +68,75 @@ func (v *videoDao) QueryVideoByVid(vid int) (*Video, bool) {
 		return &video, true
 	}
 }
+
+// db 创建新视频项
+//
+// @return `*video` `err`
+//
+// @error `CreateVideoException`
+func (v *videoDao) InsertVideo(video *Video) (*Video, error) {
+	// video.vid == null
+	DB.Create(video)
+	query, ok := v.QueryVideoByVid(video.Vid)
+	if !ok {
+		return nil, CreateVideoException
+	} else {
+		return query, nil
+	}
+}
+
+// db 更新旧视频项
+//
+// @return `*video` `err`
+//
+// @error `VideoNotExistException` `NoAuthToActionVideoException` `NotUpdateVideoException`
+func (v *videoDao) UpdateVideo(video *Video) (*Video, error) {
+	old, ok := v.QueryVideoByVid(video.Vid)
+	if !ok {
+		return nil, VideoNotExistException
+	}
+	if video.AuthorUid != old.AuthorUid {
+		return nil, NoAuthToActionVideoException
+	}
+	// TODO preprocess
+	if video.Title == "" {
+		video.Title = old.Title
+	}
+	if video.Description == "" {
+		video.Description = old.Description
+	}
+	if video.VideoUrl == "" {
+		video.VideoUrl = old.VideoUrl
+	}
+	DB.Model(video).Updates(map[string]interface{}{
+		col_video_title:       video.Title,
+		col_video_description: video.Description,
+		col_video_video_url:   video.VideoUrl,
+	})
+	after, _ := v.QueryVideoByVid(video.Vid)
+	if old.Equals(after) {
+		return after, NotUpdateVideoException
+	} else {
+		return after, nil
+	}
+}
+
+// db 删除视频项
+//
+// @return `*video` `err`
+//
+// @error `VideoNotExistException` `NoAuthToActionVideoException` `DeleteVideoException`
+func (v *videoDao) DeleteVideo(vid int, uid int) (*Video, error) {
+	query, ok := v.QueryVideoByVid(vid)
+	if !ok {
+		return nil, VideoNotExistException
+	}
+	if query.AuthorUid != uid {
+		return nil, NoAuthToActionVideoException
+	}
+	if DB.Delete(query).RowsAffected != 1 {
+		return nil, DeleteVideoException
+	} else {
+		return query, nil
+	}
+}

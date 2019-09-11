@@ -21,8 +21,8 @@
 |`DELETE`|`/user/delete`|Delete the current user <sup>[4]</sup>|
 |`GET`|`/user/subscriber/:uid`|Query user's subscribers <sup>[2]</sup>|
 |`GET`|`/user/subscribing/:uid`|Query user's subscribing users <sup>[2]</sup>|
-|`POST`|`/user/sub/?uid`|Subscribe the user <sup>[3]</sup> <sup>[4]</sup>|
-|`POST`|`/user/unsub/?uid`|Unsubscribe the user <sup>[3]</sup> <sup>[4]</sup>|
+|`POST`|`/user/sub?uid`|Subscribe the user <sup>[3]</sup> <sup>[4]</sup>|
+|`POST`|`/user/unsub?uid`|Unsubscribe the user <sup>[3]</sup> <sup>[4]</sup>|
 |`GET`|`/video/all`|Query all videos|
 |`GET`|`/video/uid/:uid`|Query user upload video <sup>[2]</sup>|
 |`GET`|`/video/vid/:vid`|Query video <sup>[2]</sup>|
@@ -45,8 +45,8 @@
 
 ## Request Query Param
 
-+ `POST /user/sub/?uid`
-+ `POST /user/unsub/?uid`
++ `POST /user/sub?uid`
++ `POST /user/unsub?uid`
 
 |Field|Type|Is Required|Description|Remark|
 |--|--|--|--|--|
@@ -72,7 +72,7 @@
 
 |Field|Type|Is Required|Description|Remark|
 |--|--|--|--|--|
-|`uid`|`int`|Required|Query video vid||
+|`vid`|`int`|Required|Query video vid||
 
 ## Request Body
 
@@ -93,7 +93,7 @@ Example:
 }
 ```
 
-+ `POST /auth/modifypass`
++ `POST /auth/modifypass` (Raw-Json)
 
 |Field|Type|Is Required|Description|Remark|
 |--|--|--|--|--|
@@ -109,7 +109,7 @@ Example:
 
 |Field|Type|Is Required|Description|Remark|
 |--|--|--|--|--|
-|`username`|`string`|Required|New username|Must in `[4, 30]`, can't contain blankspace|
+|`username`|`string`|Not Required|New username|Must in `[4, 30]`, can't contain blankspace|
 |`profile`|`string`|Not Required|User's profile|Must in `[0, 255]`|
 |`sex`|`char`|Not Required|User sex|`M` or `F` or `X`|
 |`avatar_url`|`date`|Not Required|User avatar url||
@@ -198,8 +198,8 @@ Example:
 }
 ```
 
-+ `POST /user/sub/?uid` (Json)
-+ `POST /user/unsub/?uid` (Json)
++ `POST /user/sub?uid` (Json)
++ `POST /user/unsub?uid` (Json)
 
 |Field|Type|Description|Remark|
 |--|--|--|--|

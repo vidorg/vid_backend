@@ -18,14 +18,19 @@ var (
 	VideoNotExistException = errors.New("Video not found")
 
 	// user action failed
-	ModifyPassException = errors.New("User password modify failed")
-	InsertUserException = errors.New("User insert failed")
-	// UpdateUserException = errors.New("User update failed")
-	DeleteUserException = errors.New("User delete failed")
+	ModifyPassException    = errors.New("User password modify failed")
+	InsertUserException    = errors.New("User insert failed")
+	NotUpdateUserException = errors.New("User information not updated")
+	DeleteUserException    = errors.New("User delete failed")
+
+	// video action failed
+	CreateVideoException         = errors.New("Video insert failed")
+	NotUpdateVideoException      = errors.New("Video information not updated")
+	DeleteVideoException         = errors.New("Video delete failed")
+	NoAuthToActionVideoException = errors.New("Have no authorization to action video")
 
 	// user other exception
 	UserNameUsedException     = errors.New("Username has been used")
-	NotUpdateUserException    = errors.New("User information not updated")
 	UpdateInvalidException    = errors.New("User information invalid")
 	SubscribeOneSelfException = errors.New("Cound not subscribe to oneself")
 
