@@ -64,7 +64,7 @@ func (v *videoCtrl) GetVideoByVid(c *gin.Context) {
 func (v *videoCtrl) UploadNewVideo(c *gin.Context) {
 	body := ReqUtil.GetBody(c.Request.Body)
 	var video Video
-	if !ReqUtil.CheckJsonValid(body, &video) {
+	if !video.Unmarshal(body, false, true) {
 		c.JSON(http.StatusBadRequest, Message{
 			Message: RequestBodyError.Error(),
 		})
@@ -89,7 +89,7 @@ func (v *videoCtrl) UploadNewVideo(c *gin.Context) {
 func (v *videoCtrl) UpdateVideoInfo(c *gin.Context) {
 	body := ReqUtil.GetBody(c.Request.Body)
 	var video Video
-	if !ReqUtil.CheckJsonValid(body, &video) {
+	if !video.Unmarshal(body, true, false) {
 		c.JSON(http.StatusBadRequest, Message{
 			Message: RequestBodyError.Error(),
 		})
@@ -99,7 +99,7 @@ func (v *videoCtrl) UpdateVideoInfo(c *gin.Context) {
 	authusr, _ := c.Get("user")
 	uid := authusr.(User).Uid
 	video.AuthorUid = uid
-	
+
 	query, err := VideoDao.UpdateVideo(&video)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, Message{
@@ -112,7 +112,7 @@ func (v *videoCtrl) UpdateVideoInfo(c *gin.Context) {
 
 // DELETE /video/delete?vid (Auth)
 func (v *videoCtrl) DeleteVideo(c *gin.Context) {
-	vid, ok := ReqUtil.GetIntParam(c.Params, "vid")
+	vid, ok := ReqUtil.GetIntQuery(c, "vid")
 	if !ok {
 		c.JSON(http.StatusBadRequest, Message{
 			Message: fmt.Sprintf(RouteParamError.Error(), "vid"),

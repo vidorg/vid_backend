@@ -1,7 +1,6 @@
 package database
 
 import (
-	"fmt"
 	"time"
 	. "vid/exceptions"
 	. "vid/models"
@@ -34,8 +33,8 @@ func (u *userDao) QueryAllUsers() (users []User) {
 // @return `*user` `isUserExist`
 func (u *userDao) QueryUserByUid(uid int) (*User, bool) {
 	var user User
-	DB.Where(col_user_uid+" = ?", uid).Find(&user)
-	if !user.CheckValid() { // PK is null (auto-increment)
+	nf := DB.Where(col_user_uid+" = ?", uid).Find(&user).RecordNotFound()
+	if nf {
 		return nil, false
 	} else {
 		return &user, true
@@ -47,9 +46,8 @@ func (u *userDao) QueryUserByUid(uid int) (*User, bool) {
 // @return `*user` `isUserExist`
 func (u *userDao) QueryUserByUserName(username string) (*User, bool) {
 	var user User
-	DB.Where(col_user_username+" = ?", username).Find(&user)
-	fmt.Println(user)
-	if !user.CheckValid() { // PK is null (auto-increment)
+	nf := DB.Where(col_user_username+" = ?", username).Find(&user).RecordNotFound()
+	if nf {
 		return nil, false
 	} else {
 		return &user, true
@@ -69,6 +67,10 @@ func (u *userDao) UpdateUser(user User) (*User, error) {
 	if !ok {
 		return nil, UserNotExistException
 	}
+
+	if user.Username == "" {
+		user.Username = queryBefore.Username
+	}
 	// 检查格式
 	if !user.CheckFormat() {
 		return nil, UpdateInvalidException
@@ -79,9 +81,6 @@ func (u *userDao) UpdateUser(user User) (*User, error) {
 	}
 
 	// 更新信息
-	if user.Username == "" {
-		user.Username = queryBefore.Username
-	}
 	if user.Profile == "" {
 		// TODO
 		user.Profile = queryBefore.Profile

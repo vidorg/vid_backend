@@ -52,7 +52,7 @@ func (u *userCtrl) QueryUser(c *gin.Context) {
 func (u *userCtrl) UpdateUser(c *gin.Context) {
 	body := ReqUtil.GetBody(c.Request.Body)
 	var user User
-	if !ReqUtil.CheckJsonValid(body, &user) {
+	if !user.Unmarshal(body, false) {
 		c.JSON(http.StatusBadRequest, Message{
 			Message: RequestBodyError.Error(),
 		})

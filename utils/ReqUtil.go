@@ -2,11 +2,8 @@ package utils
 
 import (
 	"bytes"
-	"encoding/json"
 	"io"
 	"strconv"
-
-	. "vid/models"
 
 	"github.com/gin-gonic/gin"
 )
@@ -20,16 +17,6 @@ func (b *reqUtil) GetBody(body io.ReadCloser) string {
 	buf := new(bytes.Buffer)
 	buf.ReadFrom(body)
 	return buf.String()
-}
-
-// 检查请求体的 Json 是否合法，需要实现 IBaseModel 接口
-func (b *reqUtil) CheckJsonValid(bodyJson string, objPtr IBaseModel) bool {
-	err := json.Unmarshal([]byte(bodyJson), objPtr)
-	if err != nil || !objPtr.CheckValid() {
-		return false
-	} else {
-		return true
-	}
 }
 
 // 获得 int 类型的路由参数

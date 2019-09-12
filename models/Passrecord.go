@@ -10,8 +10,3 @@ func (PassRecord) TableName() string {
 	// Default: pass_record
 	return "tbl_passrecord"
 }
-
-// @override
-func (p *PassRecord) CheckValid() bool {
-	return p.Uid != 0 && p.EncryptedPass != ""
-}

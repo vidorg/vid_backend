@@ -1,6 +1,9 @@
 package models
 
-import "time"
+import (
+	"encoding/json"
+	"time"
+)
 
 type Video struct {
 	Vid         int       `json:"vid" gorm:"primary_key;AUTO_INCREMENT"`
@@ -12,12 +15,17 @@ type Video struct {
 	Author      *User     `json:"author" gorm:"-"` // omitempty
 }
 
-// @override
-func (v *Video) CheckValid() bool {
-	return v.Vid > 0
-}
-
 func (v *Video) Equals(obj *Video) bool {
 	return v.Vid == obj.Vid && v.Title == obj.Title && v.Description == obj.Description &&
 		v.VideoUrl == obj.VideoUrl && v.AuthorUid == obj.AuthorUid
+}
+
+func (v *Video) Unmarshal(jsonBody string, needVid bool, needUrl bool) bool {
+	err := json.Unmarshal([]byte(jsonBody), v)
+	if err != nil ||
+		(needVid && v.Vid == 0) ||
+		(needUrl && v.VideoUrl == "") {
+		return false
+	}
+	return true
 }

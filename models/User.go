@@ -1,6 +1,7 @@
 package models
 
 import (
+	"encoding/json"
 	"strings"
 	"time"
 	"vid/config"
@@ -19,10 +20,15 @@ type User struct {
 	Subscribings []*User   `json:"-" gorm:"many2many:subscribe;jointable_foreignkey:subscriber_uid;association_jointable_foreignkey:up_uid"`
 }
 
-// @override
-func (u *User) CheckValid() bool {
-	return u.Username != "" && strings.Index(u.Username, " ") == -1 &&
-		(u.Sex == "M" || u.Sex == "F" || u.Sex == "X" || strings.Trim(u.Sex, " ") == "")
+func (u *User) Unmarshal(jsonBody string, needUid bool) bool {
+	err := json.Unmarshal([]byte(jsonBody), u)
+	if err != nil || (needUid && u.Uid == 0) {
+		return false
+	}
+	if strings.Index(u.Username, " ") != -1 {
+		return false
+	}
+	return true
 }
 
 func (u *User) Equals(obj *User) bool {
@@ -37,5 +43,6 @@ func (u *User) Equals(obj *User) bool {
 func (u *User) CheckFormat() bool {
 	cfg := config.AppCfg
 	return len(u.Username) >= cfg.FormatConfig.MinLen_Username &&
-		len(u.Username) <= cfg.FormatConfig.MaxLen_Username
+		len(u.Username) <= cfg.FormatConfig.MaxLen_Username &&
+		(u.Sex == "M" || u.Sex == "F" || u.Sex == "X" || strings.Trim(u.Sex, " ") == "")
 }

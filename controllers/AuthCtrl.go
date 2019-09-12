@@ -22,7 +22,7 @@ func (u *authCtrl) Login(c *gin.Context) {
 
 	body := ReqUtil.GetBody(c.Request.Body)
 	var regReq RegLogReq
-	if !ReqUtil.CheckJsonValid(body, &regReq) {
+	if !regReq.Unmarshal(body) {
 		c.JSON(http.StatusBadRequest, Message{
 			Message: RequestBodyError.Error(),
 		})
@@ -63,7 +63,7 @@ func (u *authCtrl) Register(c *gin.Context) {
 
 	body := ReqUtil.GetBody(c.Request.Body)
 	var regReq RegLogReq
-	if !ReqUtil.CheckJsonValid(body, &regReq) {
+	if !regReq.Unmarshal(body) {
 		c.JSON(http.StatusBadRequest, Message{
 			Message: RequestBodyError.Error(),
 		})
@@ -91,7 +91,7 @@ func (u *authCtrl) Register(c *gin.Context) {
 func (u *authCtrl) ModifyPass(c *gin.Context) {
 	body := ReqUtil.GetBody(c.Request.Body)
 	var passReq PassReq
-	if !ReqUtil.CheckJsonValid(body, &passReq) {
+	if !passReq.Unmarshal(body) {
 		c.JSON(http.StatusBadRequest, Message{
 			Message: RequestBodyError.Error(),
 		})

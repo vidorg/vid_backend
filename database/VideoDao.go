@@ -57,8 +57,8 @@ func (v *videoDao) QueryVideosByUid(uid int) ([]Video, error) {
 // @return `*Video` `isExist`
 func (v *videoDao) QueryVideoByVid(vid int) (*Video, bool) {
 	var video Video
-	DB.Where(col_video_vid+" = ?", vid).Find(&video)
-	if !video.CheckValid() {
+	nf := DB.Where(col_video_vid+" = ?", vid).Find(&video).RecordNotFound()
+	if nf {
 		return nil, false
 	} else {
 		user, ok := UserDao.QueryUserByUid(video.AuthorUid)

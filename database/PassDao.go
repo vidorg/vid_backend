@@ -20,8 +20,8 @@ const (
 // @return `isExist`
 func (p *passDao) queryPassRecord(uid int) (*PassRecord, bool) {
 	var pass PassRecord
-	DB.Where(col_pass_uid+" = ?", uid).Find(&pass)
-	if !pass.CheckValid() {
+	nf := DB.Where(col_pass_uid+" = ?", uid).Find(&pass).RecordNotFound()
+	if nf {
 		return nil, false
 	} else {
 		return &pass, true
@@ -76,8 +76,8 @@ func (p *passDao) QueryPassRecordByUsername(username string) (*User, *PassRecord
 	}
 
 	var pass PassRecord
-	DB.Where(col_pass_uid+" = ?", user.Uid).Find(&pass)
-	if !pass.CheckValid() {
+	nf := DB.Where(col_pass_uid+" = ?", user.Uid).Find(&pass).RecordNotFound()
+	if nf {
 		return nil, nil, false
 	} else {
 		return user, &pass, true
