@@ -64,7 +64,7 @@ func (v *videoCtrl) GetVideoByVid(c *gin.Context) {
 func (v *videoCtrl) UploadNewVideo(c *gin.Context) {
 	body := ReqUtil.GetBody(c.Request.Body)
 	var video Video
-	if !video.Unmarshal(body, false, true) {
+	if !video.Unmarshal(body, true) {
 		c.JSON(http.StatusBadRequest, Message{
 			Message: RequestBodyError.Error(),
 		})
@@ -89,7 +89,7 @@ func (v *videoCtrl) UploadNewVideo(c *gin.Context) {
 func (v *videoCtrl) UpdateVideoInfo(c *gin.Context) {
 	body := ReqUtil.GetBody(c.Request.Body)
 	var video Video
-	if !video.Unmarshal(body, true, false) {
+	if !video.Unmarshal(body, false) {
 		c.JSON(http.StatusBadRequest, Message{
 			Message: RequestBodyError.Error(),
 		})

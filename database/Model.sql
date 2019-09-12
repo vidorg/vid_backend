@@ -41,6 +41,7 @@ CREATE TABLE `tbl_video` (
   `upload_time` datetime DEFAULT '2000-01-01 00:00:00',
   `author_uid` int(11) DEFAULT NULL,
   PRIMARY KEY (`vid`),
+  UNIQUE KEY `video_url` (`video_url`),
   KEY `tbl_video_author_uid_tbl_user_uid_foreign` (`author_uid`),
   CONSTRAINT `tbl_video_author_uid_tbl_user_uid_foreign` FOREIGN KEY (`author_uid`) REFERENCES `tbl_user` (`uid`) ON DELETE SET NULL ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8
+) ENGINE=InnoDB DEFAULT DEFAULT CHARSET=utf8

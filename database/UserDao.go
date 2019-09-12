@@ -60,7 +60,7 @@ func (u *userDao) QueryUserByUserName(username string) (*User, bool) {
 //
 // @return `*user` `err`
 //
-// @error `UserNotExistException` `UpdateInvalidException` `UserNameUsedException` `NotUpdateUserException`
+// @error `UserNotExistException` `UsetInfoException` `UserNameUsedException` `NotUpdateUserException`
 func (u *userDao) UpdateUser(user User) (*User, error) {
 	// 检查用户信息
 	queryBefore, ok := u.QueryUserByUid(user.Uid)
@@ -68,19 +68,10 @@ func (u *userDao) UpdateUser(user User) (*User, error) {
 		return nil, UserNotExistException
 	}
 
+	// 更新空字段
 	if user.Username == "" {
 		user.Username = queryBefore.Username
 	}
-	// 检查格式
-	if !user.CheckFormat() {
-		return nil, UpdateInvalidException
-	}
-	// 检查同名
-	if _, ok = u.QueryUserByUserName(user.Username); ok && user.Username != queryBefore.Username {
-		return nil, UserNameUsedException
-	}
-
-	// 更新信息
 	if user.Profile == "" {
 		// TODO
 		user.Profile = queryBefore.Profile
@@ -94,6 +85,15 @@ func (u *userDao) UpdateUser(user User) (*User, error) {
 	if user.BirthTime == time.Date(1, 1, 1, 0, 0, 0, 0, time.UTC) {
 		// 0001-01-01 00:00:00 +0000 UTC
 		user.BirthTime = queryBefore.BirthTime
+	}
+
+	// 检查格式
+	if !user.CheckFormat() {
+		return nil, UsetInfoException
+	}
+	// 检查同名
+	if _, ok = u.QueryUserByUserName(user.Username); ok && user.Username != queryBefore.Username {
+		return nil, UserNameUsedException
 	}
 
 	DB.Model(&user).Updates(map[string]interface{}{

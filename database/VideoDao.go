@@ -52,6 +52,20 @@ func (v *videoDao) QueryVideosByUid(uid int) ([]Video, error) {
 	return videos, nil
 }
 
+// db 查询用户发布视频数
+//
+// @return `video_cnt` `err`
+//
+// @error `UserNotExistException`
+func (v *videoDao) QueryUserVideoCnt(uid int) (int, error) {
+	if _, ok := UserDao.QueryUserByUid(uid); !ok {
+		return 0, UserNotExistException
+	}
+	var videos []Video
+	DB.Where(col_video_author_uid+" = ?", uid).Find(&videos)
+	return len(videos), nil
+}
+
 // db 查询 vid 视频和作者
 //
 // @return `*Video` `isExist`
@@ -69,13 +83,30 @@ func (v *videoDao) QueryVideoByVid(vid int) (*Video, bool) {
 	}
 }
 
+// db 查询 video_url 视频
+//
+// @return `*Video` `isExist`
+func (v *videoDao) QueryVideoByUrl(video_url string) (*Video, bool) {
+	var video Video
+	nf := DB.Where(col_video_video_url+" = ?", video_url).Find(&video).RecordNotFound()
+	if nf {
+		return nil, false
+	} else {
+		return &video, true
+	}
+}
+
 // db 创建新视频项
 //
 // @return `*video` `err`
 //
-// @error `CreateVideoException`
+// @error `VideoUrlUsedException` `CreateVideoException`
 func (v *videoDao) InsertVideo(video *Video) (*Video, error) {
-	// video.vid == null
+	// 检查同资源
+	if _, ok := v.QueryVideoByUrl(video.VideoUrl); ok {
+		return nil, VideoUrlUsedException
+	}
+	// 新建
 	DB.Create(video)
 	query, ok := v.QueryVideoByVid(video.Vid)
 	if !ok {
@@ -95,19 +126,29 @@ func (v *videoDao) UpdateVideo(video *Video) (*Video, error) {
 	if !ok {
 		return nil, VideoNotExistException
 	}
+
+	// 作者不一致，无权限
 	if video.AuthorUid != old.AuthorUid {
 		return nil, NoAuthToActionVideoException
 	}
-	// TODO preprocess
+
+	// 更新空字段
 	if video.Title == "" {
 		video.Title = old.Title
 	}
 	if video.Description == "" {
+		// TODO
 		video.Description = old.Description
 	}
 	if video.VideoUrl == "" {
 		video.VideoUrl = old.VideoUrl
 	}
+
+	// 检查同资源
+	if _, ok := v.QueryVideoByUrl(video.VideoUrl); ok && video.VideoUrl != old.VideoUrl {
+		return nil, VideoUrlUsedException
+	}
+
 	DB.Model(video).Updates(map[string]interface{}{
 		col_video_title:       video.Title,
 		col_video_description: video.Description,

@@ -34,11 +34,13 @@ func (u *userCtrl) QueryUser(c *gin.Context) {
 	query, ok := UserDao.QueryUserByUid(uid)
 	if ok {
 		subing_cnt, suber_cnt, _ := UserDao.QuerySubCnt(uid)
+		video_cnt, _ := VideoDao.QueryUserVideoCnt(uid)
 		c.JSON(http.StatusOK, UserResp{
 			User: *query,
 			Info: UserExtraInfo{
 				Subscriber_cnt: suber_cnt,
 				Subscribing_cnt: subing_cnt,
+				Video_cnt: video_cnt,
 			},
 		})
 	} else {

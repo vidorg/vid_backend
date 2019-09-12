@@ -7,30 +7,42 @@
 |Date|Remark|
 |--|--|
 |`2019/09/01`|Complete user group & auth group|
+|`2019/09/12`|Complete video group|
+
+## SubRoute
+
+|Uri|Description|
+|--|--|
+|`/auth/`|User register & login & modify password|
+|`/user/`|User information & subscribe information|
+|`/video/`|Video information & upload|
 
 ## URI
 
 |Method|Uri|Description|
 |--|--|--|
-|`POST`|`/auth/login`|Login as an exist user <sup>[1]</sup>|
-|`POST`|`/auth/register`|Register and create an unexist user <sup>[1]</sup>|
-|`POST`|`/auth/modifypass`|Modify an exist user's password <sup>[1]</sup> <sup>[4]</sup>|
+|`POST`|`/auth/login`|Login as an exist user <a href="#id1"><sup>[1]</sup></a>|
+|`POST`|`/auth/register`|Register and create an unexist user <a href="#id1"><sup>[1]</sup></a>|
+|`POST`|`/auth/modifypass`|Modify an exist user's password <a href="#id1"><sup>[1]</sup></a> <a href="#id4"><sup>[4]</sup></a>|
 |`GET`|`/user/all`|Query all users' information|
-|`GET`|`/user/uid/:uid`|Query user's information <sup>[2]</sup>|
-|`POST`|`/user/update`|Update user's information <sup>[1]</sup> <sup>[4]</sup>|
-|`DELETE`|`/user/delete`|Delete the current user <sup>[4]</sup>|
-|`GET`|`/user/subscriber/:uid`|Query user's subscribers <sup>[2]</sup>|
-|`GET`|`/user/subscribing/:uid`|Query user's subscribing users <sup>[2]</sup>|
-|`POST`|`/user/sub?uid`|Subscribe the user <sup>[3]</sup> <sup>[4]</sup>|
-|`POST`|`/user/unsub?uid`|Unsubscribe the user <sup>[3]</sup> <sup>[4]</sup>|
+|`GET`|`/user/uid/:uid`|Query user's information <a href="#id2"><sup>[2]</sup></a>|
+|`POST`|`/user/update`|Update user's information <a href="#id1"><sup>[1]</sup></a> <a href="#id4"><sup>[4]</sup></a>|
+|`DELETE`|`/user/delete`|Delete the current user <a href="#id4"><sup>[4]</sup></a>|
+|`GET`|`/user/subscriber/:uid`|Query user's subscribers <a href="#id2"><sup>[2]</sup></a>|
+|`GET`|`/user/subscribing/:uid`|Query user's subscribing users <a href="#id2"><sup>[2]</sup></a>|
+|`POST`|`/user/sub?uid`|Subscribe the user <a href="#id3"><sup>[3]</sup></a> <a href="#id4"><sup>[4]</sup></a>|
+|`POST`|`/user/unsub?uid`|Unsubscribe the user <a href="#id3"><sup>[3]</sup></a> <a href="#id4"><sup>[4]</sup></a>|
 |`GET`|`/video/all`|Query all videos|
-|`GET`|`/video/uid/:uid`|Query user upload video <sup>[2]</sup>|
-|`GET`|`/video/vid/:vid`|Query video <sup>[2]</sup>|
+|`GET`|`/video/uid/:uid`|Query user upload video <a href="#id2"><sup>[2]</sup></a>|
+|`GET`|`/video/vid/:vid`|Query video <a href="#id2"><sup>[2]</sup></a>|
+|`POST`|`/video/new`|Upload new video <a href="#id1"><sup>[1]</sup></a> <a href="#id4"><sup>[4]</sup></a>|
+|`POST`|`/video/update`|Update video information <a href="#id1"><sup>[1]</sup></a> <a href="#id4"><sup>[4]</sup></a>|
+|`DELETE`|`/video/delete?vid`|Delete current user's video <a href="#id2"><sup>[2]</sup></a> <a href="#id4"><sup>[4]</sup></a>|
 
-+ [1] [Need request body](https://github.com/vidorg/Vid_Backend/blob/master/docs/api.md#request-body)
-+ [2] [Need route param](https://github.com/vidorg/Vid_Backend/blob/master/docs/api.md#request-route-param)
-+ [3] [Need query param](https://github.com/vidorg/Vid_Backend/blob/master/docs/api.md#request-query-param)
-+ [4] [Need authorization](https://github.com/vidorg/Vid_Backend/blob/master/docs/api.md#request-header)
++ <span id="id1">[1]</span> [Need request body](https://github.com/vidorg/Vid_Backend/blob/master/docs/api.md#request-body)
++ <span id="id2">[2]</span> [Need route param](https://github.com/vidorg/Vid_Backend/blob/master/docs/api.md#request-route-param)
++ <span id="id3">[3]</span> [Need query param](https://github.com/vidorg/Vid_Backend/blob/master/docs/api.md#request-query-param)
++ <span id="id4">[4]</span> [Need authorization](https://github.com/vidorg/Vid_Backend/blob/master/docs/api.md#request-header)
 + [Response](https://github.com/vidorg/Vid_Backend/blob/master/docs/api.md#response-header)
 
 ---
@@ -51,6 +63,12 @@
 |Field|Type|Is Required|Description|Remark|
 |--|--|--|--|--|
 |`uid`|`int`|Required|Subscribe/UnSubscribe user uid||
+
++ `DELETE /video/delete?vid`
+
+|Field|Type|Is Required|Description|Remark|
+|--|--|--|--|--|
+|`vid`|`int`|Required|Deleted user's video vid|Author must be the current user|
 
 ## Request Route Param
 
@@ -99,6 +117,8 @@ Example:
 |--|--|--|--|--|
 |`password`|`string`|Required|User's password|Must in `[8, 20]`, can't contain blankspace|
 
+Example:
+
 ```json
 {
     "password": "NewPassword"
@@ -115,15 +135,56 @@ Example:
 |`avatar_url`|`date`|Not Required|User avatar url||
 |`birth_time`|`date`|Not Required|User birth time||
 
+Example:
+
 ```json
 {
     "username": "NewUsername",
     "profile": "NewProfile",
     "sex": "M",
-    "avatar_url": "xxxx",
+    "avatar_url": "https://github.com/fluidicon.png",
     "birth_time": "2008-01-01T00:00:00+08:00",
 }
 ```
+
++ `POST /video/new` (Raw-Json)
+
+|Field|Type|Is Required|Description|Remark|
+|--|--|--|--|--|
+|`title`|`string`|Required|New video title||
+|`description`|`string`|Not Required|New video description||
+|`video_url`|`string`|Required|New video resource url|Need to be unique url|
+
+Example:
+
+```json
+{
+    "title": "New Title",
+    "description": "New Description",
+    "video_url": "https://xxxxxx",
+}
+```
+
++ `POST /video/update` (Raw-Json)
+
+|Field|Type|Is Required|Description|Remark|
+|--|--|--|--|--|
+|`vid`|`int`|Required|Update video vid||
+|`title`|`string`|Not Required|Update video title||
+|`description`|`string`|Not Required|Update video description||
+|`video_url`|`string`|Not Required|Update video resource url|Need to be unique url|
+
+Example:
+
+```json
+{
+    "vid": 1,
+    "title": "New Title",
+    "description": "New Description",
+    "video_url": "https://xxxxxx",
+}
+```
+
 ---
 
 ## Response Header
@@ -162,10 +223,10 @@ Example:
     "uid": 5,
     "username": "TestUser",
     "profile": "Test Profile",
-    "sex": "",
+    "sex": "X",
     "avatar_url": "https://github.com/fluidicon.png",
     "birth_time": "2000-01-01T00:00:00+08:00",
-    "register_time": "2019-09-02T19:30:10+08:00"
+    "register_time": "2019-09-01T14:48:08+08:00"
 }
 ```
 
@@ -180,6 +241,7 @@ Example:
 |--|--|--|--|
 |`subscriber_cnt`|`int`|User subscribers count||
 |`subscribing_cnt`|`int`|User subscribing count||
+|`video_cnt`|`int`|User upload video count||
 
 Example:
 
@@ -189,11 +251,15 @@ Example:
         "uid": 5,
         "username": "TestUser",
         "profile": "Test Profile",
+        "sex": "X",
+        "avatar_url": "https://github.com/fluidicon.png",
+        "birth_time": "2000-01-01T00:00:00+08:00",
         "register_time": "2019-09-01T14:48:08+08:00"
     },
     "info": {
         "subscriber_cnt": 2,
-        "subscribing_cnt": 3
+        "subscribing_cnt": 3,
+        "video_cnt": 6
     }
 }
 ```
@@ -220,6 +286,9 @@ Example:
 + `GET /video/all` (Array)
 + `GET /video/vid/:vid` (Json)
 + `GET /video/uid/:uid` (Array)
++ `POST /video/new` (Array)
++ `POST /video/update` (Array)
++ `DELETE /video/delete` (Array)
 
 |Field|Type|Description|Remark|
 |--|--|--|--|
@@ -237,13 +306,16 @@ Example:
     "vid": 1,
     "title": "Title",
     "description": "Desctiption",
-    "video_url": "",
+    "video_url": "https://xxxxxx",
     "upload_time": "2019-09-02T17:05:00+08:00",
     "author": {
-        "uid": 1,
-        "username": "Username",
-        "profile": "Profile",
-        "register_time": "2019-09-02T16:59:53+08:00"
+        "uid": 5,
+        "username": "TestUser",
+        "profile": "Test Profile",
+        "sex": "X",
+        "avatar_url": "https://github.com/fluidicon.png",
+        "birth_time": "2000-01-01T00:00:00+08:00",
+        "register_time": "2019-09-01T14:48:08+08:00"
     }
 }
 ```
@@ -253,6 +325,18 @@ Example:
 ## Error Type
 
 + See [Exception.go](https://github.com/vidorg/Vid_Backend/blob/master/exceptions/Exception.go)
+
+|Error type|Description|
+|--|--|
+|||
+
+Example:
+
+```json
+{
+    "message": "Token has expired"
+}
+```
 
 ## Error Code
 

@@ -17,13 +17,13 @@ var (
 	UserNotExistException  = errors.New("User not found")
 	VideoNotExistException = errors.New("Video not found")
 
-	// user action failed
+	// user crud failed
 	ModifyPassException    = errors.New("User password modify failed")
 	InsertUserException    = errors.New("User insert failed")
 	NotUpdateUserException = errors.New("User information not updated")
 	DeleteUserException    = errors.New("User delete failed")
 
-	// video action failed
+	// video crud failed
 	CreateVideoException         = errors.New("Video insert failed")
 	NotUpdateVideoException      = errors.New("Video information not updated")
 	DeleteVideoException         = errors.New("Video delete failed")
@@ -31,10 +31,11 @@ var (
 
 	// user other exception
 	UserNameUsedException     = errors.New("Username has been used")
-	UpdateInvalidException    = errors.New("User information invalid")
+	UsetInfoException         = errors.New("User information invalid")
 	SubscribeOneSelfException = errors.New("Cound not subscribe to oneself")
 
 	// video exception
+	VideoUrlUsedException = errors.New("Video resource url has been used")
 )
 
 // Ctrl
