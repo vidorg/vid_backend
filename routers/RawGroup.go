@@ -13,12 +13,12 @@ func setupRawGroup(router *gin.Engine) {
 
 	rawGroup := router.Group("/raw")
 	{
-		rawGroup.GET("/img/:user/:filename", RawCtrl.RawImg)
+		rawGroup.GET("/image/:user/:filename", RawCtrl.RawImage)
 		rawGroup.GET("/video/:user/:filename", RawCtrl.RawVideo)
 		uploadSubGroup := rawGroup.Group("/upload")
 		{
 			uploadSubGroup.Use(jwt)
-			uploadSubGroup.POST("/img", RawCtrl.UploadImg)
+			uploadSubGroup.POST("/image", RawCtrl.UploadImage)
 			uploadSubGroup.POST("/video", RawCtrl.UploadVideo)
 		}
 	}

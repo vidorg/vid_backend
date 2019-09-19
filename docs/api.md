@@ -8,7 +8,7 @@
 |--|--|
 |`2019/09/01`|Complete user group & auth group|
 |`2019/09/12`|Complete video group|
-|`2019/09/19`|Complete search group|
+|`2019/09/19`|Complete search group & raw group|
 
 ## SubRoute
 
@@ -16,7 +16,9 @@
 |--|--|
 |`/auth/`|User register & login & modify password|
 |`/user/`|User information & subscribe information|
-|`/video/`|Video information & upload|
+|`/video/`|Video information|
+|`/search/`|User & video search|
+|`/raw/`|Image & video upload & download|
 
 ## URI
 
@@ -38,9 +40,13 @@
 |`GET`|`/video/vid/:vid`|Query video <sup>[2]</sup>|
 |`POST`|`/video/new`|Upload new video <sup>[1]</sup> <sup>[4]</sup>|
 |`POST`|`/video/update`|Update video information <sup>[1]</sup> <sup>[4]</sup>|
-|`DELETE`|`/video/delete?vid`|Delete current user's video <sup>[2]</sup> <sup>[4]</sup>|
+|`DELETE`|`/video/delete?vid`|Delete current user's video <sup>[3]</sup> <sup>[4]</sup>|
 |`GET`|`/search/user?keyword`|Search user by keyword or uid <sup>[3]</sup>|
 |`GET`|`/search/video?keyword`|Search video by keyword or vid <sup>[3]</sup>|
+|`POST`|`/raw/upload/image`|Upload user's image <sup>[1]</sup> <sup>[4]</sup>|
+|`POST`|`/raw/upload/video`|Upload user's video <sup>[1]</sup> <sup>[4]</sup>|
+|`GET`|`/raw/image/:user/:filename`|Download image <sup>[2]</sup>|
+|`GET`|`/raw/video/:user/:filename`|Download video <sup>[2]</sup>|
 
 + [1] [Need request body](https://github.com/vidorg/Vid_Backend/blob/master/docs/api.md#request-body)
 + [2] [Need route param](https://github.com/vidorg/Vid_Backend/blob/master/docs/api.md#request-route-param)
@@ -101,6 +107,14 @@
 |Field|Type|Is Required|Description|Remark|
 |--|--|--|--|--|
 |`vid`|`int`|Required|Query video vid||
+
++ `GET /raw/image/:user/:filename`
++ `GET /raw/video/:user/:filename`
+
+|Field|Type|Is Required|Description|Remark|
+|--|--|--|--|--|
+|`user`|`int`|Required|Resource's author uid||
+|`filename`|`string`|Required|Resource's filename||
 
 ## Request Body
 
@@ -195,6 +209,18 @@ Example:
 }
 ```
 
++ `POST /raw/upload/image` (Form-Data)
+
+|Field|Type|Is Required|Description|Remark|
+|--|--|--|--|--|
+|`image`|`File`|Required|Upload image file|Only support `jpg` `png` `bmp`|
+
++ `POST /raw/upload/video` (Form-Data)
+
+|Field|Type|Is Required|Description|Remark|
+|--|--|--|--|--|
+|`video`|`File`|Required|Upload video file|Only support `mp4`|
+
 ---
 
 ## Response Header
@@ -204,6 +230,13 @@ Example:
 |Field|Type|Description|Remark|
 |--|--|--|--|
 |`Authorization`|`string`|User login token|Default expired time is `600s`|
+
++ `GET /raw/image/:user/:filename`
++ `GET /raw/video/:user/:filename`
+
+|Field|Type|Description|Remark|
+|--|--|--|--|
+|`Content-Type`|`string`|Resource content type|`image/png` or `video/mpeg4`|
 
 ## Response Body
 
@@ -329,6 +362,23 @@ Example:
         "birth_time": "2000-01-01T00:00:00+08:00",
         "register_time": "2019-09-01T14:48:08+08:00"
     }
+}
+```
+
++ `POST /raw/upload/image`
++ `POST /raw/upload/video`
+
+|Field|Type|Description|Remark|
+|--|--|--|--|
+|`type`|`string`|Upload type|`Image` or `Video`|
+|`url`|`string`|Upload resource url|New filename is modified as the current time|
+
+Example:
+
+```json
+{
+    "type": "Image",
+    "url": "http://127.0.0.1:1234/raw/image/2/20190919172804.png"
 }
 ```
 

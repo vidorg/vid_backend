@@ -14,7 +14,7 @@ import (
 
 func jwtAbort(c *gin.Context, err error) {
 	c.JSON(http.StatusUnauthorized, Message{
-		Message: CmnCtrl.Capitalize(err.Error()),
+		Message: CmnUtil.Capitalize(err.Error()),
 	})
 	c.Abort()
 }
