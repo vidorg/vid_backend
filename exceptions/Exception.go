@@ -36,6 +36,11 @@ var (
 
 	// video exception
 	VideoUrlUsedException = errors.New("Video resource url has been used")
+
+	// raw exception
+	ImageUploadException = errors.New("Image upload failed")
+	VideoUploadException = errors.New("Video upload failed")
+	FileExtException     = errors.New("Extension not supported")
 )
 
 // Ctrl
