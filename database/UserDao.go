@@ -231,3 +231,13 @@ func (u *userDao) QuerySubCnt(uid int) (int, int, error) {
 	DB.Model(user).Related(&suber, "Subscribers")
 	return len(subing), len(suber), nil
 }
+
+///////////////////////////////////////////////////////////////////////////////////////////
+
+// db 根据用户名模糊查询用户
+//
+// @return `[]user`
+func (u *userDao) SearchByUserName(username string) (users []User) {
+	DB.Where(col_user_username+" like ?", "%"+username+"%").Find(&users).RecordNotFound()
+	return users
+}

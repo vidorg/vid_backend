@@ -8,6 +8,7 @@
 |--|--|
 |`2019/09/01`|Complete user group & auth group|
 |`2019/09/12`|Complete video group|
+|`2019/09/19`|Complete search group|
 
 ## SubRoute
 
@@ -21,28 +22,30 @@
 
 |Method|Uri|Description|
 |--|--|--|
-|`POST`|`/auth/login`|Login as an exist user <a href="#id1"><sup>[1]</sup></a>|
-|`POST`|`/auth/register`|Register and create an unexist user <a href="#id1"><sup>[1]</sup></a>|
-|`POST`|`/auth/modifypass`|Modify an exist user's password <a href="#id1"><sup>[1]</sup></a> <a href="#id4"><sup>[4]</sup></a>|
+|`POST`|`/auth/login`|Login as an exist user <sup>[1]</sup>|
+|`POST`|`/auth/register`|Register and create an unexist user <sup>[1]</sup>|
+|`POST`|`/auth/modifypass`|Modify an exist user's password <sup>[1]</sup> <sup>[4]</sup>|
 |`GET`|`/user/all`|Query all users' information|
-|`GET`|`/user/uid/:uid`|Query user's information <a href="#id2"><sup>[2]</sup></a>|
-|`POST`|`/user/update`|Update user's information <a href="#id1"><sup>[1]</sup></a> <a href="#id4"><sup>[4]</sup></a>|
-|`DELETE`|`/user/delete`|Delete the current user <a href="#id4"><sup>[4]</sup></a>|
-|`GET`|`/user/subscriber/:uid`|Query user's subscribers <a href="#id2"><sup>[2]</sup></a>|
-|`GET`|`/user/subscribing/:uid`|Query user's subscribing users <a href="#id2"><sup>[2]</sup></a>|
-|`POST`|`/user/sub?uid`|Subscribe the user <a href="#id3"><sup>[3]</sup></a> <a href="#id4"><sup>[4]</sup></a>|
-|`POST`|`/user/unsub?uid`|Unsubscribe the user <a href="#id3"><sup>[3]</sup></a> <a href="#id4"><sup>[4]</sup></a>|
+|`GET`|`/user/uid/:uid`|Query user's information <sup>[2]</sup>|
+|`POST`|`/user/update`|Update user's information <sup>[1]</sup> <sup>[4]</sup>|
+|`DELETE`|`/user/delete`|Delete the current user <sup>[4]</sup>|
+|`GET`|`/user/subscriber/:uid`|Query user's subscribers <sup>[2]</sup>|
+|`GET`|`/user/subscribing/:uid`|Query user's subscribing users <sup>[2]</sup>|
+|`POST`|`/user/sub?uid`|Subscribe the user <sup>[3]</sup> <sup>[4]</sup>|
+|`POST`|`/user/unsub?uid`|Unsubscribe the user <sup>[3]</sup> <sup>[4]</sup>|
 |`GET`|`/video/all`|Query all videos|
-|`GET`|`/video/uid/:uid`|Query user upload video <a href="#id2"><sup>[2]</sup></a>|
-|`GET`|`/video/vid/:vid`|Query video <a href="#id2"><sup>[2]</sup></a>|
-|`POST`|`/video/new`|Upload new video <a href="#id1"><sup>[1]</sup></a> <a href="#id4"><sup>[4]</sup></a>|
-|`POST`|`/video/update`|Update video information <a href="#id1"><sup>[1]</sup></a> <a href="#id4"><sup>[4]</sup></a>|
-|`DELETE`|`/video/delete?vid`|Delete current user's video <a href="#id2"><sup>[2]</sup></a> <a href="#id4"><sup>[4]</sup></a>|
+|`GET`|`/video/uid/:uid`|Query user upload video <sup>[2]</sup>|
+|`GET`|`/video/vid/:vid`|Query video <sup>[2]</sup>|
+|`POST`|`/video/new`|Upload new video <sup>[1]</sup> <sup>[4]</sup>|
+|`POST`|`/video/update`|Update video information <sup>[1]</sup> <sup>[4]</sup>|
+|`DELETE`|`/video/delete?vid`|Delete current user's video <sup>[2]</sup> <sup>[4]</sup>|
+|`GET`|`/search/user?keyword`|Search user by keyword or uid <sup>[3]</sup>|
+|`GET`|`/search/video?keyword`|Search video by keyword or vid <sup>[3]</sup>|
 
-+ <span id="id1">[1]</span> [Need request body](https://github.com/vidorg/Vid_Backend/blob/master/docs/api.md#request-body)
-+ <span id="id2">[2]</span> [Need route param](https://github.com/vidorg/Vid_Backend/blob/master/docs/api.md#request-route-param)
-+ <span id="id3">[3]</span> [Need query param](https://github.com/vidorg/Vid_Backend/blob/master/docs/api.md#request-query-param)
-+ <span id="id4">[4]</span> [Need authorization](https://github.com/vidorg/Vid_Backend/blob/master/docs/api.md#request-header)
++ [1] [Need request body](https://github.com/vidorg/Vid_Backend/blob/master/docs/api.md#request-body)
++ [2] [Need route param](https://github.com/vidorg/Vid_Backend/blob/master/docs/api.md#request-route-param)
++ [3] [Need query param](https://github.com/vidorg/Vid_Backend/blob/master/docs/api.md#request-query-param)
++ [4] [Need authorization](https://github.com/vidorg/Vid_Backend/blob/master/docs/api.md#request-header)
 + [Response](https://github.com/vidorg/Vid_Backend/blob/master/docs/api.md#response-header)
 
 ---
@@ -69,6 +72,13 @@
 |Field|Type|Is Required|Description|Remark|
 |--|--|--|--|--|
 |`vid`|`int`|Required|Deleted user's video vid|Author must be the current user|
+
++ `GET /search/user?keyword`
++ `GET /search/video?keyword`
+
+|Field|Type|Is Required|Description|Remark|
+|--|--|--|--|--|
+|`keyword`|`string`|Required|Search keyword|Can start with `uid:` or `vid:`|
 
 ## Request Route Param
 
@@ -205,6 +215,7 @@ Example:
 + `DELETE /user/delete` (Json)
 + `GET /user/subscriber/:uid` (Array)
 + `GET /user/subscribing/:uid` (Array)
++ `GET /search/user?keyword` (Array)
 
 |Field|Type|Description|Remark|
 |--|--|--|--|
@@ -289,6 +300,7 @@ Example:
 + `POST /video/new` (Array)
 + `POST /video/update` (Array)
 + `DELETE /video/delete` (Array)
++ `GET /search/video?keyword` (Array)
 
 |Field|Type|Description|Remark|
 |--|--|--|--|

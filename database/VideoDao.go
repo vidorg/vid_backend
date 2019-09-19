@@ -181,3 +181,13 @@ func (v *videoDao) DeleteVideo(vid int, uid int) (*Video, error) {
 		return query, nil
 	}
 }
+
+///////////////////////////////////////////////////////////////////////////////////////////
+
+// db 根据标题模糊查询视频
+//
+// @return `[]video`
+func (u *videoDao) SearchByVideoTitle(title string) (videos []Video) {
+	DB.Where(col_video_title+" like ?", "%"+title+"%").Find(&videos).RecordNotFound()
+	return videos
+}
