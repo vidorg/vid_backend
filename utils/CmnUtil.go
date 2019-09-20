@@ -7,6 +7,7 @@ import (
 	"path"
 	"strings"
 	"time"
+	"vid/config"
 )
 
 type cmnUtil struct{}
@@ -19,7 +20,7 @@ var CmnUtil = new(cmnUtil)
 //
 // @return `http://xx:xx/`
 func (c *cmnUtil) GetServerUrl(str string) string {
-	return fmt.Sprintf("http://127.0.0.1:1234/%s", str)
+	return fmt.Sprintf("http://%s:%d/%s", config.AppCfg.HTTPServer, config.AppCfg.HTTPPort, str)
 }
 
 // 字符串首字母大写
