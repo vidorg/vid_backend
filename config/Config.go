@@ -11,6 +11,7 @@ import (
 type Config struct {
 	RunMode string
 
+	HTTPServer   string
 	HTTPPort     int
 	ReadTimeout  time.Duration
 	WriteTimeout time.Duration
@@ -75,6 +76,7 @@ func LoagServerConfig() {
 	AppCfg = Config{
 		RunMode: cfg.Section("").Key("RUN_MODE").MustString("debug"),
 
+		HTTPServer:   server.Key("HTTP_SERVER").MustString("127.0.0.1"),
 		HTTPPort:     server.Key("HTTP_PORT").MustInt(),
 		ReadTimeout:  time.Duration(server.Key("READ_TIMEOUT").MustInt(60)) * time.Second,
 		WriteTimeout: time.Duration(server.Key("WRITE_TIMEOUT").MustInt(60)) * time.Second,
