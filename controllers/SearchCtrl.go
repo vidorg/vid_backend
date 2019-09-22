@@ -1,16 +1,16 @@
 package controllers
 
 import (
-	"net/http"
 	"fmt"
-	"strings"
+	"net/http"
 	"strconv"
+	"strings"
 
-	. "vid/utils"
-	. "vid/models/resp"
-	. "vid/models"
-	. "vid/exceptions"
 	. "vid/database"
+	. "vid/exceptions"
+	. "vid/models"
+	. "vid/models/resp"
+	. "vid/utils"
 
 	"github.com/gin-gonic/gin"
 )
@@ -72,15 +72,15 @@ func _searchUser(keyWord string) interface{} {
 	// 用户名 搜索
 	nameSp := strings.Split(keyWord, " ")
 	query, ret := make([]User, 0), make([]User, 0)
-	for _, v := range(nameSp) {
+	for _, v := range nameSp {
 		if v != "" {
 			query = append(query, UserDao.SearchByUserName(v)...)
 		}
 	}
 	// 去重
-	for _, v := range(query) {
+	for _, v := range query {
 		ok := true
-		for _, v2 := range(ret) {
+		for _, v2 := range ret {
 			if v.Uid == v2.Uid {
 				ok = false
 				break
@@ -110,15 +110,15 @@ func _searchVideo(keyWord string) interface{} {
 	// 标题 搜索
 	titleSp := strings.Split(keyWord, " ")
 	query, ret := make([]Video, 0), make([]Video, 0)
-	for _, v := range(titleSp) {
+	for _, v := range titleSp {
 		if v != "" {
 			query = append(query, VideoDao.SearchByVideoTitle(v)...)
 		}
 	}
 	// 去重
-	for _, v := range(query) {
+	for _, v := range query {
 		ok := true
-		for _, v2 := range(ret) {
+		for _, v2 := range ret {
 			if v.Vid == v2.Vid {
 				ok = false
 				break

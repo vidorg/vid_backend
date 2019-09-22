@@ -6,8 +6,8 @@ import (
 
 	. "vid/database"
 	. "vid/exceptions"
-	. "vid/models/resp"
 	. "vid/models"
+	. "vid/models/resp"
 	. "vid/utils"
 
 	"github.com/gin-gonic/gin"
@@ -17,8 +17,16 @@ type videoCtrl struct{}
 
 var VideoCtrl = new(videoCtrl)
 
-// GET /video/all (Non-Auth)
+// GET /video/all (Auth) (Auth)
 func (v *videoCtrl) GetAllVideos(c *gin.Context) {
+	authusr, _ := c.Get("user")
+	if authusr.(User).Authority != AuthAdmin {
+		c.JSON(http.StatusUnauthorized, Message{
+			Message: NeedAdminException.Error(),
+		})
+		return
+	}
+
 	c.JSON(http.StatusOK, VideoDao.QueryVideos())
 }
 
@@ -95,7 +103,7 @@ func (v *videoCtrl) UpdateVideoInfo(c *gin.Context) {
 		})
 		return
 	}
-	
+
 	authusr, _ := c.Get("user")
 	uid := authusr.(User).Uid
 	video.AuthorUid = uid

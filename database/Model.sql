@@ -6,10 +6,11 @@ CREATE TABLE `tbl_user` (
   `uid` int(11) NOT NULL AUTO_INCREMENT,
   `username` varchar(50) DEFAULT NULL,
   `profile` varchar(255) DEFAULT NULL,
-  `sex` char(1) DEFAULT NULL,
+  `sex` char(5) DEFAULT 'X',
   `avatar_url` varchar(255) DEFAULT '$icon$',
   `birth_time` datetime DEFAULT '2000-01-01 00:00:00',
   `register_time` datetime DEFAULT '2000-01-01 00:00:00',
+  `authority` enum('admin','normal') DEFAULT 'normal',
   PRIMARY KEY (`uid`),
   UNIQUE KEY `username` (`username`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8

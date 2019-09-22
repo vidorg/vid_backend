@@ -27,7 +27,7 @@
 |`POST`|`/auth/login`|Login as an exist user <sup>[1]</sup>|
 |`POST`|`/auth/register`|Register and create an unexist user <sup>[1]</sup>|
 |`POST`|`/auth/modifypass`|Modify an exist user's password <sup>[1]</sup> <sup>[4]</sup>|
-|`GET`|`/user/all`|Query all users' information|
+|`GET`|`/user/all`|Query all users' information <sup>[5]</sup>|
 |`GET`|`/user/uid/:uid`|Query user's information <sup>[2]</sup>|
 |`POST`|`/user/update`|Update user's information <sup>[1]</sup> <sup>[4]</sup>|
 |`DELETE`|`/user/delete`|Delete the current user <sup>[4]</sup>|
@@ -35,7 +35,7 @@
 |`GET`|`/user/subscribing/:uid`|Query user's subscribing users <sup>[2]</sup>|
 |`POST`|`/user/sub?uid`|Subscribe the user <sup>[3]</sup> <sup>[4]</sup>|
 |`POST`|`/user/unsub?uid`|Unsubscribe the user <sup>[3]</sup> <sup>[4]</sup>|
-|`GET`|`/video/all`|Query all videos|
+|`GET`|`/video/all`|Query all videos <sup>[5]</sup>|
 |`GET`|`/video/uid/:uid`|Query user upload video <sup>[2]</sup>|
 |`GET`|`/video/vid/:vid`|Query video <sup>[2]</sup>|
 |`POST`|`/video/new`|Upload new video <sup>[1]</sup> <sup>[4]</sup>|
@@ -52,6 +52,7 @@
 + [2] [Need route param](https://github.com/vidorg/Vid_Backend/blob/master/docs/api.md#request-route-param)
 + [3] [Need query param](https://github.com/vidorg/Vid_Backend/blob/master/docs/api.md#request-query-param)
 + [4] [Need authorization](https://github.com/vidorg/Vid_Backend/blob/master/docs/api.md#request-header)
++ [5] Need admin authority
 + [Response](https://github.com/vidorg/Vid_Backend/blob/master/docs/api.md#response-header)
 
 ---
@@ -259,6 +260,7 @@ Example:
 |`avatar_url`|`date`|User avatar url||
 |`birth_time`|`date`|User birth time||
 |`register_time`|`date`|User register time||
+|`authority`|`string`|User authority|`ENUM('admin', 'normal')`|
 
 Example:
 
@@ -270,7 +272,8 @@ Example:
     "sex": "X",
     "avatar_url": "https://github.com/fluidicon.png",
     "birth_time": "2000-01-01T00:00:00+08:00",
-    "register_time": "2019-09-01T14:48:08+08:00"
+    "register_time": "2019-09-01T14:48:08+08:00",
+    "authority": "admin"
 }
 ```
 
@@ -298,7 +301,8 @@ Example:
         "sex": "X",
         "avatar_url": "https://github.com/fluidicon.png",
         "birth_time": "2000-01-01T00:00:00+08:00",
-        "register_time": "2019-09-01T14:48:08+08:00"
+        "register_time": "2019-09-01T14:48:08+08:00",
+        "authority": "admin"
     },
     "info": {
         "subscriber_cnt": 2,
@@ -360,7 +364,8 @@ Example:
         "sex": "X",
         "avatar_url": "https://github.com/fluidicon.png",
         "birth_time": "2000-01-01T00:00:00+08:00",
-        "register_time": "2019-09-01T14:48:08+08:00"
+        "register_time": "2019-09-01T14:48:08+08:00",
+        "authority": "admin"
     }
 }
 ```

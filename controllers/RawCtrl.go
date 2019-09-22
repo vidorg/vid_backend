@@ -1,13 +1,13 @@
 package controllers
 
 import (
-	"net/http"
 	"fmt"
+	"net/http"
 
 	. "vid/exceptions"
-	. "vid/utils"
-	. "vid/models/resp"
 	. "vid/models"
+	. "vid/models/resp"
+	. "vid/utils"
 
 	"github.com/gin-gonic/gin"
 )
@@ -16,7 +16,7 @@ type rawCtrl struct{}
 
 var RawCtrl = new(rawCtrl)
 
-// POST /raw/upload/img
+// POST /raw/upload/img (Admin)
 func (r *rawCtrl) UploadImage(c *gin.Context) {
 	authusr, _ := c.Get("user")
 	uid := authusr.(User).Uid
@@ -49,12 +49,12 @@ func (r *rawCtrl) UploadImage(c *gin.Context) {
 		// http://127.0.0.1:1234/raw/image/2/20190919170528.jpg
 		c.JSON(http.StatusInternalServerError, RawResp{
 			Type: "Image",
-			Url: CmnUtil.GetServerUrl(fmt.Sprintf("raw/image/%d/%s%s", uid, filename, ext)),
+			Url:  CmnUtil.GetServerUrl(fmt.Sprintf("raw/image/%d/%s%s", uid, filename, ext)),
 		})
 	}
 }
 
-// POST /raw/upload/video
+// POST /raw/upload/video (Admin)
 func (r *rawCtrl) UploadVideo(c *gin.Context) {
 	authusr, _ := c.Get("user")
 	uid := authusr.(User).Uid
@@ -75,7 +75,7 @@ func (r *rawCtrl) UploadVideo(c *gin.Context) {
 		})
 		return
 	}
-	
+
 	filename = CmnUtil.CurrentTimeInt()
 	filepath := fmt.Sprintf("./files/video/%d/%s%s", authusr.(User).Uid, filename, ext)
 	if !CmnUtil.SaveFile(filepath, file) {
@@ -85,12 +85,12 @@ func (r *rawCtrl) UploadVideo(c *gin.Context) {
 	} else {
 		c.JSON(http.StatusInternalServerError, RawResp{
 			Type: "Video",
-			Url: CmnUtil.GetServerUrl(fmt.Sprintf("raw/video/%d/%s%s", uid, filename, ext)),
+			Url:  CmnUtil.GetServerUrl(fmt.Sprintf("raw/video/%d/%s%s", uid, filename, ext)),
 		})
 	}
 }
 
-// GET /raw/image/:user/:filename
+// GET /raw/image/:user/:filename (Non-Admin)
 func (r *rawCtrl) RawImage(c *gin.Context) {
 	uid, ok := ReqUtil.GetIntParam(c.Params, "user")
 	if !ok {
@@ -106,7 +106,7 @@ func (r *rawCtrl) RawImage(c *gin.Context) {
 		})
 		return
 	}
-	
+
 	filepath := fmt.Sprintf("./files/image/%d/%s", uid, filename)
 	if !CmnUtil.IsFileExist(filepath) {
 		c.JSON(http.StatusNotFound, Message{
@@ -118,7 +118,7 @@ func (r *rawCtrl) RawImage(c *gin.Context) {
 	c.File(filepath)
 }
 
-// GET /raw/video/:user/:filename
+// GET /raw/video/:user/:filename (Non-Admin)
 func (r *rawCtrl) RawVideo(c *gin.Context) {
 	uid, ok := ReqUtil.GetIntParam(c.Params, "user")
 	if !ok {

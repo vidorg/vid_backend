@@ -5,10 +5,10 @@ import (
 	"net/http"
 
 	. "vid/database"
-	. "vid/utils"
 	. "vid/exceptions"
 	. "vid/models"
 	. "vid/models/resp"
+	. "vid/utils"
 
 	"github.com/gin-gonic/gin"
 )
@@ -17,8 +17,16 @@ type userCtrl struct{}
 
 var UserCtrl = new(userCtrl)
 
-// GET /user/all (Non-Auth)
+// GET /user/all (Auth) (Admin)
 func (u *userCtrl) QueryAllUsers(c *gin.Context) {
+	authusr, _ := c.Get("user")
+	if authusr.(User).Authority != AuthAdmin {
+		c.JSON(http.StatusUnauthorized, Message{
+			Message: NeedAdminException.Error(),
+		})
+		return
+	}
+
 	c.JSON(http.StatusOK, UserDao.QueryAllUsers())
 }
 
@@ -38,9 +46,9 @@ func (u *userCtrl) QueryUser(c *gin.Context) {
 		c.JSON(http.StatusOK, UserResp{
 			User: *query,
 			Info: UserExtraInfo{
-				Subscriber_cnt: suber_cnt,
+				Subscriber_cnt:  suber_cnt,
 				Subscribing_cnt: subing_cnt,
-				Video_cnt: video_cnt,
+				Video_cnt:       video_cnt,
 			},
 		})
 	} else {

@@ -2,6 +2,7 @@ package database
 
 import (
 	"time"
+
 	. "vid/exceptions"
 	. "vid/models"
 )

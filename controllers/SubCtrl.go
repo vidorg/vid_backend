@@ -3,12 +3,12 @@ package controllers
 import (
 	"fmt"
 	"net/http"
-	
+
+	. "vid/database"
 	. "vid/exceptions"
 	. "vid/models"
-	. "vid/database"
-	. "vid/utils"
 	. "vid/models/resp"
+	. "vid/utils"
 
 	"github.com/gin-gonic/gin"
 )
@@ -38,8 +38,8 @@ func (u *subCtrl) SubscribeUser(c *gin.Context) {
 		})
 	} else {
 		c.JSON(http.StatusOK, SubResp{
-			Me: me_uid,
-			Up: up_uid,
+			Me:     me_uid,
+			Up:     up_uid,
 			Action: "Subscribe",
 		})
 	}
@@ -66,8 +66,8 @@ func (u *subCtrl) UnSubscribeUser(c *gin.Context) {
 		})
 	} else {
 		c.JSON(http.StatusOK, SubResp{
-			Me: me_uid,
-			Up: up_uid,
+			Me:     me_uid,
+			Up:     up_uid,
 			Action: "UnSubscribe",
 		})
 	}

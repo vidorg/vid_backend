@@ -3,6 +3,9 @@ package models
 import (
 	"encoding/json"
 	"time"
+	"strings"
+
+	"vid/config"
 )
 
 type Video struct {
@@ -26,6 +29,10 @@ func (v *Video) Unmarshal(jsonBody string, isNewVideo bool) bool {
 		(isNewVideo && (v.Title == "" || v.VideoUrl == "")) ||
 		(!isNewVideo && (v.Vid == 0)) {
 		return false
+	}
+	// No description Field
+	if strings.Index(jsonBody, "\"description\": \"") == -1 {
+		v.Description = config.AppCfg.MagicToken
 	}
 	return true
 }

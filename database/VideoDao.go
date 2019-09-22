@@ -3,6 +3,7 @@ package database
 import (
 	. "vid/exceptions"
 	. "vid/models"
+	"vid/config"
 )
 
 type videoDao struct{}
@@ -136,7 +137,7 @@ func (v *videoDao) UpdateVideo(video *Video) (*Video, error) {
 	if video.Title == "" {
 		video.Title = old.Title
 	}
-	if video.Description == "" {
+	if video.Description == config.AppCfg.MagicToken {
 		// TODO
 		video.Description = old.Description
 	}

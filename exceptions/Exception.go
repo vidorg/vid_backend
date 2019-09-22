@@ -1,13 +1,17 @@
 package exceptions
 
-import "errors"
+import (
+	"errors"
+)
 
 // Authorization
 var (
 	AuthorizationException = errors.New("Authorization failed")
 	TokenExpiredException  = errors.New("Token has expired")
 	TokenInvalidException  = errors.New("Token invalid")
-	PasswordException      = errors.New("User password error")
+
+	PasswordException  = errors.New("User password error")
+	NeedAdminException = errors.New("Action need admin authority")
 )
 
 // Db

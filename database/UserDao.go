@@ -2,6 +2,8 @@ package database
 
 import (
 	"time"
+
+	"vid/config"
 	. "vid/exceptions"
 	. "vid/models"
 )
@@ -72,8 +74,7 @@ func (u *userDao) UpdateUser(user User) (*User, error) {
 	if user.Username == "" {
 		user.Username = queryBefore.Username
 	}
-	if user.Profile == "" {
-		// TODO
+	if user.Profile == config.AppCfg.MagicToken {
 		user.Profile = queryBefore.Profile
 	}
 	if user.Sex == "" {

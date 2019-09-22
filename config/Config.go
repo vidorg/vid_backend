@@ -25,6 +25,8 @@ type Config struct {
 	JwtSecret      string
 	JwtTokenExpire int64
 
+	MagicToken string
+
 	FormatConfig _FormatConfig
 }
 
@@ -66,6 +68,11 @@ func LoagServerConfig() {
 		log.Fatal(2, "Fail to parse section 'register': %v", err)
 	}
 
+	info, err := cfg.GetSection("info")
+	if err != nil {
+		log.Fatal(2, "Fail to parse section 'info': %v", err)
+	}
+
 	formatConfig := _FormatConfig{
 		MinLen_Username: register.Key("MINLEN_USERNAME").MustInt(1),
 		MaxLen_Username: register.Key("MAXLEN_USERNAME").MustInt(20),
@@ -89,6 +96,8 @@ func LoagServerConfig() {
 
 		JwtSecret:      jwt.Key("JWTSECRET").MustString(""),
 		JwtTokenExpire: jwt.Key("TOKEN_EXPIRE").MustInt64(0),
+
+		MagicToken: info.Key("MAGIC_TOKEN").MustString("MAGIC_TOKEN"),
 
 		FormatConfig: formatConfig,
 	}
