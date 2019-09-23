@@ -42,21 +42,25 @@ func (p *passDao) InsertUserPassRecord(username string, encryptedPass string) (*
 
 	tx := DB.Begin()
 
-	DB.Create(&User{
+	tx.Create(&User{
 		Username:     username,
 		RegisterTime: time.Now(),
 	})
-	queryUser, ok := UserDao.QueryUserByUserName(username)
+	// queryUser, ok := UserDao.QueryUserByUserName(username)
+	var queryUser *User
+	ok := tx.Where(col_user_username+" = ?", username).Find(queryUser).RecordNotFound()
 	if !ok {
 		tx.Rollback()
 		return nil, InsertUserException
 	}
-	DB.Create(&PassRecord{
+	tx.Create(&PassRecord{
 		Uid:           queryUser.Uid,
 		EncryptedPass: encryptedPass,
 	})
 
-	_, ok = p.queryPassRecord(queryUser.Uid)
+	// _, ok = p.queryPassRecord(queryUser.Uid)
+	ok = tx.Where(col_pass_uid+" = ?", queryUser.Uid).Find(PassRecord{}).RecordNotFound()
+
 	if !ok {
 		tx.Rollback()
 		return nil, InsertUserException

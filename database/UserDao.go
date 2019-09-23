@@ -62,7 +62,7 @@ func (u *userDao) QueryUserByUserName(username string) (*User, bool) {
 //
 // @return `*user` `err`
 //
-// @error `UserNotExistException` `UsetInfoException` `UserNameUsedException` `NotUpdateUserException`
+// @error `UserNotExistException` `UserInfoException` `UserNameUsedException` `NotUpdateUserException`
 func (u *userDao) UpdateUser(user User) (*User, error) {
 	// 检查用户信息
 	queryBefore, ok := u.QueryUserByUid(user.Uid)
@@ -90,7 +90,7 @@ func (u *userDao) UpdateUser(user User) (*User, error) {
 
 	// 检查格式
 	if !user.CheckFormat() {
-		return nil, UsetInfoException
+		return nil, UserInfoException
 	}
 	// 检查同名
 	if _, ok = u.QueryUserByUserName(user.Username); ok && user.Username != queryBefore.Username {

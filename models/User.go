@@ -10,7 +10,7 @@ import (
 
 // http://gorm.io/docs/many_to_many.html#Self-Referencing
 type User struct {
-	Uid          int       `json:"uid" gorm:"primary_key;AUTO_INCREMENT"`
+	Uid          int       `json:"uid" gorm:"primary_key;auto_increment"`
 	Username     string    `json:"username" gorm:"type:varchar(50);unique;not_null"` // 50
 	Profile      string    `json:"profile"`                                          // 255
 	Sex          string    `json:"sex" gorm:"type:char(5);default:'X'"`              // 1

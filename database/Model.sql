@@ -46,3 +46,27 @@ CREATE TABLE `tbl_video` (
   KEY `tbl_video_author_uid_tbl_user_uid_foreign` (`author_uid`),
   CONSTRAINT `tbl_video_author_uid_tbl_user_uid_foreign` FOREIGN KEY (`author_uid`) REFERENCES `tbl_user` (`uid`) ON DELETE SET NULL ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT DEFAULT CHARSET=utf8
+
+-- tbl: tbl_playlist
+
+CREATE TABLE `tbl_playlist` (
+  `gid` int(11) NOT NULL AUTO_INCREMENT,
+  `groupname` varchar(50) DEFAULT NULL,
+  `description` varchar(255) DEFAULT NULL,
+  `create_time` timestamp NULL DEFAULT NULL,
+  `author_uid` int(11) DEFAULT NULL,
+  PRIMARY KEY (`gid`),
+  KEY `tbl_playlist_author_uid_tbl_user_uid_foreign` (`author_uid`),
+  CONSTRAINT `tbl_playlist_author_uid_tbl_user_uid_foreign` FOREIGN KEY (`author_uid`) REFERENCES `tbl_user` (`uid`) ON DELETE SET NULL ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8
+
+-- tbl: tbl_videoinlist
+
+CREATE TABLE `tbl_videoinlist` (
+  `gid` int(11) NOT NULL,
+  `vid` int(11) NOT NULL,
+  PRIMARY KEY (`gid`,`vid`),
+  KEY `tbl_videoinlist_vid_tbl_video_vid_foreign` (`vid`),
+  CONSTRAINT `tbl_videoinlist_gid_tbl_playlist_gid_foreign` FOREIGN KEY (`gid`) REFERENCES `tbl_playlist` (`gid`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `tbl_videoinlist_vid_tbl_video_vid_foreign` FOREIGN KEY (`vid`) REFERENCES `tbl_video` (`vid`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8

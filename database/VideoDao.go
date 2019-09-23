@@ -1,9 +1,9 @@
 package database
 
 import (
+	"vid/config"
 	. "vid/exceptions"
 	. "vid/models"
-	"vid/config"
 )
 
 type videoDao struct{}
@@ -121,16 +121,11 @@ func (v *videoDao) InsertVideo(video *Video) (*Video, error) {
 //
 // @return `*video` `err`
 //
-// @error `VideoNotExistException` `NoAuthToActionVideoException` `NotUpdateVideoException`
+// @error `VideoNotExistException` `NotUpdateVideoException`
 func (v *videoDao) UpdateVideo(video *Video) (*Video, error) {
 	old, ok := v.QueryVideoByVid(video.Vid)
 	if !ok {
 		return nil, VideoNotExistException
-	}
-
-	// 作者不一致，无权限
-	if video.AuthorUid != old.AuthorUid {
-		return nil, NoAuthToActionVideoException
 	}
 
 	// 更新空字段
@@ -138,7 +133,6 @@ func (v *videoDao) UpdateVideo(video *Video) (*Video, error) {
 		video.Title = old.Title
 	}
 	if video.Description == config.AppCfg.MagicToken {
-		// TODO
 		video.Description = old.Description
 	}
 	if video.VideoUrl == "" {
@@ -167,14 +161,11 @@ func (v *videoDao) UpdateVideo(video *Video) (*Video, error) {
 //
 // @return `*video` `err`
 //
-// @error `VideoNotExistException` `NoAuthToActionVideoException` `DeleteVideoException`
-func (v *videoDao) DeleteVideo(vid int, uid int) (*Video, error) {
+// @error `VideoNotExistException` `DeleteVideoException`
+func (v *videoDao) DeleteVideo(vid int) (*Video, error) {
 	query, ok := v.QueryVideoByVid(vid)
 	if !ok {
 		return nil, VideoNotExistException
-	}
-	if query.AuthorUid != uid {
-		return nil, NoAuthToActionVideoException
 	}
 	if DB.Delete(query).RowsAffected != 1 {
 		return nil, DeleteVideoException
