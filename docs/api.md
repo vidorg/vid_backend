@@ -10,15 +10,7 @@
 |`2019/09/12`|Complete video group|
 |`2019/09/19`|Complete search group & raw group|
 
-## SubRoute
-
-|Uri|Description|
-|--|--|
-|`/auth/`|User register & login & modify password|
-|`/user/`|User information & subscribe information|
-|`/video/`|Video information|
-|`/search/`|User & video search|
-|`/raw/`|Image & video upload & download|
+---
 
 ## URI
 
@@ -168,7 +160,7 @@ Example:
     "profile": "NewProfile",
     "sex": "M",
     "avatar_url": "https://github.com/fluidicon.png",
-    "birth_time": "2008-01-01T00:00:00+08:00",
+    "birth_time": "2008-01-01T00:00:00+08:00"
 }
 ```
 
@@ -186,7 +178,7 @@ Example:
 {
     "title": "New Title",
     "description": "New Description",
-    "video_url": "https://xxxxxx",
+    "video_url": "https://xxxxxx"
 }
 ```
 
@@ -206,7 +198,7 @@ Example:
     "vid": 1,
     "title": "New Title",
     "description": "New Description",
-    "video_url": "https://xxxxxx",
+    "video_url": "https://xxxxxx"
 }
 ```
 
