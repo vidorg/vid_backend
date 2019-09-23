@@ -24,11 +24,34 @@ func (c *cmnUtil) GetServerUrl(str string) string {
 	return fmt.Sprintf("http://%s:%d/%s", config.AppCfg.HTTPServer, config.AppCfg.HTTPPort, str)
 }
 
+// 获得默认头像
+func (c *cmnUtil) GetDefaultAvatarUrl() string {
+	return c.GetServerUrl("raw/image/-1/avatar.jpg")
+}
+
+// 获得默认视频封面
+func (c *cmnUtil) GetDefaultVideoCoverUrl() string {
+	return c.GetServerUrl("raw/image/-1/videocover.jpg")
+}
+
+// 获得图片地址
+func (c *cmnUtil) GetImageUrl(uid int, resource string) string {
+	return c.GetServerUrl(fmt.Sprintf("raw/image/%d/%s", uid, resource))
+}
+
+// 获得视频地址
+func (c *cmnUtil) GetVideoUrl(uid int, resource string) string {
+	return c.GetServerUrl(fmt.Sprintf("raw/video/%d/%s", uid, resource))
+}
+
+//////////////////////////////////////////////////////////////
+
 // 字符串首字母大写
 func (c *cmnUtil) Capitalize(str string) string {
 	return strings.Replace(str, string(str[0]), strings.ToUpper(string(str[0])), 1)
 }
 
+// 获得当前时间编号
 func (c *cmnUtil) CurrentTimeInt() string {
 	return time.Now().Format("20060102150405")
 }

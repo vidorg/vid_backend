@@ -4,6 +4,7 @@ import (
 	"vid/config"
 	. "vid/exceptions"
 	. "vid/models"
+	. "vid/utils"
 )
 
 type videoDao struct{}
@@ -15,6 +16,7 @@ const (
 	col_video_title       = "title"
 	col_video_description = "description"
 	col_video_video_url   = "video_url"
+	col_video_cover_url   = "cover_url"
 	col_video_author_uid  = "author_uid"
 	col_video_upload_time = "upload_time"
 )
@@ -24,8 +26,9 @@ const (
 // @return `[]Video`
 func (v *videoDao) QueryVideos() (videos []Video) {
 	DB.Find(&videos)
-	for k, v := range videos {
-		user, ok := UserDao.QueryUserByUid(v.AuthorUid)
+	for k, _ := range videos {
+		videos[k].ToServer()
+		user, ok := UserDao.QueryUserByUid(videos[k].AuthorUid)
 		if ok {
 			videos[k].Author = user
 		}
@@ -47,6 +50,7 @@ func (v *videoDao) QueryVideosByUid(uid int) ([]Video, error) {
 	user, ok := UserDao.QueryUserByUid(uid)
 	if ok {
 		for k, _ := range videos {
+			videos[k].ToServer()
 			videos[k].Author = user
 		}
 	}
@@ -76,6 +80,7 @@ func (v *videoDao) QueryVideoByVid(vid int) (*Video, bool) {
 	if nf {
 		return nil, false
 	} else {
+		video.ToServer()
 		user, ok := UserDao.QueryUserByUid(video.AuthorUid)
 		if ok {
 			video.Author = user
@@ -93,9 +98,23 @@ func (v *videoDao) QueryVideoByUrl(video_url string) (*Video, bool) {
 	if nf {
 		return nil, false
 	} else {
+		video.ToServer()
 		return &video, true
 	}
 }
+
+// db 根据标题模糊查询视频
+//
+// @return `[]video`
+func (u *videoDao) SearchByVideoTitle(title string) (videos []Video) {
+	DB.Where(col_video_title+" like ?", "%"+title+"%").Find(&videos).RecordNotFound()
+	for k, _ := range videos {
+		videos[k].ToServer()
+	}
+	return videos
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////
 
 // db 创建新视频项
 //
@@ -107,12 +126,19 @@ func (v *videoDao) InsertVideo(video *Video) (*Video, error) {
 	if _, ok := v.QueryVideoByUrl(video.VideoUrl); ok {
 		return nil, VideoUrlUsedException
 	}
+
+	if video.CoverUrl == "" {
+		video.CoverUrl = CmnUtil.GetDefaultVideoCoverUrl()
+	}
+
+	video.ToDB()
 	// 新建
 	DB.Create(video)
 	query, ok := v.QueryVideoByVid(video.Vid)
 	if !ok {
 		return nil, CreateVideoException
 	} else {
+		query.ToServer()
 		return query, nil
 	}
 }
@@ -133,6 +159,8 @@ func (v *videoDao) UpdateVideo(video *Video, uid int) (*Video, error) {
 		return nil, NoAuthorizationException
 	}
 
+	video.ToDB()
+
 	// 更新空字段
 	if video.Title == "" {
 		video.Title = old.Title
@@ -142,6 +170,9 @@ func (v *videoDao) UpdateVideo(video *Video, uid int) (*Video, error) {
 	}
 	if video.VideoUrl == "" {
 		video.VideoUrl = old.VideoUrl
+	}
+	if video.CoverUrl == "" {
+		video.CoverUrl = old.CoverUrl
 	}
 
 	// 检查同资源
@@ -153,11 +184,14 @@ func (v *videoDao) UpdateVideo(video *Video, uid int) (*Video, error) {
 		col_video_title:       video.Title,
 		col_video_description: video.Description,
 		col_video_video_url:   video.VideoUrl,
+		col_video_cover_url:   video.CoverUrl,
 	})
 	after, _ := v.QueryVideoByVid(video.Vid)
 	if old.Equals(after) {
+		after.ToServer()
 		return after, NotUpdateVideoException
 	} else {
+		after.ToServer()
 		return after, nil
 	}
 }
@@ -181,16 +215,7 @@ func (v *videoDao) DeleteVideo(vid int, uid int) (*Video, error) {
 	if DB.Delete(query).RowsAffected != 1 {
 		return nil, DeleteVideoException
 	} else {
+		query.ToServer()
 		return query, nil
 	}
-}
-
-///////////////////////////////////////////////////////////////////////////////////////////
-
-// db 根据标题模糊查询视频
-//
-// @return `[]video`
-func (u *videoDao) SearchByVideoTitle(title string) (videos []Video) {
-	DB.Where(col_video_title+" like ?", "%"+title+"%").Find(&videos).RecordNotFound()
-	return videos
 }

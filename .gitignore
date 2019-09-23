@@ -2,5 +2,7 @@
 build/
 assets/docs/
 
-files/
-!files/.gitkeep
+files/image/*
+files/video/*
+!.gitkeep
+!default/

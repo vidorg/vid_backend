@@ -137,6 +137,7 @@ func (p *playlistCtrl) DeletePlaylist(c *gin.Context) {
 	}
 }
 
+// POST /playlist/add (Auth)
 func (p *playlistCtrl) AddVideosInList(c *gin.Context) {
 	body := ReqUtil.GetBody(c.Request.Body)
 	var vreq VideoinlistReq
@@ -158,6 +159,7 @@ func (p *playlistCtrl) AddVideosInList(c *gin.Context) {
 	}
 }
 
+// DELETE /playlist/remove (Auth)
 func (p *playlistCtrl) RemoveVideosInList(c *gin.Context) {
 	body := ReqUtil.GetBody(c.Request.Body)
 	var vreq VideoinlistReq
@@ -178,5 +180,3 @@ func (p *playlistCtrl) RemoveVideosInList(c *gin.Context) {
 		c.JSON(http.StatusOK, query)
 	}
 }
-
-

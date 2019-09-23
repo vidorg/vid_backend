@@ -127,7 +127,7 @@ func (v *videoCtrl) DeleteVideo(c *gin.Context) {
 	}
 
 	authusr, _ := c.Get("user")
-	
+
 	query, err := VideoDao.DeleteVideo(vid, authusr.(User).Uid)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, Message{

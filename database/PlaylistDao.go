@@ -16,6 +16,7 @@ const (
 	col_playlist_gid         = "gid"
 	col_playlist_groupname   = "groupname"
 	col_playlist_description = "description"
+	col_playlist_cover_url   = "cover_url"
 	col_playlist_create_time = "create_time"
 	col_playlist_author_uid  = "author_uid"
 )
@@ -119,6 +120,24 @@ func (p *playlistDao) QueryPlaylistByUidName(uid int, gname string) (*Playlist, 
 		return &playlist, true
 	}
 }
+
+// db 根据标题模糊视频列表
+//
+// @return `[]video`
+func (p *playlistDao) SearchByPlaylistTitle(title string) (playlists []Playlist) {
+	DB.Where(col_playlist_groupname+" like ?", "%"+title+"%").Find(&playlists).RecordNotFound()
+	for k, _ := range playlists {
+		user, ok := UserDao.QueryUserByUid(playlists[k].AuthorUid)
+		if ok {
+			for k, _ := range playlists {
+				playlists[k].Author = user
+			}
+		}
+	}
+	return playlists
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////
 
 // db 创建新列表
 //

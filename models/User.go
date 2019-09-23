@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"vid/config"
+	. "vid/utils"
 )
 
 // http://gorm.io/docs/many_to_many.html#Self-Referencing
@@ -51,6 +52,33 @@ func (u *User) CheckFormat() bool {
 	return len(u.Username) >= cfg.FormatConfig.MinLen_Username &&
 		len(u.Username) <= cfg.FormatConfig.MaxLen_Username &&
 		(u.Sex == "M" || u.Sex == "F" || u.Sex == "X" || strings.Trim(u.Sex, " ") == "")
+}
+
+// Server -> DB
+func (u *User) ToDB() {
+	if strings.HasPrefix(u.AvatarUrl, "http") {
+		sp := strings.Split(u.AvatarUrl, "/")
+		if sp[len(sp)-2] == "-1" {
+			// http://127.0.0.1:3344/raw/image/-1/avatar.jpg -> /avatar.jpg
+			u.AvatarUrl = "/" + sp[len(sp)-1]
+		} else {
+			// http://127.0.0.1:3344/raw/image/233/avatar.jpg -> avatar.jpg
+			u.AvatarUrl = sp[len(sp)-1]
+		}
+	}
+}
+
+// DB -> Server
+func (u *User) ToServer() {
+	if !strings.HasPrefix(u.AvatarUrl, "http") {
+		if strings.Index(u.AvatarUrl, "/") != -1 {
+			// /avatar.jpg -> http://127.0.0.1:3344/raw/image/-1/avatar.jpg
+			u.AvatarUrl = CmnUtil.GetImageUrl(-1, strings.TrimLeft(u.AvatarUrl, "/"))
+		} else {
+			// avatar.jpg -> http://127.0.0.1:3344/raw/image/233/avatar.jpg
+			u.AvatarUrl = CmnUtil.GetImageUrl(u.Uid, u.AvatarUrl)
+		}
+	}
 }
 
 // Authority

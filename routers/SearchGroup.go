@@ -11,5 +11,6 @@ func setupSearchGroup(router *gin.Engine) {
 	{
 		searchGroup.GET("/user", SearchCtrl.SearchUser)
 		searchGroup.GET("/video", SearchCtrl.SearchVideo)
+		searchGroup.GET("/playlist", SearchCtrl.SearchPlaylist)
 	}
 }

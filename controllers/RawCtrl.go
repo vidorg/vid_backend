@@ -49,7 +49,7 @@ func (r *rawCtrl) UploadImage(c *gin.Context) {
 		// http://127.0.0.1:1234/raw/image/2/20190919170528.jpg
 		c.JSON(http.StatusInternalServerError, RawResp{
 			Type: "Image",
-			Url:  CmnUtil.GetServerUrl(fmt.Sprintf("raw/image/%d/%s%s", uid, filename, ext)),
+			Url:  CmnUtil.GetImageUrl(uid, filename+ext),
 		})
 	}
 }
@@ -85,7 +85,7 @@ func (r *rawCtrl) UploadVideo(c *gin.Context) {
 	} else {
 		c.JSON(http.StatusInternalServerError, RawResp{
 			Type: "Video",
-			Url:  CmnUtil.GetServerUrl(fmt.Sprintf("raw/video/%d/%s%s", uid, filename, ext)),
+			Url:  CmnUtil.GetVideoUrl(uid, filename+ext),
 		})
 	}
 }
@@ -107,7 +107,13 @@ func (r *rawCtrl) RawImage(c *gin.Context) {
 		return
 	}
 
-	filepath := fmt.Sprintf("./files/image/%d/%s", uid, filename)
+	var filepath string
+	if uid == -1 {
+		filepath = fmt.Sprintf("./files/image/default/%s", filename)
+	} else {
+		filepath = fmt.Sprintf("./files/image/%d/%s", uid, filename)
+	}
+
 	if !CmnUtil.IsFileExist(filepath) {
 		c.JSON(http.StatusNotFound, Message{
 			Message: FileNotExistException.Error(),

@@ -27,6 +27,9 @@ const (
 // @return `[]User`
 func (u *userDao) QueryAllUsers() (users []User) {
 	DB.Find(&users)
+	for k, _ := range users {
+		users[k].ToServer()
+	}
 	return users
 }
 
@@ -39,6 +42,7 @@ func (u *userDao) QueryUserByUid(uid int) (*User, bool) {
 	if nf {
 		return nil, false
 	} else {
+		user.ToServer()
 		return &user, true
 	}
 }
@@ -52,8 +56,20 @@ func (u *userDao) QueryUserByUserName(username string) (*User, bool) {
 	if nf {
 		return nil, false
 	} else {
+		user.ToServer()
 		return &user, true
 	}
+}
+
+// db 根据用户名模糊查询用户
+//
+// @return `[]user`
+func (u *userDao) SearchByUserName(username string) (users []User) {
+	DB.Where(col_user_username+" like ?", "%"+username+"%").Find(&users).RecordNotFound()
+	for _, v := range users {
+		v.ToServer()
+	}
+	return users
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
@@ -69,6 +85,8 @@ func (u *userDao) UpdateUser(user User) (*User, error) {
 	if !ok {
 		return nil, UserNotExistException
 	}
+
+	user.ToDB()
 
 	// 更新空字段
 	if user.Username == "" {
@@ -108,9 +126,11 @@ func (u *userDao) UpdateUser(user User) (*User, error) {
 	query, _ := u.QueryUserByUid(user.Uid)
 	if queryBefore.Equals(query) {
 		// 数据不变
+		query.ToServer()
 		return query, NotUpdateUserException
 	} else {
 		// 正常
+		query.ToServer()
 		return query, nil
 	}
 }
@@ -130,6 +150,7 @@ func (u *userDao) DeleteUser(uid int) (*User, error) {
 	if DB.Delete(query).RowsAffected != 1 {
 		return nil, DeleteUserException
 	} else {
+		query.ToServer()
 		return query, nil
 	}
 }
@@ -190,6 +211,9 @@ func (u *userDao) QuerySubscriberUsers(uid int) ([]User, error) {
 	}
 	var users []User
 	DB.Model(user).Related(&users, "Subscribers")
+	for _, v := range users {
+		v.ToServer()
+	}
 	// SELECT `tbl_user`.*
 	// 		FROM `tbl_user` INNER JOIN `tbl_subscribe`
 	// 		ON `tbl_subscribe`.`subscriber_uid` = `tbl_user`.`uid`
@@ -209,6 +233,9 @@ func (u *userDao) QuerySubscribingUsers(uid int) ([]User, error) {
 	}
 	var users []User
 	DB.Model(user).Related(&users, "Subscribings")
+	for _, v := range users {
+		v.ToServer()
+	}
 	// SELECT `tbl_user`.*
 	// 		FROM `tbl_user` INNER JOIN `tbl_subscribe`
 	// 		ON `tbl_subscribe`.`user_uid` = `tbl_user`.`uid`
@@ -231,14 +258,4 @@ func (u *userDao) QuerySubCnt(uid int) (int, int, error) {
 	var suber []User
 	DB.Model(user).Related(&suber, "Subscribers")
 	return len(subing), len(suber), nil
-}
-
-///////////////////////////////////////////////////////////////////////////////////////////
-
-// db 根据用户名模糊查询用户
-//
-// @return `[]user`
-func (u *userDao) SearchByUserName(username string) (users []User) {
-	DB.Where(col_user_username+" like ?", "%"+username+"%").Find(&users).RecordNotFound()
-	return users
 }

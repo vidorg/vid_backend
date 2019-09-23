@@ -53,6 +53,23 @@ func (s *searchCtrl) SearchVideo(c *gin.Context) {
 	}
 }
 
+// GET /search/playlist?keyword (Non-Auth)
+func (s *searchCtrl) SearchPlaylist(c *gin.Context) {
+	keyWord, ok := ReqUtil.GetStrQuery(c, "keyword")
+	if !ok {
+		c.JSON(http.StatusOK, Message{
+			Message: fmt.Sprintf(QueryParamError.Error(), "keyword"),
+		})
+		return
+	}
+	ret := _searchPlaylist(keyWord)
+	if ret == nil {
+		c.JSON(http.StatusOK, gin.H{})
+	} else {
+		c.JSON(http.StatusOK, ret)
+	}
+}
+
 /////////////////////////////////////////////////////////////////////////////
 
 // SearchUser
@@ -120,6 +137,44 @@ func _searchVideo(keyWord string) interface{} {
 		ok := true
 		for _, v2 := range ret {
 			if v.Vid == v2.Vid {
+				ok = false
+				break
+			}
+		}
+		if ok {
+			ret = append(ret, v)
+		}
+	}
+	return ret
+}
+
+// SearchPlaylist
+func _searchPlaylist(keyWord string) interface{} {
+	if strings.HasPrefix(keyWord, "gid:") {
+		// gid 搜索
+		gid, err := strconv.Atoi(strings.TrimLeft(keyWord, "gid:"))
+		if err == nil {
+			playlist, ok := PlaylistDao.QueryPlaylistByGid(gid)
+			if ok && playlist != nil {
+				return [...]Playlist{*playlist}
+			} else {
+				return nil
+			}
+		}
+	}
+	// 标题 搜索
+	titleSp := strings.Split(keyWord, " ")
+	query, ret := make([]Playlist, 0), make([]Playlist, 0)
+	for _, v := range titleSp {
+		if v != "" {
+			query = append(query, PlaylistDao.SearchByPlaylistTitle(v)...)
+		}
+	}
+	// 去重
+	for _, v := range query {
+		ok := true
+		for _, v2 := range ret {
+			if v.Gid == v2.Gid {
 				ok = false
 				break
 			}

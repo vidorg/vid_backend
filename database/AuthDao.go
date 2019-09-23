@@ -5,6 +5,7 @@ import (
 
 	. "vid/exceptions"
 	. "vid/models"
+	. "vid/utils"
 )
 
 type passDao struct{}
@@ -42,32 +43,40 @@ func (p *passDao) InsertUserPassRecord(username string, encryptedPass string) (*
 
 	tx := DB.Begin()
 
-	tx.Create(&User{
+	// 先创建用户
+	user := &User{
 		Username:     username,
+		AvatarUrl:    CmnUtil.GetDefaultAvatarUrl(),
 		RegisterTime: time.Now(),
-	})
-	// queryUser, ok := UserDao.QueryUserByUserName(username)
-	var queryUser *User
-	ok := tx.Where(col_user_username+" = ?", username).Find(queryUser).RecordNotFound()
-	if !ok {
+	}
+	user.ToDB()
+	tx.Create(user)
+
+	// 用户是否被创建
+	var queryUser User
+	nf := tx.Where(col_user_username+" = ?", username).Find(&queryUser).RecordNotFound()
+	if nf {
 		tx.Rollback()
 		return nil, InsertUserException
 	}
+
+	// 创建密码项
 	tx.Create(&PassRecord{
 		Uid:           queryUser.Uid,
 		EncryptedPass: encryptedPass,
 	})
 
-	// _, ok = p.queryPassRecord(queryUser.Uid)
-	ok = tx.Where(col_pass_uid+" = ?", queryUser.Uid).Find(PassRecord{}).RecordNotFound()
-
-	if !ok {
+	// 密码项是否被创建
+	nf = tx.Where(col_pass_uid+" = ?", queryUser.Uid).Find(&PassRecord{}).RecordNotFound()
+	if nf {
 		tx.Rollback()
 		return nil, InsertUserException
 	}
 
 	tx.Commit()
-	return queryUser, nil
+
+	queryUser.ToServer()
+	return &queryUser, nil
 }
 
 // db 登录 查询密码项

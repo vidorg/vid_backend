@@ -9,6 +9,7 @@
 |`2019/09/01`|Complete user group & auth group|
 |`2019/09/12`|Complete video group|
 |`2019/09/19`|Complete search group & raw group|
+|`2019/09/23`|Complete playlist group & modify image url|
 
 ---
 
@@ -35,10 +36,19 @@
 |`DELETE`|`/video/delete?vid`|Delete current user's video <sup>[3]</sup> <sup>[4]</sup>|
 |`GET`|`/search/user?keyword`|Search user by keyword or uid <sup>[3]</sup>|
 |`GET`|`/search/video?keyword`|Search video by keyword or vid <sup>[3]</sup>|
+|`GET`|`/search/playlist?keyword`|Search playlist by keyword or gid <sup>[3]</sup>|
 |`POST`|`/raw/upload/image`|Upload user's image <sup>[1]</sup> <sup>[4]</sup>|
 |`POST`|`/raw/upload/video`|Upload user's video <sup>[1]</sup> <sup>[4]</sup>|
 |`GET`|`/raw/image/:user/:filename`|Download image <sup>[2]</sup>|
 |`GET`|`/raw/video/:user/:filename`|Download video <sup>[2]</sup>|
+|`GET`|`/playlist/all`|Query all playlist' information <sup>[5]</sup>|
+|`GET`|`/playlist/uid/:uid`|Query user created playlist <sup>[2]</sup>|
+|`GET`|`/playlist/gid/:gid`|Query playlist <sup>[2]</sup>|
+|`POST`|`/playlist/new`|Create new playlist <sup>[1]</sup> <sup>[4]</sup>|
+|`POST`|`/playlist/update`|Update playlist information <sup>[1]</sup> <sup>[4]</sup>|
+|`DELETE`|`/playlist/delete?gid`|Delete current user's playlist <sup>[3]</sup> <sup>[4]</sup>|
+|`POST`|`/playlist/add`|Add videos into current user's playlist <sup>[1]</sup> <sup>[4]</sup>|
+|`DELETE`|`/playlist/remove`|Remove videos from current user's playlist <sup>[1]</sup> <sup>[4]</sup>|
 
 + [1] [Need request body](https://github.com/vidorg/Vid_Backend/blob/master/docs/api.md#request-body)
 + [2] [Need route param](https://github.com/vidorg/Vid_Backend/blob/master/docs/api.md#request-route-param)
@@ -74,10 +84,17 @@
 
 + `GET /search/user?keyword`
 + `GET /search/video?keyword`
++ `GET /search/playlist?keyword`
 
 |Field|Type|Is Required|Description|Remark|
 |--|--|--|--|--|
-|`keyword`|`string`|Required|Search keyword|Can start with `uid:` or `vid:`|
+|`keyword`|`string`|Required|Search keyword|Can start with `uid:` or `vid:` or `gid:`|
+
++ `DELETE /playlist/delete?gid`
+
+|Field|Type|Is Required|Description|Remark|
+|--|--|--|--|--|
+|`gid`|`int`|Required|Deleted user's playlist gid|Author must be the current user|
 
 ## Request Route Param
 
@@ -90,15 +107,11 @@
 |`uid`|`int`|Required|Query user uid||
 
 + `GET /video/uid/:uid`
-
-|Field|Type|Is Required|Description|Remark|
-|--|--|--|--|--|
-|`uid`|`int`|Required|Query video author uid||
-
 + `GET /video/vid/:vid`
 
 |Field|Type|Is Required|Description|Remark|
 |--|--|--|--|--|
+|`uid`|`int`|Required|Query video author uid||
 |`vid`|`int`|Required|Query video vid||
 
 + `GET /raw/image/:user/:filename`
@@ -108,6 +121,15 @@
 |--|--|--|--|--|
 |`user`|`int`|Required|Resource's author uid||
 |`filename`|`string`|Required|Resource's filename||
+
++ `GET /playlist/uid/:uid`
++ `GET /playlist/gid/:gid`
+
+|Field|Type|Is Required|Description|Remark|
+|--|--|--|--|--|
+|`uid`|`int`|Required|Query playlist author uid||
+|`gid`|`int`|Required|Query playlist vid||
+
 
 ## Request Body
 
@@ -157,9 +179,9 @@ Example:
 ```json
 {
     "username": "NewUsername",
-    "profile": "NewProfile",
+    "profile": "New Profile",
     "sex": "M",
-    "avatar_url": "https://github.com/fluidicon.png",
+    "avatar_url": "http://127.0.0.1:3344/raw/image/-1/avatar.jpg",
     "birth_time": "2008-01-01T00:00:00+08:00"
 }
 ```
@@ -170,6 +192,7 @@ Example:
 |--|--|--|--|--|
 |`title`|`string`|Required|New video title||
 |`description`|`string`|Not Required|New video description||
+|`cover_url`|`string`|Not Required|New video cover url||
 |`video_url`|`string`|Required|New video resource url|Need to be unique url|
 
 Example:
@@ -178,6 +201,7 @@ Example:
 {
     "title": "New Title",
     "description": "New Description",
+    "cover_url": "http://127.0.0.1:3344/raw/image/-1/videocover.jpg",
     "video_url": "https://xxxxxx"
 }
 ```
@@ -189,6 +213,7 @@ Example:
 |`vid`|`int`|Required|Update video vid||
 |`title`|`string`|Not Required|Update video title||
 |`description`|`string`|Not Required|Update video description||
+|`cover_url`|`string`|Not Required|Update video cover url||
 |`video_url`|`string`|Not Required|Update video resource url|Need to be unique url|
 
 Example:
@@ -198,6 +223,7 @@ Example:
     "vid": 1,
     "title": "New Title",
     "description": "New Description",
+    "cover_url": "http://127.0.0.1:3344/raw/image/-1/videocover.jpg",
     "video_url": "https://xxxxxx"
 }
 ```
@@ -213,6 +239,60 @@ Example:
 |Field|Type|Is Required|Description|Remark|
 |--|--|--|--|--|
 |`video`|`File`|Required|Upload video file|Only support `mp4`|
+
++ `POST /playlist/new` (Raw-Json)
+
+|Field|Type|Is Required|Description|Remark|
+|--|--|--|--|--|
+|`groupname`|`string`|Required|New playlist name||
+|`description`|`string`|Not Required|New playlist description||
+
+Example:
+
+```json
+{
+    "groupname": "New Playlist",
+    "description": "New Description"
+}
+```
+
++ `POST /playlist/update` (Raw-Json)
+
+|Field|Type|Is Required|Description|Remark|
+|--|--|--|--|--|
+|`gid`|`int`|Required|Update playlist vid||
+|`title`|`string`|Not Required|Update playlist title||
+|`description`|`string`|Not Required|Update playlist description||
+
+Example:
+
+```json
+{
+    "gid": 1,
+    "groupname": "New Title",
+    "description": "New Description"
+}
+```
+
++ `POST /playlist/add`
++ `DELETE /playlist/remove`
+
+|Field|Type|Is Required|Description|Remark|
+|--|--|--|--|--|
+|`gid`|`int`|Required|Playlist gid||
+|`vids`|`int[]`|Not Required|Added video vids||
+
+Example:
+
+```json
+{
+	"gid": 2,
+	"vids": [
+		2,
+        3
+	]
+}
+```
 
 ---
 
@@ -262,7 +342,7 @@ Example:
     "username": "TestUser",
     "profile": "Test Profile",
     "sex": "X",
-    "avatar_url": "https://github.com/fluidicon.png",
+    "avatar_url": "http://127.0.0.1:3344/raw/image/-1/avatar.jpg",
     "birth_time": "2000-01-01T00:00:00+08:00",
     "register_time": "2019-09-01T14:48:08+08:00",
     "authority": "admin"
@@ -281,6 +361,7 @@ Example:
 |`subscriber_cnt`|`int`|User subscribers count||
 |`subscribing_cnt`|`int`|User subscribing count||
 |`video_cnt`|`int`|User upload video count||
+|`playlist_cnt`|`int`|User created playlist count||
 
 Example:
 
@@ -291,7 +372,7 @@ Example:
         "username": "TestUser",
         "profile": "Test Profile",
         "sex": "X",
-        "avatar_url": "https://github.com/fluidicon.png",
+        "avatar_url": "http://127.0.0.1:3344/raw/image/-1/avatar.jpg",
         "birth_time": "2000-01-01T00:00:00+08:00",
         "register_time": "2019-09-01T14:48:08+08:00",
         "authority": "admin"
@@ -299,7 +380,8 @@ Example:
     "info": {
         "subscriber_cnt": 2,
         "subscribing_cnt": 3,
-        "video_cnt": 6
+        "video_cnt": 6,
+        "playlist_cnt": 0
     }
 }
 ```
@@ -324,17 +406,17 @@ Example:
 ```
 
 + `GET /video/all` (Array)
-+ `GET /video/vid/:vid` (Json)
 + `GET /video/uid/:uid` (Array)
-+ `POST /video/new` (Array)
-+ `POST /video/update` (Array)
-+ `DELETE /video/delete` (Array)
++ `GET /video/vid/:vid` (Json)
++ `POST /video/new` (Json)
++ `POST /video/update` (Json)
++ `DELETE /video/delete` (Json)
 + `GET /search/video?keyword` (Array)
 
 |Field|Type|Description|Remark|
 |--|--|--|--|
 |`vid`|`int`|Video vid||
-|`title`|`int`|Video title||
+|`title`|`string`|Video title||
 |`description`|`string`|Video description||
 |`video_url`|`string`|Video url||
 |`upload_time`|`datetime`|Video upload time||
@@ -347,6 +429,7 @@ Example:
     "vid": 1,
     "title": "Title",
     "description": "Desctiption",
+    "cover_url": "http://127.0.0.1:3344/raw/image/-1/videocover.jpg",
     "video_url": "https://xxxxxx",
     "upload_time": "2019-09-02T17:05:00+08:00",
     "author": {
@@ -354,7 +437,7 @@ Example:
         "username": "TestUser",
         "profile": "Test Profile",
         "sex": "X",
-        "avatar_url": "https://github.com/fluidicon.png",
+        "avatar_url": "http://127.0.0.1:3344/raw/image/-1/avatar.jpg",
         "birth_time": "2000-01-01T00:00:00+08:00",
         "register_time": "2019-09-01T14:48:08+08:00",
         "authority": "admin"
@@ -376,6 +459,47 @@ Example:
 {
     "type": "Image",
     "url": "http://127.0.0.1:1234/raw/image/2/20190919172804.png"
+}
+```
+
++ `GET /playlist/all` (Array)
++ `GET /playlist/uid/:uid` (Array)
++ `GET /playlist/gid/:gid` (Json)
++ `POST /playlist/new` (Json)
++ `POST /playlist/update` (Json)
++ `DELETE /playlist/delete` (Json)
++ `POST /playlist/add` (Json)
++ `DELETE /playlist/remove` (Json)
++ `GET /search/playlist?keyword` (Array)
+
+|Field|Type|Description|Remark|
+|--|--|--|--|
+|`gid`|`int`|Playlist gid||
+|`groupname`|`string`|Playlist title||
+|`description`|`string`|Playlist description||
+|`create_time`|`datetime`|Playlist create time||
+|`author`|`User`|Playlist author|`null` for deleted author|
+|`videos`|`Video[]`|Playlist videos|Ignore for null list and return for array|
+
+Example:
+
+```json
+{
+    "gid": 2,
+    "groupname": "2323123",
+    "description": "",
+    "create_time": "2019-09-23T22:50:21+08:00",
+    "author": {
+        "uid": 4,
+        "username": "testuser",
+        "profile": "",
+        "sex": "X",
+        "avatar_url": "http://127.0.0.1:3344/raw/image/-1/avatar.jpg",
+        "birth_time": "2000-01-01T00:00:00+08:00",
+        "register_time": "2019-09-23T22:38:29+08:00",
+        "authority": "admin"
+    },
+    "videos": [...]
 }
 ```
 
