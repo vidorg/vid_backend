@@ -13,14 +13,16 @@ func setupUserGroup(router *gin.Engine) {
 
 	userGroup := router.Group("/user")
 	{
-		// public
-		userGroup.GET("/all", UserCtrl.QueryAllUsers)
+		// Admin
+		userGroup.Use(jwt).GET("/all", UserCtrl.QueryAllUsers)
+
+		// Public
 		userGroup.GET("/uid/:uid", UserCtrl.QueryUser)
 
 		userGroup.GET("/subscriber/:uid", SubCtrl.QuerySubscriberUsers)
 		userGroup.GET("/subscribing/:uid", SubCtrl.QuerySubscribingUsers)
 
-		// user
+		// Auth
 		userGroup.Use(jwt).POST("/update", UserCtrl.UpdateUser)
 		userGroup.Use(jwt).DELETE("/delete", UserCtrl.DeleteUser)
 

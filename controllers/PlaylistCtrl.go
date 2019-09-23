@@ -13,12 +13,12 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type videoCtrl struct{}
+type playlistCtrl struct{}
 
-var VideoCtrl = new(videoCtrl)
+var PlaylistCtrl = new(playlistCtrl)
 
-// GET /video/all (Auth) (Admin)
-func (v *videoCtrl) GetAllVideos(c *gin.Context) {
+// GET /playlist/all (Auth) (Admin)
+func (p *playlistCtrl) GetAllPlaylists(c *gin.Context) {
 	authusr, _ := c.Get("user")
 	if authusr.(User).Authority != AuthAdmin {
 		c.JSON(http.StatusUnauthorized, Message{
@@ -27,11 +27,11 @@ func (v *videoCtrl) GetAllVideos(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, VideoDao.QueryVideos())
+	c.JSON(http.StatusOK, PlaylistDao.QueryAllPlaylists())
 }
 
-// GET /video/uid/:uid (Non-Auth)
-func (v *videoCtrl) GetVideosByUid(c *gin.Context) {
+// GET /playlist/uid/:uid (Non-Auth)
+func (p *playlistCtrl) GetPlaylistsByUid(c *gin.Context) {
 	uid, ok := ReqUtil.GetIntParam(c.Params, "uid")
 	if !ok {
 		c.JSON(http.StatusBadRequest, Message{
@@ -39,7 +39,7 @@ func (v *videoCtrl) GetVideosByUid(c *gin.Context) {
 		})
 		return
 	}
-	query, err := VideoDao.QueryVideosByUid(uid)
+	query, err := PlaylistDao.QueryPlaylistsByUid(uid)
 	if err == nil {
 		c.JSON(http.StatusOK, query)
 	} else {
@@ -49,30 +49,30 @@ func (v *videoCtrl) GetVideosByUid(c *gin.Context) {
 	}
 }
 
-// GET /video/vid/:vid (Non-Auth)
-func (v *videoCtrl) GetVideoByVid(c *gin.Context) {
-	vid, ok := ReqUtil.GetIntParam(c.Params, "vid")
+// GET /playlist/gid/:gid (Non-Auth)
+func (p *playlistCtrl) GetPlaylistByGid(c *gin.Context) {
+	vid, ok := ReqUtil.GetIntParam(c.Params, "gid")
 	if !ok {
 		c.JSON(http.StatusBadRequest, Message{
-			Message: fmt.Sprintf(RouteParamError.Error(), "vid"),
+			Message: fmt.Sprintf(RouteParamError.Error(), "gid"),
 		})
 		return
 	}
-	query, ok := VideoDao.QueryVideoByVid(vid)
+	query, ok := PlaylistDao.QueryPlaylistByGid(vid)
 	if ok {
 		c.JSON(http.StatusOK, query)
 	} else {
 		c.JSON(http.StatusNotFound, Message{
-			Message: VideoNotExistException.Error(),
+			Message: PlaylistNotExistException.Error(),
 		})
 	}
 }
 
-// POST /video/new (Auth)
-func (v *videoCtrl) UploadNewVideo(c *gin.Context) {
+// POST /playlist/new (Auth)
+func (p *playlistCtrl) CreateNewPlaylist(c *gin.Context) {
 	body := ReqUtil.GetBody(c.Request.Body)
-	var video Video
-	if !video.Unmarshal(body, true) {
+	var playlist Playlist
+	if !playlist.Unmarshal(body, true) {
 		c.JSON(http.StatusBadRequest, Message{
 			Message: RequestBodyError.Error(),
 		})
@@ -81,9 +81,9 @@ func (v *videoCtrl) UploadNewVideo(c *gin.Context) {
 
 	authusr, _ := c.Get("user")
 	uid := authusr.(User).Uid
-	video.AuthorUid = uid
+	playlist.AuthorUid = uid
 
-	query, err := VideoDao.InsertVideo(&video)
+	query, err := PlaylistDao.InsertPlaylist(&playlist)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, Message{
 			Message: err.Error(),
@@ -93,11 +93,11 @@ func (v *videoCtrl) UploadNewVideo(c *gin.Context) {
 	}
 }
 
-// POST /video/update (Auth)
-func (v *videoCtrl) UpdateVideoInfo(c *gin.Context) {
+// POST /playlist/update (Auth)
+func (p *playlistCtrl) UpdatePlaylistInfo(c *gin.Context) {
 	body := ReqUtil.GetBody(c.Request.Body)
-	var video Video
-	if !video.Unmarshal(body, false) {
+	var playlist Playlist
+	if !playlist.Unmarshal(body, false) {
 		c.JSON(http.StatusBadRequest, Message{
 			Message: RequestBodyError.Error(),
 		})
@@ -106,9 +106,9 @@ func (v *videoCtrl) UpdateVideoInfo(c *gin.Context) {
 
 	authusr, _ := c.Get("user")
 	uid := authusr.(User).Uid
-	video.AuthorUid = uid
+	playlist.AuthorUid = uid
 
-	query, err := VideoDao.UpdateVideo(&video)
+	query, err := PlaylistDao.UpdatePlaylist(&playlist)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, Message{
 			Message: err.Error(),
@@ -118,17 +118,17 @@ func (v *videoCtrl) UpdateVideoInfo(c *gin.Context) {
 	}
 }
 
-// DELETE /video/delete?vid (Auth)
-func (v *videoCtrl) DeleteVideo(c *gin.Context) {
-	vid, ok := ReqUtil.GetIntQuery(c, "vid")
+// DELETE /playlist/delete?gid (Auth)
+func (p *playlistCtrl) DeletePlaylist(c *gin.Context) {
+	gid, ok := ReqUtil.GetIntQuery(c, "gid")
 	if !ok {
 		c.JSON(http.StatusBadRequest, Message{
-			Message: fmt.Sprintf(RouteParamError.Error(), "vid"),
+			Message: fmt.Sprintf(RouteParamError.Error(), "gid"),
 		})
 		return
 	}
 
-	query, err := VideoDao.DeleteVideo(vid)
+	query, err := PlaylistDao.DeletePlaylist(gid)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, Message{
 			Message: err.Error(),

@@ -1,41 +1,53 @@
 package exceptions
 
-import "errors"
+import (
+	"errors"
+)
 
 // Authorization
 var (
 	AuthorizationException = errors.New("Authorization failed")
 	TokenExpiredException  = errors.New("Token has expired")
 	TokenInvalidException  = errors.New("Token invalid")
-	PasswordException      = errors.New("User password error")
+
+	PasswordException  = errors.New("User password error")
+	NeedAdminException = errors.New("Action need admin authority")
 )
 
 // Db
 var (
 	// exist
-	UserExistException     = errors.New("User already existed")
-	UserNotExistException  = errors.New("User not found")
-	VideoNotExistException = errors.New("Video not found")
+	UserExistException        = errors.New("User already existed") // R
+	UserNotExistException     = errors.New("User not found")       // R
+	VideoNotExistException    = errors.New("Video not found")      // R
+	PlaylistNotExistException = errors.New("Playlist not found")   // R
 
 	// user crud failed
-	ModifyPassException    = errors.New("User password modify failed")
-	InsertUserException    = errors.New("User insert failed")
-	NotUpdateUserException = errors.New("User information not updated")
-	DeleteUserException    = errors.New("User delete failed")
+	InsertUserException    = errors.New("User insert failed")           // C
+	NotUpdateUserException = errors.New("User information not updated") // U
+	DeleteUserException    = errors.New("User delete failed")           // D
+	ModifyPassException    = errors.New("User password modify failed")  // U
 
 	// video crud failed
-	CreateVideoException         = errors.New("Video insert failed")
-	NotUpdateVideoException      = errors.New("Video information not updated")
-	DeleteVideoException         = errors.New("Video delete failed")
-	NoAuthToActionVideoException = errors.New("Have no authorization to action video")
+	CreateVideoException    = errors.New("Video insert failed")           // C
+	NotUpdateVideoException = errors.New("Video information not updated") // U
+	DeleteVideoException    = errors.New("Video delete failed")           // D
+
+	// playlist crud failed
+	CreatePlaylistException    = errors.New("Playlist insert failed")           // C
+	NotUpdatePlaylistException = errors.New("Playlist information not updated") // U
+	DeletePlaylistException    = errors.New("Playlist delete failed")           // D
 
 	// user other exception
 	UserNameUsedException     = errors.New("Username has been used")
-	UsetInfoException         = errors.New("User information invalid")
+	UserInfoException         = errors.New("User information invalid")
 	SubscribeOneSelfException = errors.New("Cound not subscribe to oneself")
 
-	// video exception
+	// video other exception
 	VideoUrlUsedException = errors.New("Video resource url has been used")
+
+	// playlist other exception
+	PlaylistNameUsedException = errors.New("Playlist name duplicated")
 
 	// raw exception
 	ImageUploadException  = errors.New("Image upload failed")

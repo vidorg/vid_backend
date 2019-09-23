@@ -8,15 +8,19 @@ import (
 )
 
 func setupVideoGroup(router *gin.Engine) {
-	
+
 	jwt := middleware.JWTMiddleware()
 
 	videoGroup := router.Group("/video")
 	{
-		videoGroup.GET("/all", VideoCtrl.GetAllVideos)
+		// Admin
+		videoGroup.Use(jwt).GET("/all", VideoCtrl.GetAllVideos)
+
+		// Public
 		videoGroup.GET("/uid/:uid", VideoCtrl.GetVideosByUid)
 		videoGroup.GET("/vid/:vid", VideoCtrl.GetVideoByVid)
-		
+
+		// Auth
 		videoGroup.Use(jwt).POST("/new", VideoCtrl.UploadNewVideo)
 		videoGroup.Use(jwt).POST("/update", VideoCtrl.UpdateVideoInfo)
 		videoGroup.Use(jwt).DELETE("/delete", VideoCtrl.DeleteVideo)

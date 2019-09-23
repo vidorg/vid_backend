@@ -13,6 +13,7 @@ import (
 
 func main() {
 	// Config
+
 	config.LoagServerConfig()
 	cfg := config.AppCfg
 

@@ -4,11 +4,11 @@ import (
 	"net/http"
 
 	. "vid/database"
-	. "vid/utils"
 	. "vid/exceptions"
+	. "vid/models"
 	. "vid/models/req"
 	. "vid/models/resp"
-	. "vid/models"
+	. "vid/utils"
 
 	"github.com/gin-gonic/gin"
 )
@@ -106,9 +106,9 @@ func (u *authCtrl) ModifyPass(c *gin.Context) {
 	authusr := authusrtmp.(User)
 
 	encryptedPass := PassUtil.MD5Encode(passReq.Password)
-	passRecord := PassRecord {
-		Uid: authusr.Uid,
-		EncryptedPass : encryptedPass,
+	passRecord := PassRecord{
+		Uid:           authusr.Uid,
+		EncryptedPass: encryptedPass,
 	}
 	_, err := PassDao.UpdatePass(passRecord)
 	if err != nil {
