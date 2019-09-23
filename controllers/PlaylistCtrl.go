@@ -7,6 +7,7 @@ import (
 	. "vid/database"
 	. "vid/exceptions"
 	. "vid/models"
+	. "vid/models/req"
 	. "vid/models/resp"
 	. "vid/utils"
 
@@ -105,10 +106,7 @@ func (p *playlistCtrl) UpdatePlaylistInfo(c *gin.Context) {
 	}
 
 	authusr, _ := c.Get("user")
-	uid := authusr.(User).Uid
-	playlist.AuthorUid = uid
-
-	query, err := PlaylistDao.UpdatePlaylist(&playlist)
+	query, err := PlaylistDao.UpdatePlaylist(&playlist, authusr.(User).Uid)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, Message{
 			Message: err.Error(),
@@ -128,7 +126,8 @@ func (p *playlistCtrl) DeletePlaylist(c *gin.Context) {
 		return
 	}
 
-	query, err := PlaylistDao.DeletePlaylist(gid)
+	authusr, _ := c.Get("user")
+	query, err := PlaylistDao.DeletePlaylist(gid, authusr.(User).Uid)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, Message{
 			Message: err.Error(),
@@ -137,3 +136,47 @@ func (p *playlistCtrl) DeletePlaylist(c *gin.Context) {
 		c.JSON(http.StatusOK, query)
 	}
 }
+
+func (p *playlistCtrl) AddVideosInList(c *gin.Context) {
+	body := ReqUtil.GetBody(c.Request.Body)
+	var vreq VideoinlistReq
+	if !vreq.Unmarshal(body) {
+		c.JSON(http.StatusBadRequest, Message{
+			Message: RequestBodyError.Error(),
+		})
+		return
+	}
+
+	authusr, _ := c.Get("user")
+	query, err := PlaylistDao.InsertVideosInList(vreq.Gid, vreq.Vids, authusr.(User).Uid)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, Message{
+			Message: err.Error(),
+		})
+	} else {
+		c.JSON(http.StatusOK, query)
+	}
+}
+
+func (p *playlistCtrl) RemoveVideosInList(c *gin.Context) {
+	body := ReqUtil.GetBody(c.Request.Body)
+	var vreq VideoinlistReq
+	if !vreq.Unmarshal(body) {
+		c.JSON(http.StatusBadRequest, Message{
+			Message: RequestBodyError.Error(),
+		})
+		return
+	}
+
+	authusr, _ := c.Get("user")
+	query, err := PlaylistDao.DeleteVideosInList(vreq.Gid, vreq.Vids, authusr.(User).Uid)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, Message{
+			Message: err.Error(),
+		})
+	} else {
+		c.JSON(http.StatusOK, query)
+	}
+}
+
+

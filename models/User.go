@@ -14,7 +14,7 @@ type User struct {
 	Username     string    `json:"username" gorm:"type:varchar(50);unique;not_null"` // 50
 	Profile      string    `json:"profile"`                                          // 255
 	Sex          string    `json:"sex" gorm:"type:char(5);default:'X'"`              // 1
-	AvatarUrl    string    `json:"avatar_url" gorm:"default:'$icon$'"`               // 255
+	AvatarUrl    string    `json:"avatar_url"`                                       // 255
 	BirthTime    time.Time `json:"birth_time" gorm:"type:datetime;default:'2000-01-01'"`
 	RegisterTime time.Time `json:"register_time" gorm:"type:datetime;default:'2000-01-01'"`
 	Authority    AuthType  `json:"authority" gorm:"type:ENUM('admin', 'normal');default:'normal';not_null"`

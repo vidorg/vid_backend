@@ -10,8 +10,9 @@ var (
 	TokenExpiredException  = errors.New("Token has expired")
 	TokenInvalidException  = errors.New("Token invalid")
 
-	PasswordException  = errors.New("User password error")
-	NeedAdminException = errors.New("Action need admin authority")
+	PasswordException        = errors.New("User password error")
+	NeedAdminException       = errors.New("Action need admin authority")
+	NoAuthorizationException = errors.New("Don't have authorization to action")
 )
 
 // Db
@@ -37,6 +38,7 @@ var (
 	CreatePlaylistException    = errors.New("Playlist insert failed")           // C
 	NotUpdatePlaylistException = errors.New("Playlist information not updated") // U
 	DeletePlaylistException    = errors.New("Playlist delete failed")           // D
+	DeleteVideoInListException = errors.New("Video in playlist delete failed")  // D
 
 	// user other exception
 	UserNameUsedException     = errors.New("Username has been used")

@@ -12,10 +12,11 @@ type Playlist struct {
 	Gid         int       `json:"gid" gorm:"primary_key;auto_increment"`
 	Groupname   string    `json:"groupname" gorm:"type:varchar(50);not_null"` // 50
 	Description string    `json:"description"`
+	Cover       string    `json:"cover"`
 	CreateTime  time.Time `json:"create_time" gorm:"default:'2000-01-01'"`
 	AuthorUid   int       `json:"-"`
 	Author      *User     `json:"author" gorm:"-"`
-	Videos      []*Video  `json:"videos" gorm:"-"`
+	Videos      []*Video  `json:"videos,omitempty" gorm:"-"`
 }
 
 func (p *Playlist) Equals(obj *Playlist) bool {

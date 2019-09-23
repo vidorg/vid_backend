@@ -105,10 +105,8 @@ func (v *videoCtrl) UpdateVideoInfo(c *gin.Context) {
 	}
 
 	authusr, _ := c.Get("user")
-	uid := authusr.(User).Uid
-	video.AuthorUid = uid
 
-	query, err := VideoDao.UpdateVideo(&video)
+	query, err := VideoDao.UpdateVideo(&video, authusr.(User).Uid)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, Message{
 			Message: err.Error(),
@@ -128,7 +126,9 @@ func (v *videoCtrl) DeleteVideo(c *gin.Context) {
 		return
 	}
 
-	query, err := VideoDao.DeleteVideo(vid)
+	authusr, _ := c.Get("user")
+	
+	query, err := VideoDao.DeleteVideo(vid, authusr.(User).Uid)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, Message{
 			Message: err.Error(),

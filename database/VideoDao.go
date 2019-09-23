@@ -121,11 +121,16 @@ func (v *videoDao) InsertVideo(video *Video) (*Video, error) {
 //
 // @return `*video` `err`
 //
-// @error `VideoNotExistException` `NotUpdateVideoException`
-func (v *videoDao) UpdateVideo(video *Video) (*Video, error) {
+// @error `VideoNotExistException` `NoAuthorizationException` `NotUpdateVideoException`
+func (v *videoDao) UpdateVideo(video *Video, uid int) (*Video, error) {
 	old, ok := v.QueryVideoByVid(video.Vid)
 	if !ok {
 		return nil, VideoNotExistException
+	}
+
+	// 非作者
+	if old.AuthorUid != uid {
+		return nil, NoAuthorizationException
 	}
 
 	// 更新空字段
@@ -161,12 +166,18 @@ func (v *videoDao) UpdateVideo(video *Video) (*Video, error) {
 //
 // @return `*video` `err`
 //
-// @error `VideoNotExistException` `DeleteVideoException`
-func (v *videoDao) DeleteVideo(vid int) (*Video, error) {
+// @error `VideoNotExistException` `NoAuthorizationException` `DeleteVideoException`
+func (v *videoDao) DeleteVideo(vid int, uid int) (*Video, error) {
 	query, ok := v.QueryVideoByVid(vid)
 	if !ok {
 		return nil, VideoNotExistException
 	}
+
+	// 非作者
+	if query.AuthorUid != uid {
+		return nil, NoAuthorizationException
+	}
+
 	if DB.Delete(query).RowsAffected != 1 {
 		return nil, DeleteVideoException
 	} else {

@@ -24,5 +24,7 @@ func setupPlaylistGroup(router *gin.Engine) {
 		playlistGroup.Use(jwt).POST("/new", PlaylistCtrl.CreateNewPlaylist)
 		playlistGroup.Use(jwt).POST("/update", PlaylistCtrl.UpdatePlaylistInfo)
 		playlistGroup.Use(jwt).DELETE("/delete", PlaylistCtrl.DeletePlaylist)
+		playlistGroup.Use(jwt).POST("/add", PlaylistCtrl.AddVideosInList)
+		playlistGroup.Use(jwt).POST("/remove", PlaylistCtrl.RemoveVideosInList)
 	}
 }

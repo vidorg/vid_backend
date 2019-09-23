@@ -42,8 +42,8 @@ func SetupDBConn(cfg config.Config) {
 	DB.AutoMigrate(&models.Playlist{})
 	DB.Model(&models.Playlist{}).AddForeignKey("author_uid", "tbl_user(uid)", "set null", "cascade")
 
-	DB.AutoMigrate(&models.VideoInList{})
-	DB.Model(&models.VideoInList{}).AddForeignKey("gid", "tbl_playlist(gid)", "cascade", "cascade")
+	DB.AutoMigrate(&models.Videoinlist{})
+	DB.Model(&models.Videoinlist{}).AddForeignKey("gid", "tbl_playlist(gid)", "cascade", "cascade")
 	// set null
-	DB.Model(&models.VideoInList{}).AddForeignKey("vid", "tbl_video(vid)", "cascade", "cascade")
+	DB.Model(&models.Videoinlist{}).AddForeignKey("vid", "tbl_video(vid)", "cascade", "cascade")
 }

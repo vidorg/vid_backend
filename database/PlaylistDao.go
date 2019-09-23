@@ -86,6 +86,16 @@ func (p *playlistDao) QueryPlaylistByGid(gid int) (*Playlist, bool) {
 		if ok {
 			playlist.Author = user
 		}
+
+		// Add Video
+		var videoinlist []Videoinlist
+		DB.Where(col_videoinlist_gid+" = ?", gid).Find(&videoinlist)
+		for _, v := range videoinlist {
+			video, ok := VideoDao.QueryVideoByVid(v.Vid)
+			if ok {
+				playlist.Videos = append(playlist.Videos, video)
+			}
+		}
 		return &playlist, true
 	}
 }
@@ -133,12 +143,17 @@ func (p *playlistDao) InsertPlaylist(playlist *Playlist) (*Playlist, error) {
 //
 // @return `*Playlist` `err`
 //
-// @error `PlaylistNotExistException` `PlaylistNameUsedException` `NotUpdatePlaylistException`
+// @error `PlaylistNotExistException` `NoAuthorizationException` `PlaylistNameUsedException` `NotUpdatePlaylistException`
 
-func (p *playlistDao) UpdatePlaylist(playlist *Playlist) (*Playlist, error) {
+func (p *playlistDao) UpdatePlaylist(playlist *Playlist, uid int) (*Playlist, error) {
 	old, ok := p.QueryPlaylistByGid(playlist.Gid)
 	if !ok {
 		return nil, PlaylistNotExistException
+	}
+
+	// 非作者
+	if old.AuthorUid != uid {
+		return nil, NoAuthorizationException
 	}
 
 	// 更新空字段
@@ -168,14 +183,20 @@ func (p *playlistDao) UpdatePlaylist(playlist *Playlist) (*Playlist, error) {
 
 // db 删除视频列表
 //
-// @return `*video` `err`
+// @return `*Playlist` `err`
 //
-// @error `PlaylistNotExistException` `DeletePlaylistException`
-func (p *playlistDao) DeletePlaylist(gid int) (*Playlist, error) {
+// @error `PlaylistNotExistException` `NoAuthorizationException` `DeletePlaylistException`
+func (p *playlistDao) DeletePlaylist(gid int, uid int) (*Playlist, error) {
 	query, ok := p.QueryPlaylistByGid(gid)
 	if !ok {
 		return nil, PlaylistNotExistException
 	}
+
+	// 非作者
+	if query.AuthorUid != uid {
+		return nil, NoAuthorizationException
+	}
+
 	if DB.Delete(query).RowsAffected != 1 {
 		return nil, DeletePlaylistException
 	} else {
@@ -184,3 +205,62 @@ func (p *playlistDao) DeletePlaylist(gid int) (*Playlist, error) {
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
+
+// db 往列表里添加视频
+//
+// @return `*Playlist` `err`
+//
+// @error `PlaylistNotExistException` `NoAuthorizationException`
+func (p *playlistDao) InsertVideosInList(gid int, vids []int, uid int) (*Playlist, error) {
+	query, ok := p.QueryPlaylistByGid(gid)
+	if !ok {
+		return nil, PlaylistNotExistException
+	}
+
+	// 非作者
+	if query.AuthorUid != uid {
+		return nil, NoAuthorizationException
+	}
+
+	for _, v := range vids {
+		DB.Create(Videoinlist{
+			Vid: v,
+			Gid: gid,
+		})
+	}
+	query, _ = p.QueryPlaylistByGid(gid)
+	return query, nil
+}
+
+// db 往列表里删除视频
+//
+// @return `*Playlist` `err`
+//
+// @error `PlaylistNotExistException` `NoAuthorizationException` `DeleteVideoInListException`
+func (p *playlistDao) DeleteVideosInList(gid int, vids []int, uid int) (*Playlist, error) {
+	query, ok := p.QueryPlaylistByGid(gid)
+	if !ok {
+		return nil, PlaylistNotExistException
+	}
+
+	// 非作者
+	if query.AuthorUid != uid {
+		return nil, NoAuthorizationException
+	}
+
+	for _, v := range vids {
+		DB.Delete(Videoinlist{
+			Vid: v,
+			Gid: gid,
+		})
+	}
+	_, ok = p.QueryPlaylistByGid(gid)
+
+	var videoinlist []Videoinlist
+	DB.Where(col_videoinlist_gid+" = ?", gid).Find(&videoinlist).RecordNotFound()
+	if len(videoinlist) != 0 {
+		return nil, DeleteVideoInListException
+	} else {
+		return query, nil
+	}
+}
