@@ -21,6 +21,10 @@ type User struct {
 	Authority    AuthType  `json:"authority" gorm:"type:ENUM('admin', 'normal');default:'normal';not_null"`
 	Subscribers  []*User   `json:"-" gorm:"many2many:subscribe;jointable_foreignkey:up_uid;association_jointable_foreignkey:subscriber_uid"`
 	Subscribings []*User   `json:"-" gorm:"many2many:subscribe;jointable_foreignkey:subscriber_uid;association_jointable_foreignkey:up_uid"`
+
+	// inner system
+	RegisterIP  string `json:"-" gorm:"type:char(16)"`
+	PhoneNumber int    `json:"-" gorm:"default:-1"`
 }
 
 func (u *User) Unmarshal(jsonBody string, needUid bool) bool {

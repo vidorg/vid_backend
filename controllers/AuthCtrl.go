@@ -76,7 +76,7 @@ func (u *authCtrl) Register(c *gin.Context) {
 	}
 
 	encryptedPass := PassUtil.MD5Encode(regReq.Password)
-	query, err := PassDao.InsertUserPassRecord(regReq.Username, encryptedPass)
+	query, err := PassDao.InsertUserPassRecord(regReq.Username, encryptedPass, c.ClientIP())
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, Message{

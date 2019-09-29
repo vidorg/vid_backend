@@ -35,7 +35,7 @@ func (p *passDao) queryPassRecord(uid int) (*PassRecord, bool) {
 // @return `*user` `err`
 //
 // @error `UserExistException` `InsertUserException`
-func (p *passDao) InsertUserPassRecord(username string, encryptedPass string) (*User, error) {
+func (p *passDao) InsertUserPassRecord(username string, encryptedPass string, registerIP string) (*User, error) {
 
 	if _, ok := UserDao.QueryUserByUserName(username); ok {
 		return nil, UserExistException
@@ -48,6 +48,9 @@ func (p *passDao) InsertUserPassRecord(username string, encryptedPass string) (*
 		Username:     username,
 		AvatarUrl:    CmnUtil.GetDefaultAvatarUrl(),
 		RegisterTime: time.Now(),
+
+		// inner sys
+		RegisterIP: registerIP,
 	}
 	user.ToDB()
 	tx.Create(user)

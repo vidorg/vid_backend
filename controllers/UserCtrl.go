@@ -6,6 +6,7 @@ import (
 
 	. "vid/database"
 	. "vid/exceptions"
+	"vid/middleware"
 	. "vid/models"
 	. "vid/models/resp"
 	. "vid/utils"
@@ -41,17 +42,17 @@ func (u *userCtrl) QueryUser(c *gin.Context) {
 	}
 	query, ok := UserDao.QueryUserByUid(uid)
 	if ok {
-		subing_cnt, suber_cnt, _ := UserDao.QuerySubCnt(uid)
-		video_cnt, _ := VideoDao.QueryUserVideoCnt(uid)
-		playlist_cnt, _ := PlaylistDao.QueryUserPlaylistCnt(uid)
+		// Check Auth to include phone number
+
+		authHeader := c.Request.Header.Get("Authorization")
+		_, err := middleware.JWTCheck(authHeader)
+
+		isAuth := err == nil
+		info, _ := UserDao.QueryUserExtraInfo(isAuth, query)
+
 		c.JSON(http.StatusOK, UserResp{
 			User: *query,
-			Info: UserExtraInfo{
-				Subscriber_cnt:  suber_cnt,
-				Subscribing_cnt: subing_cnt,
-				Video_cnt:       video_cnt,
-				Playlist_cnt:    playlist_cnt,
-			},
+			Info: *info,
 		})
 	} else {
 		c.JSON(http.StatusNotFound, Message{

@@ -10,6 +10,7 @@ type UserResp struct {
 }
 
 type UserExtraInfo struct {
+	PhoneNumber     int `json:"phone_number,omitempty"`
 	Subscriber_cnt  int `json:"subscriber_cnt"`
 	Subscribing_cnt int `json:"subscribing_cnt"`
 	Video_cnt       int `json:"video_cnt"`

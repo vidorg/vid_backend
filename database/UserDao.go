@@ -6,6 +6,7 @@ import (
 	"vid/config"
 	. "vid/exceptions"
 	. "vid/models"
+	. "vid/models/resp"
 )
 
 type userDao struct{}
@@ -258,4 +259,41 @@ func (u *userDao) QuerySubCnt(uid int) (int, int, error) {
 	var suber []User
 	DB.Model(user).Related(&suber, "Subscribers")
 	return len(subing), len(suber), nil
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////
+
+// db 查询 uid 其他数据
+//
+// @return `*UserExtraInfo` `err`
+//
+// @error `UserNotExistException`
+func (u *userDao) QueryUserExtraInfo(isAuth bool, user *User) (*UserExtraInfo, error) {
+	subing_cnt, suber_cnt, err := UserDao.QuerySubCnt(user.Uid)
+	if err != nil {
+		return nil, err
+	}
+
+	video_cnt, err := VideoDao.QueryUserVideoCnt(user.Uid)
+	if err != nil {
+		return nil, err
+	}
+
+	playlist_cnt, err := PlaylistDao.QueryUserPlaylistCnt(user.Uid)
+	if err != nil {
+		return nil, err
+	}
+
+	phone_number := user.PhoneNumber
+	if !isAuth {
+		phone_number = 0
+	}
+
+	return &UserExtraInfo{
+		PhoneNumber:     phone_number,
+		Subscriber_cnt:  suber_cnt,
+		Subscribing_cnt: subing_cnt,
+		Video_cnt:       video_cnt,
+		Playlist_cnt:    playlist_cnt,
+	}, nil
 }
