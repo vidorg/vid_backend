@@ -22,7 +22,7 @@
 |`POST`|`/auth/modifypass`|Modify an exist user's password <sup>[1]</sup> <sup>[4]</sup>|
 |`GET`|`/user/all`|Query all users' information <sup>[5]</sup>|
 |`GET`|`/user/uid/:uid`|Query user's information <sup>[2]</sup>|
-|`POST`|`/user/update`|Update user's information <sup>[1]</sup> <sup>[4]</sup>|
+|`PUT`|`/user/update`|Update user's information <sup>[1]</sup> <sup>[4]</sup>|
 |`DELETE`|`/user/delete`|Delete the current user <sup>[4]</sup>|
 |`GET`|`/user/subscriber/:uid`|Query user's subscribers <sup>[2]</sup>|
 |`GET`|`/user/subscribing/:uid`|Query user's subscribing users <sup>[2]</sup>|
@@ -32,23 +32,23 @@
 |`GET`|`/video/uid/:uid`|Query user upload video <sup>[2]</sup>|
 |`GET`|`/video/vid/:vid`|Query video <sup>[2]</sup>|
 |`POST`|`/video/new`|Upload new video <sup>[1]</sup> <sup>[4]</sup>|
-|`POST`|`/video/update`|Update video information <sup>[1]</sup> <sup>[4]</sup>|
+|`PUT`|`/video/update`|Update video information <sup>[1]</sup> <sup>[4]</sup>|
 |`DELETE`|`/video/delete?vid`|Delete current user's video <sup>[3]</sup> <sup>[4]</sup>|
-|`GET`|`/search/user?keyword`|Search user by keyword or uid <sup>[3]</sup>|
-|`GET`|`/search/video?keyword`|Search video by keyword or vid <sup>[3]</sup>|
-|`GET`|`/search/playlist?keyword`|Search playlist by keyword or gid <sup>[3]</sup>|
-|`POST`|`/raw/upload/image`|Upload user's image <sup>[1]</sup> <sup>[4]</sup>|
-|`POST`|`/raw/upload/video`|Upload user's video <sup>[1]</sup> <sup>[4]</sup>|
-|`GET`|`/raw/image/:user/:filename`|Download image <sup>[2]</sup>|
-|`GET`|`/raw/video/:user/:filename`|Download video <sup>[2]</sup>|
 |`GET`|`/playlist/all`|Query all playlist' information <sup>[5]</sup>|
 |`GET`|`/playlist/uid/:uid`|Query user created playlist <sup>[2]</sup>|
 |`GET`|`/playlist/gid/:gid`|Query playlist <sup>[2]</sup>|
 |`POST`|`/playlist/new`|Create new playlist <sup>[1]</sup> <sup>[4]</sup>|
-|`POST`|`/playlist/update`|Update playlist information <sup>[1]</sup> <sup>[4]</sup>|
+|`PUT`|`/playlist/update`|Update playlist information <sup>[1]</sup> <sup>[4]</sup>|
 |`DELETE`|`/playlist/delete?gid`|Delete current user's playlist <sup>[3]</sup> <sup>[4]</sup>|
 |`POST`|`/playlist/add`|Add videos into current user's playlist <sup>[1]</sup> <sup>[4]</sup>|
 |`DELETE`|`/playlist/remove`|Remove videos from current user's playlist <sup>[1]</sup> <sup>[4]</sup>|
+|`POST`|`/raw/upload/image`|Upload user's image <sup>[1]</sup> <sup>[4]</sup>|
+|`POST`|`/raw/upload/video`|Upload user's video <sup>[1]</sup> <sup>[4]</sup>|
+|`GET`|`/raw/image/:user/:filename`|Download image <sup>[2]</sup>|
+|`GET`|`/raw/video/:user/:filename`|Download video <sup>[2]</sup>|
+|`GET`|`/search/user?keyword`|Search user by keyword or uid <sup>[3]</sup>|
+|`GET`|`/search/video?keyword`|Search video by keyword or vid <sup>[3]</sup>|
+|`GET`|`/search/playlist?keyword`|Search playlist by keyword or gid <sup>[3]</sup>|
 
 + [1] [Need request body](https://github.com/vidorg/Vid_Backend/blob/master/docs/api.md#request-body)
 + [2] [Need route param](https://github.com/vidorg/Vid_Backend/blob/master/docs/api.md#request-route-param)
@@ -82,6 +82,12 @@
 |--|--|--|--|--|
 |`vid`|`int`|Required|Deleted user's video vid|Author must be the current user|
 
++ `DELETE /playlist/delete?gid`
+
+|Field|Type|Is Required|Description|Remark|
+|--|--|--|--|--|
+|`gid`|`int`|Required|Deleted user's playlist gid|Author must be the current user|
+
 + `GET /search/user?keyword`
 + `GET /search/video?keyword`
 + `GET /search/playlist?keyword`
@@ -89,12 +95,6 @@
 |Field|Type|Is Required|Description|Remark|
 |--|--|--|--|--|
 |`keyword`|`string`|Required|Search keyword|Can start with `uid:` or `vid:` or `gid:`|
-
-+ `DELETE /playlist/delete?gid`
-
-|Field|Type|Is Required|Description|Remark|
-|--|--|--|--|--|
-|`gid`|`int`|Required|Deleted user's playlist gid|Author must be the current user|
 
 ## Request Route Param
 
@@ -114,14 +114,6 @@
 |`uid`|`int`|Required|Query video author uid||
 |`vid`|`int`|Required|Query video vid||
 
-+ `GET /raw/image/:user/:filename`
-+ `GET /raw/video/:user/:filename`
-
-|Field|Type|Is Required|Description|Remark|
-|--|--|--|--|--|
-|`user`|`int`|Required|Resource's author uid||
-|`filename`|`string`|Required|Resource's filename||
-
 + `GET /playlist/uid/:uid`
 + `GET /playlist/gid/:gid`
 
@@ -130,11 +122,18 @@
 |`uid`|`int`|Required|Query playlist author uid||
 |`gid`|`int`|Required|Query playlist vid||
 
++ `GET /raw/image/:user/:filename`
++ `GET /raw/video/:user/:filename`
+
+|Field|Type|Is Required|Description|Remark|
+|--|--|--|--|--|
+|`user`|`int`|Required|Resource's author uid||
+|`filename`|`string`|Required|Resource's filename||
 
 ## Request Body
 
-+ `POST /auth/login` (Raw-Json)
-+ `POST /auth/register` (Raw-Json)
++ `POST /auth/login` (Form-Data)
++ `POST /auth/register` (Form-Data)
 
 |Field|Type|Is Required|Description|Remark|
 |--|--|--|--|--|
@@ -150,7 +149,7 @@ Example:
 }
 ```
 
-+ `POST /auth/modifypass` (Raw-Json)
++ `POST /auth/modifypass` (Form-Data)
 
 |Field|Type|Is Required|Description|Remark|
 |--|--|--|--|--|
@@ -164,7 +163,7 @@ Example:
 }
 ```
 
-+ `POST /user/update` (Raw-Json)
++ `PUT /user/update` (Raw-Json)
 
 |Field|Type|Is Required|Description|Remark|
 |--|--|--|--|--|
@@ -206,7 +205,7 @@ Example:
 }
 ```
 
-+ `POST /video/update` (Raw-Json)
++ `PUT /video/update` (Raw-Json)
 
 |Field|Type|Is Required|Description|Remark|
 |--|--|--|--|--|
@@ -228,18 +227,6 @@ Example:
 }
 ```
 
-+ `POST /raw/upload/image` (Form-Data)
-
-|Field|Type|Is Required|Description|Remark|
-|--|--|--|--|--|
-|`image`|`File`|Required|Upload image file|Only support `jpg` `png` `bmp`|
-
-+ `POST /raw/upload/video` (Form-Data)
-
-|Field|Type|Is Required|Description|Remark|
-|--|--|--|--|--|
-|`video`|`File`|Required|Upload video file|Only support `mp4`|
-
 + `POST /playlist/new` (Raw-Json)
 
 |Field|Type|Is Required|Description|Remark|
@@ -256,7 +243,7 @@ Example:
 }
 ```
 
-+ `POST /playlist/update` (Raw-Json)
++ `PUT /playlist/update` (Raw-Json)
 
 |Field|Type|Is Required|Description|Remark|
 |--|--|--|--|--|
@@ -274,8 +261,8 @@ Example:
 }
 ```
 
-+ `POST /playlist/add`
-+ `DELETE /playlist/remove`
++ `POST /playlist/add` (Raw-Json)
++ `DELETE /playlist/remove` (Raw-Json)
 
 |Field|Type|Is Required|Description|Remark|
 |--|--|--|--|--|
@@ -286,13 +273,25 @@ Example:
 
 ```json
 {
-	"gid": 2,
-	"vids": [
-		2,
+    "gid": 2,
+    "vids": [
+        2,
         3
-	]
+    ]
 }
 ```
+
++ `POST /raw/upload/image` (Form-Data)
+
+|Field|Type|Is Required|Description|Remark|
+|--|--|--|--|--|
+|`image`|`File`|Required|Upload image file|Only support `jpg` `png` `bmp`|
+
++ `POST /raw/upload/video` (Form-Data)
+
+|Field|Type|Is Required|Description|Remark|
+|--|--|--|--|--|
+|`video`|`File`|Required|Upload video file|Only support `mp4`|
 
 ---
 
@@ -317,7 +316,7 @@ Example:
 + `POST /auth/register` (Json)
 + `POST /auth/modifypass` (Json)
 + `GET /user/all` (Array)
-+ `POST /user/update` (Json)
++ `PUT /user/update` (Json)
 + `DELETE /user/delete` (Json)
 + `GET /user/subscriber/:uid` (Array)
 + `GET /user/subscribing/:uid` (Array)
@@ -358,6 +357,7 @@ Example:
 
 |Field|Type|Description|Remark|
 |--|--|--|--|
+|`phone_number`|`int`|User phone number|Show this field when auth user is `:uid`, `-1` for unsetting|
 |`subscriber_cnt`|`int`|User subscribers count||
 |`subscribing_cnt`|`int`|User subscribing count||
 |`video_cnt`|`int`|User upload video count||
@@ -378,6 +378,7 @@ Example:
         "authority": "admin"
     },
     "info": {
+        "phone_number": -1,
         "subscriber_cnt": 2,
         "subscribing_cnt": 3,
         "video_cnt": 6,
@@ -445,23 +446,6 @@ Example:
 }
 ```
 
-+ `POST /raw/upload/image`
-+ `POST /raw/upload/video`
-
-|Field|Type|Description|Remark|
-|--|--|--|--|
-|`type`|`string`|Upload type|`Image` or `Video`|
-|`url`|`string`|Upload resource url|New filename is modified as the current time|
-
-Example:
-
-```json
-{
-    "type": "Image",
-    "url": "http://127.0.0.1:1234/raw/image/2/20190919172804.png"
-}
-```
-
 + `GET /playlist/all` (Array)
 + `GET /playlist/uid/:uid` (Array)
 + `GET /playlist/gid/:gid` (Json)
@@ -499,7 +483,43 @@ Example:
         "register_time": "2019-09-23T22:38:29+08:00",
         "authority": "admin"
     },
-    "videos": [...]
+    "videos": [
+        {
+            "vid": 1,
+            "title": "Title",
+            "description": "Desctiption",
+            "cover_url": "http://127.0.0.1:3344/raw/image/-1/videocover.jpg",
+            "video_url": "https://xxxxxx",
+            "upload_time": "2019-09-02T17:05:00+08:00",
+            "author": {
+                "uid": 5,
+                "username": "TestUser",
+                "profile": "Test Profile",
+                "sex": "X",
+                "avatar_url": "http://127.0.0.1:3344/raw/image/-1/avatar.jpg",
+                "birth_time": "2000-01-01T00:00:00+08:00",
+                "register_time": "2019-09-01T14:48:08+08:00",
+                "authority": "admin"
+            }
+        }
+    ]
+}
+```
+
++ `POST /raw/upload/image`
++ `POST /raw/upload/video`
+
+|Field|Type|Description|Remark|
+|--|--|--|--|
+|`type`|`string`|Upload type|`Image` or `Video`|
+|`url`|`string`|Upload resource url|New filename is modified as the current time|
+
+Example:
+
+```json
+{
+    "type": "Image",
+    "url": "http://127.0.0.1:1234/raw/image/2/20190919172804.png"
 }
 ```
 

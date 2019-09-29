@@ -11,6 +11,8 @@ CREATE TABLE `tbl_user` (
   `birth_time` datetime DEFAULT '2000-01-01 00:00:00',
   `register_time` datetime DEFAULT '2000-01-01 00:00:00',
   `authority` enum('admin','normal') DEFAULT 'normal',
+  `register_ip` char(16) DEFAULT NULL,
+  `phone_number` int(11) DEFAULT '-1',
   PRIMARY KEY (`uid`),
   UNIQUE KEY `username` (`username`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8

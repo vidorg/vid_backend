@@ -23,7 +23,7 @@ func setupUserGroup(router *gin.Engine) {
 		userGroup.GET("/subscribing/:uid", SubCtrl.QuerySubscribingUsers)
 
 		// Auth
-		userGroup.Use(jwt).POST("/update", UserCtrl.UpdateUser)
+		userGroup.Use(jwt).PUT("/update", UserCtrl.UpdateUser)
 		userGroup.Use(jwt).DELETE("/delete", UserCtrl.DeleteUser)
 
 		userGroup.Use(jwt).POST("/sub", SubCtrl.SubscribeUser)

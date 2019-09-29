@@ -93,7 +93,7 @@ func (v *videoCtrl) UploadNewVideo(c *gin.Context) {
 	}
 }
 
-// POST /video/update (Auth)
+// PUT /video/update (Auth)
 func (v *videoCtrl) UpdateVideoInfo(c *gin.Context) {
 	body := ReqUtil.GetBody(c.Request.Body)
 	var video Video

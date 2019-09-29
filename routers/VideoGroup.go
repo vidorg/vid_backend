@@ -22,7 +22,7 @@ func setupVideoGroup(router *gin.Engine) {
 
 		// Auth
 		videoGroup.Use(jwt).POST("/new", VideoCtrl.UploadNewVideo)
-		videoGroup.Use(jwt).POST("/update", VideoCtrl.UpdateVideoInfo)
+		videoGroup.Use(jwt).PUT("/update", VideoCtrl.UpdateVideoInfo)
 		videoGroup.Use(jwt).DELETE("/delete", VideoCtrl.DeleteVideo)
 	}
 }

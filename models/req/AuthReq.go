@@ -1,8 +1,9 @@
 package req
 
 import (
-	"encoding/json"
+	"net/http"
 	"strings"
+
 	"vid/config"
 )
 
@@ -11,14 +12,18 @@ type RegLogReq struct {
 	Password string `json:"password"`
 }
 
-func (r *RegLogReq) Unmarshal(jsonBody string) bool {
-	err := json.Unmarshal([]byte(jsonBody), r)
-	if err != nil ||
-		r.Username == "" || r.Password == "" ||
-		strings.Index(r.Username, " ") != -1 || strings.Index(r.Password, " ") != -1 {
+// Form-Data
+func (r *RegLogReq) FromFormData(request *http.Request) bool {
+	username := request.FormValue("username")
+	password := request.FormValue("password")
+	if username == "" || strings.Index(username, " ") != -1 ||
+		password == "" || strings.Index(password, " ") != -1 {
 		return false
+	} else {
+		r.Username = username
+		r.Password = password
+		return true
 	}
-	return true
 }
 
 func (r *RegLogReq) CheckFormat() bool {
@@ -35,16 +40,19 @@ type PassReq struct {
 	Password string `json:"password"`
 }
 
+// Form-Data
+func (p *PassReq) FromFormData(request *http.Request) bool {
+	password := request.FormValue("password")
+	if password == "" || strings.Index(password, " ") != -1 {
+		return false
+	} else {
+		p.Password = password
+		return true
+	}
+}
+
 func (p *PassReq) CheckFormat() bool {
 	cfg := config.AppCfg
 	return len(p.Password) >= cfg.FormatConfig.MinLen_Password &&
 		len(p.Password) <= cfg.FormatConfig.MaxLen_Password
-}
-
-func (p *PassReq) Unmarshal(jsonBody string) bool {
-	err := json.Unmarshal([]byte(jsonBody), p)
-	if err != nil || p.Password == "" || strings.Index(p.Password, " ") != -1 {
-		return false
-	}
-	return true
 }

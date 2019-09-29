@@ -61,7 +61,7 @@ func (u *userCtrl) QueryUser(c *gin.Context) {
 	}
 }
 
-// POST /user/update (Auth)
+// PUT /user/update (Auth)
 func (u *userCtrl) UpdateUser(c *gin.Context) {
 	body := ReqUtil.GetBody(c.Request.Body)
 	var user User

@@ -19,17 +19,15 @@ var AuthCtrl = new(authCtrl)
 
 // POST /auth/login (Non-Auth)
 func (u *authCtrl) Login(c *gin.Context) {
-
-	body := ReqUtil.GetBody(c.Request.Body)
 	var regReq RegLogReq
-	if !regReq.Unmarshal(body) {
+	if !regReq.FromFormData(c.Request) {
 		c.JSON(http.StatusBadRequest, Message{
 			Message: RequestBodyError.Error(),
 		})
 		return
 	} else if !regReq.CheckFormat() {
 		c.JSON(http.StatusBadRequest, Message{
-			Message: LoginFormatError.Error(),
+			Message: RegisterFormatError.Error(),
 		})
 		return
 	}
@@ -60,10 +58,8 @@ func (u *authCtrl) Login(c *gin.Context) {
 
 // POST /auth/register (Non-Auth)
 func (u *authCtrl) Register(c *gin.Context) {
-
-	body := ReqUtil.GetBody(c.Request.Body)
 	var regReq RegLogReq
-	if !regReq.Unmarshal(body) {
+	if !regReq.FromFormData(c.Request) {
 		c.JSON(http.StatusBadRequest, Message{
 			Message: RequestBodyError.Error(),
 		})
@@ -89,9 +85,8 @@ func (u *authCtrl) Register(c *gin.Context) {
 
 // POST /auth/modifypass (Auth)
 func (u *authCtrl) ModifyPass(c *gin.Context) {
-	body := ReqUtil.GetBody(c.Request.Body)
 	var passReq PassReq
-	if !passReq.Unmarshal(body) {
+	if !passReq.FromFormData(c.Request) {
 		c.JSON(http.StatusBadRequest, Message{
 			Message: RequestBodyError.Error(),
 		})

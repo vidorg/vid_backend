@@ -94,7 +94,7 @@ func (p *playlistCtrl) CreateNewPlaylist(c *gin.Context) {
 	}
 }
 
-// POST /playlist/update (Auth)
+// PUT /playlist/update (Auth)
 func (p *playlistCtrl) UpdatePlaylistInfo(c *gin.Context) {
 	body := ReqUtil.GetBody(c.Request.Body)
 	var playlist Playlist

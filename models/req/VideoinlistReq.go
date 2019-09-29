@@ -9,6 +9,7 @@ type VideoinlistReq struct {
 	Vids []int `json:"vids"`
 }
 
+// Raw-Json
 func (v *VideoinlistReq) Unmarshal(jsonBody string) bool {
 	err := json.Unmarshal([]byte(jsonBody), v)
 	if err != nil || v.Gid == 0 {
