@@ -1,11 +1,11 @@
-package routers
+package router
 
 import (
 	"fmt"
 	"net/http"
-	. "vid/app/controllers"
+	. "vid/app/controller"
 	"vid/app/middleware"
-	"vid/app/models/dto"
+	"vid/app/model/dto"
 
 	"github.com/gin-gonic/gin"
 )

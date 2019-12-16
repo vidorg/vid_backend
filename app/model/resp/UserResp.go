@@ -1,7 +1,7 @@
 package resp
 
 import (
-	po2 "vid/app/models/po"
+	po2 "vid/app/model/po"
 )
 
 type UserResp struct {

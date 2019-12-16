@@ -1,12 +1,12 @@
-package controllers
+package controller
 
 import (
 	"fmt"
 	"net/http"
-	"vid/app/controllers/exceptions"
-	po2 "vid/app/models/po"
-	"vid/app/models/resp"
-	"vid/app/utils"
+	"vid/app/controller/exception"
+	po2 "vid/app/model/po"
+	"vid/app/model/resp"
+	"vid/app/util"
 
 	"github.com/gin-gonic/gin"
 )
@@ -23,32 +23,32 @@ func (r *rawCtrl) UploadImage(c *gin.Context) {
 	file, header, err := c.Request.FormFile("image")
 	if err != nil {
 		c.JSON(http.StatusBadRequest, resp.Message{
-			Message: exceptions.RequestBodyError.Error(),
+			Message: exception.RequestBodyError.Error(),
 		})
 		return
 	}
 	filename := header.Filename
 
-	ok, ext := utils.CmnUtil.ImageExt(filename)
+	ok, ext := util.CmnUtil.ImageExt(filename)
 	if !ok {
 		c.JSON(http.StatusBadRequest, resp.Message{
-			Message: exceptions.FileExtException.Error(),
+			Message: exception.FileExtException.Error(),
 		})
 		return
 	}
 
-	filename = utils.CmnUtil.CurrentTimeInt()
+	filename = util.CmnUtil.CurrentTimeInt()
 	// ./files/image/2/20190919170528.jpg
 	filepath := fmt.Sprintf("./files/image/%d/%s%s", uid, filename, ext)
-	if !utils.CmnUtil.SaveFile(filepath, file) {
+	if !util.CmnUtil.SaveFile(filepath, file) {
 		c.JSON(http.StatusInternalServerError, resp.Message{
-			Message: exceptions.ImageUploadException.Error(),
+			Message: exception.ImageUploadException.Error(),
 		})
 	} else {
 		// http://127.0.0.1:1234/raw/image/2/20190919170528.jpg
 		c.JSON(http.StatusInternalServerError, resp.RawResp{
 			Type: "Image",
-			Url:  utils.CmnUtil.GetImageUrl(uid, filename+ext),
+			Url:  util.CmnUtil.GetImageUrl(uid, filename+ext),
 		})
 	}
 }
@@ -61,47 +61,47 @@ func (r *rawCtrl) UploadVideo(c *gin.Context) {
 	file, header, err := c.Request.FormFile("video")
 	if err != nil {
 		c.JSON(http.StatusBadRequest, resp.Message{
-			Message: exceptions.RequestBodyError.Error(),
+			Message: exception.RequestBodyError.Error(),
 		})
 		return
 	}
 	filename := header.Filename
 
-	ok, ext := utils.CmnUtil.VideoExt(filename)
+	ok, ext := util.CmnUtil.VideoExt(filename)
 	if !ok {
 		c.JSON(http.StatusBadRequest, resp.Message{
-			Message: exceptions.FileExtException.Error(),
+			Message: exception.FileExtException.Error(),
 		})
 		return
 	}
 
-	filename = utils.CmnUtil.CurrentTimeInt()
+	filename = util.CmnUtil.CurrentTimeInt()
 	filepath := fmt.Sprintf("./files/video/%d/%s%s", authusr.(po2.User).Uid, filename, ext)
-	if !utils.CmnUtil.SaveFile(filepath, file) {
+	if !util.CmnUtil.SaveFile(filepath, file) {
 		c.JSON(http.StatusInternalServerError, resp.Message{
-			Message: exceptions.VideoUploadException.Error(),
+			Message: exception.VideoUploadException.Error(),
 		})
 	} else {
 		c.JSON(http.StatusInternalServerError, resp.RawResp{
 			Type: "Video",
-			Url:  utils.CmnUtil.GetVideoUrl(uid, filename+ext),
+			Url:  util.CmnUtil.GetVideoUrl(uid, filename+ext),
 		})
 	}
 }
 
 // GET /raw/image/:user/:filename (Non-Admin)
 func (r *rawCtrl) RawImage(c *gin.Context) {
-	uid, ok := utils.ReqUtil.GetIntParam(c.Params, "user")
+	uid, ok := util.ReqUtil.GetIntParam(c.Params, "user")
 	if !ok {
 		c.JSON(http.StatusBadRequest, resp.Message{
-			Message: fmt.Sprintf(exceptions.RouteParamError.Error(), "user"),
+			Message: fmt.Sprintf(exception.RouteParamError.Error(), "user"),
 		})
 		return
 	}
-	filename, ok := utils.ReqUtil.GetStrParam(c.Params, "filename")
+	filename, ok := util.ReqUtil.GetStrParam(c.Params, "filename")
 	if !ok {
 		c.JSON(http.StatusBadRequest, resp.Message{
-			Message: fmt.Sprintf(exceptions.RouteParamError.Error(), "filename"),
+			Message: fmt.Sprintf(exception.RouteParamError.Error(), "filename"),
 		})
 		return
 	}
@@ -113,9 +113,9 @@ func (r *rawCtrl) RawImage(c *gin.Context) {
 		filepath = fmt.Sprintf("./files/image/%d/%s", uid, filename)
 	}
 
-	if !utils.CmnUtil.IsFileExist(filepath) {
+	if !util.CmnUtil.IsFileExist(filepath) {
 		c.JSON(http.StatusNotFound, resp.Message{
-			Message: exceptions.FileNotExistException.Error(),
+			Message: exception.FileNotExistException.Error(),
 		})
 		return
 	}
@@ -125,25 +125,25 @@ func (r *rawCtrl) RawImage(c *gin.Context) {
 
 // GET /raw/video/:user/:filename (Non-Admin)
 func (r *rawCtrl) RawVideo(c *gin.Context) {
-	uid, ok := utils.ReqUtil.GetIntParam(c.Params, "user")
+	uid, ok := util.ReqUtil.GetIntParam(c.Params, "user")
 	if !ok {
 		c.JSON(http.StatusBadRequest, resp.Message{
-			Message: fmt.Sprintf(exceptions.RouteParamError.Error(), "user"),
+			Message: fmt.Sprintf(exception.RouteParamError.Error(), "user"),
 		})
 		return
 	}
-	filename, ok := utils.ReqUtil.GetStrParam(c.Params, "filename")
+	filename, ok := util.ReqUtil.GetStrParam(c.Params, "filename")
 	if !ok {
 		c.JSON(http.StatusBadRequest, resp.Message{
-			Message: fmt.Sprintf(exceptions.RouteParamError.Error(), "filename"),
+			Message: fmt.Sprintf(exception.RouteParamError.Error(), "filename"),
 		})
 		return
 	}
 
 	filepath := fmt.Sprintf("./files/video/%d/%s", uid, filename)
-	if !utils.CmnUtil.IsFileExist(filepath) {
+	if !util.CmnUtil.IsFileExist(filepath) {
 		c.JSON(http.StatusNotFound, resp.Message{
-			Message: exceptions.FileNotExistException.Error(),
+			Message: exception.FileNotExistException.Error(),
 		})
 		return
 	}

@@ -2,10 +2,10 @@ package dao
 
 import (
 	"time"
-	. "vid/app/controllers/exceptions"
+	. "vid/app/controller/exception"
 	"vid/app/database"
-	po2 "vid/app/models/po"
-	"vid/app/models/resp"
+	po2 "vid/app/model/po"
+	"vid/app/model/resp"
 )
 
 type userDao struct{}

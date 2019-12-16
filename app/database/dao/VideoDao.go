@@ -1,10 +1,10 @@
 package dao
 
 import (
-	. "vid/app/controllers/exceptions"
+	. "vid/app/controller/exception"
 	"vid/app/database"
-	po2 "vid/app/models/po"
-	"vid/app/utils"
+	po2 "vid/app/model/po"
+	"vid/app/util"
 )
 
 type videoDao struct{}
@@ -128,7 +128,7 @@ func (v *videoDao) InsertVideo(video *po2.Video) (*po2.Video, error) {
 	}
 
 	if video.CoverUrl == "" {
-		video.CoverUrl = utils.CmnUtil.GetDefaultVideoCoverUrl()
+		video.CoverUrl = util.CmnUtil.GetDefaultVideoCoverUrl()
 	}
 
 	video.ToDB()

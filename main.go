@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"vid/app/config"
 	"vid/app/database"
-	"vid/app/routers"
-	"vid/app/utils"
+	"vid/app/router"
+	"vid/app/util"
 
 	"github.com/gin-gonic/gin"
 )
@@ -26,11 +26,11 @@ func main() {
 	database.SetupDBConn(cfg.DatabaseConfig)
 
 	// Jwt
-	utils.JwtSecret = []byte(cfg.JwtConfig.Secret)
-	utils.JwtExpire = cfg.JwtConfig.Expire
+	util.JwtSecret = []byte(cfg.JwtConfig.Secret)
+	util.JwtExpire = cfg.JwtConfig.Expire
 
 	// Router & Middleware
-	router := routers.SetupRouters()
+	router := router.SetupRouters()
 
 	// App
 	s := &http.Server{

@@ -1,4 +1,4 @@
-package controllers
+package controller
 
 import (
 	"net/http"
@@ -6,9 +6,9 @@ import (
 	"vid/app/database"
 	"vid/app/database/dao"
 	"vid/app/middleware"
-	"vid/app/models/dto"
-	"vid/app/models/po"
-	"vid/app/utils"
+	"vid/app/model/dto"
+	"vid/app/model/po"
+	"vid/app/util"
 
 	"github.com/gin-gonic/gin"
 )
@@ -28,7 +28,7 @@ func (u *authCtrl) Login(c *gin.Context) {
 			dto.Result{}.Error(http.StatusBadRequest).SetMessage("Request body error"))
 		return
 	}
-	expire := utils.JwtExpire
+	expire := util.JwtExpire
 	if val, err := strconv.Atoi(expireString); err == nil {
 		expire = int64(val)
 	}
@@ -40,13 +40,13 @@ func (u *authCtrl) Login(c *gin.Context) {
 		return
 	}
 
-	if !utils.PassUtil.MD5Check(password, passRecord.EncryptedPass) {
+	if !util.PassUtil.MD5Check(password, passRecord.EncryptedPass) {
 		c.JSON(http.StatusUnauthorized,
 			dto.Result{}.Error(http.StatusUnauthorized).SetMessage("Password error"))
 		return
 	}
 
-	token, err := utils.PassUtil.GenToken(passRecord.User.Uid, expire)
+	token, err := util.PassUtil.GenToken(passRecord.User.Uid, expire)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError,
 			dto.Result{}.Error(http.StatusInternalServerError).SetMessage("Login failed"))
@@ -69,7 +69,7 @@ func (u *authCtrl) Register(c *gin.Context) {
 	}
 
 	passRecord := &po.PassRecord{
-		EncryptedPass: utils.PassUtil.MD5Encode(password),
+		EncryptedPass: util.PassUtil.MD5Encode(password),
 		User: &po.User{
 			Username: username, RegisterIP: c.ClientIP(),
 		},
@@ -101,7 +101,7 @@ func (u *authCtrl) ModifyPass(c *gin.Context) {
 	}
 
 	passRecord := &po.PassRecord{
-		EncryptedPass: utils.PassUtil.MD5Encode(password),
+		EncryptedPass: util.PassUtil.MD5Encode(password),
 		User:          user,
 		Uid:           user.Uid,
 	}

@@ -1,7 +1,7 @@
-package routers
+package router
 
 import (
-	. "vid/app/controllers"
+	. "vid/app/controller"
 	"vid/app/middleware"
 
 	"github.com/gin-gonic/gin"

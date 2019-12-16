@@ -1,13 +1,13 @@
-package controllers
+package controller
 
 import (
 	"fmt"
 	"net/http"
-	"vid/app/controllers/exceptions"
+	"vid/app/controller/exception"
 	"vid/app/database/dao"
-	po2 "vid/app/models/po"
-	"vid/app/models/resp"
-	"vid/app/utils"
+	po2 "vid/app/model/po"
+	"vid/app/model/resp"
+	"vid/app/util"
 
 	"github.com/gin-gonic/gin"
 )
@@ -21,7 +21,7 @@ func (v *videoCtrl) GetAllVideos(c *gin.Context) {
 	authusr, _ := c.Get("user")
 	if authusr.(po2.User).Authority != po2.AuthAdmin {
 		c.JSON(http.StatusUnauthorized, resp.Message{
-			Message: exceptions.NeedAdminException.Error(),
+			Message: exception.NeedAdminException.Error(),
 		})
 		return
 	}
@@ -31,10 +31,10 @@ func (v *videoCtrl) GetAllVideos(c *gin.Context) {
 
 // GET /video/uid/:uid (Non-Auth)
 func (v *videoCtrl) GetVideosByUid(c *gin.Context) {
-	uid, ok := utils.ReqUtil.GetIntParam(c.Params, "uid")
+	uid, ok := util.ReqUtil.GetIntParam(c.Params, "uid")
 	if !ok {
 		c.JSON(http.StatusBadRequest, resp.Message{
-			Message: fmt.Sprintf(exceptions.RouteParamError.Error(), "uid"),
+			Message: fmt.Sprintf(exception.RouteParamError.Error(), "uid"),
 		})
 		return
 	}
@@ -50,10 +50,10 @@ func (v *videoCtrl) GetVideosByUid(c *gin.Context) {
 
 // GET /video/vid/:vid (Non-Auth)
 func (v *videoCtrl) GetVideoByVid(c *gin.Context) {
-	vid, ok := utils.ReqUtil.GetIntParam(c.Params, "vid")
+	vid, ok := util.ReqUtil.GetIntParam(c.Params, "vid")
 	if !ok {
 		c.JSON(http.StatusBadRequest, resp.Message{
-			Message: fmt.Sprintf(exceptions.RouteParamError.Error(), "vid"),
+			Message: fmt.Sprintf(exception.RouteParamError.Error(), "vid"),
 		})
 		return
 	}
@@ -62,18 +62,18 @@ func (v *videoCtrl) GetVideoByVid(c *gin.Context) {
 		c.JSON(http.StatusOK, query)
 	} else {
 		c.JSON(http.StatusNotFound, resp.Message{
-			Message: exceptions.VideoNotExistException.Error(),
+			Message: exception.VideoNotExistException.Error(),
 		})
 	}
 }
 
 // POST /video/new (Auth)
 func (v *videoCtrl) UploadNewVideo(c *gin.Context) {
-	body := utils.ReqUtil.GetBody(c.Request.Body)
+	body := util.ReqUtil.GetBody(c.Request.Body)
 	var video po2.Video
 	if !video.Unmarshal(body, true) {
 		c.JSON(http.StatusBadRequest, resp.Message{
-			Message: exceptions.RequestBodyError.Error(),
+			Message: exception.RequestBodyError.Error(),
 		})
 		return
 	}
@@ -94,11 +94,11 @@ func (v *videoCtrl) UploadNewVideo(c *gin.Context) {
 
 // PUT /video/update (Auth)
 func (v *videoCtrl) UpdateVideoInfo(c *gin.Context) {
-	body := utils.ReqUtil.GetBody(c.Request.Body)
+	body := util.ReqUtil.GetBody(c.Request.Body)
 	var video po2.Video
 	if !video.Unmarshal(body, false) {
 		c.JSON(http.StatusBadRequest, resp.Message{
-			Message: exceptions.RequestBodyError.Error(),
+			Message: exception.RequestBodyError.Error(),
 		})
 		return
 	}
@@ -117,10 +117,10 @@ func (v *videoCtrl) UpdateVideoInfo(c *gin.Context) {
 
 // DELETE /video/delete?vid (Auth)
 func (v *videoCtrl) DeleteVideo(c *gin.Context) {
-	vid, ok := utils.ReqUtil.GetIntQuery(c, "vid")
+	vid, ok := util.ReqUtil.GetIntQuery(c, "vid")
 	if !ok {
 		c.JSON(http.StatusBadRequest, resp.Message{
-			Message: fmt.Sprintf(exceptions.RouteParamError.Error(), "vid"),
+			Message: fmt.Sprintf(exception.RouteParamError.Error(), "vid"),
 		})
 		return
 	}

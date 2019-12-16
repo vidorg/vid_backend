@@ -1,14 +1,14 @@
-package controllers
+package controller
 
 import (
 	"fmt"
 	"net/http"
-	"vid/app/controllers/exceptions"
+	"vid/app/controller/exception"
 	"vid/app/database/dao"
-	po2 "vid/app/models/po"
-	"vid/app/models/req"
-	"vid/app/models/resp"
-	"vid/app/utils"
+	po2 "vid/app/model/po"
+	"vid/app/model/req"
+	"vid/app/model/resp"
+	"vid/app/util"
 
 	"github.com/gin-gonic/gin"
 )
@@ -22,7 +22,7 @@ func (p *playlistCtrl) GetAllPlaylists(c *gin.Context) {
 	authusr, _ := c.Get("user")
 	if authusr.(po2.User).Authority != po2.AuthAdmin {
 		c.JSON(http.StatusUnauthorized, resp.Message{
-			Message: exceptions.NeedAdminException.Error(),
+			Message: exception.NeedAdminException.Error(),
 		})
 		return
 	}
@@ -32,10 +32,10 @@ func (p *playlistCtrl) GetAllPlaylists(c *gin.Context) {
 
 // GET /playlist/uid/:uid (Non-Auth)
 func (p *playlistCtrl) GetPlaylistsByUid(c *gin.Context) {
-	uid, ok := utils.ReqUtil.GetIntParam(c.Params, "uid")
+	uid, ok := util.ReqUtil.GetIntParam(c.Params, "uid")
 	if !ok {
 		c.JSON(http.StatusBadRequest, resp.Message{
-			Message: fmt.Sprintf(exceptions.RouteParamError.Error(), "uid"),
+			Message: fmt.Sprintf(exception.RouteParamError.Error(), "uid"),
 		})
 		return
 	}
@@ -51,10 +51,10 @@ func (p *playlistCtrl) GetPlaylistsByUid(c *gin.Context) {
 
 // GET /playlist/gid/:gid (Non-Auth)
 func (p *playlistCtrl) GetPlaylistByGid(c *gin.Context) {
-	vid, ok := utils.ReqUtil.GetIntParam(c.Params, "gid")
+	vid, ok := util.ReqUtil.GetIntParam(c.Params, "gid")
 	if !ok {
 		c.JSON(http.StatusBadRequest, resp.Message{
-			Message: fmt.Sprintf(exceptions.RouteParamError.Error(), "gid"),
+			Message: fmt.Sprintf(exception.RouteParamError.Error(), "gid"),
 		})
 		return
 	}
@@ -63,18 +63,18 @@ func (p *playlistCtrl) GetPlaylistByGid(c *gin.Context) {
 		c.JSON(http.StatusOK, query)
 	} else {
 		c.JSON(http.StatusNotFound, resp.Message{
-			Message: exceptions.PlaylistNotExistException.Error(),
+			Message: exception.PlaylistNotExistException.Error(),
 		})
 	}
 }
 
 // POST /playlist/new (Auth)
 func (p *playlistCtrl) CreateNewPlaylist(c *gin.Context) {
-	body := utils.ReqUtil.GetBody(c.Request.Body)
+	body := util.ReqUtil.GetBody(c.Request.Body)
 	var playlist po2.Playlist
 	if !playlist.Unmarshal(body, true) {
 		c.JSON(http.StatusBadRequest, resp.Message{
-			Message: exceptions.RequestBodyError.Error(),
+			Message: exception.RequestBodyError.Error(),
 		})
 		return
 	}
@@ -95,11 +95,11 @@ func (p *playlistCtrl) CreateNewPlaylist(c *gin.Context) {
 
 // PUT /playlist/update (Auth)
 func (p *playlistCtrl) UpdatePlaylistInfo(c *gin.Context) {
-	body := utils.ReqUtil.GetBody(c.Request.Body)
+	body := util.ReqUtil.GetBody(c.Request.Body)
 	var playlist po2.Playlist
 	if !playlist.Unmarshal(body, false) {
 		c.JSON(http.StatusBadRequest, resp.Message{
-			Message: exceptions.RequestBodyError.Error(),
+			Message: exception.RequestBodyError.Error(),
 		})
 		return
 	}
@@ -117,10 +117,10 @@ func (p *playlistCtrl) UpdatePlaylistInfo(c *gin.Context) {
 
 // DELETE /playlist/delete?gid (Auth)
 func (p *playlistCtrl) DeletePlaylist(c *gin.Context) {
-	gid, ok := utils.ReqUtil.GetIntQuery(c, "gid")
+	gid, ok := util.ReqUtil.GetIntQuery(c, "gid")
 	if !ok {
 		c.JSON(http.StatusBadRequest, resp.Message{
-			Message: fmt.Sprintf(exceptions.RouteParamError.Error(), "gid"),
+			Message: fmt.Sprintf(exception.RouteParamError.Error(), "gid"),
 		})
 		return
 	}
@@ -138,11 +138,11 @@ func (p *playlistCtrl) DeletePlaylist(c *gin.Context) {
 
 // POST /playlist/add (Auth)
 func (p *playlistCtrl) AddVideosInList(c *gin.Context) {
-	body := utils.ReqUtil.GetBody(c.Request.Body)
+	body := util.ReqUtil.GetBody(c.Request.Body)
 	var vreq req.VideoinlistReq
 	if !vreq.Unmarshal(body) {
 		c.JSON(http.StatusBadRequest, resp.Message{
-			Message: exceptions.RequestBodyError.Error(),
+			Message: exception.RequestBodyError.Error(),
 		})
 		return
 	}
@@ -160,11 +160,11 @@ func (p *playlistCtrl) AddVideosInList(c *gin.Context) {
 
 // DELETE /playlist/remove (Auth)
 func (p *playlistCtrl) RemoveVideosInList(c *gin.Context) {
-	body := utils.ReqUtil.GetBody(c.Request.Body)
+	body := util.ReqUtil.GetBody(c.Request.Body)
 	var vreq req.VideoinlistReq
 	if !vreq.Unmarshal(body) {
 		c.JSON(http.StatusBadRequest, resp.Message{
-			Message: exceptions.RequestBodyError.Error(),
+			Message: exception.RequestBodyError.Error(),
 		})
 		return
 	}

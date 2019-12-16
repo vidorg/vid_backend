@@ -2,9 +2,9 @@ package dao
 
 import (
 	"time"
-	. "vid/app/controllers/exceptions"
+	. "vid/app/controller/exception"
 	"vid/app/database"
-	po2 "vid/app/models/po"
+	po2 "vid/app/model/po"
 )
 
 type playlistDao struct{}

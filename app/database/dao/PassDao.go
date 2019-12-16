@@ -3,7 +3,7 @@ package dao
 import (
 	"log"
 	. "vid/app/database"
-	"vid/app/models/po"
+	"vid/app/model/po"
 )
 
 type passDao struct{}

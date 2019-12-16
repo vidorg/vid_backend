@@ -4,12 +4,12 @@ import (
 	"net/http"
 	"strings"
 	"vid/app/database/dao"
-	"vid/app/models/dto"
-	"vid/app/models/po"
-	"vid/app/utils"
+	"vid/app/model/dto"
+	"vid/app/model/po"
+	"vid/app/util"
 
 	"github.com/gin-gonic/gin"
-	. "vid/app/controllers/exceptions"
+	. "vid/app/controller/exception"
 )
 
 func JWTMiddleware() gin.HandlerFunc {
@@ -42,7 +42,7 @@ func JWTCheck(authHeader string) (*po.User, error) {
 	}
 
 	// Token Parse Err
-	claims, err := utils.PassUtil.ParseToken(parts[1])
+	claims, err := util.PassUtil.ParseToken(parts[1])
 	if err != nil {
 		if strings.Index(err.Error(), "token is expired by") != -1 {
 			// Token Expired

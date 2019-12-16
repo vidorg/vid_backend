@@ -1,14 +1,14 @@
-package controllers
+package controller
 
 import (
 	"fmt"
 	"net/http"
-	"vid/app/controllers/exceptions"
+	"vid/app/controller/exception"
 	"vid/app/database/dao"
 	"vid/app/middleware"
-	po2 "vid/app/models/po"
-	"vid/app/models/resp"
-	"vid/app/utils"
+	po2 "vid/app/model/po"
+	"vid/app/model/resp"
+	"vid/app/util"
 
 	"github.com/gin-gonic/gin"
 )
@@ -26,7 +26,7 @@ func (u *userCtrl) QueryAllUsers(c *gin.Context) {
 	authusr, _ := c.Get("user")
 	if authusr.(po2.User).Authority != po2.AuthAdmin {
 		c.JSON(http.StatusUnauthorized, resp.Message{
-			Message: exceptions.NeedAdminException.Error(),
+			Message: exception.NeedAdminException.Error(),
 		})
 		return
 	}
@@ -36,10 +36,10 @@ func (u *userCtrl) QueryAllUsers(c *gin.Context) {
 
 // GET /user/uid/:uid (Non-Auth)
 func (u *userCtrl) QueryUser(c *gin.Context) {
-	uid, ok := utils.ReqUtil.GetIntParam(c.Params, "uid")
+	uid, ok := util.ReqUtil.GetIntParam(c.Params, "uid")
 	if !ok {
 		c.JSON(http.StatusBadRequest, resp.Message{
-			Message: fmt.Sprintf(exceptions.RouteParamError.Error(), "uid"),
+			Message: fmt.Sprintf(exception.RouteParamError.Error(), "uid"),
 		})
 		return
 	}
@@ -59,18 +59,18 @@ func (u *userCtrl) QueryUser(c *gin.Context) {
 		})
 	} else {
 		c.JSON(http.StatusNotFound, resp.Message{
-			Message: exceptions.UserNotExistException.Error(),
+			Message: exception.UserNotExistException.Error(),
 		})
 	}
 }
 
 // PUT /user/update (Auth)
 func (u *userCtrl) UpdateUser(c *gin.Context) {
-	body := utils.ReqUtil.GetBody(c.Request.Body)
+	body := util.ReqUtil.GetBody(c.Request.Body)
 	var user po2.User
 	if !user.Unmarshal(body, false) {
 		c.JSON(http.StatusBadRequest, resp.Message{
-			Message: exceptions.RequestBodyError.Error(),
+			Message: exception.RequestBodyError.Error(),
 		})
 		return
 	}

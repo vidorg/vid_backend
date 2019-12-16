@@ -1,15 +1,15 @@
-package controllers
+package controller
 
 import (
 	"fmt"
 	"net/http"
 	"strconv"
 	"strings"
-	"vid/app/controllers/exceptions"
+	"vid/app/controller/exception"
 	"vid/app/database/dao"
-	po2 "vid/app/models/po"
-	"vid/app/models/resp"
-	"vid/app/utils"
+	po2 "vid/app/model/po"
+	"vid/app/model/resp"
+	"vid/app/util"
 
 	"github.com/gin-gonic/gin"
 )
@@ -20,10 +20,10 @@ var SearchCtrl = new(searchCtrl)
 
 // GET /search/user?keyword (Non-Auth)
 func (s *searchCtrl) SearchUser(c *gin.Context) {
-	keyWord, ok := utils.ReqUtil.GetStrQuery(c, "keyword")
+	keyWord, ok := util.ReqUtil.GetStrQuery(c, "keyword")
 	if !ok {
 		c.JSON(http.StatusOK, resp.Message{
-			Message: fmt.Sprintf(exceptions.QueryParamError.Error(), "keyword"),
+			Message: fmt.Sprintf(exception.QueryParamError.Error(), "keyword"),
 		})
 		return
 	}
@@ -37,10 +37,10 @@ func (s *searchCtrl) SearchUser(c *gin.Context) {
 
 // GET /search/video?keyword (Non-Auth)
 func (s *searchCtrl) SearchVideo(c *gin.Context) {
-	keyWord, ok := utils.ReqUtil.GetStrQuery(c, "keyword")
+	keyWord, ok := util.ReqUtil.GetStrQuery(c, "keyword")
 	if !ok {
 		c.JSON(http.StatusOK, resp.Message{
-			Message: fmt.Sprintf(exceptions.QueryParamError.Error(), "keyword"),
+			Message: fmt.Sprintf(exception.QueryParamError.Error(), "keyword"),
 		})
 		return
 	}
@@ -54,10 +54,10 @@ func (s *searchCtrl) SearchVideo(c *gin.Context) {
 
 // GET /search/playlist?keyword (Non-Auth)
 func (s *searchCtrl) SearchPlaylist(c *gin.Context) {
-	keyWord, ok := utils.ReqUtil.GetStrQuery(c, "keyword")
+	keyWord, ok := util.ReqUtil.GetStrQuery(c, "keyword")
 	if !ok {
 		c.JSON(http.StatusOK, resp.Message{
-			Message: fmt.Sprintf(exceptions.QueryParamError.Error(), "keyword"),
+			Message: fmt.Sprintf(exception.QueryParamError.Error(), "keyword"),
 		})
 		return
 	}

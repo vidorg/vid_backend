@@ -7,7 +7,7 @@ import (
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 	"log"
 	"vid/app/config"
-	"vid/app/models/po"
+	"vid/app/model/po"
 )
 
 var DB *gorm.DB

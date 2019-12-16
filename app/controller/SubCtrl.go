@@ -1,13 +1,13 @@
-package controllers
+package controller
 
 import (
 	"fmt"
 	"net/http"
-	"vid/app/controllers/exceptions"
+	"vid/app/controller/exception"
 	"vid/app/database/dao"
-	po2 "vid/app/models/po"
-	"vid/app/models/resp"
-	"vid/app/utils"
+	po2 "vid/app/model/po"
+	"vid/app/model/resp"
+	"vid/app/util"
 
 	"github.com/gin-gonic/gin"
 )
@@ -21,11 +21,11 @@ func (u *subCtrl) SubscribeUser(c *gin.Context) {
 	authusr, _ := c.Get("user")
 
 	me_uid := authusr.(po2.User).Uid
-	up_uid, ok := utils.ReqUtil.GetIntQuery(c, "uid")
+	up_uid, ok := util.ReqUtil.GetIntQuery(c, "uid")
 
 	if !ok {
 		c.JSON(http.StatusBadRequest, resp.Message{
-			Message: fmt.Sprintf(exceptions.QueryParamError.Error(), "uid"),
+			Message: fmt.Sprintf(exception.QueryParamError.Error(), "uid"),
 		})
 		return
 	}
@@ -49,11 +49,11 @@ func (u *subCtrl) UnSubscribeUser(c *gin.Context) {
 	authusr, _ := c.Get("user")
 
 	me_uid := authusr.(po2.User).Uid
-	up_uid, ok := utils.ReqUtil.GetIntQuery(c, "uid")
+	up_uid, ok := util.ReqUtil.GetIntQuery(c, "uid")
 
 	if !ok {
 		c.JSON(http.StatusBadRequest, resp.Message{
-			Message: fmt.Sprintf(exceptions.QueryParamError.Error(), "uid"),
+			Message: fmt.Sprintf(exception.QueryParamError.Error(), "uid"),
 		})
 		return
 	}
@@ -74,10 +74,10 @@ func (u *subCtrl) UnSubscribeUser(c *gin.Context) {
 
 // GET /user/subscriber/:uid (Non-Auth)
 func (u *subCtrl) QuerySubscriberUsers(c *gin.Context) {
-	uid, ok := utils.ReqUtil.GetIntParam(c.Params, "uid")
+	uid, ok := util.ReqUtil.GetIntParam(c.Params, "uid")
 	if !ok {
 		c.JSON(http.StatusBadRequest, resp.Message{
-			Message: fmt.Sprintf(exceptions.RouteParamError.Error(), "uid"),
+			Message: fmt.Sprintf(exception.RouteParamError.Error(), "uid"),
 		})
 		return
 	}
@@ -93,10 +93,10 @@ func (u *subCtrl) QuerySubscriberUsers(c *gin.Context) {
 
 // GET /user/subscriber/:uid (Non-Auth)
 func (u *subCtrl) QuerySubscribingUsers(c *gin.Context) {
-	uid, ok := utils.ReqUtil.GetIntParam(c.Params, "uid")
+	uid, ok := util.ReqUtil.GetIntParam(c.Params, "uid")
 	if !ok {
 		c.JSON(http.StatusBadRequest, resp.Message{
-			Message: fmt.Sprintf(exceptions.RouteParamError.Error(), "uid"),
+			Message: fmt.Sprintf(exception.RouteParamError.Error(), "uid"),
 		})
 		return
 	}

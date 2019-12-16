@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"strings"
 	"time"
-	"vid/app/utils"
+	"vid/app/util"
 
 	// "vid/app/config"
 )
@@ -79,10 +79,10 @@ func (u *User) ToServer() {
 	if !strings.HasPrefix(u.AvatarUrl, "http") {
 		if strings.Index(u.AvatarUrl, "/") != -1 {
 			// /avatar.jpg -> http://127.0.0.1:3344/raw/image/-1/avatar.jpg
-			u.AvatarUrl = utils.CmnUtil.GetImageUrl(-1, strings.TrimLeft(u.AvatarUrl, "/"))
+			u.AvatarUrl = util.CmnUtil.GetImageUrl(-1, strings.TrimLeft(u.AvatarUrl, "/"))
 		} else {
 			// avatar.jpg -> http://127.0.0.1:3344/raw/image/233/avatar.jpg
-			u.AvatarUrl = utils.CmnUtil.GetImageUrl(u.Uid, u.AvatarUrl)
+			u.AvatarUrl = util.CmnUtil.GetImageUrl(u.Uid, u.AvatarUrl)
 		}
 	}
 }
