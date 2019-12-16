@@ -1,104 +1,104 @@
 package controller
 
 import (
-	"fmt"
+	"github.com/gin-gonic/gin"
 	"net/http"
+	"strconv"
 	"vid/app/controller/exception"
+	"vid/app/database"
 	"vid/app/database/dao"
 	"vid/app/middleware"
-	po2 "vid/app/model/po"
-	"vid/app/model/resp"
+	"vid/app/model/dto"
+	"vid/app/model/enum"
 	"vid/app/util"
-
-	"github.com/gin-gonic/gin"
 )
 
 type userCtrl struct{}
 
 var UserCtrl = new(userCtrl)
 
-// GET /user/all (Auth) (Admin)
-// @Summary QueryAllUsers
-// @Description Get All User
-// @Produce json
-// @Router /user/all [Post]
+// GET /user/ (Admin)
 func (u *userCtrl) QueryAllUsers(c *gin.Context) {
-	authusr, _ := c.Get("user")
-	if authusr.(po2.User).Authority != po2.AuthAdmin {
-		c.JSON(http.StatusUnauthorized, resp.Message{
-			Message: exception.NeedAdminException.Error(),
-		})
-		return
-	}
-
-	c.JSON(http.StatusOK, dao.UserDao.QueryAllUsers())
+	c.JSON(http.StatusOK, dto.Result{}.Ok().SetArray(dao.UserDao.Query()))
 }
 
-// GET /user/uid/:uid (Non-Auth)
+// GET /user/:uid (Non-Auth)
 func (u *userCtrl) QueryUser(c *gin.Context) {
-	uid, ok := util.ReqUtil.GetIntParam(c.Params, "uid")
-	if !ok {
-		c.JSON(http.StatusBadRequest, resp.Message{
-			Message: fmt.Sprintf(exception.RouteParamError.Error(), "uid"),
-		})
+	uidString := c.Param("uid")
+	uid, err := strconv.Atoi(uidString)
+	if err != nil {
+		c.JSON(http.StatusBadRequest,
+			dto.Result{}.Error(http.StatusBadRequest).SetMessage(exception.RouteParamError.Error()))
 		return
 	}
-	query, ok := dao.UserDao.QueryUserByUid(uid)
-	if ok {
-		// Check Auth to include phone number
 
-		authHeader := c.Request.Header.Get("Authorization")
-		_, err := middleware.JWTCheck(authHeader)
-
-		isAuth := err == nil
-		info, _ := dao.UserDao.QueryUserExtraInfo(isAuth, query)
-
-		c.JSON(http.StatusOK, resp.UserResp{
-			User: *query,
-			Info: *info,
-		})
-	} else {
-		c.JSON(http.StatusNotFound, resp.Message{
-			Message: exception.UserNotExistException.Error(),
-		})
+	user := dao.UserDao.QueryByUid(uid)
+	if user == nil {
+		c.JSON(http.StatusNotFound,
+			dto.Result{}.Error(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()))
+		return
 	}
+
+	isSelfOrAdmin := middleware.GetAuthUser(c) == nil || user.Authority == enum.AuthAdmin
+
+	extraInfo, status := dao.UserDao.QueryUserExtraInfo(isSelfOrAdmin, user)
+	if status == database.DbNotFound {
+		c.JSON(http.StatusNotFound,
+			dto.Result{}.Error(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()))
+		return
+	}
+
+	c.JSON(http.StatusOK,
+		dto.Result{}.Ok().PutData("user", user).PutData("extra", extraInfo))
 }
 
 // PUT /user/update (Auth)
 func (u *userCtrl) UpdateUser(c *gin.Context) {
-	body := util.ReqUtil.GetBody(c.Request.Body)
-	var user po2.User
-	if !user.Unmarshal(body, false) {
-		c.JSON(http.StatusBadRequest, resp.Message{
-			Message: exception.RequestBodyError.Error(),
-		})
+	user := middleware.GetAuthUser(c)
+
+	username := c.DefaultPostForm("username", user.Username)
+	sexString := c.DefaultPostForm("sex", string(user.Sex))
+	sex := enum.StringToSex(sexString)
+	profile := c.DefaultPostForm("profile", user.Profile)
+	birthTimeString := c.DefaultPostForm("birth_time", util.CmnUtil.ParseFromTime(user.BirthTime))
+	birthTime := util.CmnUtil.ParseToTime(birthTimeString, user.BirthTime)
+	phoneNumber := c.DefaultPostForm("phone_number", user.PhoneNumber)
+
+	user.Username = username
+	user.Sex = sex
+	user.Profile = profile
+	user.BirthTime = birthTime
+	user.PhoneNumber = phoneNumber
+
+	status := dao.UserDao.Update(user)
+	if status == database.DbNotFound {
+		c.JSON(http.StatusNotFound,
+			dto.Result{}.Error(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()))
+		return
+	} else if status == database.DbFailed {
+		c.JSON(http.StatusInternalServerError,
+			dto.Result{}.Error(http.StatusInternalServerError).SetMessage(exception.UserUpdateError.Error()))
 		return
 	}
 
-	authusr, _ := c.Get("user")
-	user.Uid = authusr.(po2.User).Uid
-
-	query, err := dao.UserDao.UpdateUser(user)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, resp.Message{
-			Message: err.Error(),
-		})
-	} else {
-		c.JSON(http.StatusOK, query)
-	}
+	c.JSON(http.StatusOK,
+		dto.Result{}.Ok().SetData(user))
 }
 
 // DELETE /user/delete (Auth)
 func (u *userCtrl) DeleteUser(c *gin.Context) {
-	authusr, _ := c.Get("user")
-	uid := authusr.(po2.User).Uid
-
-	del, err := dao.UserDao.DeleteUser(uid)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, resp.Message{
-			Message: err.Error(),
-		})
-	} else {
-		c.JSON(http.StatusOK, del)
+	user := middleware.GetAuthUser(c)
+	user, status := dao.UserDao.Delete(user.Uid)
+	if status == database.DbNotFound {
+		c.JSON(http.StatusNotFound,
+			dto.Result{}.Error(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()))
+		return
+	} else if status == database.DbFailed {
+		c.JSON(http.StatusInternalServerError,
+			dto.Result{}.Error(http.StatusInternalServerError).SetMessage(exception.UserDeleteError.Error()))
+		return
 	}
+
+	c.JSON(http.StatusOK,
+		dto.Result{}.Ok().SetData(user))
 }

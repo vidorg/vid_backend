@@ -4,68 +4,60 @@ import (
 	"errors"
 )
 
+// Request
+var (
+	FormParamError  = errors.New("request form data exception")
+	JsonParamError  = errors.New("request raw json exception")
+	QueryParamError = errors.New("request query param exception")
+	RouteParamError = errors.New("request route param exception")
+
+	FormatError = errors.New("request format exception")
+)
+
 // Authorization
 var (
-	AuthorizationException = errors.New("Authorization failed")
-	TokenExpiredException  = errors.New("Token has expired")
-	TokenInvalidException  = errors.New("Token invalid")
+	AuthorizationError = errors.New("authorization failed")
+	TokenExpiredError  = errors.New("token has expired")
+	TokenInvalidError  = errors.New("token invalid")
 
-	PasswordException        = errors.New("User password error")
-	NeedAdminException       = errors.New("Action need admin authority")
-	NoAuthorizationException = errors.New("Don't have authorization to action")
+	PasswordError   = errors.New("password error")
+	LoginError      = errors.New("login failed")
+	RegisterError   = errors.New("register failed")
+	ModifyPassError = errors.New("update password failed")
+
+	NeedAdminError = errors.New("need admin authority")
 )
 
-// Db
+// Model
 var (
-	// exist
-	UserExistException        = errors.New("User already existed") // R
-	UserNotExistException     = errors.New("User not found")       // R
-	VideoNotExistException    = errors.New("Video not found")      // R
-	PlaylistNotExistException = errors.New("Playlist not found")   // R
+	// user
+	UserUpdateError   = errors.New("user update failed") // U
+	UserDeleteError   = errors.New("user delete failed") // D
+	UserNotFoundError = errors.New("user not found")     // R
 
-	// user crud failed
-	InsertUserException    = errors.New("User insert failed")           // C
-	NotUpdateUserException = errors.New("User information not updated") // U
-	DeleteUserException    = errors.New("User delete failed")           // D
-	ModifyPassException    = errors.New("User password modify failed")  // U
+	UserNameUsedError  = errors.New("username duplicated")
+	SubscribeSelfError = errors.New("subscribe oneself invalid")
 
-	// video crud failed
-	CreateVideoException    = errors.New("Video insert failed")           // C
-	NotUpdateVideoException = errors.New("Video information not updated") // U
-	DeleteVideoException    = errors.New("Video delete failed")           // D
+	// video
+	VideoInsertError   = errors.New("video insert failed") // C
+	VideoUpdateError   = errors.New("video update failed") // U
+	VideoDeleteError   = errors.New("video delete failed") // D
+	VideoNotFoundError = errors.New("video not found")     // R
 
-	// playlist crud failed
-	CreatePlaylistException    = errors.New("Playlist insert failed")           // C
-	NotUpdatePlaylistException = errors.New("Playlist information not updated") // U
-	DeletePlaylistException    = errors.New("Playlist delete failed")           // D
-	DeleteVideoInListException = errors.New("Video in playlist delete failed")  // D
+	// playlist
+	PlaylistInsertError   = errors.New("playlist insert failed") // C
+	PlaylistUpdateError   = errors.New("playlist update failed") // U
+	PlaylistDeleteError   = errors.New("playlist delete failed") // D
+	PlaylistNotFoundError = errors.New("playlist not found")     // R
 
-	// user other exception
-	UserNameUsedException     = errors.New("Username has been used")
-	UserInfoException         = errors.New("User information invalid")
-	SubscribeOneSelfException = errors.New("Cound not subscribe to oneself")
-
-	// video other exception
-	VideoUrlUsedException = errors.New("Video resource url has been used")
-
-	// playlist other exception
-	PlaylistNameUsedException = errors.New("Playlist name duplicated")
-
-	// raw exception
-	ImageUploadException  = errors.New("Image upload failed")
-	VideoUploadException  = errors.New("Video upload failed")
-	FileExtException      = errors.New("Extension not supported")
-	FileNotExistException = errors.New("File not exist")
+	PlaylistNameUsedError    = errors.New("playlist name duplicated")
+	PlaylistVideoDeleteError = errors.New("playlist video delete failed") // D
 )
 
-// Ctrl
+// File
 var (
-	// request error
-	RequestBodyError = errors.New("Request body error")
-	QueryParamError  = errors.New("Query param '%s' not found or error")
-	RouteParamError  = errors.New("Route param '%s' not found or error")
-
-	// format error
-	LoginFormatError    = errors.New("Login username or password format error")
-	RegisterFormatError = errors.New("Register username or password format error")
+	ImageUploadError   = errors.New("image upload failed")
+	VideoUploadError   = errors.New("video upload failed")
+	FileExtensionError = errors.New("extension not supported")
+	FileNotFoundError  = errors.New("file not exist")
 )

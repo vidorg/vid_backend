@@ -23,7 +23,6 @@ func (p *passDao) Query(username string) *po.PassRecord {
 	return pass
 }
 
-// DbExisted / DbFailed
 func (p *passDao) Insert(pass *po.PassRecord) DbStatus {
 	if err := DB.Create(pass).Error; err != nil {
 		if IsDuplicateError(err) {
@@ -36,7 +35,6 @@ func (p *passDao) Insert(pass *po.PassRecord) DbStatus {
 	return DbSuccess
 }
 
-// DbNotFound / DbFailed
 func (p *passDao) Update(pass *po.PassRecord) DbStatus {
 	if err := DB.Model(pass).Update(pass).Error; err != nil {
 		if IsNotFoundError(err) {

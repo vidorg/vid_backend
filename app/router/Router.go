@@ -3,9 +3,9 @@ package router
 import (
 	"fmt"
 	"net/http"
-	. "vid/app/controller"
 	"vid/app/middleware"
 	"vid/app/model/dto"
+	"vid/app/router/group"
 
 	"github.com/gin-gonic/gin"
 )
@@ -16,10 +16,9 @@ func SetupRouters() *gin.Engine {
 	router.Use(gin.Recovery())
 	router.Use(middleware.CORS(middleware.CORSOptions{}))
 
-	SetupTestGroup(router)
-	SetupAuthGroup(router)
+	group.SetupAuthGroup(router)
+	group.SetupUserGroup(router)
 
-	// SetupUserGroup(router)
 	// SetupVideoGroup(router)
 	// SetupSearchGroup(router)
 	// SetupPlaylistGroup(router)
@@ -31,17 +30,4 @@ func SetupRouters() *gin.Engine {
 	})
 
 	return router
-}
-
-func SetupTestGroup(router *gin.Engine) {
-	testGroup := router.Group("/test")
-	{
-		testGroup.GET("/", TestCtrl.Test)
-	}
-
-	authTestGroup := router.Group("/auth-test")
-	{
-		authTestGroup.Use(middleware.JWTMiddleware())
-		authTestGroup.GET("/", TestCtrl.AuthTest)
-	}
 }

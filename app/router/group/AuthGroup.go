@@ -1,4 +1,4 @@
-package router
+package group
 
 import (
 	. "vid/app/controller"
@@ -8,10 +8,14 @@ import (
 )
 
 func SetupAuthGroup(router *gin.Engine) {
+
+	jwt := middleware.JWTMiddleware(false)
+
 	authGroup := router.Group("/auth")
 	{
 		authGroup.POST("/login", AuthCtrl.Login)
 		authGroup.POST("/register", AuthCtrl.Register)
-		authGroup.Use(middleware.JWTMiddleware()).POST("/pass", AuthCtrl.ModifyPass)
+		authGroup.Use(jwt).POST("/pass", AuthCtrl.ModifyPass)
+		authGroup.Use(jwt).GET("/", AuthCtrl.CurrentUser)
 	}
 }

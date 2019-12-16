@@ -54,13 +54,17 @@ func (p *passUtil) GenToken(uid int, ex int64) (string, error) {
 }
 
 func (p *passUtil) ParseToken(tokenStr string) (*Claims, error) {
-	token, err := jwt.ParseWithClaims(tokenStr, &Claims{}, func(token *jwt.Token) (interface{}, error) {
+	keyFunc := func(token *jwt.Token) (interface{}, error) {
 		return JwtSecret, nil
-	})
+	}
+	token, err := jwt.ParseWithClaims(tokenStr, &Claims{}, keyFunc)
+	if err != nil {
+		return nil, err
+	}
 
 	if claims, ok := token.Claims.(*Claims); ok && token.Valid {
 		return claims, nil
 	}
 
-	return nil, err
+	return nil, jwt.ValidationError{}
 }

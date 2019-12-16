@@ -13,6 +13,21 @@ type cmnUtil struct{}
 
 var CmnUtil = new(cmnUtil)
 
+func (c *cmnUtil) ParseToTime(timeString string, defaultTime time.Time) time.Time {
+	format := "2006-01-02 15:04:05"
+	t, err := time.Parse(format, timeString)
+	if err != nil {
+		return defaultTime
+	} else {
+		return t
+	}
+}
+
+func (c *cmnUtil) ParseFromTime(time time.Time) string {
+	format := "2006-01-02 15:04:05"
+	return time.Format(format)
+}
+
 // 获得服务器根网址
 //
 //  `str` `xx/xx/`
@@ -43,7 +58,7 @@ func (c *cmnUtil) GetVideoUrl(uid int, resource string) string {
 	return c.GetServerUrl(fmt.Sprintf("raw/video/%d/%s", uid, resource))
 }
 
-//////////////////////////////////////////////////////////////
+// ////////////////////////////////////////////////////////////
 
 // 字符串首字母大写
 func (c *cmnUtil) Capitalize(str string) string {
@@ -62,9 +77,9 @@ func (c *cmnUtil) CurrentTimeInt() string {
 func (c *cmnUtil) ImageExt(filename string) (bool, string) {
 	ext := path.Ext(filename)
 	return ext == ".jpg" ||
-			ext == ".png" ||
-			ext == ".jpeg" ||
-			ext == ".bmp",
+		ext == ".png" ||
+		ext == ".jpeg" ||
+		ext == ".bmp",
 		ext
 }
 

@@ -6,9 +6,9 @@ import (
 )
 
 type Result struct {
-	Code    int                    `json:"code"`
-	Message string                 `json:"message"`
-	Data    map[string]interface{} `json:"data,omitempty"`
+	Code    int         `json:"code"`
+	Message string      `json:"message"`
+	Data    interface{} `json:"data,omitempty"` // map[string]interface{}
 }
 
 func (Result) Ok() *Result {
@@ -49,12 +49,7 @@ func (r *Result) SetMessage(message string) *Result {
 	return r
 }
 
-func (r *Result) SetData(data map[string]interface{}) *Result {
-	r.Data = data
-	return r
-}
-
-func (r *Result) SetObject(data interface{}) *Result {
+func (r *Result) SetData(data interface{}) *Result {
 	dataMap := make(map[string]interface{})
 
 	elem := reflect.ValueOf(data).Elem()
@@ -66,10 +61,17 @@ func (r *Result) SetObject(data interface{}) *Result {
 	return r
 }
 
+func (r *Result) SetArray(array interface{}) *Result {
+	r.Data = array
+	return r
+}
+
 func (r *Result) PutData(field string, data interface{}) *Result {
-	if r.Data == nil {
-		r.Data = make(map[string]interface{})
+	dataMap, ok := (r.Data).(map[string]interface{})
+	if !ok {
+		dataMap = make(map[string]interface{})
 	}
-	r.Data[field] = data
+	dataMap[field] = data
+	r.Data = dataMap
 	return r
 }

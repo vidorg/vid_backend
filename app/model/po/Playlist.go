@@ -7,8 +7,6 @@ import (
 )
 
 type Playlist struct {
-	TimePo
-
 	Gid         int       `json:"gid" gorm:"primary_key;auto_increment"`
 	Groupname   string    `json:"groupname" gorm:"type:varchar(50);not_null"` // 50
 	Description string    `json:"description"`
@@ -16,6 +14,8 @@ type Playlist struct {
 	AuthorUid   int       `json:"-"`
 	Author      *User     `json:"author" gorm:"-"`
 	Videos      []*Video  `json:"videos,omitempty" gorm:"-"`
+
+	TimePo
 }
 
 func (p *Playlist) Equals(obj *Playlist) bool {

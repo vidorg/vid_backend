@@ -3,6 +3,7 @@ package controller
 import (
 	"net/http"
 	"strconv"
+	"vid/app/controller/exception"
 	"vid/app/database"
 	"vid/app/database/dao"
 	"vid/app/middleware"
@@ -25,7 +26,7 @@ func (u *authCtrl) Login(c *gin.Context) {
 	expireString := c.PostForm("expire")
 	if username == "" || password == "" {
 		c.JSON(http.StatusBadRequest,
-			dto.Result{}.Error(http.StatusBadRequest).SetMessage("Request body error"))
+			dto.Result{}.Error(http.StatusBadRequest).SetMessage(exception.FormParamError.Error()))
 		return
 	}
 	expire := util.JwtExpire
@@ -36,25 +37,25 @@ func (u *authCtrl) Login(c *gin.Context) {
 	passRecord := dao.PassDao.Query(username)
 	if passRecord == nil {
 		c.JSON(http.StatusNotFound,
-			dto.Result{}.Error(http.StatusNotFound).SetMessage("User not found"))
+			dto.Result{}.Error(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()))
 		return
 	}
 
 	if !util.PassUtil.MD5Check(password, passRecord.EncryptedPass) {
 		c.JSON(http.StatusUnauthorized,
-			dto.Result{}.Error(http.StatusUnauthorized).SetMessage("Password error"))
+			dto.Result{}.Error(http.StatusUnauthorized).SetMessage(exception.PasswordError.Error()))
 		return
 	}
 
 	token, err := util.PassUtil.GenToken(passRecord.User.Uid, expire)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError,
-			dto.Result{}.Error(http.StatusInternalServerError).SetMessage("Login failed"))
+			dto.Result{}.Error(http.StatusInternalServerError).SetMessage(exception.LoginError.Error()))
 		return
 	}
 
 	c.JSON(http.StatusOK,
-		dto.Result{}.Ok().PutData("username", passRecord.User.Username).PutData("token", token))
+		dto.Result{}.Ok().PutData("user", passRecord.User).PutData("token", token))
 }
 
 // POST /auth/register (Non-Auth)
@@ -64,7 +65,7 @@ func (u *authCtrl) Register(c *gin.Context) {
 	password := c.PostForm("password")
 	if username == "" || password == "" {
 		c.JSON(http.StatusBadRequest,
-			dto.Result{}.Error(http.StatusBadRequest).SetMessage("Request body error"))
+			dto.Result{}.Error(http.StatusBadRequest).SetMessage(exception.FormParamError.Error()))
 		return
 	}
 
@@ -77,16 +78,16 @@ func (u *authCtrl) Register(c *gin.Context) {
 	status := dao.PassDao.Insert(passRecord)
 	if status == database.DbFailed {
 		c.JSON(http.StatusInternalServerError,
-			dto.Result{}.Error(http.StatusInternalServerError).SetMessage("Register failed"))
+			dto.Result{}.Error(http.StatusInternalServerError).SetMessage(exception.RegisterError.Error()))
 		return
 	} else if status == database.DbExisted {
 		c.JSON(http.StatusInternalServerError,
-			dto.Result{}.Error(http.StatusInternalServerError).SetMessage("User has existed"))
+			dto.Result{}.Error(http.StatusInternalServerError).SetMessage(exception.UserNameUsedError.Error()))
 		return
 	}
 
 	c.JSON(http.StatusOK,
-		dto.Result{}.Ok().PutData("username", passRecord.User.Username))
+		dto.Result{}.Ok().PutData("user", passRecord.User))
 }
 
 // POST /auth/pass (Auth)
@@ -96,7 +97,7 @@ func (u *authCtrl) ModifyPass(c *gin.Context) {
 	password := c.PostForm("password")
 	if password == "" {
 		c.JSON(http.StatusBadRequest,
-			dto.Result{}.Error(http.StatusBadRequest).SetMessage("Request body error"))
+			dto.Result{}.Error(http.StatusBadRequest).SetMessage(exception.FormParamError.Error()))
 		return
 	}
 
@@ -108,14 +109,21 @@ func (u *authCtrl) ModifyPass(c *gin.Context) {
 	status := dao.PassDao.Update(passRecord)
 	if status == database.DbNotFound {
 		c.JSON(http.StatusInternalServerError,
-			dto.Result{}.Error(http.StatusInternalServerError).SetMessage("User not found"))
+			dto.Result{}.Error(http.StatusInternalServerError).SetMessage(exception.UserNameUsedError.Error()))
 		return
 	} else if status == database.DbFailed {
 		c.JSON(http.StatusInternalServerError,
-			dto.Result{}.Error(http.StatusInternalServerError).SetMessage("Register failed"))
+			dto.Result{}.Error(http.StatusInternalServerError).SetMessage(exception.ModifyPassError.Error()))
 		return
 	}
 
 	c.JSON(http.StatusOK,
-		dto.Result{}.Ok().PutData("username", passRecord.User.Username))
+		dto.Result{}.Ok().PutData("user", passRecord.User))
+}
+
+// GET /auth/ (Auth)
+func (u *authCtrl) CurrentUser(c *gin.Context) {
+	user := middleware.GetAuthUser(c)
+	c.JSON(http.StatusOK,
+		dto.Result{}.Ok().PutData("user", user))
 }

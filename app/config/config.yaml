@@ -2,8 +2,6 @@ run-mode: debug
 
 http:
   port: 3344
-  read-timeout: 60
-  write-timeout: 60
 
 database:
   type: mysql
@@ -15,7 +13,7 @@ database:
 
 jwt:
   secret: 9C27D0C7C04BDA8A1F1B099CF4F9B1956AF5164F
-  expire: 1800 # s
+  expire: 1800 # second
 
 format:
   min-username: 4

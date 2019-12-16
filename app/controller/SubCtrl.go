@@ -1,15 +1,14 @@
 package controller
 
 import (
-	"fmt"
-	"net/http"
-	"vid/app/controller/exception"
-	"vid/app/database/dao"
-	po2 "vid/app/model/po"
-	"vid/app/model/resp"
-	"vid/app/util"
-
 	"github.com/gin-gonic/gin"
+	"net/http"
+	"strconv"
+	"vid/app/controller/exception"
+	"vid/app/database"
+	"vid/app/database/dao"
+	"vid/app/middleware"
+	"vid/app/model/dto"
 )
 
 type subCtrl struct{}
@@ -18,94 +17,94 @@ var SubCtrl = new(subCtrl)
 
 // POST /user/sub?uid (Auth)
 func (u *subCtrl) SubscribeUser(c *gin.Context) {
-	authusr, _ := c.Get("user")
-
-	me_uid := authusr.(po2.User).Uid
-	up_uid, ok := util.ReqUtil.GetIntQuery(c, "uid")
-
-	if !ok {
-		c.JSON(http.StatusBadRequest, resp.Message{
-			Message: fmt.Sprintf(exception.QueryParamError.Error(), "uid"),
-		})
+	user := middleware.GetAuthUser(c)
+	upUidString := c.Query("uid")
+	upUid, err := strconv.Atoi(upUidString)
+	if err != nil {
+		c.JSON(http.StatusBadRequest,
+			dto.Result{}.Error(http.StatusBadRequest).SetMessage(exception.RouteParamError.Error()))
 		return
 	}
 
-	err := dao.UserDao.SubscribeUser(me_uid, up_uid)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, resp.Message{
-			Message: err.Error(),
-		})
-	} else {
-		c.JSON(http.StatusOK, resp.SubResp{
-			Me:     me_uid,
-			Up:     up_uid,
-			Action: "Subscribe",
-		})
+	status := dao.SubDao.SubscribeUser(user.Uid, upUid)
+	if status == database.DbNotFound {
+		c.JSON(http.StatusNotFound,
+			dto.Result{}.Error(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()))
+		return
+	} else if status == database.DbExtra {
+		c.JSON(http.StatusBadRequest,
+			dto.Result{}.Error(http.StatusBadRequest).SetMessage(exception.SubscribeSelfError.Error()))
+		return
 	}
+
+	c.JSON(http.StatusOK,
+		dto.Result{}.Ok().PutData("me", user.Uid).PutData("up", upUid).PutData("action", "subscribe"))
 }
 
 // POST /user/unsub?uid (Auth)
 func (u *subCtrl) UnSubscribeUser(c *gin.Context) {
-	authusr, _ := c.Get("user")
-
-	me_uid := authusr.(po2.User).Uid
-	up_uid, ok := util.ReqUtil.GetIntQuery(c, "uid")
-
-	if !ok {
-		c.JSON(http.StatusBadRequest, resp.Message{
-			Message: fmt.Sprintf(exception.QueryParamError.Error(), "uid"),
-		})
+	user := middleware.GetAuthUser(c)
+	upUidString := c.Query("uid")
+	upUid, err := strconv.Atoi(upUidString)
+	if err != nil {
+		c.JSON(http.StatusBadRequest,
+			dto.Result{}.Error(http.StatusBadRequest).SetMessage(exception.RouteParamError.Error()))
 		return
 	}
 
-	err := dao.UserDao.UnSubscribeUser(me_uid, up_uid)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, resp.Message{
-			Message: err.Error(),
-		})
-	} else {
-		c.JSON(http.StatusOK, resp.SubResp{
-			Me:     me_uid,
-			Up:     up_uid,
-			Action: "UnSubscribe",
-		})
+	status := dao.SubDao.UnSubscribeUser(user.Uid, upUid)
+	if status == database.DbNotFound {
+		c.JSON(http.StatusNotFound,
+			dto.Result{}.Error(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()))
+		return
+	} else if status == database.DbExtra {
+		c.JSON(http.StatusBadRequest,
+			dto.Result{}.Error(http.StatusBadRequest).SetMessage(exception.SubscribeSelfError.Error()))
+		return
 	}
+
+	c.JSON(http.StatusOK,
+		dto.Result{}.Ok().PutData("me", user.Uid).PutData("up", upUid).PutData("action", "unsubscribe"))
 }
 
-// GET /user/subscriber/:uid (Non-Auth)
+// GET /user/:uid/subscriber (Non-Auth)
 func (u *subCtrl) QuerySubscriberUsers(c *gin.Context) {
-	uid, ok := util.ReqUtil.GetIntParam(c.Params, "uid")
-	if !ok {
-		c.JSON(http.StatusBadRequest, resp.Message{
-			Message: fmt.Sprintf(exception.RouteParamError.Error(), "uid"),
-		})
+	uidString, _ := c.Params.Get("uid")
+	uid, err := strconv.Atoi(uidString)
+	if err != nil {
+		c.JSON(http.StatusBadRequest,
+			dto.Result{}.Error(http.StatusBadRequest).SetMessage(exception.RouteParamError.Error()))
 		return
 	}
-	query, err := dao.UserDao.QuerySubscriberUsers(uid)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, resp.Message{
-			Message: err.Error(),
-		})
-	} else {
-		c.JSON(http.StatusOK, query)
+
+	users, status := dao.SubDao.QuerySubscriberUsers(uid)
+	if status == database.DbNotFound {
+		c.JSON(http.StatusNotFound,
+			dto.Result{}.Error(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()))
+		return
 	}
+
+	c.JSON(http.StatusOK,
+		dto.Result{}.Ok().SetArray(users))
 }
 
-// GET /user/subscriber/:uid (Non-Auth)
+// GET /user/:uid/subscribing (Non-Auth)
 func (u *subCtrl) QuerySubscribingUsers(c *gin.Context) {
-	uid, ok := util.ReqUtil.GetIntParam(c.Params, "uid")
-	if !ok {
-		c.JSON(http.StatusBadRequest, resp.Message{
-			Message: fmt.Sprintf(exception.RouteParamError.Error(), "uid"),
-		})
+	uidString, _ := c.Params.Get("uid")
+	uid, err := strconv.Atoi(uidString)
+	if err != nil {
+		c.JSON(http.StatusBadRequest,
+			dto.Result{}.Error(http.StatusBadRequest).SetMessage(exception.RouteParamError.Error()))
 		return
 	}
-	query, err := dao.UserDao.QuerySubscribingUsers(uid)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, resp.Message{
-			Message: err.Error(),
-		})
-	} else {
-		c.JSON(http.StatusOK, query)
+
+	users, status := dao.SubDao.QuerySubscribingUsers(uid)
+	if status == database.DbNotFound {
+		c.JSON(http.StatusNotFound,
+			dto.Result{}.Error(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()))
+		return
 	}
+
+	c.JSON(http.StatusOK,
+		dto.Result{}.Ok().SetArray(users))
 }

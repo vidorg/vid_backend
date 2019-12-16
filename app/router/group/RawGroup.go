@@ -1,4 +1,4 @@
-package router
+package group
 
 import (
 	. "vid/app/controller"
@@ -9,7 +9,7 @@ import (
 
 func SetupRawGroup(router *gin.Engine) {
 
-	jwt := middleware.JWTMiddleware()
+	jwt := middleware.JWTMiddleware(false)
 
 	rawGroup := router.Group("/raw")
 	{

@@ -23,7 +23,7 @@ func (r *rawCtrl) UploadImage(c *gin.Context) {
 	file, header, err := c.Request.FormFile("image")
 	if err != nil {
 		c.JSON(http.StatusBadRequest, resp.Message{
-			Message: exception.RequestBodyError.Error(),
+			Message: exception.JsonParamError.Error(),
 		})
 		return
 	}
@@ -32,7 +32,7 @@ func (r *rawCtrl) UploadImage(c *gin.Context) {
 	ok, ext := util.CmnUtil.ImageExt(filename)
 	if !ok {
 		c.JSON(http.StatusBadRequest, resp.Message{
-			Message: exception.FileExtException.Error(),
+			Message: exception.FileExtensionError.Error(),
 		})
 		return
 	}
@@ -42,7 +42,7 @@ func (r *rawCtrl) UploadImage(c *gin.Context) {
 	filepath := fmt.Sprintf("./files/image/%d/%s%s", uid, filename, ext)
 	if !util.CmnUtil.SaveFile(filepath, file) {
 		c.JSON(http.StatusInternalServerError, resp.Message{
-			Message: exception.ImageUploadException.Error(),
+			Message: exception.ImageUploadError.Error(),
 		})
 	} else {
 		// http://127.0.0.1:1234/raw/image/2/20190919170528.jpg
@@ -61,7 +61,7 @@ func (r *rawCtrl) UploadVideo(c *gin.Context) {
 	file, header, err := c.Request.FormFile("video")
 	if err != nil {
 		c.JSON(http.StatusBadRequest, resp.Message{
-			Message: exception.RequestBodyError.Error(),
+			Message: exception.JsonParamError.Error(),
 		})
 		return
 	}
@@ -70,7 +70,7 @@ func (r *rawCtrl) UploadVideo(c *gin.Context) {
 	ok, ext := util.CmnUtil.VideoExt(filename)
 	if !ok {
 		c.JSON(http.StatusBadRequest, resp.Message{
-			Message: exception.FileExtException.Error(),
+			Message: exception.FileExtensionError.Error(),
 		})
 		return
 	}
@@ -79,7 +79,7 @@ func (r *rawCtrl) UploadVideo(c *gin.Context) {
 	filepath := fmt.Sprintf("./files/video/%d/%s%s", authusr.(po2.User).Uid, filename, ext)
 	if !util.CmnUtil.SaveFile(filepath, file) {
 		c.JSON(http.StatusInternalServerError, resp.Message{
-			Message: exception.VideoUploadException.Error(),
+			Message: exception.VideoUploadError.Error(),
 		})
 	} else {
 		c.JSON(http.StatusInternalServerError, resp.RawResp{
@@ -115,7 +115,7 @@ func (r *rawCtrl) RawImage(c *gin.Context) {
 
 	if !util.CmnUtil.IsFileExist(filepath) {
 		c.JSON(http.StatusNotFound, resp.Message{
-			Message: exception.FileNotExistException.Error(),
+			Message: exception.FileNotFoundError.Error(),
 		})
 		return
 	}
@@ -143,7 +143,7 @@ func (r *rawCtrl) RawVideo(c *gin.Context) {
 	filepath := fmt.Sprintf("./files/video/%d/%s", uid, filename)
 	if !util.CmnUtil.IsFileExist(filepath) {
 		c.JSON(http.StatusNotFound, resp.Message{
-			Message: exception.FileNotExistException.Error(),
+			Message: exception.FileNotFoundError.Error(),
 		})
 		return
 	}

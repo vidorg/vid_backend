@@ -30,15 +30,12 @@ func main() {
 	util.JwtExpire = cfg.JwtConfig.Expire
 
 	// Router & Middleware
-	router := router.SetupRouters()
+	appRouter := router.SetupRouters()
 
 	// App
 	s := &http.Server{
-		Addr: fmt.Sprintf(":%d", cfg.HTTPConfig.Port),
-		// ReadTimeout:    cfg.HTTPConfig.ReadTimeout,
-		// WriteTimeout:   cfg.HTTPConfig.WriteTimeout,
-		MaxHeaderBytes: 1 << 20,
-		Handler:        router,
+		Addr:    fmt.Sprintf(":%d", cfg.HTTPConfig.Port),
+		Handler: appRouter,
 	}
 
 	// Run

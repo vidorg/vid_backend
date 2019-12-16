@@ -1,4 +1,4 @@
-package router
+package group
 
 import (
 	. "vid/app/controller"
@@ -9,21 +9,17 @@ import (
 
 func SetupUserGroup(router *gin.Engine) {
 
-	jwt := middleware.JWTMiddleware()
+	jwt := middleware.JWTMiddleware(false)
+	jwtAdmin := middleware.JWTMiddleware(true)
 
 	userGroup := router.Group("/user")
 	{
-		// Admin
-		userGroup.Use(jwt).GET("/", UserCtrl.QueryAllUsers)
-
-		// Auth
+		userGroup.Use(jwtAdmin).GET("/", UserCtrl.QueryAllUsers)
 		userGroup.Use(jwt).PUT("/", UserCtrl.UpdateUser)
 		userGroup.Use(jwt).DELETE("/", UserCtrl.DeleteUser)
-
 		userGroup.Use(jwt).POST("/sub", SubCtrl.SubscribeUser)
 		userGroup.Use(jwt).POST("/unsub", SubCtrl.UnSubscribeUser)
 
-		// Public
 		userGroup.GET("/:uid", UserCtrl.QueryUser)
 		userGroup.GET("/:uid/subscriber", SubCtrl.QuerySubscriberUsers)
 		userGroup.GET("/:uid/subscribing", SubCtrl.QuerySubscribingUsers)
