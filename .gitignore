@@ -1,6 +1,10 @@
 .idea/
+.docs/
+.ionide/
+
 build/
 assets/docs/
+docs/
 
 files/image/*
 files/video/*

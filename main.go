@@ -2,43 +2,48 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"net/http"
-	"vid/config"
-	"vid/database"
-	"vid/routers"
-	"vid/utils"
+	"vid/app/config"
+	"vid/app/database"
+	"vid/app/routers"
+	"vid/app/utils"
 
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
-	// Config
 
-	config.LoagServerConfig()
-	cfg := config.AppCfg
+	// ServerConfig
+	cfg, err := config.Load()
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	gin.SetMode(cfg.RunMode)
 
 	// Database
-	database.SetupDBConn(cfg)
+	database.SetupDBConn(cfg.DatabaseConfig)
 
 	// Jwt
-	utils.JwtSecret = []byte(cfg.JwtSecret)
-	utils.JwtTokenExpire = cfg.JwtTokenExpire
+	utils.JwtSecret = []byte(cfg.JwtConfig.Secret)
+	utils.JwtExpire = cfg.JwtConfig.Expire
 
 	// Router & Middleware
 	router := routers.SetupRouters()
 
 	// App
 	s := &http.Server{
-		Addr:           fmt.Sprintf(":%d", cfg.HTTPPort),
-		ReadTimeout:    cfg.ReadTimeout,
-		WriteTimeout:   cfg.WriteTimeout,
+		Addr: fmt.Sprintf(":%d", cfg.HTTPConfig.Port),
+		// ReadTimeout:    cfg.HTTPConfig.ReadTimeout,
+		// WriteTimeout:   cfg.HTTPConfig.WriteTimeout,
 		MaxHeaderBytes: 1 << 20,
-
-		Handler: router,
+		Handler:        router,
 	}
 
-	fmt.Printf("Server init on port :%d\n", cfg.HTTPPort)
-	s.ListenAndServe()
+	// Run
+	log.Printf("Server init on port :%d\n", cfg.HTTPConfig.Port)
+	if err := s.ListenAndServe(); err != nil {
+		log.Fatal(err)
+	}
 }
