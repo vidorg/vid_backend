@@ -10,7 +10,7 @@ import (
 	"vid/app/middleware"
 	"vid/app/model/dto"
 	"vid/app/model/enum"
-	"vid/app/util"
+	"vid/app/model/vo"
 )
 
 type userCtrl struct{}
@@ -65,7 +65,7 @@ func (u *userCtrl) UpdateUser(c *gin.Context) {
 	username := c.DefaultPostForm("username", user.Username)
 	sex := enum.StringToSex(c.DefaultPostForm("sex", string(user.Sex)))
 	profile := c.DefaultPostForm("profile", user.Profile)
-	birthTime := util.CmnUtil.ParseToTime(c.DefaultPostForm("birth_time", util.CmnUtil.ParseFromTime(user.BirthTime)), user.BirthTime)
+	birthTime := vo.JsonDate{}.Parse(c.DefaultPostForm("birth_time", user.BirthTime.String()), user.BirthTime)
 	phoneNumber := c.DefaultPostForm("phone_number", user.PhoneNumber)
 
 	user.Username = username

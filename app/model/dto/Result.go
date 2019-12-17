@@ -1,16 +1,14 @@
 package dto
 
 import (
-	lhm "github.com/emirpasic/gods/maps/linkedhashmap"
 	"net/http"
-	"reflect"
-	"strings"
+	"vid/app/model/vo"
 )
 
 type Result struct {
-	Code    int      `json:"code"`
-	Message string   `json:"message"`
-	Data    *lhm.Map `json:"data,omitempty"` // map[string]interface{}
+	Code    int          `json:"code"`
+	Message string       `json:"message"`
+	Data    *vo.OrderMap `json:"data,omitempty"` // map[string]interface{}
 }
 
 func (Result) Ok() *Result {
@@ -52,27 +50,13 @@ func (r *Result) SetMessage(message string) *Result {
 }
 
 func (r *Result) SetData(data interface{}) *Result {
-	r.Data = lhm.New()
-
-	elem := reflect.ValueOf(data).Elem()
-	relType := elem.Type()
-	for i := 0; i < relType.NumField(); i++ {
-		tag := relType.Field(i).Tag.Get("json")
-		omitempty := strings.Index(tag, "omitempty") != -1
-
-		field := strings.Split(tag, ",")[0] // elem.Field(i).Name
-		value := elem.Field(i).Interface()
-
-		if !omitempty || value != nil {
-			r.Data.Put(field, value)
-		}
-	}
+	r.Data = vo.OrderMap{}.FromObject(data)
 	return r
 }
 
 func (r *Result) PutData(field string, data interface{}) *Result {
 	if r.Data == nil {
-		r.Data = lhm.New()
+		r.Data = vo.NewOrderMap()
 	}
 	r.Data.Put(field, data)
 	return r
@@ -80,7 +64,7 @@ func (r *Result) PutData(field string, data interface{}) *Result {
 
 func (r *Result) SetPage(count int, page int, data interface{}) *Result {
 	if r.Data == nil {
-		r.Data = lhm.New()
+		r.Data = vo.NewOrderMap()
 	}
 	r.Data.Put("count", count)
 	r.Data.Put("page", page)

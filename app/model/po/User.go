@@ -1,8 +1,8 @@
 package po
 
 import (
-	"time"
 	"vid/app/model/enum"
+	"vid/app/model/vo"
 
 	// "vid/app/config"
 )
@@ -13,8 +13,8 @@ type User struct {
 	Sex       enum.SexType  `json:"sex"      gorm:"type:enum('unknown','male','female');default:'unknown'"`
 	Profile   string        `json:"profile"`    // 255
 	AvatarUrl string        `json:"avatar_url"` // 255
-	BirthTime time.Time     `json:"birth_time" gorm:"default:'2000-01-01 00:00:00'"`
-	Authority enum.AuthType `json:"authority" gorm:"type:enum('admin', 'normal');default:'normal';not_null"`
+	BirthTime vo.JsonDate   `json:"birth_time" gorm:"default:'2000-01-01 00:00:00'"`
+	Authority enum.AuthType `json:"authority"  gorm:"type:enum('admin', 'normal');default:'normal';not_null"`
 
 	// inner system
 	RegisterIP  string `json:"-"`
@@ -24,5 +24,5 @@ type User struct {
 	Subscribers  []*User `json:"-" gorm:"many2many:subscribe;jointable_foreignkey:up_uid;association_jointable_foreignkey:subscriber_uid"` // subscriber_uid -> up_uid
 	Subscribings []*User `json:"-" gorm:"many2many:subscribe;jointable_foreignkey:subscriber_uid;association_jointable_foreignkey:up_uid"` // up_uid -> subscriber_uid
 
-	TimePo
+	TimePo `json:"-"`
 }
