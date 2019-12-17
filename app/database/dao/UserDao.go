@@ -54,8 +54,8 @@ func (u *userDao) Update(user *po.User) DbStatus {
 }
 
 func (u *userDao) Delete(uid int) (*po.User, DbStatus) {
-	user := u.QueryByUid(uid)
-	if user == nil {
+	user := &po.User{Uid: uid}
+	if DB.NewRecord(user) {
 		return nil, DbNotFound
 	}
 	if err := DB.Model(user).Update(user).Error; err != nil {

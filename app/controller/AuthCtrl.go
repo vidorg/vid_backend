@@ -19,35 +19,34 @@ type authCtrl struct{}
 var AuthCtrl = new(authCtrl)
 
 // @Router 				/auth/login [POST]
-// @Security 			ApiKeyAuth
 // @Summary 			登录
-// @Description 		用户登录
+/* @Description 		用户登录，Non-Auth
+
+						| code | message |
+						| --- | --- |
+						| 400 | request form data exception |
+						| 401 | password error |
+						| 404 | user not found |
+ 						| 500 | login failed | */
 // @Param 				username formData string true 用户名
 // @Param 				password formData string true 用户密码
 // @Param 				expire formData integer false 登录有效期，默认一个小时
-// @ID 					auth-login
 // @Accept 				multipart/form-data
-// @Produce 			application/json
 /* @Success 200 		{
 							"code": 200,
 							"message": "Success",
-							"data": {}
- 						} */
-/* @Failure 400 	 	{
-							"code": 400,
-							"message": "request form data exception"
- 						} */
-/* @Failure 401 		{
-							"code": 401,
-							"message": "password error"
- 						} */
-/* @Failure 404 		{
-							"code": 404,
-							"message": "user not found"
- 						} */
-/* @Failure 500 		{
-							"code": 500,
-							"message": "login failed"
+							"data": {
+								"user": {
+									"uid": 10,
+									"username": "aoihosizora",
+									"sex": "unknown",
+									"profile": "",
+									"avatar_url": "",
+									"birth_time": "2000-01-01",
+									"authority": "normal"
+								},
+								"token": "Bearer xxx"
+							}
  						} */
 func (u *authCtrl) Login(c *gin.Context) {
 
@@ -88,7 +87,31 @@ func (u *authCtrl) Login(c *gin.Context) {
 		dto.Result{}.Ok().PutData("user", passRecord.User).PutData("token", token))
 }
 
-// POST /auth/register (Non-Auth)
+// @Router 				/auth/register [POST]
+// @Summary 			注册
+/* @Description 		用户注册，Non-Auth
+
+						| code | message |
+						| --- | --- |
+						| 400 | request form data exception |
+						| 500 | username duplicated |
+ 						| 500 | register failed | */
+// @Param 				username formData string true 用户名
+// @Param 				password formData string true 用户密码
+// @Accept 				multipart/form-data
+/* @Success 200 		{
+							"code": 200,
+							"message": "Success",
+							"data": {
+								"uid": 10,
+								"username": "aoihosizora",
+								"sex": "unknown",
+								"profile": "",
+								"avatar_url": "",
+								"birth_time": "2000-01-01",
+								"authority": "normal"
+							}
+ 						} */
 func (u *authCtrl) Register(c *gin.Context) {
 
 	username := c.PostForm("username")
@@ -106,22 +129,47 @@ func (u *authCtrl) Register(c *gin.Context) {
 		},
 	}
 	status := dao.PassDao.Insert(passRecord)
-	if status == database.DbFailed {
-		c.JSON(http.StatusInternalServerError,
-			dto.Result{}.Error(http.StatusInternalServerError).SetMessage(exception.RegisterError.Error()))
-		return
-	} else if status == database.DbExisted {
+	if status == database.DbExisted {
 		c.JSON(http.StatusInternalServerError,
 			dto.Result{}.Error(http.StatusInternalServerError).SetMessage(exception.UserNameUsedError.Error()))
+		return
+	} else if status == database.DbFailed {
+		c.JSON(http.StatusInternalServerError,
+			dto.Result{}.Error(http.StatusInternalServerError).SetMessage(exception.RegisterError.Error()))
 		return
 	}
 
 	c.JSON(http.StatusOK,
-		dto.Result{}.Ok().PutData("user", passRecord.User))
+		dto.Result{}.Ok().SetData(passRecord.User))
 }
 
-// @securityDefinitions.basic BasicAuth
-// POST /auth/pass (Auth)
+// @Router 				/auth/pass [POST]
+// @Summary 			修改密码
+/* @Description 		用户修改密码，Auth
+
+						| code | message |
+						| --- | --- |
+						| 400 | request form data exception |
+						| 401 | authorization failed |
+						| 401 | token has expired |
+						| 404 | user not found |
+ 						| 500 | update password failed | */
+// @Param 				Authorization header string true 用户 Token
+// @Param 				password formData string true 用户新密码
+// @Accept 				multipart/form-data
+/* @Success 200 		{
+							"code": 200,
+							"message": "Success",
+							"data": {
+								"uid": 10,
+								"username": "aoihosizora",
+								"sex": "unknown",
+								"profile": "",
+								"avatar_url": "",
+								"birth_time": "2000-01-01",
+								"authority": "normal"
+							}
+ 						} */
 func (u *authCtrl) ModifyPass(c *gin.Context) {
 	user := middleware.GetAuthUser(c)
 
@@ -139,8 +187,8 @@ func (u *authCtrl) ModifyPass(c *gin.Context) {
 	}
 	status := dao.PassDao.Update(passRecord)
 	if status == database.DbNotFound {
-		c.JSON(http.StatusInternalServerError,
-			dto.Result{}.Error(http.StatusInternalServerError).SetMessage(exception.UserNameUsedError.Error()))
+		c.JSON(http.StatusNotFound,
+			dto.Result{}.Error(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()))
 		return
 	} else if status == database.DbFailed {
 		c.JSON(http.StatusInternalServerError,
@@ -149,12 +197,35 @@ func (u *authCtrl) ModifyPass(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK,
-		dto.Result{}.Ok().PutData("user", passRecord.User))
+		dto.Result{}.Ok().SetData(passRecord.User))
 }
 
-// GET /auth/ (Auth)
+// @Router 				/auth/ [GET]
+// @Summary 			查看当前用户
+/* @Description 		根据认证 token 查看当前用户，Auth
+
+						| code | message |
+						| --- | --- |
+						| 400 | request form data exception |
+						| 401 | authorization failed |
+ 						| 401 | token has expired | */
+// @Param 				Authorization header string true 用户 Token
+// @Accept 				multipart/form-data
+/* @Success 200 		{
+							"code": 200,
+							"message": "Success",
+							"data": {
+								"uid": 10,
+								"username": "aoihosizora",
+								"sex": "unknown",
+								"profile": "",
+								"avatar_url": "",
+								"birth_time": "2000-01-01",
+								"authority": "normal"
+							}
+ 						} */
 func (u *authCtrl) CurrentUser(c *gin.Context) {
 	user := middleware.GetAuthUser(c)
 	c.JSON(http.StatusOK,
-		dto.Result{}.Ok().PutData("user", user))
+		dto.Result{}.Ok().SetData(user))
 }

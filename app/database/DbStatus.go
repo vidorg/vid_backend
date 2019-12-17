@@ -7,5 +7,4 @@ const (
 	DbFailed
 	DbNotFound
 	DbExisted
-	DbExtra
 )

@@ -8,4 +8,3 @@ assets/docs/
 files/image/*
 files/video/*
 !.gitkeep
-!default/

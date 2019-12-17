@@ -17,7 +17,37 @@ type userCtrl struct{}
 
 var UserCtrl = new(userCtrl)
 
-// GET /user?page (Admin)
+// @Router 				/user/ [GET]
+// @Summary 			查询所有用户
+/* @Description 		管理员查询所有用户，返回分页数据，Admin
+
+						| code | message |
+						| --- | --- |
+						| 401 | authorization failed |
+						| 401 | token has expired |
+ 						| 401 | need admin authority | */
+// @Param 				Authorization header string true 用户 Token
+// @Param 				page query integer false 分页
+// @Accept 				multipart/form-data
+/* @Success 200 		{
+							"code": 200,
+							"message": "Success",
+							"data": {
+								"count": 1,
+								"page": 1,
+								"data": [
+									{
+										"uid": 1,
+										"username": "User1",
+										"sex": "male",
+										"profile": "",
+										"avatar_url": "",
+										"birth_time": "2000-01-01",
+										"authority": "admin"
+									}
+								]
+							}
+ 						} */
 func (u *userCtrl) QueryAllUsers(c *gin.Context) {
 	pageString := c.Query("page")
 	page, err := strconv.Atoi(pageString)
@@ -29,7 +59,37 @@ func (u *userCtrl) QueryAllUsers(c *gin.Context) {
 		dto.Result{}.Ok().SetPage(count, page, users))
 }
 
-// GET /user/:uid (Non-Auth)
+// @Router 				/user/{uid} [GET]
+// @Summary 			查询用户
+/* @Description 		普通用户查询用户信息，Non-Auth
+
+						| code | message |
+						| --- | --- |
+						| 400 | request route param exception |
+ 						| 404 | user not found | */
+// @Param 				uid path integer true 用户 id
+// @Accept 				multipart/form-data
+/* @Success 200 		{
+							"code": 200,
+							"message": "Success",
+							"data": {
+								"user": {
+									"uid": 10,
+									"username": "aoihosizora",
+									"sex": "unknown",
+									"profile": "",
+									"avatar_url": "",
+									"birth_time": "2000-01-01",
+									"authority": "admin"
+								},
+								"extra": {
+									"subscribing_cnt": 1,
+									"subscriber_cnt": 2,
+									"video_cnt": 0,
+									"playlist_cnt": 0
+								}
+							}
+ 						} */
 func (u *userCtrl) QueryUser(c *gin.Context) {
 	uidString := c.Param("uid")
 	uid, err := strconv.Atoi(uidString)
@@ -47,18 +107,42 @@ func (u *userCtrl) QueryUser(c *gin.Context) {
 	}
 
 	isSelfOrAdmin := middleware.GetAuthUser(c) == nil || user.Authority == enum.AuthAdmin
-	extraInfo, status := dao.UserDao.QueryUserExtraInfo(isSelfOrAdmin, user)
-	if status == database.DbNotFound {
-		c.JSON(http.StatusNotFound,
-			dto.Result{}.Error(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()))
-		return
-	}
+	extraInfo, _ := dao.UserDao.QueryUserExtraInfo(isSelfOrAdmin, user)
 
 	c.JSON(http.StatusOK,
 		dto.Result{}.Ok().PutData("user", user).PutData("extra", extraInfo))
 }
 
-// PUT /user/update (Auth)
+// @Router 				/user/ [PUT]
+// @Summary 			更新用户
+/* @Description 		更新用户信息，Auth
+
+						| code | message |
+						| --- | --- |
+						| 401 | authorization failed |
+						| 401 | token has expired |
+ 						| 404 | user not found |
+ 						| 500 | user update failed | */
+// @Param 				Authorization header string true 用户 Token
+// @Param 				username formData string false 新用户名
+// @Param 				sex formData string false 新用户性别，只允许为 (male, female, unknown)
+// @Param 				profile formData string false 新用户简介
+// @Param 				birth_time formData string false 新用户生日，固定格式为 2000-01-01
+// @Param 				phone_number formData string false 新用户电话号码
+// @Accept 				multipart/form-data
+/* @Success 200 		{
+							"code": 200,
+							"message": "Success",
+							"data": {
+								"uid": 10,
+								"username": "aoihosizora",
+								"sex": "male",
+								"profile": "Demo Profile",
+								"avatar_url": "",
+								"birth_time": "2019-12-18",
+								"authority": "admin"
+							}
+ 						} */
 func (u *userCtrl) UpdateUser(c *gin.Context) {
 	user := middleware.GetAuthUser(c)
 
@@ -89,7 +173,22 @@ func (u *userCtrl) UpdateUser(c *gin.Context) {
 		dto.Result{}.Ok().SetData(user))
 }
 
-// DELETE /user/delete (Auth)
+// @Router 				/user/ [DELETE]
+// @Summary 			删除用户
+/* @Description 		删除用户所有信息，Auth
+
+						| code | message |
+						| --- | --- |
+						| 401 | authorization failed |
+						| 401 | token has expired |
+ 						| 404 | user not found |
+ 						| 404 | user delete failed | */
+// @Param 				Authorization header string true 用户 Token
+// @Accept 				multipart/form-data
+/* @Success 200 		{
+							"code": 200,
+							"message": "Success"
+ 						} */
 func (u *userCtrl) DeleteUser(c *gin.Context) {
 	user := middleware.GetAuthUser(c)
 	user, status := dao.UserDao.Delete(user.Uid)
@@ -103,6 +202,5 @@ func (u *userCtrl) DeleteUser(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK,
-		dto.Result{}.Ok().SetData(user))
+	c.JSON(http.StatusOK, dto.Result{}.Ok())
 }

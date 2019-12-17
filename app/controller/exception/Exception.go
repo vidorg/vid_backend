@@ -36,6 +36,8 @@ var (
 
 	UserNameUsedError  = errors.New("username duplicated")
 	SubscribeSelfError = errors.New("subscribe oneself invalid")
+	SubscribeError     = errors.New("subscribe failed")
+	UnSubscribeError   = errors.New("unsubscribe failed")
 
 	// video
 	VideoInsertError   = errors.New("video insert failed") // C
