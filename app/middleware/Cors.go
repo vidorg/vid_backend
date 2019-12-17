@@ -11,6 +11,7 @@ type CORSOptions struct {
 
 // CORS middleware from https://github.com/gin-gonic/gin/issues/29#issuecomment-89132826
 func CORS(options CORSOptions) gin.HandlerFunc {
+
 	return func(c *gin.Context) {
 		c.Writer.Header().Set("Access-Control-Allow-Origin", "http://127.0.0.1") // allow any origin domain
 		if options.Origin != "" {

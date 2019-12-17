@@ -13,7 +13,7 @@ type User struct {
 	Sex       enum.SexType  `json:"sex"      gorm:"type:enum('unknown','male','female');default:'unknown'"`
 	Profile   string        `json:"profile"`    // 255
 	AvatarUrl string        `json:"avatar_url"` // 255
-	BirthTime time.Time     `json:"birth_time" gorm:"default:'2000-01-01'"`
+	BirthTime time.Time     `json:"birth_time" gorm:"default:'2000-01-01 00:00:00'"`
 	Authority enum.AuthType `json:"authority" gorm:"type:enum('admin', 'normal');default:'normal';not_null"`
 
 	// inner system

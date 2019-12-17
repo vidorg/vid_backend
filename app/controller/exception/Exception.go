@@ -18,12 +18,11 @@ var (
 var (
 	AuthorizationError = errors.New("authorization failed")
 	TokenExpiredError  = errors.New("token has expired")
-	TokenInvalidError  = errors.New("token invalid")
 
 	PasswordError   = errors.New("password error")
 	LoginError      = errors.New("login failed")
 	RegisterError   = errors.New("register failed")
-	ModifyPassError = errors.New("update password failed")
+	UpdatePassError = errors.New("update password failed")
 
 	NeedAdminError = errors.New("need admin authority")
 )
@@ -51,7 +50,7 @@ var (
 	PlaylistNotFoundError = errors.New("playlist not found")     // R
 
 	PlaylistNameUsedError    = errors.New("playlist name duplicated")
-	PlaylistVideoDeleteError = errors.New("playlist video delete failed") // D
+	PlaylistVideoDeleteError = errors.New("playlist video delete failed")
 )
 
 // File

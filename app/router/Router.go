@@ -2,19 +2,21 @@ package router
 
 import (
 	"fmt"
+	"github.com/gin-gonic/gin"
 	"net/http"
 	"vid/app/middleware"
 	"vid/app/model/dto"
 	"vid/app/router/group"
-
-	"github.com/gin-gonic/gin"
 )
 
 func SetupRouters() *gin.Engine {
 	router := gin.Default()
 
+
 	router.Use(gin.Recovery())
-	router.Use(middleware.CORS(middleware.CORSOptions{}))
+	router.Use(middleware.CORS(middleware.CORSOptions{
+		Origin: "",
+	}))
 
 	group.SetupAuthGroup(router)
 	group.SetupUserGroup(router)

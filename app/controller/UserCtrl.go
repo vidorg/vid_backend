@@ -17,9 +17,16 @@ type userCtrl struct{}
 
 var UserCtrl = new(userCtrl)
 
-// GET /user/ (Admin)
+// GET /user?page (Admin)
 func (u *userCtrl) QueryAllUsers(c *gin.Context) {
-	c.JSON(http.StatusOK, dto.Result{}.Ok().SetArray(dao.UserDao.Query()))
+	pageString := c.Query("page")
+	page, err := strconv.Atoi(pageString)
+	if err != nil || page == 0 {
+		page = 1
+	}
+	users, count := dao.UserDao.QueryAll(page)
+	c.JSON(http.StatusOK,
+		dto.Result{}.Ok().SetPage(count, page, users))
 }
 
 // GET /user/:uid (Non-Auth)
@@ -40,7 +47,6 @@ func (u *userCtrl) QueryUser(c *gin.Context) {
 	}
 
 	isSelfOrAdmin := middleware.GetAuthUser(c) == nil || user.Authority == enum.AuthAdmin
-
 	extraInfo, status := dao.UserDao.QueryUserExtraInfo(isSelfOrAdmin, user)
 	if status == database.DbNotFound {
 		c.JSON(http.StatusNotFound,
@@ -57,11 +63,9 @@ func (u *userCtrl) UpdateUser(c *gin.Context) {
 	user := middleware.GetAuthUser(c)
 
 	username := c.DefaultPostForm("username", user.Username)
-	sexString := c.DefaultPostForm("sex", string(user.Sex))
-	sex := enum.StringToSex(sexString)
+	sex := enum.StringToSex(c.DefaultPostForm("sex", string(user.Sex)))
 	profile := c.DefaultPostForm("profile", user.Profile)
-	birthTimeString := c.DefaultPostForm("birth_time", util.CmnUtil.ParseFromTime(user.BirthTime))
-	birthTime := util.CmnUtil.ParseToTime(birthTimeString, user.BirthTime)
+	birthTime := util.CmnUtil.ParseToTime(c.DefaultPostForm("birth_time", util.CmnUtil.ParseFromTime(user.BirthTime)), user.BirthTime)
 	phoneNumber := c.DefaultPostForm("phone_number", user.PhoneNumber)
 
 	user.Username = username

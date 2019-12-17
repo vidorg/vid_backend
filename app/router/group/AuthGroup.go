@@ -15,7 +15,7 @@ func SetupAuthGroup(router *gin.Engine) {
 	{
 		authGroup.POST("/login", AuthCtrl.Login)
 		authGroup.POST("/register", AuthCtrl.Register)
-		authGroup.Use(jwt).POST("/pass", AuthCtrl.ModifyPass)
-		authGroup.Use(jwt).GET("/", AuthCtrl.CurrentUser)
+		authGroup.POST("/pass", jwt, AuthCtrl.ModifyPass)
+		authGroup.GET("/", jwt, AuthCtrl.CurrentUser)
 	}
 }

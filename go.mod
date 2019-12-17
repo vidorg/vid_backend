@@ -5,6 +5,7 @@ require (
 	github.com/cpuguy83/go-md2man/v2 v2.0.0 // indirect
 	github.com/creack/pty v1.1.9 // indirect
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
+	github.com/emirpasic/gods v1.12.0
 	github.com/gin-gonic/gin v1.4.0
 	github.com/go-ini/ini v1.46.0
 	github.com/go-openapi/jsonreference v0.19.3 // indirect

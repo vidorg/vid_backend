@@ -14,8 +14,9 @@ type cmnUtil struct{}
 var CmnUtil = new(cmnUtil)
 
 func (c *cmnUtil) ParseToTime(timeString string, defaultTime time.Time) time.Time {
-	format := "2006-01-02 15:04:05"
-	t, err := time.Parse(format, timeString)
+	format := "2006/01/02 15:04:05"
+	loc, _ := time.LoadLocation("Asia/Shanghai")
+	t, err := time.ParseInLocation(format, timeString, loc)
 	if err != nil {
 		return defaultTime
 	} else {
@@ -24,7 +25,7 @@ func (c *cmnUtil) ParseToTime(timeString string, defaultTime time.Time) time.Tim
 }
 
 func (c *cmnUtil) ParseFromTime(time time.Time) string {
-	format := "2006-01-02 15:04:05"
+	format := "2006/01/02 15:04:05"
 	return time.Format(format)
 }
 

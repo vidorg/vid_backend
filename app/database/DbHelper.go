@@ -11,6 +11,7 @@ import (
 )
 
 var DB *gorm.DB
+var PageSize int
 
 func SetupDBConn(cfg config.DatabaseConfig) {
 	dbParams := fmt.Sprintf("%v:%v@tcp(%v)/%v?charset=%v&parseTime=True&loc=Local",
@@ -26,6 +27,7 @@ func SetupDBConn(cfg config.DatabaseConfig) {
 		log.Fatal(err)
 	}
 
+	PageSize = cfg.PageSize
 	DB.LogMode(true)
 	DB.SingularTable(true)
 	gorm.DefaultTableNameHandler = func(db *gorm.DB, defaultTableName string) string {

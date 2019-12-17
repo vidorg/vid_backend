@@ -10,10 +10,11 @@ database:
   charset: utf8
   user: root
   password: 123
+  page-size: 5
 
 jwt:
   secret: 9C27D0C7C04BDA8A1F1B099CF4F9B1956AF5164F
-  expire: 1800 # second
+  expire: 86400 # second
 
 format:
   min-username: 4

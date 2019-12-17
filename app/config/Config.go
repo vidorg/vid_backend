@@ -19,6 +19,7 @@ type DatabaseConfig struct {
 	Charset        string `yaml:"charset"`
 	User           string `yaml:"user"`
 	Password       string `yaml:"password"`
+	PageSize       int    `yaml:"page-size"`
 }
 
 type JwtConfig struct {

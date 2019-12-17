@@ -34,7 +34,7 @@ func (u *authCtrl) Login(c *gin.Context) {
 		expire = int64(val)
 	}
 
-	passRecord := dao.PassDao.Query(username)
+	passRecord := dao.PassDao.QueryByUsername(username)
 	if passRecord == nil {
 		c.JSON(http.StatusNotFound,
 			dto.Result{}.Error(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()))
@@ -113,7 +113,7 @@ func (u *authCtrl) ModifyPass(c *gin.Context) {
 		return
 	} else if status == database.DbFailed {
 		c.JSON(http.StatusInternalServerError,
-			dto.Result{}.Error(http.StatusInternalServerError).SetMessage(exception.ModifyPassError.Error()))
+			dto.Result{}.Error(http.StatusInternalServerError).SetMessage(exception.UpdatePassError.Error()))
 		return
 	}
 
