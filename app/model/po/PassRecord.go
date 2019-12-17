@@ -6,7 +6,7 @@ type PassRecord struct {
 
 	User *User `gorm:"foreignkey:Uid"`
 
-	TimePo
+	GormTime
 }
 
 func (PassRecord) TableName() string {

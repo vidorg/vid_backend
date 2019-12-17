@@ -1,0 +1,53 @@
+basePath: /
+host: localhost:3344
+info:
+  description: Backend of repo https://github.com/vidorg/vid_vue
+  license:
+    name: MIT
+    url: https://github.com/vidorg/vid_backend/blob/master/LICENSE
+  termsOfService: https://github.com/vidorg
+  title: vid backend
+  version: '1.1'
+paths:
+  /auth/login:
+    post:
+      consumes:
+      - multipart/form-data
+      description: 用户登录
+      operationId: auth-login
+      parameters:
+      - description: 用户名
+        in: formData
+        name: username
+        required: true
+        type: string
+      - description: 用户密码
+        in: formData
+        name: password
+        required: true
+        type: string
+      - description: 登录有效期，默认一个小时
+        in: formData
+        name: expire
+        required: false
+        type: integer
+      produces:
+      - application/json
+      responses:
+        '200':
+          description: "```json\n{\n  \"code\": 200,\n  \"message\": \"Success\",\n\
+            \  \"data\": {}\n}\n```"
+        '400':
+          description: "```json\n{\n  \"code\": 400,\n  \"message\": \"request form\
+            \ data exception\"\n}\n```"
+        '401':
+          description: "```json\n{\n  \"code\": 401,\n  \"message\": \"password error\"\
+            \n}\n```"
+        '404':
+          description: "```json\n{\n  \"code\": 404,\n  \"message\": \"user not found\"\
+            \n}\n```"
+        '500':
+          description: "```json\n{\n  \"code\": 500,\n  \"message\": \"login failed\"\
+            \n}\n```"
+      summary: 登录
+swagger: '2.0'

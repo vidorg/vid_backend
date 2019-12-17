@@ -24,5 +24,5 @@ type User struct {
 	Subscribers  []*User `json:"-" gorm:"many2many:subscribe;jointable_foreignkey:up_uid;association_jointable_foreignkey:subscriber_uid"` // subscriber_uid -> up_uid
 	Subscribings []*User `json:"-" gorm:"many2many:subscribe;jointable_foreignkey:subscriber_uid;association_jointable_foreignkey:up_uid"` // up_uid -> subscriber_uid
 
-	TimePo `json:"-"`
+	GormTime `json:"-"`
 }

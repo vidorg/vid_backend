@@ -19,7 +19,7 @@ type Video struct {
 	AuthorUid   int       `json:"-"`
 	Author      *User     `json:"author" gorm:"-"` // omitempty
 
-	TimePo
+	GormTime
 }
 
 func (v *Video) Equals(obj *Video) bool {

@@ -18,7 +18,37 @@ type authCtrl struct{}
 
 var AuthCtrl = new(authCtrl)
 
-// POST /auth/login (Non-Auth)
+// @Router 				/auth/login [POST]
+// @Security 			ApiKeyAuth
+// @Summary 			登录
+// @Description 		用户登录
+// @Param 				username formData string true 用户名
+// @Param 				password formData string true 用户密码
+// @Param 				expire formData integer false 登录有效期，默认一个小时
+// @ID 					auth-login
+// @Accept 				multipart/form-data
+// @Produce 			application/json
+/* @Success 200 		{
+							"code": 200,
+							"message": "Success",
+							"data": {}
+ 						} */
+/* @Failure 400 	 	{
+							"code": 400,
+							"message": "request form data exception"
+ 						} */
+/* @Failure 401 		{
+							"code": 401,
+							"message": "password error"
+ 						} */
+/* @Failure 404 		{
+							"code": 404,
+							"message": "user not found"
+ 						} */
+/* @Failure 500 		{
+							"code": 500,
+							"message": "login failed"
+ 						} */
 func (u *authCtrl) Login(c *gin.Context) {
 
 	username := c.PostForm("username")
@@ -90,6 +120,7 @@ func (u *authCtrl) Register(c *gin.Context) {
 		dto.Result{}.Ok().PutData("user", passRecord.User))
 }
 
+// @securityDefinitions.basic BasicAuth
 // POST /auth/pass (Auth)
 func (u *authCtrl) ModifyPass(c *gin.Context) {
 	user := middleware.GetAuthUser(c)

@@ -10,8 +10,24 @@ import (
 	"vid/app/util"
 
 	"github.com/gin-gonic/gin"
+
+	_ "vid/docs"
+
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
+// @title vid backend
+// @version 1.1
+// @description Backend of repo https://github.com/vidorg/vid_vue
+// @termsOfService https://github.com/vidorg
+
+// @license.name MIT
+// @license.url https://github.com/vidorg/vid_backend/blob/master/LICENSE
+
+// @host localhost:3344
+// @basePath /
+// @swagger 2.0
 func main() {
 
 	// ServerConfig
@@ -31,6 +47,7 @@ func main() {
 
 	// Router & Middleware
 	appRouter := router.SetupRouters()
+	appRouter.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	// App
 	s := &http.Server{

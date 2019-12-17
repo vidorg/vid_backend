@@ -15,7 +15,7 @@ type Playlist struct {
 	Author      *User     `json:"author" gorm:"-"`
 	Videos      []*Video  `json:"videos,omitempty" gorm:"-"`
 
-	TimePo
+	GormTime
 }
 
 func (p *Playlist) Equals(obj *Playlist) bool {
