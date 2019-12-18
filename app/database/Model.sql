@@ -1,5 +1,8 @@
 -- db: db_vid
 
+-- host: localhost:3306
+-- charset: utf8
+
 -- tbl: tbl_password
 
 CREATE TABLE `tbl_password`
@@ -43,3 +46,23 @@ CREATE TABLE `tbl_subscribe`
     PRIMARY KEY (`up_uid`, `subscriber_uid`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8;
+
+-- tbl: tbl_video
+
+CREATE TABLE `tbl_video`
+(
+    `vid`         int(11)   NOT NULL AUTO_INCREMENT,
+    `title`       varchar(100)   DEFAULT NULL,
+    `description` varchar(255)   DEFAULT NULL,
+    `video_url`   varchar(255)   DEFAULT NULL,
+    `cover_url`   varchar(255)   DEFAULT NULL,
+    `upload_time` datetime       DEFAULT CURRENT_TIMESTAMP,
+    `author_uid`  int(11)        DEFAULT NULL,
+    `created_at`  timestamp NULL DEFAULT NULL,
+    `updated_at`  timestamp NULL DEFAULT NULL,
+    `deleted_at`  timestamp NULL DEFAULT NULL,
+    PRIMARY KEY (`vid`),
+    UNIQUE KEY `video_url` (`video_url`)
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8;
+

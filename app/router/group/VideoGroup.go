@@ -2,24 +2,23 @@ package group
 
 import (
 	"github.com/gin-gonic/gin"
+	. "vid/app/controller"
+	"vid/app/middleware"
 )
 
 func SetupVideoGroup(router *gin.Engine) {
 
-	// jwt := middleware.JWTMiddleware()
-	//
-	// videoGroup := router.Group("/video")
-	// {
-	// 	// Admin
-	// 	videoGroup.Use(jwt).GET("/all", VideoCtrl.GetAllVideos)
-	//
-	// 	// Public
-	// 	videoGroup.GET("/uid/:uid", VideoCtrl.GetVideosByUid)
-	// 	videoGroup.GET("/vid/:vid", VideoCtrl.GetVideoByVid)
-	//
-	// 	// Auth
-	// 	videoGroup.Use(jwt).POST("/new", VideoCtrl.UploadNewVideo)
-	// 	videoGroup.Use(jwt).PUT("/update", VideoCtrl.UpdateVideoInfo)
-	// 	videoGroup.Use(jwt).DELETE("/delete", VideoCtrl.DeleteVideo)
-	// }
+	jwt := middleware.JWTMiddleware(false)
+	jwtAdmin := middleware.JWTMiddleware(true)
+
+	videoGroup := router.Group("/video")
+	{
+		videoGroup.GET("/", jwtAdmin, VideoCtrl.QueryAllVideos)
+		videoGroup.GET("/vid/:vid", VideoCtrl.QueryVideoByVid)
+		videoGroup.GET("/uid/:uid", VideoCtrl.QueryVideosByUid)
+
+		videoGroup.POST("/", jwt, VideoCtrl.InsertVideo)
+		videoGroup.PUT("/:vid", jwt, VideoCtrl.UpdateVideo)
+		videoGroup.DELETE("/:vid", jwt, VideoCtrl.DeleteVideo)
+	}
 }

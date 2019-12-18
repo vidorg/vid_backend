@@ -3,7 +3,6 @@ package dao
 import (
 	"log"
 	. "vid/app/database"
-	"vid/app/model/dto"
 	"vid/app/model/po"
 )
 
@@ -53,47 +52,18 @@ func (u *userDao) Update(user *po.User) DbStatus {
 	return DbSuccess
 }
 
-func (u *userDao) Delete(uid int) (*po.User, DbStatus) {
+func (u *userDao) Delete(uid int) DbStatus {
 	user := &po.User{Uid: uid}
 	if DB.NewRecord(user) {
-		return nil, DbNotFound
+		return DbNotFound
 	}
 	if err := DB.Model(user).Update(user).Error; err != nil {
 		if IsNotFoundError(err) {
-			return nil, DbNotFound
+			return DbNotFound
 		} else {
 			log.Println(err)
-			return nil, DbFailed
+			return DbFailed
 		}
 	}
-	return user, DbSuccess
-}
-
-func (u *userDao) QueryUserExtraInfo(isSelfOrAdmin bool, user *po.User) (*dto.UserExtraInfo, DbStatus) {
-	phoneNumber := user.PhoneNumber
-	if !isSelfOrAdmin {
-		phoneNumber = ""
-	}
-	subscribingCnt, subscriberCnt, status := SubDao.QuerySubCnt(user.Uid)
-	if status == DbNotFound {
-		return nil, status
-	}
-
-	// video_cnt, err := VideoDao.QueryUserVideoCnt(user.Uid)
-	// if err != nil {
-	// 	return nil, err
-	// }
-	//
-	// playlist_cnt, err := PlaylistDao.QueryUserPlaylistCnt(user.Uid)
-	// if err != nil {
-	// 	return nil, err
-	// }
-
-	return &dto.UserExtraInfo{
-		PhoneNumber:      phoneNumber,
-		SubscribingCount: subscribingCnt,
-		SubscriberCount:  subscriberCnt,
-		VideoCount:       0,
-		PlaylistCount:    0,
-	}, DbSuccess
+	return DbSuccess
 }

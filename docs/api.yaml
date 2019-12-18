@@ -20,7 +20,7 @@ paths:
 
         | --- | --- |
 
-        | 400 | request form data exception |
+        | 400 | request form data error |
 
         | 401 | authorization failed |
 
@@ -53,7 +53,7 @@ paths:
 
         | --- | --- |
 
-        | 400 | request form data exception |
+        | 400 | request form data error |
 
         | 401 | password error |
 
@@ -99,7 +99,9 @@ paths:
 
         | --- | --- |
 
-        | 400 | request form data exception |
+        | 400 | request form data error |
+
+        | 400 | request format error |
 
         | 401 | authorization failed |
 
@@ -141,7 +143,9 @@ paths:
 
         | --- | --- |
 
-        | 400 | request form data exception |
+        | 400 | request form data error |
+
+        | 400 | request format error |
 
         | 500 | username duplicated |
 
@@ -200,44 +204,6 @@ paths:
           description: "```json\n{\n  \"code\": 200,\n  \"message\": \"Success\"\n\
             }\n```"
       summary: 删除用户
-    get:
-      consumes:
-      - multipart/form-data
-      description: '管理员查询所有用户，返回分页数据，Admin
-
-
-        | code | message |
-
-        | --- | --- |
-
-        | 401 | authorization failed |
-
-        | 401 | token has expired |
-
-        | 401 | need admin authority | '
-      operationId: -user-get
-      parameters:
-      - description: 用户 Token
-        in: header
-        name: Authorization
-        required: true
-        type: string
-      - description: 分页
-        in: query
-        name: page
-        required: false
-        type: integer
-      produces:
-      - application/json
-      responses:
-        '200':
-          description: "```json\n{\n  \"code\": 200,\n  \"message\": \"Success\",\n\
-            \  \"data\": {\n    \"count\": 1,\n    \"page\": 1,\n    \"data\": [\n\
-            \      {\n        \"uid\": 1,\n        \"username\": \"User1\",\n    \
-            \    \"sex\": \"male\",\n        \"profile\": \"\",\n        \"avatar_url\"\
-            : \"\",\n        \"birth_time\": \"2000-01-01\",\n        \"authority\"\
-            : \"admin\"\n      }\n    ]\n  }\n}\n```"
-      summary: 查询所有用户
     put:
       consumes:
       - multipart/form-data
@@ -248,13 +214,17 @@ paths:
 
         | --- | --- |
 
+        | 400 | request format error |
+
         | 401 | authorization failed |
 
         | 401 | token has expired |
 
         | 404 | user not found |
 
-        | 500 | user update failed | '
+        | 500 | username duplicated |
+
+        | 500 | user update failed |'
       operationId: -user-put
       parameters:
       - description: 用户 Token
@@ -297,7 +267,7 @@ paths:
             : \"\",\n    \"birth_time\": \"2019-12-18\",\n    \"authority\": \"admin\"\
             \n  }\n}\n```"
       summary: 更新用户
-  /user/sub:
+  /user/sub?uid:
     post:
       consumes:
       - multipart/form-data
@@ -308,7 +278,7 @@ paths:
 
         | --- | --- |
 
-        | 400 | request query param exception |
+        | 400 | request query param error |
 
         | 400 | subscribe oneself invalid |
 
@@ -319,7 +289,7 @@ paths:
         | 404 | user not found |
 
         | 500 | subscribe failed | '
-      operationId: -user-sub-post
+      operationId: -user-sub?uid-post
       parameters:
       - description: 用户 Token
         in: header
@@ -339,7 +309,7 @@ paths:
             \  \"data\": {\n    \"me\": 10,\n    \"up\": 3,\n    \"action\": \"subscribe\"\
             \n  }\n}\n```"
       summary: 关注用户
-  /user/unsub:
+  /user/unsub?uid:
     post:
       consumes:
       - multipart/form-data
@@ -350,7 +320,7 @@ paths:
 
         | --- | --- |
 
-        | 400 | request query param exception |
+        | 400 | request query param error |
 
         | 401 | authorization failed |
 
@@ -359,7 +329,7 @@ paths:
         | 404 | user not found |
 
         | 500 | unsubscribe failed | '
-      operationId: -user-unsub-post
+      operationId: -user-unsub?uid-post
       parameters:
       - description: 用户 Token
         in: header
@@ -383,14 +353,14 @@ paths:
     get:
       consumes:
       - multipart/form-data
-      description: '普通用户查询用户信息，Non-Auth
+      description: '查询用户信息，Non-Auth
 
 
         | code | message |
 
         | --- | --- |
 
-        | 400 | request route param exception |
+        | 400 | request route param error |
 
         | 404 | user not found | '
       operationId: -user-{uid}-get
@@ -423,7 +393,7 @@ paths:
 
         | --- | --- |
 
-        | 400 | request route param exception |
+        | 400 | request route param error |
 
         | 404 | user not found | '
       operationId: -user-{uid}-subscriber-get
@@ -443,14 +413,11 @@ paths:
       responses:
         '200':
           description: "```json\n{\n  \"code\": 200,\n  \"message\": \"Success\",\n\
-            \  \"data\": {\n    \"count\": 2,\n    \"page\": 1,\n    \"data\": [\n\
-            \      {\n        \"uid\": 1,\n        \"username\": \"User1\",\n    \
-            \    \"sex\": \"male\",\n        \"profile\": \"\",\n        \"avatar_url\"\
+            \  \"data\": {\n    \"count\": 1,\n    \"page\": 1,\n    \"data\": [\n\
+            \      {\n        \"uid\": 2,\n        \"username\": \"User2\",\n    \
+            \    \"sex\": \"unknown\",\n        \"profile\": \"\",\n        \"avatar_url\"\
             : \"\",\n        \"birth_time\": \"2000-01-01\",\n        \"authority\"\
-            : \"admin\"\n      },\n      {\n        \"uid\": 2,\n        \"username\"\
-            : \"User2\",\n        \"sex\": \"unknown\",\n        \"profile\": \"\"\
-            ,\n        \"avatar_url\": \"\",\n        \"birth_time\": \"2000-01-01\"\
-            ,\n        \"authority\": \"normal\"\n      }\n    ]\n  }\n}\n```"
+            : \"normal\"\n      }\n    ]\n  }\n}\n```"
       summary: 用户粉丝
   /user/{uid}/subscribing:
     get:
@@ -463,7 +430,7 @@ paths:
 
         | --- | --- |
 
-        | 400 | request route param exception |
+        | 400 | request route param error |
 
         | 404 | user not found | '
       operationId: -user-{uid}-subscribing-get
@@ -488,5 +455,293 @@ paths:
             \    \"sex\": \"male\",\n        \"profile\": \"\",\n        \"avatar_url\"\
             : \"\",\n        \"birth_time\": \"2000-01-01\",\n        \"authority\"\
             : \"admin\"\n      }\n    ]\n  }\n}\n```"
-      summary: 用户关注的人
+      summary: 用户关注
+  /user?page:
+    get:
+      consumes:
+      - multipart/form-data
+      description: '管理员查询所有用户，返回分页数据，Admin
+
+
+        | code | message |
+
+        | --- | --- |
+
+        | 401 | authorization failed |
+
+        | 401 | token has expired |
+
+        | 401 | need admin authority | '
+      operationId: -user?page-get
+      parameters:
+      - description: 用户 Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 分页
+        in: query
+        name: page
+        required: false
+        type: integer
+      produces:
+      - application/json
+      responses:
+        '200':
+          description: "```json\n{\n  \"code\": 200,\n  \"message\": \"Success\",\n\
+            \  \"data\": {\n    \"count\": 1,\n    \"page\": 1,\n    \"data\": [\n\
+            \      {\n        \"uid\": 1,\n        \"username\": \"User1\",\n    \
+            \    \"sex\": \"male\",\n        \"profile\": \"\",\n        \"avatar_url\"\
+            : \"\",\n        \"birth_time\": \"2000-01-01\",\n        \"authority\"\
+            : \"admin\"\n      }\n    ]\n  }\n}\n```"
+      summary: 查询所有用户
+  /video/:
+    post:
+      consumes:
+      - multipart/form-data
+      description: '新建用户视频，Auth
+
+
+        | code | message |
+
+        | --- | --- |
+
+        | 400 | request form data error |
+
+        | 401 | authorization failed |
+
+        | 401 | token has expired |
+
+        | 500 | video existed failed |
+
+        | 401 | video insert failed | '
+      operationId: -video-post
+      parameters:
+      - description: 用户 Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 视频标题
+        in: formData
+        name: title
+        required: true
+        type: string
+      - description: 视频简介
+        in: formData
+        name: description
+        required: true
+        type: string
+      - description: 视频资源链接
+        in: formData
+        name: video_url
+        required: true
+        type: string
+      - description: 视频封面链接
+        in: formData
+        name: cover_url
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        '200':
+          description: "```json\n{\n  \"code\": 200,\n  \"message\": \"Success\",\n\
+            \  \"data\": {}\n}\n```"
+      summary: 新建视频
+  /video/uid/{uid}?page:
+    get:
+      consumes:
+      - multipart/form-data
+      description: '查询作者为用户的所有视频，返回分页数据，Non-Auth
+
+
+        | code | message |
+
+        | --- | --- |
+
+        | 400 | request route param error |
+
+        | 404 | user not found | '
+      operationId: -video-uid-{uid}?page-get
+      parameters:
+      - description: 用户 id
+        in: path
+        name: uid
+        required: true
+        type: integer
+      - description: 分页
+        in: query
+        name: page
+        required: false
+        type: integer
+      produces:
+      - application/json
+      responses:
+        '200':
+          description: "```json\n{\n  \"code\": 200,\n  \"message\": \"Success\",\n\
+            \  \"data\": {}\n}\n```"
+      summary: 查询用户视频
+  /video/vid/{vid}:
+    get:
+      consumes:
+      - multipart/form-data
+      description: '查询视频信息，Non-Auth
+
+
+        | code | message |
+
+        | --- | --- |
+
+        | 400 | request route param error |
+
+        | 404 | video not found | '
+      operationId: -video-vid-{vid}-get
+      parameters:
+      - description: 视频 id
+        in: path
+        name: vid
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        '200':
+          description: "```json\n{\n  \"code\": 200,\n  \"message\": \"Success\",\n\
+            \  \"data\": {}\n}\n```"
+      summary: 查询视频
+  /video/{vid}:
+    delete:
+      consumes:
+      - multipart/form-data
+      description: '删除用户视频，Auth
+
+
+        | code | message |
+
+        | --- | --- |
+
+        | 400 | request route param error |
+
+        | 401 | authorization failed |
+
+        | 401 | token has expired |
+
+        | 404 | video not found |
+
+        | 500 | video delete failed | '
+      operationId: -video-{vid}-delete
+      parameters:
+      - description: 用户 Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 删除视频 id
+        in: path
+        name: vid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        '200':
+          description: "```json\n{\n  \"code\": 200,\n  \"message\": \"Success\",\n\
+            \  \"data\": {}\n}\n```"
+      summary: 删除视频
+    post:
+      consumes:
+      - multipart/form-data
+      description: '更新用户视频信息，Auth
+
+
+        | code | message |
+
+        | --- | --- |
+
+        | 400 | request route param error |
+
+        | 400 | request format error |
+
+        | 401 | authorization failed |
+
+        | 401 | token has expired |
+
+        | 404 | video not found |
+
+        | 404 | video update failed | '
+      operationId: -video-{vid}-post
+      parameters:
+      - description: 用户 Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 更新视频 id
+        in: path
+        name: vid
+        required: true
+        type: string
+      - description: 视频新标题
+        in: formData
+        name: title
+        required: false
+        type: string
+      - description: 视频新简介
+        in: formData
+        name: description
+        required: false
+        type: string
+      - description: 视频新资源链接
+        in: formData
+        name: video_url
+        required: false
+        type: string
+      - description: 视频新封面链接
+        in: formData
+        name: cover_url
+        required: false
+        type: string
+      produces:
+      - application/json
+      responses:
+        '200':
+          description: "```json\n{\n  \"code\": 200,\n  \"message\": \"Success\",\n\
+            \  \"data\": {}\n}\n```"
+      summary: 更新视频
+  /video?page:
+    get:
+      consumes:
+      - multipart/form-data
+      description: '管理员查询所有视频，返回分页数据，Admin
+
+
+        | code | message |
+
+        | --- | --- |
+
+        | 401 | authorization failed |
+
+        | 401 | token has expired |
+
+        | 401 | need admin authority | '
+      operationId: -video?page-get
+      parameters:
+      - description: 用户 Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 分页
+        in: query
+        name: page
+        required: false
+        type: integer
+      produces:
+      - application/json
+      responses:
+        '200':
+          description: "```json\n{\n  \"code\": 200,\n  \"message\": \"Success\",\n\
+            \  \"data\": {}\n}\n```"
+      summary: 查询所有视频
 swagger: '2.0'

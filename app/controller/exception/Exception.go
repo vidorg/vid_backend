@@ -6,12 +6,12 @@ import (
 
 // Request
 var (
-	FormParamError  = errors.New("request form data exception")
-	JsonParamError  = errors.New("request raw json exception")
-	QueryParamError = errors.New("request query param exception")
-	RouteParamError = errors.New("request route param exception")
+	FormParamError  = errors.New("request form data error")
+	JsonParamError  = errors.New("request raw json error")
+	QueryParamError = errors.New("request query param error")
+	RouteParamError = errors.New("request route param error")
 
-	FormatError = errors.New("request format exception")
+	FormatError = errors.New("request format error")
 )
 
 // Authorization
@@ -40,10 +40,12 @@ var (
 	UnSubscribeError   = errors.New("unsubscribe failed")
 
 	// video
+	VideoNotFoundError = errors.New("video not found")     // R
 	VideoInsertError   = errors.New("video insert failed") // C
 	VideoUpdateError   = errors.New("video update failed") // U
 	VideoDeleteError   = errors.New("video delete failed") // D
-	VideoNotFoundError = errors.New("video not found")     // R
+
+	VideoExistError   = errors.New("video existed failed")
 
 	// playlist
 	PlaylistInsertError   = errors.New("playlist insert failed") // C

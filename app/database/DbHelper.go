@@ -36,8 +36,7 @@ func SetupDBConn(cfg config.DatabaseConfig) {
 
 	DB.AutoMigrate(&po.User{})
 	DB.AutoMigrate(&po.PassRecord{})
-
-	// DB.AutoMigrate(&po.Video{})
+	DB.AutoMigrate(&po.Video{})
 	// DB.AutoMigrate(&po.Playlist{})
 	// DB.AutoMigrate(&po.VideoList{})
 }

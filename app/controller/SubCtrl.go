@@ -21,7 +21,7 @@ var SubCtrl = new(subCtrl)
 
 						| code | message |
 						| --- | --- |
-						| 400 | request route param exception |
+						| 400 | request route param error |
  						| 404 | user not found | */
 // @Param 				uid path integer true 所查询的用户 id
 // @Param 				page query integer false 分页
@@ -30,18 +30,9 @@ var SubCtrl = new(subCtrl)
 							"code": 200,
 							"message": "Success",
 							"data": {
-								"count": 2,
+								"count": 1,
 								"page": 1,
 								"data": [
-									{
-										"uid": 1,
-										"username": "User1",
-										"sex": "male",
-										"profile": "",
-										"avatar_url": "",
-										"birth_time": "2000-01-01",
-										"authority": "admin"
-									},
 									{
 										"uid": 2,
 										"username": "User2",
@@ -80,12 +71,12 @@ func (u *subCtrl) QuerySubscriberUsers(c *gin.Context) {
 }
 
 // @Router 				/user/{uid}/subscribing [GET]
-// @Summary 			用户关注的人
+// @Summary 			用户关注
 /* @Description 		查询用户所有关注，返回分页数据，Non-Auth
 
 						| code | message |
 						| --- | --- |
-						| 400 | request route param exception |
+						| 400 | request route param error |
  						| 404 | user not found | */
 // @Param 				uid path integer true 所查询的用户 id
 // @Param 				page query integer false 分页
@@ -134,13 +125,13 @@ func (u *subCtrl) QuerySubscribingUsers(c *gin.Context) {
 		dto.Result{}.Ok().SetPage(count, page, users))
 }
 
-// @Router 				/user/sub [POST]
+// @Router 				/user/sub?uid [POST]
 // @Summary 			关注用户
 /* @Description 		关注某一用户，Auth
 
 						| code | message |
 						| --- | --- |
-						| 400 | request query param exception |
+						| 400 | request query param error |
  						| 400 | subscribe oneself invalid |
 						| 401 | authorization failed |
 						| 401 | token has expired |
@@ -188,13 +179,13 @@ func (u *subCtrl) SubscribeUser(c *gin.Context) {
 		dto.Result{}.Ok().PutData("me", user.Uid).PutData("up", upUid).PutData("action", "subscribe"))
 }
 
-// @Router 				/user/unsub [POST]
+// @Router 				/user/unsub?uid [POST]
 // @Summary 			取消关注用户
 /* @Description 		取消关注某一用户，Auth
 
 						| code | message |
 						| --- | --- |
-						| 400 | request query param exception |
+						| 400 | request query param error |
 						| 401 | authorization failed |
 						| 401 | token has expired |
  						| 404 | user not found |

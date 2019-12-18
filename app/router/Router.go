@@ -19,8 +19,7 @@ func SetupRouters() *gin.Engine {
 
 	group.SetupAuthGroup(router)
 	group.SetupUserGroup(router)
-
-	// SetupVideoGroup(router)
+	group.SetupVideoGroup(router)
 	// SetupSearchGroup(router)
 	// SetupPlaylistGroup(router)
 	// SetupRawGroup(router)

@@ -5,6 +5,6 @@
 build/
 assets/docs/
 
-files/image/*
-files/video/*
+usr/image/*
+usr/video/*
 !.gitkeep

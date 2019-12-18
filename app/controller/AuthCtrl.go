@@ -7,6 +7,7 @@ import (
 	"vid/app/database"
 	"vid/app/database/dao"
 	"vid/app/middleware"
+	"vid/app/model"
 	"vid/app/model/dto"
 	"vid/app/model/po"
 	"vid/app/util"
@@ -24,7 +25,7 @@ var AuthCtrl = new(authCtrl)
 
 						| code | message |
 						| --- | --- |
-						| 400 | request form data exception |
+						| 400 | request form data error |
 						| 401 | password error |
 						| 404 | user not found |
  						| 500 | login failed | */
@@ -93,7 +94,8 @@ func (u *authCtrl) Login(c *gin.Context) {
 
 						| code | message |
 						| --- | --- |
-						| 400 | request form data exception |
+						| 400 | request form data error |
+						| 400 | request format error |
 						| 500 | username duplicated |
  						| 500 | register failed | */
 // @Param 				username formData string true 用户名
@@ -119,6 +121,11 @@ func (u *authCtrl) Register(c *gin.Context) {
 	if username == "" || password == "" {
 		c.JSON(http.StatusBadRequest,
 			dto.Result{}.Error(http.StatusBadRequest).SetMessage(exception.FormParamError.Error()))
+		return
+	}
+	if !model.FormatCheck.Username(username) || !model.FormatCheck.Password(password) {
+		c.JSON(http.StatusBadRequest,
+			dto.Result{}.Error(http.StatusBadRequest).SetMessage(exception.FormatError.Error()))
 		return
 	}
 
@@ -149,7 +156,8 @@ func (u *authCtrl) Register(c *gin.Context) {
 
 						| code | message |
 						| --- | --- |
-						| 400 | request form data exception |
+						| 400 | request form data error |
+						| 400 | request format error |
 						| 401 | authorization failed |
 						| 401 | token has expired |
 						| 404 | user not found |
@@ -179,6 +187,11 @@ func (u *authCtrl) ModifyPass(c *gin.Context) {
 			dto.Result{}.Error(http.StatusBadRequest).SetMessage(exception.FormParamError.Error()))
 		return
 	}
+	if !model.FormatCheck.Password(password) {
+		c.JSON(http.StatusBadRequest,
+			dto.Result{}.Error(http.StatusBadRequest).SetMessage(exception.FormatError.Error()))
+		return
+	}
 
 	passRecord := &po.PassRecord{
 		EncryptedPass: util.PassUtil.MD5Encode(password),
@@ -206,7 +219,7 @@ func (u *authCtrl) ModifyPass(c *gin.Context) {
 
 						| code | message |
 						| --- | --- |
-						| 400 | request form data exception |
+						| 400 | request form data error |
 						| 401 | authorization failed |
  						| 401 | token has expired | */
 // @Param 				Authorization header string true 用户 Token

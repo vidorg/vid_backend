@@ -21,12 +21,10 @@ import (
 // @version 1.1
 // @description Backend of repo https://github.com/vidorg/vid_vue
 // @termsOfService https://github.com/vidorg
-
-// @license.name MIT
-// @license.url https://github.com/vidorg/vid_backend/blob/master/LICENSE
-
 // @host localhost:3344
 // @basePath /
+// @license.name MIT
+// @license.url https://github.com/vidorg/vid_backend/blob/master/LICENSE
 // @swagger 2.0
 func main() {
 

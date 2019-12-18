@@ -8,6 +8,7 @@ import (
 	"vid/app/database"
 	"vid/app/database/dao"
 	"vid/app/middleware"
+	"vid/app/model"
 	"vid/app/model/dto"
 	"vid/app/model/enum"
 	"vid/app/model/vo"
@@ -17,7 +18,7 @@ type userCtrl struct{}
 
 var UserCtrl = new(userCtrl)
 
-// @Router 				/user/ [GET]
+// @Router 				/user?page [GET]
 // @Summary 			查询所有用户
 /* @Description 		管理员查询所有用户，返回分页数据，Admin
 
@@ -61,11 +62,11 @@ func (u *userCtrl) QueryAllUsers(c *gin.Context) {
 
 // @Router 				/user/{uid} [GET]
 // @Summary 			查询用户
-/* @Description 		普通用户查询用户信息，Non-Auth
+/* @Description 		查询用户信息，Non-Auth
 
 						| code | message |
 						| --- | --- |
-						| 400 | request route param exception |
+						| 400 | request route param error |
  						| 404 | user not found | */
 // @Param 				uid path integer true 用户 id
 // @Accept 				multipart/form-data
@@ -107,7 +108,17 @@ func (u *userCtrl) QueryUser(c *gin.Context) {
 	}
 
 	isSelfOrAdmin := middleware.GetAuthUser(c) == nil || user.Authority == enum.AuthAdmin
-	extraInfo, _ := dao.UserDao.QueryUserExtraInfo(isSelfOrAdmin, user)
+	if !isSelfOrAdmin {
+		user.PhoneNumber = ""
+	}
+	subscribingCnt, subscriberCnt, _ := dao.SubDao.QuerySubCnt(user.Uid)
+	extraInfo := &dto.UserExtraInfo{
+		PhoneNumber:      user.PhoneNumber,
+		SubscribingCount: subscribingCnt,
+		SubscriberCount:  subscriberCnt,
+		VideoCount:       0,
+		PlaylistCount:    0,
+	}
 
 	c.JSON(http.StatusOK,
 		dto.Result{}.Ok().PutData("user", user).PutData("extra", extraInfo))
@@ -119,10 +130,12 @@ func (u *userCtrl) QueryUser(c *gin.Context) {
 
 						| code | message |
 						| --- | --- |
+						| 400 | request format error |
 						| 401 | authorization failed |
 						| 401 | token has expired |
  						| 404 | user not found |
- 						| 500 | user update failed | */
+ 						| 500 | username duplicated |
+ 						| 500 | user update failed |*/
 // @Param 				Authorization header string true 用户 Token
 // @Param 				username formData string false 新用户名
 // @Param 				sex formData string false 新用户性别，只允许为 (male, female, unknown)
@@ -147,23 +160,29 @@ func (u *userCtrl) UpdateUser(c *gin.Context) {
 	user := middleware.GetAuthUser(c)
 
 	username := c.DefaultPostForm("username", user.Username)
-	sex := enum.StringToSex(c.DefaultPostForm("sex", string(user.Sex)))
 	profile := c.DefaultPostForm("profile", user.Profile)
-	birthTime := vo.JsonDate{}.Parse(c.DefaultPostForm("birth_time", user.BirthTime.String()), user.BirthTime)
-	phoneNumber := c.DefaultPostForm("phone_number", user.PhoneNumber)
-
+	if !model.FormatCheck.Username(username) || !model.FormatCheck.UserProfile(profile) {
+		c.JSON(http.StatusBadRequest,
+			dto.Result{}.Error(http.StatusBadRequest).SetMessage(exception.FormatError.Error()))
+		return
+	}
 	user.Username = username
-	user.Sex = sex
 	user.Profile = profile
-	user.BirthTime = birthTime
-	user.PhoneNumber = phoneNumber
+	user.Sex = enum.StringToSex(c.DefaultPostForm("sex", string(user.Sex)))
+	user.BirthTime = vo.JsonDate{}.Parse(c.DefaultPostForm("birth_time", user.BirthTime.String()), user.BirthTime)
+	user.PhoneNumber = c.DefaultPostForm("phone_number", user.PhoneNumber)
+	// TODO AvatarUrl
 
 	status := dao.UserDao.Update(user)
 	if status == database.DbNotFound {
 		c.JSON(http.StatusNotFound,
 			dto.Result{}.Error(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()))
 		return
-	} else if status == database.DbFailed {
+	} else if status == database.DbExisted {
+		c.JSON(http.StatusInternalServerError,
+			dto.Result{}.Error(http.StatusInternalServerError).SetMessage(exception.UserNameUsedError.Error()))
+		return
+	}else if status == database.DbFailed {
 		c.JSON(http.StatusInternalServerError,
 			dto.Result{}.Error(http.StatusInternalServerError).SetMessage(exception.UserUpdateError.Error()))
 		return
@@ -191,7 +210,7 @@ func (u *userCtrl) UpdateUser(c *gin.Context) {
  						} */
 func (u *userCtrl) DeleteUser(c *gin.Context) {
 	user := middleware.GetAuthUser(c)
-	user, status := dao.UserDao.Delete(user.Uid)
+	status := dao.UserDao.Delete(user.Uid)
 	if status == database.DbNotFound {
 		c.JSON(http.StatusNotFound,
 			dto.Result{}.Error(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()))

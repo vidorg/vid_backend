@@ -27,19 +27,11 @@ type JwtConfig struct {
 	Expire int64  `yaml:"expire"`
 }
 
-type FormatConfig struct {
-	MinUsernameLength int `yaml:"min-username"`
-	MaxUsernameLength int `yaml:"max-username"`
-	MinPasswordLength int `yaml:"min-password"`
-	MaxPasswordLength int `yaml:"max-password"`
-}
-
 type ServerConfig struct {
 	RunMode        string         `yaml:"run-mode"`
 	HTTPConfig     HTTPConfig     `yaml:"http"`
 	DatabaseConfig DatabaseConfig `yaml:"database"`
 	JwtConfig      JwtConfig      `yaml:"jwt"`
-	FormatConfig   FormatConfig   `yaml:"format"`
 }
 
 func Load() (*ServerConfig, error) {
