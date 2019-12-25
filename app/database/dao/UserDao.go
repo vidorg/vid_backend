@@ -47,8 +47,6 @@ func (u *userDao) Update(user *po.User) DbStatus {
 			return DbFailed
 		}
 	}
-	// user.BirthTime == time.Date(1, 1, 1, 0, 0, 0, 0, time.UTC)
-	// 0001-01-01 00:00:00 +0000 UTC
 	return DbSuccess
 }
 

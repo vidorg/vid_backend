@@ -14,7 +14,7 @@ type Result struct {
 func (Result) Ok() *Result {
 	return &Result{
 		Code:    200,
-		Message: "Success",
+		Message: "success",
 	}
 }
 
@@ -22,15 +22,15 @@ func (Result) Error(code int) *Result {
 	var message string
 	switch code {
 	case http.StatusBadRequest:
-		message = "Bad Request"
+		message = "bad Request"
 	case http.StatusUnauthorized:
-		message = "Unauthorized"
+		message = "unauthorized"
 	case http.StatusNotFound:
-		message = "Not Found"
+		message = "not found"
 	case http.StatusInternalServerError:
-		message = "Internal Server Error"
+		message = "internal server error"
 	default:
-		message = "Unknown Error"
+		message = "unknown error"
 	}
 
 	return &Result{

@@ -32,7 +32,7 @@ var AuthCtrl = new(authCtrl)
 // @ErrorCode 			500 login failed
 /* @Success 200 		{
 							"code": 200,
-							"message": "Success",
+							"message": "success",
 							"data": {
 								"user": {
 									"uid": 10,
@@ -47,13 +47,11 @@ var AuthCtrl = new(authCtrl)
 							}
  						} */
 func (u *authCtrl) Login(c *gin.Context) {
-
-	username := c.PostForm("username")
-	password := c.PostForm("password")
+	username, exist1 := c.GetPostForm("username")
+	password, exist2 := c.GetPostForm("password")
 	expireString := c.PostForm("expire")
-	if username == "" || password == "" {
-		c.JSON(http.StatusBadRequest,
-			dto.Result{}.Error(http.StatusBadRequest).SetMessage(exception.FormParamError.Error()))
+	if !exist1 || !exist2 {
+		c.JSON(http.StatusBadRequest, dto.Result{}.Error(http.StatusBadRequest).SetMessage(exception.FormParamError.Error()))
 		return
 	}
 	expire := util.JwtExpire
@@ -63,26 +61,22 @@ func (u *authCtrl) Login(c *gin.Context) {
 
 	passRecord := dao.PassDao.QueryByUsername(username)
 	if passRecord == nil {
-		c.JSON(http.StatusNotFound,
-			dto.Result{}.Error(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()))
+		c.JSON(http.StatusNotFound, dto.Result{}.Error(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()))
 		return
 	}
 
 	if !util.PassUtil.MD5Check(password, passRecord.EncryptedPass) {
-		c.JSON(http.StatusUnauthorized,
-			dto.Result{}.Error(http.StatusUnauthorized).SetMessage(exception.PasswordError.Error()))
+		c.JSON(http.StatusUnauthorized, dto.Result{}.Error(http.StatusUnauthorized).SetMessage(exception.PasswordError.Error()))
 		return
 	}
 
 	token, err := util.PassUtil.GenToken(passRecord.User.Uid, expire)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError,
-			dto.Result{}.Error(http.StatusInternalServerError).SetMessage(exception.LoginError.Error()))
+		c.JSON(http.StatusInternalServerError, dto.Result{}.Error(http.StatusInternalServerError).SetMessage(exception.LoginError.Error()))
 		return
 	}
 
-	c.JSON(http.StatusOK,
-		dto.Result{}.Ok().PutData("user", passRecord.User).PutData("token", token))
+	c.JSON(http.StatusOK, dto.Result{}.Ok().PutData("user", passRecord.User).PutData("token", token))
 }
 
 // @Router 				/auth/register [POST]
@@ -93,11 +87,11 @@ func (u *authCtrl) Login(c *gin.Context) {
 // @Accept 				multipart/form-data
 // @ErrorCode			400 request form data error
 // @ErrorCode			400 request format error
-// @ErrorCode			500 username duplicated
+// @ErrorCode			500 username has been used
 // @ErrorCode			500 register failed
 /* @Success 200 		{
 							"code": 200,
-							"message": "Success",
+							"message": "success",
 							"data": {
 								"uid": 10,
 								"username": "aoihosizora",
@@ -109,85 +103,66 @@ func (u *authCtrl) Login(c *gin.Context) {
 							}
  						} */
 func (u *authCtrl) Register(c *gin.Context) {
-
-	username := c.PostForm("username")
-	password := c.PostForm("password")
-	if username == "" || password == "" {
-		c.JSON(http.StatusBadRequest,
-			dto.Result{}.Error(http.StatusBadRequest).SetMessage(exception.FormParamError.Error()))
+	username, exist1 := c.GetPostForm("username")
+	password, exist2 := c.GetPostForm("password")
+	if !exist1 || !exist2 {
+		c.JSON(http.StatusBadRequest, dto.Result{}.Error(http.StatusBadRequest).SetMessage(exception.FormParamError.Error()))
 		return
 	}
 	if !model.FormatCheck.Username(username) || !model.FormatCheck.Password(password) {
-		c.JSON(http.StatusBadRequest,
-			dto.Result{}.Error(http.StatusBadRequest).SetMessage(exception.FormatError.Error()))
+		c.JSON(http.StatusBadRequest, dto.Result{}.Error(http.StatusBadRequest).SetMessage(exception.FormatError.Error()))
 		return
 	}
 
 	passRecord := &po.PassRecord{
 		EncryptedPass: util.PassUtil.MD5Encode(password),
 		User: &po.User{
-			Username: username, RegisterIP: c.ClientIP(),
+			Username: username,
+			RegisterIP: c.ClientIP(),
 		},
 	}
 	status := dao.PassDao.Insert(passRecord)
 	if status == database.DbExisted {
-		c.JSON(http.StatusInternalServerError,
-			dto.Result{}.Error(http.StatusInternalServerError).SetMessage(exception.UserNameUsedError.Error()))
+		c.JSON(http.StatusInternalServerError, dto.Result{}.Error(http.StatusInternalServerError).SetMessage(exception.UserNameUsedError.Error()))
 		return
 	} else if status == database.DbFailed {
-		c.JSON(http.StatusInternalServerError,
-			dto.Result{}.Error(http.StatusInternalServerError).SetMessage(exception.RegisterError.Error()))
+		c.JSON(http.StatusInternalServerError, dto.Result{}.Error(http.StatusInternalServerError).SetMessage(exception.RegisterError.Error()))
 		return
 	}
 
-	c.JSON(http.StatusOK,
-		dto.Result{}.Ok().SetData(passRecord.User))
+	c.JSON(http.StatusOK, dto.Result{}.Ok().SetData(passRecord.User))
 }
 
 // @Router 				/auth/pass [POST] [Auth]
 // @Summary 			修改密码
 // @Description 		用户修改密码
-// @Param 				Authorization header string true "用户登录令牌"
 // @Param 				password formData string true "用户密码" minLength(8) maxLength(30)
 // @Accept 				multipart/form-data
 // @ErrorCode			400 request form data error
 // @ErrorCode			400 request format error
-// @ErrorCode			401 authorization failed
-// @ErrorCode			401 token has expired
 // @ErrorCode			404 user not found
 // @ErrorCode			500 update password failed
 /* @Success 200 		{
 							"code": 200,
-							"message": "Success",
-							"data": {
-								"uid": 10,
-								"username": "aoihosizora",
-								"sex": "unknown",
-								"profile": "",
-								"avatar_url": "",
-								"birth_time": "2000-01-01",
-								"authority": "normal"
-							}
+							"message": "success"
  						} */
 func (u *authCtrl) ModifyPass(c *gin.Context) {
-	user := middleware.GetAuthUser(c)
+	authUser := middleware.GetAuthUser(c)
 
-	password := c.PostForm("password")
-	if password == "" {
-		c.JSON(http.StatusBadRequest,
-			dto.Result{}.Error(http.StatusBadRequest).SetMessage(exception.FormParamError.Error()))
+	password, exist := c.GetPostForm("password")
+	if !exist {
+		c.JSON(http.StatusBadRequest, dto.Result{}.Error(http.StatusBadRequest).SetMessage(exception.FormParamError.Error()))
 		return
 	}
 	if !model.FormatCheck.Password(password) {
-		c.JSON(http.StatusBadRequest,
-			dto.Result{}.Error(http.StatusBadRequest).SetMessage(exception.FormatError.Error()))
+		c.JSON(http.StatusBadRequest, dto.Result{}.Error(http.StatusBadRequest).SetMessage(exception.FormatError.Error()))
 		return
 	}
 
 	passRecord := &po.PassRecord{
 		EncryptedPass: util.PassUtil.MD5Encode(password),
-		User:          user,
-		Uid:           user.Uid,
+		User:          authUser,
+		Uid:           authUser.Uid,
 	}
 	status := dao.PassDao.Update(passRecord)
 	if status == database.DbNotFound {
@@ -200,20 +175,16 @@ func (u *authCtrl) ModifyPass(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK,
-		dto.Result{}.Ok().SetData(passRecord.User))
+	c.JSON(http.StatusOK, dto.Result{}.Ok())
 }
 
 // @Router 				/auth/ [GET] [Auth]
 // @Summary 			查看当前登录用户
 // @Description 		根据认证令牌，查看当前登录用户
-// @Param 				Authorization header string true "用户登录令牌"
 // @Accept 				multipart/form-data
-// @ErrorCode			401 authorization failed
-// @ErrorCode			401 token has expired
 /* @Success 200 		{
 							"code": 200,
-							"message": "Success",
+							"message": "success",
 							"data": {
 								"uid": 10,
 								"username": "aoihosizora",
@@ -225,7 +196,6 @@ func (u *authCtrl) ModifyPass(c *gin.Context) {
 							}
  						} */
 func (u *authCtrl) CurrentUser(c *gin.Context) {
-	user := middleware.GetAuthUser(c)
-	c.JSON(http.StatusOK,
-		dto.Result{}.Ok().SetData(user))
+	authUser := middleware.GetAuthUser(c)
+	c.JSON(http.StatusOK, dto.Result{}.Ok().SetData(authUser))
 }

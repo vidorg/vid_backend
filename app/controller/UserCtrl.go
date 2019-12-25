@@ -21,15 +21,12 @@ var UserCtrl = new(userCtrl)
 // @Router 				/user?page [GET] [Auth]
 // @Summary 			查询所有用户
 // @Description 		管理员查询所有用户，返回分页数据，Admin
-// @Param 				Authorization header string true "用户登录令牌"
 // @Param 				page query integer false "分页"
 // @Accept 				multipart/form-data
-// @ErrorCode			401 authorization failed
-// @ErrorCode			401 token has expired
 // @ErrorCode			401 need admin authority
 /* @Success 200 		{
 							"code": 200,
-							"message": "Success",
+							"message": "success",
 							"data": {
 								"count": 1,
 								"page": 1,
@@ -53,8 +50,7 @@ func (u *userCtrl) QueryAllUsers(c *gin.Context) {
 		page = 1
 	}
 	users, count := dao.UserDao.QueryAll(page)
-	c.JSON(http.StatusOK,
-		dto.Result{}.Ok().SetPage(count, page, users))
+	c.JSON(http.StatusOK, dto.Result{}.Ok().SetPage(count, page, users))
 }
 
 // @Router 				/user/{uid} [GET]
@@ -66,7 +62,7 @@ func (u *userCtrl) QueryAllUsers(c *gin.Context) {
 // @ErrorCode			404 user not found
 /* @Success 200 		{
 							"code": 200,
-							"message": "Success",
+							"message": "success",
 							"data": {
 								"user": {
 									"uid": 10,
@@ -89,19 +85,17 @@ func (u *userCtrl) QueryUser(c *gin.Context) {
 	uidString := c.Param("uid")
 	uid, err := strconv.Atoi(uidString)
 	if err != nil {
-		c.JSON(http.StatusBadRequest,
-			dto.Result{}.Error(http.StatusBadRequest).SetMessage(exception.RouteParamError.Error()))
+		c.JSON(http.StatusBadRequest, dto.Result{}.Error(http.StatusBadRequest).SetMessage(exception.RouteParamError.Error()))
 		return
 	}
 
 	user := dao.UserDao.QueryByUid(uid)
 	if user == nil {
-		c.JSON(http.StatusNotFound,
-			dto.Result{}.Error(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()))
+		c.JSON(http.StatusNotFound, dto.Result{}.Error(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()))
 		return
 	}
-
-	isSelfOrAdmin := middleware.GetAuthUser(c) == nil || user.Authority == enum.AuthAdmin
+	authUser := middleware.GetAuthUser(c)
+	isSelfOrAdmin := authUser != nil && (authUser.Uid == uid || authUser.Authority == enum.AuthAdmin)
 	if !isSelfOrAdmin {
 		user.PhoneNumber = ""
 	}
@@ -110,33 +104,29 @@ func (u *userCtrl) QueryUser(c *gin.Context) {
 		PhoneNumber:      user.PhoneNumber,
 		SubscribingCount: subscribingCnt,
 		SubscriberCount:  subscriberCnt,
-		VideoCount:       0,
+		VideoCount:       0, // TODO
 		PlaylistCount:    0,
 	}
 
-	c.JSON(http.StatusOK,
-		dto.Result{}.Ok().PutData("user", user).PutData("extra", extraInfo))
+	c.JSON(http.StatusOK, dto.Result{}.Ok().PutData("user", user).PutData("extra", extraInfo))
 }
 
 // @Router 				/user/ [PUT] [Auth]
 // @Summary 			更新用户
 // @Description 		更新用户信息
-// @Param 				Authorization header string true "用户登录令牌"
-// @Param 				username formData string false "用户名" minLength(8) maxLength(30)
-// @Param 				sex formData string false "用户性别" enum(male, female, unknown)
-// @Param 				profile formData string false "用户简介" minLength(0) maxLength(255)
-// @Param 				birth_time formData string false "用户生日，固定格式为2000-01-01"
-// @Param 				phone_number formData string false "用户手机号码"
+// @Param 				username formData string true "用户名" minLength(8) maxLength(30)
+// @Param 				sex formData string true "用户性别" enum(male, female, unknown)
+// @Param 				profile formData string true "用户简介" minLength(0) maxLength(255)
+// @Param 				birth_time formData string true "用户生日，固定格式为2000-01-01"
+// @Param 				phone_number formData string true "用户手机号码"
 // @Accept 				multipart/form-data
 // @ErrorCode 			400 request format error
-// @ErrorCode 			401 authorization failed
-// @ErrorCode 			401 token has expired
+// @ErrorCode 			400 username has been used
 // @ErrorCode 			404 user not found
-// @ErrorCode 			500 username duplicated
 // @ErrorCode 			500 user update failed
 /* @Success 200 		{
 							"code": 200,
-							"message": "Success",
+							"message": "success",
 							"data": {
 								"uid": 10,
 								"username": "aoihosizora",
@@ -148,63 +138,63 @@ func (u *userCtrl) QueryUser(c *gin.Context) {
 							}
  						} */
 func (u *userCtrl) UpdateUser(c *gin.Context) {
-	user := middleware.GetAuthUser(c)
+	authUser := middleware.GetAuthUser(c)
 
-	username := c.DefaultPostForm("username", user.Username)
-	profile := c.DefaultPostForm("profile", user.Profile)
-	if !model.FormatCheck.Username(username) || !model.FormatCheck.UserProfile(profile) {
-		c.JSON(http.StatusBadRequest,
-			dto.Result{}.Error(http.StatusBadRequest).SetMessage(exception.FormatError.Error()))
+	username, exist1 := c.GetPostForm("username")
+	profile, exist2 := c.GetPostForm("profile")
+	sex, exist3 := c.GetPostForm("sex")
+	birthTimeStr, exist4 := c.GetPostForm("birth_time")
+	birthTime, err := vo.JsonDate{}.Parse(birthTimeStr)
+	phoneNumber, exist5 := c.GetPostForm("phone_number")
+	if !exist1 || !exist2 || !exist3 || !exist4 || !exist5 {
+		c.JSON(http.StatusBadRequest, dto.Result{}.Error(http.StatusBadRequest).SetMessage(exception.FormParamError.Error()))
 		return
 	}
-	user.Username = username
-	user.Profile = profile
-	user.Sex = enum.StringToSex(c.DefaultPostForm("sex", string(user.Sex)))
-	user.BirthTime = vo.JsonDate{}.Parse(c.DefaultPostForm("birth_time", user.BirthTime.String()), user.BirthTime)
-	user.PhoneNumber = c.DefaultPostForm("phone_number", user.PhoneNumber)
+	if !model.FormatCheck.Username(username) || !model.FormatCheck.UserProfile(profile) || err != nil {
+		c.JSON(http.StatusBadRequest, dto.Result{}.Error(http.StatusBadRequest).SetMessage(exception.FormatError.Error()))
+		return
+	}
 
-	status := dao.UserDao.Update(user)
+	authUser.Username = username
+	authUser.Sex = enum.StringToSex(sex)
+	authUser.Profile = profile
+	authUser.BirthTime = birthTime
+	authUser.PhoneNumber = phoneNumber
+
+	status := dao.UserDao.Update(authUser)
 	if status == database.DbNotFound {
-		c.JSON(http.StatusNotFound,
-			dto.Result{}.Error(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()))
+		c.JSON(http.StatusNotFound, dto.Result{}.Error(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()))
 		return
 	} else if status == database.DbExisted {
-		c.JSON(http.StatusInternalServerError,
-			dto.Result{}.Error(http.StatusInternalServerError).SetMessage(exception.UserNameUsedError.Error()))
+		c.JSON(http.StatusBadRequest, dto.Result{}.Error(http.StatusBadRequest).SetMessage(exception.UserNameUsedError.Error()))
 		return
 	} else if status == database.DbFailed {
-		c.JSON(http.StatusInternalServerError,
-			dto.Result{}.Error(http.StatusInternalServerError).SetMessage(exception.UserUpdateError.Error()))
+		c.JSON(http.StatusInternalServerError, dto.Result{}.Error(http.StatusInternalServerError).SetMessage(exception.UserUpdateError.Error()))
 		return
 	}
 
-	c.JSON(http.StatusOK,
-		dto.Result{}.Ok().SetData(user))
+	c.JSON(http.StatusOK, dto.Result{}.Ok().SetData(authUser))
 }
 
 // @Router 				/user/ [DELETE] [Auth]
 // @Summary 			删除用户
 // @Description 		删除用户所有信息
-// @Param 				Authorization header string true "用户登录令牌"
 // @Accept 				multipart/form-data
-// @ErrorCode 			401 authorization failed
-// @ErrorCode 			401 token has expired
 // @ErrorCode 			404 user not found
-// @ErrorCode 			404 user delete failed
+// @ErrorCode 			500 user delete failed
 /* @Success 200 		{
 							"code": 200,
-							"message": "Success"
+							"message": "success"
  						} */
 func (u *userCtrl) DeleteUser(c *gin.Context) {
-	user := middleware.GetAuthUser(c)
-	status := dao.UserDao.Delete(user.Uid)
+	authUser := middleware.GetAuthUser(c)
+
+	status := dao.UserDao.Delete(authUser.Uid)
 	if status == database.DbNotFound {
-		c.JSON(http.StatusNotFound,
-			dto.Result{}.Error(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()))
+		c.JSON(http.StatusNotFound, dto.Result{}.Error(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()))
 		return
 	} else if status == database.DbFailed {
-		c.JSON(http.StatusInternalServerError,
-			dto.Result{}.Error(http.StatusInternalServerError).SetMessage(exception.UserDeleteError.Error()))
+		c.JSON(http.StatusInternalServerError, dto.Result{}.Error(http.StatusInternalServerError).SetMessage(exception.UserDeleteError.Error()))
 		return
 	}
 

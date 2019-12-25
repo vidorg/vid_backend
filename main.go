@@ -17,17 +17,19 @@ import (
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
-// @title vid backend
-// @version 1.1
-// @description Backend of repo https://github.com/vidorg/vid_vue
-// @termsOfService https://github.com/vidorg
-// @host localhost:3344
-// @basePath /
-// @license.name MIT
-// @license.url https://github.com/vidorg/vid_backend/blob/master/LICENSE
-// @swagger 2.0
+// @title 					vid backend
+// @version 				1.1
+// @description 			Backend of repo https://github.com/vidorg/vid_vue
+// @termsOfService 			https://github.com/vidorg
+// @host 					localhost:3344
+// @basePath 				/
+// @authorization.param 	Authorization header string true "用户登录令牌"
+// @authorization.error		401 authorization failed
+// @authorization.error		401 token has expired
+// @license.name 			MIT
+// @license.url 			https://github.com/vidorg/vid_backend/blob/master/LICENSE
+// @swagger 				2.0
 func main() {
-
 	// ServerConfig
 	cfg, err := config.Load()
 	if err != nil {

@@ -6,10 +6,10 @@ import (
 
 // Request
 var (
+	RouteParamError = errors.New("request route param error")
 	FormParamError  = errors.New("request form data error")
 	JsonParamError  = errors.New("request raw json error")
-	QueryParamError = errors.New("request query param error")
-	RouteParamError = errors.New("request route param error")
+	// QueryParamError = errors.New("request query param error")
 
 	FormatError = errors.New("request format error")
 )
@@ -34,7 +34,7 @@ var (
 	UserDeleteError   = errors.New("user delete failed") // D
 	UserNotFoundError = errors.New("user not found")     // R
 
-	UserNameUsedError  = errors.New("username duplicated")
+	UserNameUsedError  = errors.New("username has been used")
 	SubscribeSelfError = errors.New("subscribe oneself invalid")
 	SubscribeError     = errors.New("subscribe failed")
 	UnSubscribeError   = errors.New("unsubscribe failed")
@@ -45,7 +45,7 @@ var (
 	VideoUpdateError   = errors.New("video update failed") // U
 	VideoDeleteError   = errors.New("video delete failed") // D
 
-	VideoExistError   = errors.New("video existed failed")
+	VideoExistError   = errors.New("video resource has been used")
 
 	// playlist
 	PlaylistInsertError   = errors.New("playlist insert failed") // C

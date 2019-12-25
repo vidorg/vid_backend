@@ -25,7 +25,7 @@ var SubCtrl = new(subCtrl)
 // @ErrorCode			404 user not found
 /* @Success 200 		{
 							"code": 200,
-							"message": "Success",
+							"message": "success",
 							"data": {
 								"count": 1,
 								"page": 1,
@@ -46,8 +46,7 @@ func (u *subCtrl) QuerySubscriberUsers(c *gin.Context) {
 	uidString, _ := c.Params.Get("uid")
 	uid, err := strconv.Atoi(uidString)
 	if err != nil {
-		c.JSON(http.StatusBadRequest,
-			dto.Result{}.Error(http.StatusBadRequest).SetMessage(exception.RouteParamError.Error()))
+		c.JSON(http.StatusBadRequest, dto.Result{}.Error(http.StatusBadRequest).SetMessage(exception.RouteParamError.Error()))
 		return
 	}
 	pageString := c.Query("page")
@@ -58,13 +57,11 @@ func (u *subCtrl) QuerySubscriberUsers(c *gin.Context) {
 
 	users, count, status := dao.SubDao.QuerySubscriberUsers(uid, page)
 	if status == database.DbNotFound {
-		c.JSON(http.StatusNotFound,
-			dto.Result{}.Error(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()))
+		c.JSON(http.StatusNotFound, dto.Result{}.Error(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()))
 		return
 	}
 
-	c.JSON(http.StatusOK,
-		dto.Result{}.Ok().SetPage(count, page, users))
+	c.JSON(http.StatusOK, dto.Result{}.Ok().SetPage(count, page, users))
 }
 
 // @Router 				/user/{uid}/subscribing [GET]
@@ -77,7 +74,7 @@ func (u *subCtrl) QuerySubscriberUsers(c *gin.Context) {
 // @ErrorCode			404 user not found
 /* @Success 200 		{
 							"code": 200,
-							"message": "Success",
+							"message": "success",
 							"data": {
 								"count": 1,
 								"page": 1,
@@ -98,8 +95,7 @@ func (u *subCtrl) QuerySubscribingUsers(c *gin.Context) {
 	uidString, _ := c.Params.Get("uid")
 	uid, err := strconv.Atoi(uidString)
 	if err != nil {
-		c.JSON(http.StatusBadRequest,
-			dto.Result{}.Error(http.StatusBadRequest).SetMessage(exception.RouteParamError.Error()))
+		c.JSON(http.StatusBadRequest, dto.Result{}.Error(http.StatusBadRequest).SetMessage(exception.RouteParamError.Error()))
 		return
 	}
 	pageString := c.Query("page")
@@ -110,8 +106,7 @@ func (u *subCtrl) QuerySubscribingUsers(c *gin.Context) {
 
 	users, count, status := dao.SubDao.QuerySubscribingUsers(uid, page)
 	if status == database.DbNotFound {
-		c.JSON(http.StatusNotFound,
-			dto.Result{}.Error(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()))
+		c.JSON(http.StatusNotFound, dto.Result{}.Error(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()))
 		return
 	}
 
@@ -119,21 +114,18 @@ func (u *subCtrl) QuerySubscribingUsers(c *gin.Context) {
 		dto.Result{}.Ok().SetPage(count, page, users))
 }
 
-// @Router 				/user/sub?uid [POST] [Auth]
+// @Router 				/user/subscribing/{uid} [POST] [Auth]
 // @Summary 			关注用户
 // @Description 		关注某一用户
-// @Param 				Authorization header string true "用户登录令牌"
 // @Param 				uid query integer true "关注用户id"
 // @Accept 				multipart/form-data
-// @ErrorCode 			400 request query param error
+// @ErrorCode 			400 request route param error
 // @ErrorCode 			400 subscribe oneself invalid
-// @ErrorCode 			401 authorization failed
-// @ErrorCode 			401 token has expired
 // @ErrorCode 			404 user not found
 // @ErrorCode 			500 subscribe failed
 /* @Success 200 		{
 							"code": 200,
-							"message": "Success",
+							"message": "success",
 							"data": {
 								"me": 10,
 								"up": 3,
@@ -141,49 +133,42 @@ func (u *subCtrl) QuerySubscribingUsers(c *gin.Context) {
 							}
  						} */
 func (u *subCtrl) SubscribeUser(c *gin.Context) {
-	user := middleware.GetAuthUser(c)
-	upUidString := c.Query("uid")
+	authUser := middleware.GetAuthUser(c)
+
+	upUidString, _ := c.Params.Get("uid")
 	upUid, err := strconv.Atoi(upUidString)
 	if err != nil {
-		c.JSON(http.StatusBadRequest,
-			dto.Result{}.Error(http.StatusBadRequest).SetMessage(exception.QueryParamError.Error()))
+		c.JSON(http.StatusBadRequest, dto.Result{}.Error(http.StatusBadRequest).SetMessage(exception.RouteParamError.Error()))
 		return
 	}
-	if user.Uid == upUid {
-		c.JSON(http.StatusBadRequest,
-			dto.Result{}.Error(http.StatusBadRequest).SetMessage(exception.SubscribeSelfError.Error()))
+	if authUser.Uid == upUid {
+		c.JSON(http.StatusBadRequest, dto.Result{}.Error(http.StatusBadRequest).SetMessage(exception.SubscribeSelfError.Error()))
 		return
 	}
 
-	status := dao.SubDao.SubscribeUser(user.Uid, upUid)
+	status := dao.SubDao.SubscribeUser(authUser.Uid, upUid)
 	if status == database.DbNotFound {
-		c.JSON(http.StatusNotFound,
-			dto.Result{}.Error(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()))
+		c.JSON(http.StatusNotFound, dto.Result{}.Error(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()))
 		return
 	} else if status == database.DbFailed {
-		c.JSON(http.StatusInternalServerError,
-			dto.Result{}.Error(http.StatusInternalServerError).SetMessage(exception.SubscribeError.Error()))
+		c.JSON(http.StatusInternalServerError, dto.Result{}.Error(http.StatusInternalServerError).SetMessage(exception.SubscribeError.Error()))
 		return
 	}
 
-	c.JSON(http.StatusOK,
-		dto.Result{}.Ok().PutData("me", user.Uid).PutData("up", upUid).PutData("action", "subscribe"))
+	c.JSON(http.StatusOK, dto.Result{}.Ok().PutData("me", authUser.Uid).PutData("up", upUid).PutData("action", "subscribe"))
 }
 
-// @Router 				/user/unsub?uid [POST] [Auth]
+// @Router 				/user/subscribing/{uid} [DELETE] [Auth]
 // @Summary 			取消关注用户
 // @Description 		取消关注某一用户
-// @Param 				Authorization header string true "用户登录令牌"
 // @Param 				uid query integer true "取消关注用户id"
 // @Accept 				multipart/form-data
-// @ErrorCode			400 request query param error
-// @ErrorCode			401 authorization failed
-// @ErrorCode			401 token has expired
+// @ErrorCode			400 request route param error
 // @ErrorCode			404 user not found
 // @ErrorCode			500 unsubscribe failed
 /* @Success 200 		{
 							"code": 200,
-							"message": "Success",
+							"message": "success",
 							"data": {
 								"me": 10,
 								"up": 3,
@@ -191,26 +176,24 @@ func (u *subCtrl) SubscribeUser(c *gin.Context) {
 							}
  						} */
 func (u *subCtrl) UnSubscribeUser(c *gin.Context) {
-	user := middleware.GetAuthUser(c)
-	upUidString := c.Query("uid")
+	authUser := middleware.GetAuthUser(c)
+
+	upUidString, _ := c.Params.Get("uid")
 	upUid, err := strconv.Atoi(upUidString)
 	if err != nil {
-		c.JSON(http.StatusBadRequest,
-			dto.Result{}.Error(http.StatusBadRequest).SetMessage(exception.QueryParamError.Error()))
+		c.JSON(http.StatusBadRequest, dto.Result{}.Error(http.StatusBadRequest).SetMessage(exception.RouteParamError.Error()))
 		return
 	}
 
-	status := dao.SubDao.UnSubscribeUser(user.Uid, upUid)
+	status := dao.SubDao.UnSubscribeUser(authUser.Uid, upUid)
 	if status == database.DbNotFound {
-		c.JSON(http.StatusNotFound,
-			dto.Result{}.Error(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()))
+		c.JSON(http.StatusNotFound, dto.Result{}.Error(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()))
 		return
 	} else if status == database.DbFailed {
-		c.JSON(http.StatusInternalServerError,
-			dto.Result{}.Error(http.StatusInternalServerError).SetMessage(exception.UnSubscribeError.Error()))
+		c.JSON(http.StatusInternalServerError, dto.Result{}.Error(http.StatusInternalServerError).SetMessage(exception.UnSubscribeError.Error()))
 		return
 	}
 
 	c.JSON(http.StatusOK,
-		dto.Result{}.Ok().PutData("me", user.Uid).PutData("up", upUid).PutData("action", "unsubscribe"))
+		dto.Result{}.Ok().PutData("me", authUser.Uid).PutData("up", upUid).PutData("action", "unsubscribe"))
 }

@@ -38,13 +38,9 @@ func (dt JsonDateTime) String() string {
 	return time.Time(dt).Format(dateTimeFormat)
 }
 
-func (d JsonDate) Parse(dateString string, defaultDate JsonDate) JsonDate {
+func (d JsonDate) Parse(dateString string) (JsonDate, error) {
 	newD, err := time.ParseInLocation(dateFormat, dateString, location)
-	if err != nil {
-		return defaultDate
-	} else {
-		return JsonDate(newD)
-	}
+	return JsonDate(newD), err
 }
 
 func (dt JsonDateTime) Parse(dateTimeString string, defaultDateTime JsonDateTime) JsonDateTime {

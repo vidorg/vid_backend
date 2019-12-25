@@ -19,8 +19,8 @@ func SetupUserGroup(router *gin.Engine) {
 		userGroup.PUT("/", jwt, UserCtrl.UpdateUser)
 		userGroup.DELETE("/", jwt, UserCtrl.DeleteUser)
 
-		userGroup.POST("/sub", jwt, SubCtrl.SubscribeUser)
-		userGroup.POST("/unsub", jwt, SubCtrl.UnSubscribeUser)
+		userGroup.POST("/subscribing/:uid", jwt, SubCtrl.SubscribeUser)
+		userGroup.DELETE("/subscribing/:uid", jwt, SubCtrl.UnSubscribeUser)
 
 		userGroup.GET("/:uid/subscriber", SubCtrl.QuerySubscriberUsers)
 		userGroup.GET("/:uid/subscribing", SubCtrl.QuerySubscribingUsers)

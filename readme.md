@@ -9,7 +9,7 @@
 [yaml doc](https://github.com/vidorg/vid_backend/blob/master/docs/api.yaml) and 
 [html doc](https://github.com/vidorg/vid_backend/blob/master/docs/api.html)
 ```bash
-sh genapi.sh
+sh gendoc.sh
 
 # yaml:
 # python ./docs/parse_yaml.py main.go ./docs/api.yaml
