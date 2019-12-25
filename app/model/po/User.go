@@ -1,6 +1,8 @@
 package po
 
 import (
+	"reflect"
+	"vid/app/model/dto"
 	"vid/app/model/enum"
 	"vid/app/model/vo"
 )
@@ -23,4 +25,20 @@ type User struct {
 	Subscribers  []*User `json:"-" gorm:"many2many:subscribe;jointable_foreignkey:up_uid;association_jointable_foreignkey:subscriber_uid"` // subscriber_uid -> up_uid
 
 	GormTime `json:"-"`
+}
+
+func (User) AvatarUrlConverter() dto.Converter {
+	return dto.Converter{
+		FieldType: reflect.TypeOf(User{}),
+		Converter: func(obj interface{}) interface{} {
+			if content, ok := obj.(User); ok {
+				content.AvatarUrl = "http://localhost:3344/" + content.AvatarUrl
+				return content
+			} else if content, ok := obj.(*User); ok {
+				content.AvatarUrl = "http://localhost:3344/" + content.AvatarUrl
+				return content
+			}
+			return obj
+		},
+	}
 }

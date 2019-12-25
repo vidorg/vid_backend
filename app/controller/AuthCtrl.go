@@ -133,7 +133,7 @@ func (u *authCtrl) Register(c *gin.Context) {
 	c.JSON(http.StatusOK, dto.Result{}.Ok().SetData(passRecord.User))
 }
 
-// @Router 				/auth/pass [POST] [Auth]
+// @Router 				/auth/password [PUT] [Auth]
 // @Summary 			修改密码
 // @Description 		用户修改密码
 // @Param 				password formData string true "用户密码" minLength(8) maxLength(30)
@@ -146,7 +146,7 @@ func (u *authCtrl) Register(c *gin.Context) {
 							"code": 200,
 							"message": "success"
  						} */
-func (u *authCtrl) ModifyPass(c *gin.Context) {
+func (u *authCtrl) ModifyPassword(c *gin.Context) {
 	authUser := middleware.GetAuthUser(c)
 
 	password, exist := c.GetPostForm("password")

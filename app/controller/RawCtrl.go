@@ -29,7 +29,7 @@ func (r *rawCtrl) UploadImage(c *gin.Context) {
 	}
 	filename := header.Filename
 
-	ok, ext := util.CmnUtil.ImageExt(filename)
+	ok, ext := util.ImageUtil.CheckImageExt(filename)
 	if !ok {
 		c.JSON(http.StatusBadRequest, resp.Message{
 			Message: exception.FileExtensionError.Error(),
@@ -37,18 +37,18 @@ func (r *rawCtrl) UploadImage(c *gin.Context) {
 		return
 	}
 
-	filename = util.CmnUtil.CurrentTimeInt()
+	filename = util.CommonUtil.CurrentTimeUuid()
 	// ./usr/image/2/20190919170528.jpg
 	filepath := fmt.Sprintf("./usr/image/%d/%s%s", uid, filename, ext)
-	if !util.CmnUtil.SaveFile(filepath, file) {
+	if !util.CommonUtil.SaveFile(filepath, file) {
 		c.JSON(http.StatusInternalServerError, resp.Message{
-			Message: exception.ImageUploadError.Error(),
+			Message: exception.ImageSaveError.Error(),
 		})
 	} else {
 		// http://127.0.0.1:1234/raw/image/2/20190919170528.jpg
 		c.JSON(http.StatusInternalServerError, resp.RawResp{
 			Type: "Image",
-			Url:  util.CmnUtil.GetImageUrl(uid, filename+ext),
+			Url:  util.CommonUtil.GetImageUrl(uid, filename+ext),
 		})
 	}
 }
@@ -67,7 +67,7 @@ func (r *rawCtrl) UploadVideo(c *gin.Context) {
 	}
 	filename := header.Filename
 
-	ok, ext := util.CmnUtil.VideoExt(filename)
+	ok, ext := util.CommonUtil.VideoExt(filename)
 	if !ok {
 		c.JSON(http.StatusBadRequest, resp.Message{
 			Message: exception.FileExtensionError.Error(),
@@ -75,16 +75,16 @@ func (r *rawCtrl) UploadVideo(c *gin.Context) {
 		return
 	}
 
-	filename = util.CmnUtil.CurrentTimeInt()
+	filename = util.CommonUtil.CurrentTimeUuid()
 	filepath := fmt.Sprintf("./usr/video/%d/%s%s", authusr.(po2.User).Uid, filename, ext)
-	if !util.CmnUtil.SaveFile(filepath, file) {
+	if !util.CommonUtil.SaveFile(filepath, file) {
 		c.JSON(http.StatusInternalServerError, resp.Message{
 			Message: exception.VideoUploadError.Error(),
 		})
 	} else {
 		c.JSON(http.StatusInternalServerError, resp.RawResp{
 			Type: "Video",
-			Url:  util.CmnUtil.GetVideoUrl(uid, filename+ext),
+			Url:  util.CommonUtil.GetVideoUrl(uid, filename+ext),
 		})
 	}
 }
@@ -113,7 +113,7 @@ func (r *rawCtrl) RawImage(c *gin.Context) {
 		filepath = fmt.Sprintf("./usr/image/%d/%s", uid, filename)
 	}
 
-	if !util.CmnUtil.IsFileExist(filepath) {
+	if !util.CommonUtil.IsFileOrDirExist(filepath) {
 		c.JSON(http.StatusNotFound, resp.Message{
 			Message: exception.FileNotFoundError.Error(),
 		})
@@ -141,7 +141,7 @@ func (r *rawCtrl) RawVideo(c *gin.Context) {
 	}
 
 	filepath := fmt.Sprintf("./usr/video/%d/%s", uid, filename)
-	if !util.CmnUtil.IsFileExist(filepath) {
+	if !util.CommonUtil.IsFileOrDirExist(filepath) {
 		c.JSON(http.StatusNotFound, resp.Message{
 			Message: exception.FileNotFoundError.Error(),
 		})

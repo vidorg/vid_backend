@@ -1,7 +1,9 @@
 package controller
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/shomali11/util/xconditions"
 	"net/http"
 	"strconv"
 	"vid/app/controller/exception"
@@ -11,7 +13,9 @@ import (
 	"vid/app/model"
 	"vid/app/model/dto"
 	"vid/app/model/enum"
+	"vid/app/model/po"
 	"vid/app/model/vo"
+	"vid/app/util"
 )
 
 type userCtrl struct{}
@@ -23,6 +27,7 @@ var UserCtrl = new(userCtrl)
 // @Description 		管理员查询所有用户，返回分页数据，Admin
 // @Param 				page query integer false "分页"
 // @Accept 				multipart/form-data
+// @ErrorCode			400 request query param error
 // @ErrorCode			401 need admin authority
 /* @Success 200 		{
 							"code": 200,
@@ -44,13 +49,16 @@ var UserCtrl = new(userCtrl)
 							}
  						} */
 func (u *userCtrl) QueryAllUsers(c *gin.Context) {
-	pageString := c.Query("page")
+	pageString := c.DefaultQuery("page", "1")
 	page, err := strconv.Atoi(pageString)
-	if err != nil || page == 0 {
-		page = 1
+	if err != nil {
+		c.JSON(http.StatusBadRequest, dto.Result{}.Error(http.StatusBadRequest).SetMessage(exception.QueryParamError.Error()))
+		return
 	}
+	page = xconditions.IfThenElse(page == 0, 1, page).(int)
+
 	users, count := dao.UserDao.QueryAll(page)
-	c.JSON(http.StatusOK, dto.Result{}.Ok().SetPage(count, page, users))
+	c.JSON(http.StatusOK, dto.Result{}.Ok().AddConverter(po.User{}.AvatarUrlConverter()).SetPage(count, page, users))
 }
 
 // @Router 				/user/{uid} [GET]
@@ -100,15 +108,16 @@ func (u *userCtrl) QueryUser(c *gin.Context) {
 		user.PhoneNumber = ""
 	}
 	subscribingCnt, subscriberCnt, _ := dao.SubDao.QuerySubCnt(user.Uid)
+	videoCnt, _ := dao.VideoDao.QueryCount(user.Uid)
 	extraInfo := &dto.UserExtraInfo{
 		PhoneNumber:      user.PhoneNumber,
 		SubscribingCount: subscribingCnt,
 		SubscriberCount:  subscriberCnt,
-		VideoCount:       0, // TODO
-		PlaylistCount:    0,
+		VideoCount:       videoCnt,
+		PlaylistCount:    0, // TODO
 	}
 
-	c.JSON(http.StatusOK, dto.Result{}.Ok().PutData("user", user).PutData("extra", extraInfo))
+	c.JSON(http.StatusOK, dto.Result{}.Ok().AddConverter(po.User{}.AvatarUrlConverter()).PutData("user", user).PutData("extra", extraInfo))
 }
 
 // @Router 				/user/ [PUT] [Auth]
@@ -134,7 +143,8 @@ func (u *userCtrl) QueryUser(c *gin.Context) {
 								"profile": "Demo Profile",
 								"avatar_url": "",
 								"birth_time": "2019-12-18",
-								"authority": "admin"
+								"authority": "admin",
+        						"phone_number": "13512345678"
 							}
  						} */
 func (u *userCtrl) UpdateUser(c *gin.Context) {
@@ -144,15 +154,29 @@ func (u *userCtrl) UpdateUser(c *gin.Context) {
 	profile, exist2 := c.GetPostForm("profile")
 	sex, exist3 := c.GetPostForm("sex")
 	birthTimeStr, exist4 := c.GetPostForm("birth_time")
-	birthTime, err := vo.JsonDate{}.Parse(birthTimeStr)
+	birthTime, err1 := vo.JsonDate{}.Parse(birthTimeStr)
 	phoneNumber, exist5 := c.GetPostForm("phone_number")
 	if !exist1 || !exist2 || !exist3 || !exist4 || !exist5 {
 		c.JSON(http.StatusBadRequest, dto.Result{}.Error(http.StatusBadRequest).SetMessage(exception.FormParamError.Error()))
 		return
 	}
-	if !model.FormatCheck.Username(username) || !model.FormatCheck.UserProfile(profile) || err != nil {
+	if !model.FormatCheck.Username(username) || !model.FormatCheck.UserProfile(profile) || !model.FormatCheck.PhoneNumber(phoneNumber) || err1 != nil {
 		c.JSON(http.StatusBadRequest, dto.Result{}.Error(http.StatusBadRequest).SetMessage(exception.FormatError.Error()))
 		return
+	}
+	avatarFile, avatarHeader, err2 := c.Request.FormFile("avatar")
+	if err2 == nil {
+		supported, ext := util.ImageUtil.CheckImageExt(avatarHeader.Filename)
+		if !supported {
+			c.JSON(http.StatusBadRequest, dto.Result{}.Error(http.StatusBadRequest).SetMessage(exception.ImageNotSupportedError.Error()))
+			return
+		}
+		savePath := fmt.Sprintf("./usr/image/%s/avatar_%s.jpg", strconv.Itoa(authUser.Uid), util.CommonUtil.CurrentTimeUuid())
+		if err := util.ImageUtil.SaveAsJpg(avatarFile, ext, savePath); err != nil {
+			c.JSON(http.StatusInternalServerError, dto.Result{}.Error(http.StatusInternalServerError).SetMessage(exception.ImageSaveError.Error()))
+			return
+		}
+		authUser.AvatarUrl = savePath
 	}
 
 	authUser.Username = username
@@ -173,7 +197,7 @@ func (u *userCtrl) UpdateUser(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, dto.Result{}.Ok().SetData(authUser))
+	c.JSON(http.StatusOK, dto.Result{}.Ok().SetData(authUser).PutData("phone_number", phoneNumber))
 }
 
 // @Router 				/user/ [DELETE] [Auth]

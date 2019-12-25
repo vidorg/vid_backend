@@ -7,9 +7,9 @@ import (
 // Request
 var (
 	RouteParamError = errors.New("request route param error")
+	QueryParamError = errors.New("request query param error")
 	FormParamError  = errors.New("request form data error")
 	JsonParamError  = errors.New("request raw json error")
-	// QueryParamError = errors.New("request query param error")
 
 	FormatError = errors.New("request format error")
 )
@@ -45,7 +45,7 @@ var (
 	VideoUpdateError   = errors.New("video update failed") // U
 	VideoDeleteError   = errors.New("video delete failed") // D
 
-	VideoExistError   = errors.New("video resource has been used")
+	VideoExistError = errors.New("video resource has been used")
 
 	// playlist
 	PlaylistInsertError   = errors.New("playlist insert failed") // C
@@ -59,7 +59,9 @@ var (
 
 // File
 var (
-	ImageUploadError   = errors.New("image upload failed")
+	ImageSaveError         = errors.New("image save failed")
+	ImageNotSupportedError = errors.New("image type not supported")
+
 	VideoUploadError   = errors.New("video upload failed")
 	FileExtensionError = errors.New("extension not supported")
 	FileNotFoundError  = errors.New("file not exist")
