@@ -4,8 +4,8 @@
 + `Golang` 1.11.5
 
 ### Documents
-+ See [api.md](https://github.com/vidorg/Vid_Backend/tree/master/docs/api.md)
 + Run following code to generate the swagger 
+[api.md](https://github.com/vidorg/Vid_Backend/tree/master/docs/api.md) and
 [yaml doc](https://github.com/vidorg/vid_backend/blob/master/docs/api.yaml) and 
 [html doc](https://github.com/vidorg/vid_backend/blob/master/docs/api.html)
 ```bash
@@ -20,7 +20,7 @@ sh genapi.sh
 
 ### Run
 ```bash
-cd vid/backend
+cd vid_backend
 go run main.go
 ```
 

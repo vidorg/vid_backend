@@ -21,18 +21,15 @@ var AuthCtrl = new(authCtrl)
 
 // @Router 				/auth/login [POST]
 // @Summary 			登录
-/* @Description 		用户登录，Non-Auth
-
-						| code | message |
-						| --- | --- |
-						| 400 | request form data error |
-						| 401 | password error |
-						| 404 | user not found |
- 						| 500 | login failed | */
-// @Param 				username formData string true 用户名
-// @Param 				password formData string true 用户密码
-// @Param 				expire formData integer false 登录有效期，默认一个小时
+// @Description 		用户登录
+// @Param 				username formData string true "用户名"
+// @Param 				password formData string true "用户密码"
+// @Param 				expire formData integer false "登录有效期，默认为七天"
 // @Accept 				multipart/form-data
+// @ErrorCode 			400 request form data error
+// @ErrorCode 			401 password error
+// @ErrorCode 			404 user not found
+// @ErrorCode 			500 login failed
 /* @Success 200 		{
 							"code": 200,
 							"message": "Success",
@@ -90,17 +87,14 @@ func (u *authCtrl) Login(c *gin.Context) {
 
 // @Router 				/auth/register [POST]
 // @Summary 			注册
-/* @Description 		用户注册，Non-Auth
-
-						| code | message |
-						| --- | --- |
-						| 400 | request form data error |
-						| 400 | request format error |
-						| 500 | username duplicated |
- 						| 500 | register failed | */
-// @Param 				username formData string true 用户名
-// @Param 				password formData string true 用户密码
+// @Description 		用户注册
+// @Param 				username formData string true "用户名" minLength(5) maxLength(30)
+// @Param 				password formData string true "用户密码" minLength(8) maxLength(30)
 // @Accept 				multipart/form-data
+// @ErrorCode			400 request form data error
+// @ErrorCode			400 request format error
+// @ErrorCode			500 username duplicated
+// @ErrorCode			500 register failed
 /* @Success 200 		{
 							"code": 200,
 							"message": "Success",
@@ -150,21 +144,18 @@ func (u *authCtrl) Register(c *gin.Context) {
 		dto.Result{}.Ok().SetData(passRecord.User))
 }
 
-// @Router 				/auth/pass [POST]
+// @Router 				/auth/pass [POST] [Auth]
 // @Summary 			修改密码
-/* @Description 		用户修改密码，Auth
-
-						| code | message |
-						| --- | --- |
-						| 400 | request form data error |
-						| 400 | request format error |
-						| 401 | authorization failed |
-						| 401 | token has expired |
-						| 404 | user not found |
- 						| 500 | update password failed | */
-// @Param 				Authorization header string true 用户 Token
-// @Param 				password formData string true 用户新密码
+// @Description 		用户修改密码
+// @Param 				Authorization header string true "用户登录令牌"
+// @Param 				password formData string true "用户密码" minLength(8) maxLength(30)
 // @Accept 				multipart/form-data
+// @ErrorCode			400 request form data error
+// @ErrorCode			400 request format error
+// @ErrorCode			401 authorization failed
+// @ErrorCode			401 token has expired
+// @ErrorCode			404 user not found
+// @ErrorCode			500 update password failed
 /* @Success 200 		{
 							"code": 200,
 							"message": "Success",
@@ -213,17 +204,13 @@ func (u *authCtrl) ModifyPass(c *gin.Context) {
 		dto.Result{}.Ok().SetData(passRecord.User))
 }
 
-// @Router 				/auth/ [GET]
-// @Summary 			查看当前用户
-/* @Description 		根据认证 token 查看当前用户，Auth
-
-						| code | message |
-						| --- | --- |
-						| 400 | request form data error |
-						| 401 | authorization failed |
- 						| 401 | token has expired | */
-// @Param 				Authorization header string true 用户 Token
+// @Router 				/auth/ [GET] [Auth]
+// @Summary 			查看当前登录用户
+// @Description 		根据认证令牌，查看当前登录用户
+// @Param 				Authorization header string true "用户登录令牌"
 // @Accept 				multipart/form-data
+// @ErrorCode			401 authorization failed
+// @ErrorCode			401 token has expired
 /* @Success 200 		{
 							"code": 200,
 							"message": "Success",

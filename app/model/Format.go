@@ -23,7 +23,7 @@ func (formatCheck) UserProfile(profile string) bool {
 }
 
 func (formatCheck) VideoTitle(title string) bool {
-	return len(title) <= 100
+	return len(title) >= 5 && len(title) <= 100
 }
 
 func (formatCheck) VideoDesc(desc string) bool {

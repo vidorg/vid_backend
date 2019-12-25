@@ -13,29 +13,37 @@ https://github.com/vidorg
 #### GET
 ##### Summary:
 
-查看当前用户
+查看当前登录用户
 
 ##### Description:
 
-根据认证 token 查看当前用户，Auth
+根据认证令牌，查看当前登录用户
 
-| code | message |
+| Code | Message |
 | --- | --- |
-| 400 | request form data error |
 | 401 | authorization failed |
-| 401 | token has expired | 
+| 401 | token has expired |
+
+
+
 
 ##### Parameters
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ---- |
-| Authorization | header | 用户 Token | Yes | string |
+| Authorization | header | 用户登录令牌 | Yes | string |
 
 ##### Responses
 
 | Code | Description |
 | ---- | ----------- |
 | 200 | ```json {   "code": 200,   "message": "Success",   "data": {     "uid": 10,     "username": "aoihosizora",     "sex": "unknown",     "profile": "",     "avatar_url": "",     "birth_time": "2000-01-01",     "authority": "normal"   } } ``` |
+
+##### Security
+
+| Security Schema | Scopes | |
+| --- | --- | --- |
+| basicAuth | [] | |
 
 ### /auth/login
 
@@ -46,14 +54,17 @@ https://github.com/vidorg
 
 ##### Description:
 
-用户登录，Non-Auth
+用户登录
 
-| code | message |
+| Code | Message |
 | --- | --- |
 | 400 | request form data error |
 | 401 | password error |
 | 404 | user not found |
-| 500 | login failed | 
+| 500 | login failed |
+
+
+
 
 ##### Parameters
 
@@ -61,7 +72,7 @@ https://github.com/vidorg
 | ---- | ---------- | ----------- | -------- | ---- |
 | username | formData | 用户名 | Yes | string |
 | password | formData | 用户密码 | Yes | string |
-| expire | formData | 登录有效期，默认一个小时 | No | integer |
+| expire | formData | 登录有效期，默认为七天 | No | integer |
 
 ##### Responses
 
@@ -78,29 +89,38 @@ https://github.com/vidorg
 
 ##### Description:
 
-用户修改密码，Auth
+用户修改密码
 
-| code | message |
+| Code | Message |
 | --- | --- |
 | 400 | request form data error |
 | 400 | request format error |
 | 401 | authorization failed |
 | 401 | token has expired |
 | 404 | user not found |
-| 500 | update password failed | 
+| 500 | update password failed |
+
+
+
 
 ##### Parameters
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ---- |
-| Authorization | header | 用户 Token | Yes | string |
-| password | formData | 用户新密码 | Yes | string |
+| Authorization | header | 用户登录令牌 | Yes | string |
+| password | formData | 用户密码  *Minimum length* : 8 *Maximin length* : 30 | Yes | string |
 
 ##### Responses
 
 | Code | Description |
 | ---- | ----------- |
 | 200 | ```json {   "code": 200,   "message": "Success",   "data": {     "uid": 10,     "username": "aoihosizora",     "sex": "unknown",     "profile": "",     "avatar_url": "",     "birth_time": "2000-01-01",     "authority": "normal"   } } ``` |
+
+##### Security
+
+| Security Schema | Scopes | |
+| --- | --- | --- |
+| basicAuth | [] | |
 
 ### /auth/register
 
@@ -111,21 +131,24 @@ https://github.com/vidorg
 
 ##### Description:
 
-用户注册，Non-Auth
+用户注册
 
-| code | message |
+| Code | Message |
 | --- | --- |
 | 400 | request form data error |
 | 400 | request format error |
 | 500 | username duplicated |
-| 500 | register failed | 
+| 500 | register failed |
+
+
+
 
 ##### Parameters
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ---- |
-| username | formData | 用户名 | Yes | string |
-| password | formData | 用户密码 | Yes | string |
+| username | formData | 用户名  *Minimum length* : 5 *Maximin length* : 30 | Yes | string |
+| password | formData | 用户密码  *Minimum length* : 8 *Maximin length* : 30 | Yes | string |
 
 ##### Responses
 
@@ -142,26 +165,35 @@ https://github.com/vidorg
 
 ##### Description:
 
-删除用户所有信息，Auth
+删除用户所有信息
 
-| code | message |
+| Code | Message |
 | --- | --- |
 | 401 | authorization failed |
 | 401 | token has expired |
 | 404 | user not found |
-| 404 | user delete failed | 
+| 404 | user delete failed |
+
+
+
 
 ##### Parameters
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ---- |
-| Authorization | header | 用户 Token | Yes | string |
+| Authorization | header | 用户登录令牌 | Yes | string |
 
 ##### Responses
 
 | Code | Description |
 | ---- | ----------- |
 | 200 | ```json {   "code": 200,   "message": "Success" } ``` |
+
+##### Security
+
+| Security Schema | Scopes | |
+| --- | --- | --- |
+| basicAuth | [] | |
 
 #### PUT
 ##### Summary:
@@ -170,9 +202,9 @@ https://github.com/vidorg
 
 ##### Description:
 
-更新用户信息，Auth
+更新用户信息
 
-| code | message |
+| Code | Message |
 | --- | --- |
 | 400 | request format error |
 | 401 | authorization failed |
@@ -181,22 +213,31 @@ https://github.com/vidorg
 | 500 | username duplicated |
 | 500 | user update failed |
 
+
+
+
 ##### Parameters
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ---- |
-| Authorization | header | 用户 Token | Yes | string |
-| username | formData | 新用户名 | No | string |
-| sex | formData | 新用户性别，只允许为 (male, female, unknown) | No | string |
-| profile | formData | 新用户简介 | No | string |
-| birth_time | formData | 新用户生日，固定格式为 2000-01-01 | No | string |
-| phone_number | formData | 新用户电话号码 | No | string |
+| Authorization | header | 用户登录令牌 | Yes | string |
+| username | formData | 用户名  *Minimum length* : 8 *Maximin length* : 30 | No | string |
+| sex | formData | 用户性别 | No | string |
+| profile | formData | 用户简介  *Minimum length* : 0 *Maximin length* : 255 | No | string |
+| birth_time | formData | 用户生日，固定格式为2000-01-01 | No | string |
+| phone_number | formData | 用户手机号码 | No | string |
 
 ##### Responses
 
 | Code | Description |
 | ---- | ----------- |
 | 200 | ```json {   "code": 200,   "message": "Success",   "data": {     "uid": 10,     "username": "aoihosizora",     "sex": "male",     "profile": "Demo Profile",     "avatar_url": "",     "birth_time": "2019-12-18",     "authority": "admin"   } } ``` |
+
+##### Security
+
+| Security Schema | Scopes | |
+| --- | --- | --- |
+| basicAuth | [] | |
 
 ### /user/sub?uid
 
@@ -207,29 +248,38 @@ https://github.com/vidorg
 
 ##### Description:
 
-关注某一用户，Auth
+关注某一用户
 
-| code | message |
+| Code | Message |
 | --- | --- |
 | 400 | request query param error |
 | 400 | subscribe oneself invalid |
 | 401 | authorization failed |
 | 401 | token has expired |
 | 404 | user not found |
-| 500 | subscribe failed | 
+| 500 | subscribe failed |
+
+
+
 
 ##### Parameters
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ---- |
-| Authorization | header | 用户 Token | Yes | string |
-| uid | query | 对方用户 id | Yes | integer |
+| Authorization | header | 用户登录令牌 | Yes | string |
+| uid | query | 关注用户id | Yes | integer |
 
 ##### Responses
 
 | Code | Description |
 | ---- | ----------- |
 | 200 | ```json {   "code": 200,   "message": "Success",   "data": {     "me": 10,     "up": 3,     "action": "subscribe"   } } ``` |
+
+##### Security
+
+| Security Schema | Scopes | |
+| --- | --- | --- |
+| basicAuth | [] | |
 
 ### /user/unsub?uid
 
@@ -240,28 +290,37 @@ https://github.com/vidorg
 
 ##### Description:
 
-取消关注某一用户，Auth
+取消关注某一用户
 
-| code | message |
+| Code | Message |
 | --- | --- |
 | 400 | request query param error |
 | 401 | authorization failed |
 | 401 | token has expired |
 | 404 | user not found |
-| 500 | unsubscribe failed | 
+| 500 | unsubscribe failed |
+
+
+
 
 ##### Parameters
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ---- |
-| Authorization | header | 用户 Token | Yes | string |
-| uid | query | 对方用户 id | Yes | integer |
+| Authorization | header | 用户登录令牌 | Yes | string |
+| uid | query | 取消关注用户id | Yes | integer |
 
 ##### Responses
 
 | Code | Description |
 | ---- | ----------- |
 | 200 | ```json {   "code": 200,   "message": "Success",   "data": {     "me": 10,     "up": 3,     "action": "unsubscribe"   } } ``` |
+
+##### Security
+
+| Security Schema | Scopes | |
+| --- | --- | --- |
+| basicAuth | [] | |
 
 ### /user/{uid}
 
@@ -272,18 +331,21 @@ https://github.com/vidorg
 
 ##### Description:
 
-查询用户信息，Non-Auth
+查询用户信息
 
-| code | message |
+| Code | Message |
 | --- | --- |
 | 400 | request route param error |
-| 404 | user not found | 
+| 404 | user not found |
+
+
+
 
 ##### Parameters
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ---- |
-| uid | path | 用户 id | Yes | integer |
+| uid | path | 用户id | Yes | integer |
 
 ##### Responses
 
@@ -300,18 +362,21 @@ https://github.com/vidorg
 
 ##### Description:
 
-查询用户所有粉丝，返回分页数据，Non-Auth
+查询用户所有粉丝，返回分页数据
 
-| code | message |
+| Code | Message |
 | --- | --- |
 | 400 | request route param error |
-| 404 | user not found | 
+| 404 | user not found |
+
+
+
 
 ##### Parameters
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ---- |
-| uid | path | 所查询的用户 id | Yes | integer |
+| uid | path | 查询的用户id | Yes | integer |
 | page | query | 分页 | No | integer |
 
 ##### Responses
@@ -329,18 +394,21 @@ https://github.com/vidorg
 
 ##### Description:
 
-查询用户所有关注，返回分页数据，Non-Auth
+查询用户所有关注，返回分页数据
 
-| code | message |
+| Code | Message |
 | --- | --- |
 | 400 | request route param error |
-| 404 | user not found | 
+| 404 | user not found |
+
+
+
 
 ##### Parameters
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ---- |
-| uid | path | 所查询的用户 id | Yes | integer |
+| uid | path | 查询的用户id | Yes | integer |
 | page | query | 分页 | No | integer |
 
 ##### Responses
@@ -360,17 +428,20 @@ https://github.com/vidorg
 
 管理员查询所有用户，返回分页数据，Admin
 
-| code | message |
+| Code | Message |
 | --- | --- |
 | 401 | authorization failed |
 | 401 | token has expired |
-| 401 | need admin authority | 
+| 401 | need admin authority |
+
+
+
 
 ##### Parameters
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ---- |
-| Authorization | header | 用户 Token | Yes | string |
+| Authorization | header | 用户登录令牌 | Yes | string |
 | page | query | 分页 | No | integer |
 
 ##### Responses
@@ -378,6 +449,12 @@ https://github.com/vidorg
 | Code | Description |
 | ---- | ----------- |
 | 200 | ```json {   "code": 200,   "message": "Success",   "data": {     "count": 1,     "page": 1,     "data": [       {         "uid": 1,         "username": "User1",         "sex": "male",         "profile": "",         "avatar_url": "",         "birth_time": "2000-01-01",         "authority": "admin"       }     ]   } } ``` |
+
+##### Security
+
+| Security Schema | Scopes | |
+| --- | --- | --- |
+| basicAuth | [] | |
 
 ### /video/
 
@@ -388,23 +465,27 @@ https://github.com/vidorg
 
 ##### Description:
 
-新建用户视频，Auth
+新建用户视频
 
-| code | message |
+| Code | Message |
 | --- | --- |
 | 400 | request form data error |
+| 400 | request format error |
 | 401 | authorization failed |
 | 401 | token has expired |
 | 500 | video existed failed |
-| 401 | video insert failed | 
+| 500 | video insert failed |
+
+
+
 
 ##### Parameters
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ---- |
-| Authorization | header | 用户 Token | Yes | string |
-| title | formData | 视频标题 | Yes | string |
-| description | formData | 视频简介 | Yes | string |
+| Authorization | header | 用户登录令牌 | Yes | string |
+| title | formData | 视频标题  *Minimum length* : 5 *Maximin length* : 100 | Yes | string |
+| description | formData | 视频简介  *Minimum length* : 0 *Maximin length* : 255 | Yes | string |
 | video_url | formData | 视频资源链接 | Yes | string |
 | cover_url | formData | 视频封面链接 | Yes | string |
 
@@ -413,6 +494,12 @@ https://github.com/vidorg
 | Code | Description |
 | ---- | ----------- |
 | 200 | ```json {   "code": 200,   "message": "Success",   "data": {} } ``` |
+
+##### Security
+
+| Security Schema | Scopes | |
+| --- | --- | --- |
+| basicAuth | [] | |
 
 ### /video/uid/{uid}?page
 
@@ -423,18 +510,21 @@ https://github.com/vidorg
 
 ##### Description:
 
-查询作者为用户的所有视频，返回分页数据，Non-Auth
+查询作者为用户的所有视频，返回分页数据
 
-| code | message |
+| Code | Message |
 | --- | --- |
 | 400 | request route param error |
-| 404 | user not found | 
+| 404 | user not found |
+
+
+
 
 ##### Parameters
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ---- |
-| uid | path | 用户 id | Yes | integer |
+| uid | path | 用户id | Yes | integer |
 | page | query | 分页 | No | integer |
 
 ##### Responses
@@ -452,18 +542,21 @@ https://github.com/vidorg
 
 ##### Description:
 
-查询视频信息，Non-Auth
+查询视频信息
 
-| code | message |
+| Code | Message |
 | --- | --- |
 | 400 | request route param error |
-| 404 | video not found | 
+| 404 | video not found |
+
+
+
 
 ##### Parameters
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ---- |
-| vid | path | 视频 id | Yes | integer |
+| vid | path | 视频id | Yes | integer |
 
 ##### Responses
 
@@ -480,28 +573,37 @@ https://github.com/vidorg
 
 ##### Description:
 
-删除用户视频，Auth
+删除用户视频
 
-| code | message |
+| Code | Message |
 | --- | --- |
 | 400 | request route param error |
 | 401 | authorization failed |
 | 401 | token has expired |
 | 404 | video not found |
-| 500 | video delete failed | 
+| 500 | video delete failed |
+
+
+
 
 ##### Parameters
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ---- |
-| Authorization | header | 用户 Token | Yes | string |
-| vid | path | 删除视频 id | Yes | string |
+| Authorization | header | 用户登录令牌 | Yes | string |
+| vid | path | 删除视频id | Yes | string |
 
 ##### Responses
 
 | Code | Description |
 | ---- | ----------- |
 | 200 | ```json {   "code": 200,   "message": "Success",   "data": {} } ``` |
+
+##### Security
+
+| Security Schema | Scopes | |
+| --- | --- | --- |
+| basicAuth | [] | |
 
 #### POST
 ##### Summary:
@@ -510,33 +612,42 @@ https://github.com/vidorg
 
 ##### Description:
 
-更新用户视频信息，Auth
+更新用户视频信息
 
-| code | message |
+| Code | Message |
 | --- | --- |
 | 400 | request route param error |
 | 400 | request format error |
 | 401 | authorization failed |
 | 401 | token has expired |
 | 404 | video not found |
-| 404 | video update failed | 
+| 500 | video update failed |
+
+
+
 
 ##### Parameters
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ---- |
-| Authorization | header | 用户 Token | Yes | string |
-| vid | path | 更新视频 id | Yes | string |
-| title | formData | 视频新标题 | No | string |
-| description | formData | 视频新简介 | No | string |
-| video_url | formData | 视频新资源链接 | No | string |
-| cover_url | formData | 视频新封面链接 | No | string |
+| Authorization | header | 用户登录令牌 | Yes | string |
+| vid | path | 更新视频id | Yes | string |
+| title | formData | 视频标题  *Minimum length* : 5 *Maximin length* : 100 | No | string |
+| description | formData | 视频简介  *Minimum length* : 0 *Maximin length* : 255 | No | string |
+| video_url | formData | 视频资源链接 | No | string |
+| cover_url | formData | 视频封面链接 | No | string |
 
 ##### Responses
 
 | Code | Description |
 | ---- | ----------- |
 | 200 | ```json {   "code": 200,   "message": "Success",   "data": {} } ``` |
+
+##### Security
+
+| Security Schema | Scopes | |
+| --- | --- | --- |
+| basicAuth | [] | |
 
 ### /video?page
 
@@ -549,17 +660,20 @@ https://github.com/vidorg
 
 管理员查询所有视频，返回分页数据，Admin
 
-| code | message |
+| Code | Message |
 | --- | --- |
 | 401 | authorization failed |
 | 401 | token has expired |
-| 401 | need admin authority | 
+| 401 | need admin authority |
+
+
+
 
 ##### Parameters
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ---- |
-| Authorization | header | 用户 Token | Yes | string |
+| Authorization | header | 用户登录令牌 | Yes | string |
 | page | query | 分页 | No | integer |
 
 ##### Responses
@@ -567,3 +681,9 @@ https://github.com/vidorg
 | Code | Description |
 | ---- | ----------- |
 | 200 | ```json {   "code": 200,   "message": "Success",   "data": {} } ``` |
+
+##### Security
+
+| Security Schema | Scopes | |
+| --- | --- | --- |
+| basicAuth | [] | |

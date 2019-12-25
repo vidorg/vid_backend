@@ -19,18 +19,15 @@ type videoCtrl struct{}
 
 var VideoCtrl = new(videoCtrl)
 
-// @Router 				/video?page [GET]
+// @Router 				/video?page [GET] [Auth]
 // @Summary 			查询所有视频
-/* @Description 		管理员查询所有视频，返回分页数据，Admin
-
-						| code | message |
-						| --- | --- |
-						| 401 | authorization failed |
-						| 401 | token has expired |
- 						| 401 | need admin authority | */
-// @Param 				Authorization header string true 用户 Token
-// @Param 				page query integer false 分页
+// @Description 		管理员查询所有视频，返回分页数据，Admin
+// @Param 				Authorization header string true "用户登录令牌"
+// @Param 				page query integer false "分页"
 // @Accept 				multipart/form-data
+// @ErrorCode 			401 authorization failed
+// @ErrorCode 			401 token has expired
+// @ErrorCode 			401 need admin authority
 /* @Success 200 		{
 							"code": 200,
 							"message": "Success",
@@ -49,15 +46,12 @@ func (v *videoCtrl) QueryAllVideos(c *gin.Context) {
 
 // @Router 				/video/uid/{uid}?page [GET]
 // @Summary 			查询用户视频
-/* @Description 		查询作者为用户的所有视频，返回分页数据，Non-Auth
-
-						| code | message |
-						| --- | --- |
-						| 400 | request route param error |
- 						| 404 | user not found | */
-// @Param 				uid path integer true 用户 id
-// @Param 				page query integer false 分页
+// @Description 		查询作者为用户的所有视频，返回分页数据
+// @Param 				uid path integer true "用户id"
+// @Param 				page query integer false "分页"
 // @Accept 				multipart/form-data
+// @ErrorCode			400 request route param error
+// @ErrorCode			404 user not found
 /* @Success 200 		{
 							"code": 200,
 							"message": "Success",
@@ -90,14 +84,11 @@ func (v *videoCtrl) QueryVideosByUid(c *gin.Context) {
 
 // @Router 				/video/vid/{vid} [GET]
 // @Summary 			查询视频
-/* @Description 		查询视频信息，Non-Auth
-
-						| code | message |
-						| --- | --- |
-						| 400 | request route param error |
- 						| 404 | video not found | */
-// @Param 				vid path integer true 视频 id
+// @Description 		查询视频信息
+// @Param 				vid path integer true "视频id"
 // @Accept 				multipart/form-data
+// @ErrorCode			400 request route param error
+// @ErrorCode			404 video not found
 /* @Success 200 		{
 							"code": 200,
 							"message": "Success",
@@ -122,23 +113,21 @@ func (v *videoCtrl) QueryVideoByVid(c *gin.Context) {
 		dto.Result{}.Ok().SetData(video))
 }
 
-// @Router 				/video/ [POST]
+// @Router 				/video/ [POST] [Auth]
 // @Summary 			新建视频
-/* @Description 		新建用户视频，Auth
-
-						| code | message |
-						| --- | --- |
-						| 400 | request form data error |
-						| 401 | authorization failed |
- 						| 401 | token has expired |
- 						| 500 | video existed failed |
- 						| 401 | video insert failed | */
-// @Param 				Authorization header string true 用户 Token
-// @Param 				title formData string true 视频标题
-// @Param 				description formData string true 视频简介
-// @Param 				video_url formData string true 视频资源链接
-// @Param 				cover_url formData string true 视频封面链接
+// @Description 		新建用户视频
+// @Param 				Authorization header string true "用户登录令牌"
+// @Param 				title formData string true "视频标题" minLength(5) maxLength(100)
+// @Param 				description formData string true "视频简介" minLength(0) maxLength(255)
+// @Param 				video_url formData string true "视频资源链接"
+// @Param 				cover_url formData string true "视频封面链接"
 // @Accept 				multipart/form-data
+// @ErrorCode 			400 request form data error
+// @ErrorCode 			400 request format error
+// @ErrorCode 			401 authorization failed
+// @ErrorCode 			401 token has expired
+// @ErrorCode 			500 video existed failed
+// @ErrorCode 			500 video insert failed
 /* @Success 200 		{
 							"code": 200,
 							"message": "Success",
@@ -157,14 +146,19 @@ func (v *videoCtrl) InsertVideo(c *gin.Context) {
 			dto.Result{}.Error(http.StatusBadRequest).SetMessage(exception.FormParamError.Error()))
 		return
 	}
+	if !model.FormatCheck.VideoTitle(title) || !model.FormatCheck.VideoDesc(description) {
+		c.JSON(http.StatusBadRequest,
+			dto.Result{}.Error(http.StatusBadRequest).SetMessage(exception.FormatError.Error()))
+		return
+	}
 
 	video := &po.Video{
-		Title: title,
+		Title:       title,
 		Description: description,
-		VideoUrl: url,
-		CoverUrl: cover,
-		UploadTime: vo.JsonDate(time.Now()),
-		AuthorUid: user.Uid,
+		VideoUrl:    url,
+		CoverUrl:    cover,
+		UploadTime:  vo.JsonDate(time.Now()),
+		AuthorUid:   user.Uid,
 	}
 
 	status := dao.VideoDao.Insert(video)
@@ -182,25 +176,22 @@ func (v *videoCtrl) InsertVideo(c *gin.Context) {
 		dto.Result{}.Ok().SetData(video))
 }
 
-// @Router 				/video/{vid} [POST]
+// @Router 				/video/{vid} [POST] [Auth]
 // @Summary 			更新视频
-/* @Description 		更新用户视频信息，Auth
-
-						| code | message |
-						| --- | --- |
-						| 400 | request route param error |
-						| 400 | request format error |
-						| 401 | authorization failed |
- 						| 401 | token has expired |
- 						| 404 | video not found |
- 						| 404 | video update failed | */
-// @Param 				Authorization header string true 用户 Token
-// @Param 				vid path string true 更新视频 id
-// @Param 				title formData string false 视频新标题
-// @Param 				description formData string false 视频新简介
-// @Param 				video_url formData string false 视频新资源链接
-// @Param 				cover_url formData string false 视频新封面链接
+// @Description 		更新用户视频信息
+// @Param 				Authorization header string true "用户登录令牌"
+// @Param 				vid path string true "更新视频id"
+// @Param 				title formData string false "视频标题" minLength(5) maxLength(100)
+// @Param 				description formData string false "视频简介" minLength(0) maxLength(255)
+// @Param 				video_url formData string false "视频资源链接"
+// @Param 				cover_url formData string false "视频封面链接"
 // @Accept 				multipart/form-data
+// @ErrorCode 			400 request route param error
+// @ErrorCode 			400 request format error
+// @ErrorCode 			401 authorization failed
+// @ErrorCode 			401 token has expired
+// @ErrorCode 			404 video not found
+// @ErrorCode 			500 video update failed
 /* @Success 200 		{
 							"code": 200,
 							"message": "Success",
@@ -246,20 +237,17 @@ func (v *videoCtrl) UpdateVideo(c *gin.Context) {
 		dto.Result{}.Ok().SetData(video))
 }
 
-// @Router 				/video/{vid} [DELETE]
+// @Router 				/video/{vid} [DELETE] [Auth]
 // @Summary 			删除视频
-/* @Description 		删除用户视频，Auth
-
-						| code | message |
-						| --- | --- |
-						| 400 | request route param error |
-						| 401 | authorization failed |
- 						| 401 | token has expired |
- 						| 404 | video not found |
- 						| 500 | video delete failed | */
-// @Param 				Authorization header string true 用户 Token
-// @Param 				vid path string true 删除视频 id
+// @Description 		删除用户视频
+// @Param 				Authorization header string true "用户登录令牌"
+// @Param 				vid path string true "删除视频id"
 // @Accept 				multipart/form-data
+// @ErrorCode			400 request route param error
+// @ErrorCode			401 authorization failed
+// @ErrorCode			401 token has expired
+// @ErrorCode			404 video not found
+// @ErrorCode			500 video delete failed
 /* @Success 200 		{
 							"code": 200,
 							"message": "Success",

@@ -18,18 +18,15 @@ type userCtrl struct{}
 
 var UserCtrl = new(userCtrl)
 
-// @Router 				/user?page [GET]
+// @Router 				/user?page [GET] [Auth]
 // @Summary 			查询所有用户
-/* @Description 		管理员查询所有用户，返回分页数据，Admin
-
-						| code | message |
-						| --- | --- |
-						| 401 | authorization failed |
-						| 401 | token has expired |
- 						| 401 | need admin authority | */
-// @Param 				Authorization header string true 用户 Token
-// @Param 				page query integer false 分页
+// @Description 		管理员查询所有用户，返回分页数据，Admin
+// @Param 				Authorization header string true "用户登录令牌"
+// @Param 				page query integer false "分页"
 // @Accept 				multipart/form-data
+// @ErrorCode			401 authorization failed
+// @ErrorCode			401 token has expired
+// @ErrorCode			401 need admin authority
 /* @Success 200 		{
 							"code": 200,
 							"message": "Success",
@@ -62,14 +59,11 @@ func (u *userCtrl) QueryAllUsers(c *gin.Context) {
 
 // @Router 				/user/{uid} [GET]
 // @Summary 			查询用户
-/* @Description 		查询用户信息，Non-Auth
-
-						| code | message |
-						| --- | --- |
-						| 400 | request route param error |
- 						| 404 | user not found | */
-// @Param 				uid path integer true 用户 id
+// @Description 		查询用户信息
+// @Param 				uid path integer true "用户id"
 // @Accept 				multipart/form-data
+// @ErrorCode			400 request route param error
+// @ErrorCode			404 user not found
 /* @Success 200 		{
 							"code": 200,
 							"message": "Success",
@@ -124,25 +118,22 @@ func (u *userCtrl) QueryUser(c *gin.Context) {
 		dto.Result{}.Ok().PutData("user", user).PutData("extra", extraInfo))
 }
 
-// @Router 				/user/ [PUT]
+// @Router 				/user/ [PUT] [Auth]
 // @Summary 			更新用户
-/* @Description 		更新用户信息，Auth
-
-						| code | message |
-						| --- | --- |
-						| 400 | request format error |
-						| 401 | authorization failed |
-						| 401 | token has expired |
- 						| 404 | user not found |
- 						| 500 | username duplicated |
- 						| 500 | user update failed |*/
-// @Param 				Authorization header string true 用户 Token
-// @Param 				username formData string false 新用户名
-// @Param 				sex formData string false 新用户性别，只允许为 (male, female, unknown)
-// @Param 				profile formData string false 新用户简介
-// @Param 				birth_time formData string false 新用户生日，固定格式为 2000-01-01
-// @Param 				phone_number formData string false 新用户电话号码
+// @Description 		更新用户信息
+// @Param 				Authorization header string true "用户登录令牌"
+// @Param 				username formData string false "用户名" minLength(8) maxLength(30)
+// @Param 				sex formData string false "用户性别" enum(male, female, unknown)
+// @Param 				profile formData string false "用户简介" minLength(0) maxLength(255)
+// @Param 				birth_time formData string false "用户生日，固定格式为2000-01-01"
+// @Param 				phone_number formData string false "用户手机号码"
 // @Accept 				multipart/form-data
+// @ErrorCode 			400 request format error
+// @ErrorCode 			401 authorization failed
+// @ErrorCode 			401 token has expired
+// @ErrorCode 			404 user not found
+// @ErrorCode 			500 username duplicated
+// @ErrorCode 			500 user update failed
 /* @Success 200 		{
 							"code": 200,
 							"message": "Success",
@@ -171,7 +162,6 @@ func (u *userCtrl) UpdateUser(c *gin.Context) {
 	user.Sex = enum.StringToSex(c.DefaultPostForm("sex", string(user.Sex)))
 	user.BirthTime = vo.JsonDate{}.Parse(c.DefaultPostForm("birth_time", user.BirthTime.String()), user.BirthTime)
 	user.PhoneNumber = c.DefaultPostForm("phone_number", user.PhoneNumber)
-	// TODO AvatarUrl
 
 	status := dao.UserDao.Update(user)
 	if status == database.DbNotFound {
@@ -182,7 +172,7 @@ func (u *userCtrl) UpdateUser(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError,
 			dto.Result{}.Error(http.StatusInternalServerError).SetMessage(exception.UserNameUsedError.Error()))
 		return
-	}else if status == database.DbFailed {
+	} else if status == database.DbFailed {
 		c.JSON(http.StatusInternalServerError,
 			dto.Result{}.Error(http.StatusInternalServerError).SetMessage(exception.UserUpdateError.Error()))
 		return
@@ -192,18 +182,15 @@ func (u *userCtrl) UpdateUser(c *gin.Context) {
 		dto.Result{}.Ok().SetData(user))
 }
 
-// @Router 				/user/ [DELETE]
+// @Router 				/user/ [DELETE] [Auth]
 // @Summary 			删除用户
-/* @Description 		删除用户所有信息，Auth
-
-						| code | message |
-						| --- | --- |
-						| 401 | authorization failed |
-						| 401 | token has expired |
- 						| 404 | user not found |
- 						| 404 | user delete failed | */
-// @Param 				Authorization header string true 用户 Token
+// @Description 		删除用户所有信息
+// @Param 				Authorization header string true "用户登录令牌"
 // @Accept 				multipart/form-data
+// @ErrorCode 			401 authorization failed
+// @ErrorCode 			401 token has expired
+// @ErrorCode 			404 user not found
+// @ErrorCode 			404 user delete failed
 /* @Success 200 		{
 							"code": 200,
 							"message": "Success"
