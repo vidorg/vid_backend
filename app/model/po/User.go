@@ -29,7 +29,7 @@ type User struct {
 	GormTime `json:"-"`
 }
 
-func (User) AvatarUrlConverter() dto.Converter {
+func (User) UrlConverter() dto.Converter {
 	return dto.Converter{
 		FieldType: reflect.TypeOf(&User{}),
 		Converter: func(obj interface{}) {

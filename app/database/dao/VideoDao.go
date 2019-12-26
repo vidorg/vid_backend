@@ -27,7 +27,7 @@ func (v *videoDao) QueryByUid(uid int, page int) (videos []po.Video, count int, 
 		return nil, 0, DbNotFound
 	}
 	video := &po.Video{AuthorUid: uid}
-	DB.Where(video).Count(&count)
+	DB.Model(video).Where(video).Count(&count)
 	DB.Limit(PageSize).Offset((page - 1) * PageSize).Where(video).Find(&videos)
 	for idx := range videos {
 		videos[idx].Author = author
@@ -95,7 +95,7 @@ func (v *videoDao) Delete(vid int, uid int) DbStatus {
 	if video.AuthorUid != uid {
 		return DbNotFound
 	}
-	if err := DB.Model(video).Update(video).Error; err != nil {
+	if err := DB.Model(video).Delete(video).Error; err != nil {
 		log.Println(err)
 		return DbFailed
 	}

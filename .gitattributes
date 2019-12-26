@@ -1,5 +1,5 @@
 * text=auto
 
-./docs/*.md linguist-vendored
-./docs/*.yaml linguist-vendored
+./docs/*.md linguist-vendored=true linguist-generated=true
+./docs/*.yaml linguist-vendored=true linguist-generated=true
 ./usr/* linguist-vendored

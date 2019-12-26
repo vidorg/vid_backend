@@ -58,7 +58,7 @@ func (u *userCtrl) QueryAllUsers(c *gin.Context) {
 	page = xconditions.IfThenElse(page == 0, 1, page).(int)
 
 	users, count := dao.UserDao.QueryAll(page)
-	c.JSON(http.StatusOK, dto.Result{}.Ok().AddConverter(po.User{}.AvatarUrlConverter()).SetPage(count, page, users))
+	c.JSON(http.StatusOK, dto.Result{}.Ok().AddConverter(po.User{}.UrlConverter()).SetPage(count, page, users))
 }
 
 // @Router 				/user/{uid} [GET]
@@ -117,7 +117,7 @@ func (u *userCtrl) QueryUser(c *gin.Context) {
 		PlaylistCount:    0, // TODO
 	}
 
-	c.JSON(http.StatusOK, dto.Result{}.Ok().AddConverter(po.User{}.AvatarUrlConverter()).PutData("user", user).PutData("extra", extraInfo))
+	c.JSON(http.StatusOK, dto.Result{}.Ok().AddConverter(po.User{}.UrlConverter()).PutData("user", user).PutData("extra", extraInfo))
 }
 
 // @Router 				/user/ [PUT] [Auth]
@@ -128,7 +128,9 @@ func (u *userCtrl) QueryUser(c *gin.Context) {
 // @Param 				profile formData string true "用户简介" minLength(0) maxLength(255)
 // @Param 				birth_time formData string true "用户生日，固定格式为2000-01-01"
 // @Param 				phone_number formData string true "用户手机号码"
+// @Param 				avatar formData file false "用户头像，默认不修改"
 // @Accept 				multipart/form-data
+// @ErrorCode 			400 request form data error
 // @ErrorCode 			400 request format error
 // @ErrorCode 			400 request body too large
 // @ErrorCode 			400 username has been used
@@ -201,7 +203,7 @@ func (u *userCtrl) UpdateUser(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, dto.Result{}.Ok().AddConverter(po.User{}.AvatarUrlConverter()).SetData(authUser).PutData("phone_number", phoneNumber))
+	c.JSON(http.StatusOK, dto.Result{}.Ok().AddConverter(po.User{}.UrlConverter()).SetData(authUser).PutData("phone_number", phoneNumber))
 }
 
 // @Router 				/user/ [DELETE] [Auth]

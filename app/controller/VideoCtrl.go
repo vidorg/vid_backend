@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/shomali11/util/xconditions"
 	"net/http"
@@ -14,6 +15,7 @@ import (
 	"vid/app/model/dto"
 	"vid/app/model/po"
 	"vid/app/model/vo"
+	"vid/app/util"
 )
 
 type videoCtrl struct{}
@@ -39,14 +41,14 @@ var VideoCtrl = new(videoCtrl)
 										"title": "VideoTitle",
 										"description": "VideoDesc",
 										"video_url": "",
-										"cover_url": "",
+										"cover_url": "http://localhost:3344/raw/image/default/cover.jpg",
 										"upload_time": "2019-12-26",
 										"author": {
 											"uid": 10,
 											"username": "aoihosizora",
 											"sex": "male",
 											"profile": "Demo Profile",
-											"avatar_url": "avatar_20191226131519858696.jpg",
+											"avatar_url": "http://localhost:3344/raw/image/default/avatar.jpg",
 											"birth_time": "2019-12-26",
 											"authority": "admin"
 										}
@@ -64,7 +66,7 @@ func (v *videoCtrl) QueryAllVideos(c *gin.Context) {
 	page = xconditions.IfThenElse(page == 0, 1, page).(int)
 
 	videos, count := dao.VideoDao.QueryAll(page)
-	c.JSON(http.StatusOK, dto.Result{}.Ok().AddConverter(po.User{}.AvatarUrlConverter()).SetPage(count, page, videos))
+	c.JSON(http.StatusOK, dto.Result{}.Ok().AddConverter(po.User{}.UrlConverter()).AddConverter(po.Video{}.UrlConverter()).SetPage(count, page, videos))
 }
 
 // @Router 				/video/uid/{uid}?page [GET]
@@ -88,14 +90,14 @@ func (v *videoCtrl) QueryAllVideos(c *gin.Context) {
 										"title": "VideoTitle",
 										"description": "VideoDesc",
 										"video_url": "",
-										"cover_url": "",
+										"cover_url": "http://localhost:3344/raw/image/default/cover.jpg",
 										"upload_time": "2019-12-26",
 										"author": {
 											"uid": 10,
 											"username": "aoihosizora",
 											"sex": "male",
 											"profile": "Demo Profile",
-											"avatar_url": "avatar_20191226131519858696.jpg",
+											"avatar_url": "http://localhost:3344/raw/image/default/avatar.jpg",
 											"birth_time": "2019-12-26",
 											"authority": "admin"
 										}
@@ -118,13 +120,13 @@ func (v *videoCtrl) QueryVideosByUid(c *gin.Context) {
 	}
 	page = xconditions.IfThenElse(page == 0, 1, page).(int)
 
-	users, count, status := dao.VideoDao.QueryByUid(uid, page)
+	videos, count, status := dao.VideoDao.QueryByUid(uid, page)
 	if status == database.DbNotFound {
 		c.JSON(http.StatusNotFound, dto.Result{}.Error(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()))
 		return
 	}
 
-	c.JSON(http.StatusOK, dto.Result{}.Ok().AddConverter(po.User{}.AvatarUrlConverter()).SetPage(count, page, users))
+	c.JSON(http.StatusOK, dto.Result{}.Ok().AddConverter(po.User{}.UrlConverter()).AddConverter(po.Video{}.UrlConverter()).SetPage(count, page, videos))
 }
 
 // @Router 				/video/vid/{vid} [GET]
@@ -142,14 +144,14 @@ func (v *videoCtrl) QueryVideosByUid(c *gin.Context) {
 								"title": "VideoTitle",
 								"description": "VideoDesc",
 								"video_url": "",
-								"cover_url": "",
+								"cover_url": "http://localhost:3344/raw/image/default/cover.jpg",
 								"upload_time": "2019-12-26",
 								"author": {
 									"uid": 10,
 									"username": "aoihosizora",
 									"sex": "male",
 									"profile": "Demo Profile",
-									"avatar_url": "avatar_20191226131519858696.jpg",
+									"avatar_url": "http://localhost:3344/raw/image/default/avatar.jpg",
 									"birth_time": "2019-12-26",
 									"authority": "admin"
 								}
@@ -169,7 +171,7 @@ func (v *videoCtrl) QueryVideoByVid(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, dto.Result{}.Ok().AddConverter(po.User{}.AvatarUrlConverter()).SetData(video))
+	c.JSON(http.StatusOK, dto.Result{}.Ok().AddConverter(po.User{}.UrlConverter()).AddConverter(po.Video{}.UrlConverter()).SetData(video))
 }
 
 // @Router 				/video/ [POST] [Auth]
@@ -178,11 +180,14 @@ func (v *videoCtrl) QueryVideoByVid(c *gin.Context) {
 // @Param 				title formData string true "视频标题" minLength(5) maxLength(100)
 // @Param 				description formData string true "视频简介" minLength(0) maxLength(255)
 // @Param 				video_url formData string true "视频资源链接"
-// @Param 				cover_url formData string true "视频封面链接"
+// @Param 				cover formData file false "视频封面"
 // @Accept 				multipart/form-data
 // @ErrorCode 			400 request form data error
 // @ErrorCode 			400 request format error
+// @ErrorCode 			400 request body too large
+// @ErrorCode 			400 image type not supported
 // @ErrorCode 			400 video resource has been used
+// @ErrorCode 			500 image save failed
 // @ErrorCode 			500 video insert failed
 /* @Success 200 		{
 							"code": 200,
@@ -192,14 +197,14 @@ func (v *videoCtrl) QueryVideoByVid(c *gin.Context) {
 								"title": "VideoTitle",
 								"description": "VideoDesc",
 								"video_url": "",
-								"cover_url": "",
+								"cover_url": "http://localhost:3344/raw/image/default/cover.jpg",
 								"upload_time": "2019-12-26",
 								"author": {
 									"uid": 10,
 									"username": "aoihosizora",
 									"sex": "male",
 									"profile": "Demo Profile",
-									"avatar_url": "avatar_20191226131519858696.jpg",
+									"avatar_url": "http://localhost:3344/raw/image/default/avatar.jpg",
 									"birth_time": "2019-12-26",
 									"authority": "admin"
 								}
@@ -210,9 +215,8 @@ func (v *videoCtrl) InsertVideo(c *gin.Context) {
 
 	title, exist1 := c.GetPostForm("title")
 	description, exist2 := c.GetPostForm("description")
-	url, exist3 := c.GetPostForm("video_url")
-	cover, exist4 := c.GetPostForm("cover_url")
-	if !exist1 || !exist2 || !exist3 || !exist4 {
+	videoUrl, exist3 := c.GetPostForm("video_url")
+	if !exist1 || !exist2 || !exist3 {
 		c.JSON(http.StatusBadRequest,
 			dto.Result{}.Error(http.StatusBadRequest).SetMessage(exception.FormParamError.Error()))
 		return
@@ -222,12 +226,28 @@ func (v *videoCtrl) InsertVideo(c *gin.Context) {
 			dto.Result{}.Error(http.StatusBadRequest).SetMessage(exception.FormatError.Error()))
 		return
 	}
+	coverUrl := ""
+	coverFile, coverHeader, err := c.Request.FormFile("cover")
+	if err == nil && coverFile != nil {
+		supported, ext := util.ImageUtil.CheckImageExt(coverHeader.Filename)
+		if !supported {
+			c.JSON(http.StatusBadRequest, dto.Result{}.Error(http.StatusBadRequest).SetMessage(exception.ImageNotSupportedError.Error()))
+			return
+		}
+		filename := fmt.Sprintf("cover_%s.jpg", util.CommonUtil.CurrentTimeUuid())
+		savePath := fmt.Sprintf("./usr/image/%d/%s", authUser.Uid, filename)
+		if err := util.ImageUtil.SaveAsJpg(coverFile, ext, savePath); err != nil {
+			c.JSON(http.StatusInternalServerError, dto.Result{}.Error(http.StatusInternalServerError).SetMessage(exception.ImageSaveError.Error()))
+			return
+		}
+		coverUrl = filename
+	}
 
 	video := &po.Video{
 		Title:       title,
 		Description: description,
-		VideoUrl:    url, // TODO
-		CoverUrl:    cover,
+		CoverUrl:    coverUrl,
+		VideoUrl:    videoUrl, // TODO
 		UploadTime:  vo.JsonDate(time.Now()),
 		AuthorUid:   authUser.Uid,
 		Author:      authUser,
@@ -241,7 +261,7 @@ func (v *videoCtrl) InsertVideo(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, dto.Result{}.Ok().AddConverter(po.User{}.AvatarUrlConverter()).SetData(video))
+	c.JSON(http.StatusOK, dto.Result{}.Ok().AddConverter(po.User{}.UrlConverter()).AddConverter(po.Video{}.UrlConverter()).SetData(video))
 }
 
 // @Router 				/video/{vid} [POST] [Auth]
@@ -250,12 +270,15 @@ func (v *videoCtrl) InsertVideo(c *gin.Context) {
 // @Param 				vid path string true "更新视频id"
 // @Param 				title formData string false "视频标题" minLength(5) maxLength(100)
 // @Param 				description formData string false "视频简介" minLength(0) maxLength(255)
-// @Param 				cover_url formData string false "视频封面链接"
+// @Param 				cover formData file false "视频封面"
 // @Accept 				multipart/form-data
 // @ErrorCode 			400 request route param error
 // @ErrorCode 			400 request form data error
 // @ErrorCode 			400 request format error
+// @ErrorCode 			400 request body too large
+// @ErrorCode 			400 image type not supported
 // @ErrorCode 			404 video not found
+// @ErrorCode 			500 image save failed
 // @ErrorCode 			500 video update failed
 /* @Success 200 		{
 							"code": 200,
@@ -265,14 +288,14 @@ func (v *videoCtrl) InsertVideo(c *gin.Context) {
 								"title": "VideoTitle",
 								"description": "VideoDesc",
 								"video_url": "",
-								"cover_url": "",
+								"cover_url": "http://localhost:3344/raw/image/default/cover.jpg",
 								"upload_time": "2019-12-26",
 								"author": {
 									"uid": 10,
 									"username": "aoihosizora",
 									"sex": "male",
 									"profile": "Demo Profile",
-									"avatar_url": "avatar_20191226131519858696.jpg",
+									"avatar_url": "http://localhost:3344/raw/image/default/avatar.jpg",
 									"birth_time": "2019-12-26",
 									"authority": "admin"
 								}
@@ -289,8 +312,7 @@ func (v *videoCtrl) UpdateVideo(c *gin.Context) {
 	}
 	title, exist1 := c.GetPostForm("title")
 	description, exist2 := c.GetPostForm("description")
-	coverUrl, exist3 := c.GetPostForm("cover_url")
-	if !exist1 || !exist2 || !exist3 {
+	if !exist1 || !exist2 {
 		c.JSON(http.StatusBadRequest, dto.Result{}.Error(http.StatusBadRequest).SetMessage(exception.FormParamError.Error()))
 		return
 	}
@@ -298,11 +320,27 @@ func (v *videoCtrl) UpdateVideo(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, dto.Result{}.Error(http.StatusBadRequest).SetMessage(exception.FormatError.Error()))
 		return
 	}
+	coverUrl := ""
+	coverFile, coverHeader, err := c.Request.FormFile("cover")
+	if err == nil && coverFile != nil {
+		supported, ext := util.ImageUtil.CheckImageExt(coverHeader.Filename)
+		if !supported {
+			c.JSON(http.StatusBadRequest, dto.Result{}.Error(http.StatusBadRequest).SetMessage(exception.ImageNotSupportedError.Error()))
+			return
+		}
+		filename := fmt.Sprintf("cover_%s.jpg", util.CommonUtil.CurrentTimeUuid())
+		savePath := fmt.Sprintf("./usr/image/%d/%s", authUser.Uid, filename)
+		if err := util.ImageUtil.SaveAsJpg(coverFile, ext, savePath); err != nil {
+			c.JSON(http.StatusInternalServerError, dto.Result{}.Error(http.StatusInternalServerError).SetMessage(exception.ImageSaveError.Error()))
+			return
+		}
+		coverUrl = filename
+	}
 
 	video := dao.VideoDao.QueryByVid(vid)
 	video.Title = title
 	video.Description = description
-	video.CoverUrl = coverUrl // TODO
+	video.CoverUrl = xconditions.IfThenElse(coverUrl == "", video.CoverUrl, coverUrl).(string)
 
 	status := dao.VideoDao.Update(video, authUser.Uid)
 	if status == database.DbNotFound {
@@ -313,7 +351,7 @@ func (v *videoCtrl) UpdateVideo(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, dto.Result{}.Ok().AddConverter(po.User{}.AvatarUrlConverter()).SetData(video))
+	c.JSON(http.StatusOK, dto.Result{}.Ok().AddConverter(po.User{}.UrlConverter()).AddConverter(po.Video{}.UrlConverter()).SetData(video))
 }
 
 // @Router 				/video/{vid} [DELETE] [Auth]

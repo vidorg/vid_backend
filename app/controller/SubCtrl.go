@@ -65,7 +65,7 @@ func (u *subCtrl) QuerySubscriberUsers(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, dto.Result{}.Ok().AddConverter(po.User{}.AvatarUrlConverter()).SetPage(count, page, users))
+	c.JSON(http.StatusOK, dto.Result{}.Ok().AddConverter(po.User{}.UrlConverter()).SetPage(count, page, users))
 }
 
 // @Router 				/user/{uid}/subscribing [GET]
@@ -116,7 +116,7 @@ func (u *subCtrl) QuerySubscribingUsers(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, dto.Result{}.Ok().AddConverter(po.User{}.AvatarUrlConverter()).SetPage(count, page, users))
+	c.JSON(http.StatusOK, dto.Result{}.Ok().AddConverter(po.User{}.UrlConverter()).SetPage(count, page, users))
 }
 
 // @Router 				/user/subscribing?to [PUT] [Auth]

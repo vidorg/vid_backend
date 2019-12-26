@@ -18,9 +18,9 @@ var RawCtrl = new(rawCtrl)
 
 // @Router 				/raw/image/{uid}/{filename} [GET]
 // @Summary 			获取图片
-// @Description 		获取用户头像图片
+// @Description 		获取用户头像图片以及视频封面
 // @Param 				uid path string true "用户id，或者default"
-// @Param 				filename path string true "图片文件名"
+// @Param 				filename path string true "图片文件名，jpg后缀名"
 // @Accept 				multipart/form-data
 // @ErrorCode 			400 request route param error
 // @ErrorCode 			404 image not found
@@ -40,7 +40,7 @@ func (r *rawCtrl) RawImage(c *gin.Context) {
 	}
 	filename := c.Param("filename")
 
-	filePath := xconditions.IfThenElse(uid == -1, fmt.Sprintf("./usr/image/default/%s", filename), fmt.Sprintf("./usr/image/%d/%s", uid, filename)).(string)
+	filePath := xconditions.IfThenElse(uid == -1, fmt.Sprintf("./usr/default/%s", filename), fmt.Sprintf("./usr/image/%d/%s", uid, filename)).(string)
 	if !util.CommonUtil.IsFileOrDirExist(filePath) {
 		c.JSON(http.StatusNotFound, dto.Result{}.Error(http.StatusBadRequest).SetMessage(exception.ImageNotFoundError.Error()))
 		return
@@ -49,31 +49,3 @@ func (r *rawCtrl) RawImage(c *gin.Context) {
 	c.Writer.Header().Add("Content-Type", "image/jpeg")
 	c.File(filePath)
 }
-
-// // GET /raw/video/:user/:filename (Non-Admin)
-// func (r *rawCtrl) RawVideo(c *gin.Context) {
-// 	uid, ok := util.ReqUtil.GetIntParam(c.Params, "user")
-// 	if !ok {
-// 		c.JSON(http.StatusBadRequest, resp.Message{
-// 			Message: fmt.Sprintf(exception.RouteParamError.Error(), "user"),
-// 		})
-// 		return
-// 	}
-// 	filename, ok := util.ReqUtil.GetStrParam(c.Params, "filename")
-// 	if !ok {
-// 		c.JSON(http.StatusBadRequest, resp.Message{
-// 			Message: fmt.Sprintf(exception.RouteParamError.Error(), "filename"),
-// 		})
-// 		return
-// 	}
-//
-// 	filepath := fmt.Sprintf("./usr/video/%d/%s", uid, filename)
-// 	if !util.CommonUtil.IsFileOrDirExist(filepath) {
-// 		c.JSON(http.StatusNotFound, resp.Message{
-// 			Message: exception.FileNotFoundError.Error(),
-// 		})
-// 		return
-// 	}
-// 	c.Writer.Header().Add("Content-Type", "video/mpeg4")
-// 	c.File(filepath)
-// }

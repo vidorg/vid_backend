@@ -11,13 +11,13 @@ func SetupUserGroup(router *gin.Engine) {
 
 	jwt := middleware.JWTMiddleware(false)
 	jwtAdmin := middleware.JWTMiddleware(true)
+	limit := middleware.StreamLimitMiddleware(2 << 20)
 
 	userGroup := router.Group("/user")
 	{
 		userGroup.GET("/", jwtAdmin, UserCtrl.QueryAllUsers)
 		userGroup.GET("/:uid", UserCtrl.QueryUser)
-		userGroup.PUT("/", jwt, middleware.StreamLimitMiddleware(2<<20), UserCtrl.UpdateUser) // 2M
-		// userGroup.PUT("/", jwt, UserCtrl.UpdateUser) // 2M
+		userGroup.PUT("/", jwt, limit, UserCtrl.UpdateUser) // 2M avatar
 		userGroup.DELETE("/", jwt, UserCtrl.DeleteUser)
 
 		userGroup.PUT("/subscribing", jwt, SubCtrl.SubscribeUser)

@@ -10,6 +10,7 @@ func SetupVideoGroup(router *gin.Engine) {
 
 	jwt := middleware.JWTMiddleware(false)
 	jwtAdmin := middleware.JWTMiddleware(true)
+	limit := middleware.StreamLimitMiddleware(2 << 20)
 
 	videoGroup := router.Group("/video")
 	{
@@ -17,8 +18,8 @@ func SetupVideoGroup(router *gin.Engine) {
 		videoGroup.GET("/vid/:vid", VideoCtrl.QueryVideoByVid)
 		videoGroup.GET("/uid/:uid", VideoCtrl.QueryVideosByUid)
 
-		videoGroup.POST("/", jwt, VideoCtrl.InsertVideo)
-		videoGroup.PUT("/:vid", jwt, VideoCtrl.UpdateVideo)
+		videoGroup.POST("/", jwt, limit, VideoCtrl.InsertVideo)    // 2M cover
+		videoGroup.PUT("/:vid", jwt, limit, VideoCtrl.UpdateVideo) // 2M cover
 		videoGroup.DELETE("/:vid", jwt, VideoCtrl.DeleteVideo)
 	}
 }

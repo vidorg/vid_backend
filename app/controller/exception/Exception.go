@@ -9,7 +9,7 @@ var (
 	RouteParamError = errors.New("request route param error")
 	QueryParamError = errors.New("request query param error")
 	FormParamError  = errors.New("request form data error")
-	JsonParamError  = errors.New("request raw json error")
+	// JsonParamError  = errors.New("request raw json error")
 
 	FormatError           = errors.New("request format error")
 	RequestSizeLargeError = errors.New("request body too large")
@@ -47,15 +47,6 @@ var (
 	VideoDeleteError   = errors.New("video delete failed") // D
 
 	VideoExistError = errors.New("video resource has been used")
-
-	// playlist
-	PlaylistInsertError   = errors.New("playlist insert failed") // C
-	PlaylistUpdateError   = errors.New("playlist update failed") // U
-	PlaylistDeleteError   = errors.New("playlist delete failed") // D
-	PlaylistNotFoundError = errors.New("playlist not found")     // R
-
-	PlaylistNameUsedError    = errors.New("playlist name duplicated")
-	PlaylistVideoDeleteError = errors.New("playlist video delete failed")
 )
 
 // File
@@ -63,7 +54,4 @@ var (
 	ImageNotFoundError     = errors.New("image not found")
 	ImageSaveError         = errors.New("image save failed")
 	ImageNotSupportedError = errors.New("image type not supported")
-
-	VideoUploadError   = errors.New("video upload failed")
-	FileExtensionError = errors.New("extension not supported")
 )

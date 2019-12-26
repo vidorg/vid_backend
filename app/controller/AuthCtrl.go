@@ -76,7 +76,7 @@ func (u *authCtrl) Login(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, dto.Result{}.Ok().AddConverter(po.User{}.AvatarUrlConverter()).PutData("user", passRecord.User).PutData("token", token))
+	c.JSON(http.StatusOK, dto.Result{}.Ok().AddConverter(po.User{}.UrlConverter()).PutData("user", passRecord.User).PutData("token", token))
 }
 
 // @Router 				/auth/register [POST]
@@ -130,7 +130,7 @@ func (u *authCtrl) Register(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, dto.Result{}.Ok().AddConverter(po.User{}.AvatarUrlConverter()).SetData(passRecord.User))
+	c.JSON(http.StatusOK, dto.Result{}.Ok().AddConverter(po.User{}.UrlConverter()).SetData(passRecord.User))
 }
 
 // @Router 				/auth/password [PUT] [Auth]
@@ -197,5 +197,5 @@ func (u *authCtrl) ModifyPassword(c *gin.Context) {
  						} */
 func (u *authCtrl) CurrentUser(c *gin.Context) {
 	authUser := middleware.GetAuthUser(c)
-	c.JSON(http.StatusOK, dto.Result{}.Ok().AddConverter(po.User{}.AvatarUrlConverter()).SetData(authUser))
+	c.JSON(http.StatusOK, dto.Result{}.Ok().AddConverter(po.User{}.UrlConverter()).SetData(authUser))
 }
