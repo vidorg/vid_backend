@@ -41,7 +41,7 @@ var UserCtrl = new(userCtrl)
 										"username": "User1",
 										"sex": "male",
 										"profile": "",
-										"avatar_url": "",
+										"avatar_url": "http://localhost:3344/raw/image/default/avatar.jpg",
 										"birth_time": "2000-01-01",
 										"authority": "admin"
 									}
@@ -77,7 +77,7 @@ func (u *userCtrl) QueryAllUsers(c *gin.Context) {
 									"username": "aoihosizora",
 									"sex": "unknown",
 									"profile": "",
-									"avatar_url": "",
+									"avatar_url": "http://localhost:3344/raw/image/default/avatar.jpg",
 									"birth_time": "2000-01-01",
 									"authority": "admin"
 								},
@@ -130,8 +130,11 @@ func (u *userCtrl) QueryUser(c *gin.Context) {
 // @Param 				phone_number formData string true "用户手机号码"
 // @Accept 				multipart/form-data
 // @ErrorCode 			400 request format error
+// @ErrorCode 			400 request body too large
 // @ErrorCode 			400 username has been used
+// @ErrorCode 			400 image type not supported
 // @ErrorCode 			404 user not found
+// @ErrorCode 			500 image save failed
 // @ErrorCode 			500 user update failed
 /* @Success 200 		{
 							"code": 200,
@@ -141,7 +144,7 @@ func (u *userCtrl) QueryUser(c *gin.Context) {
 								"username": "aoihosizora",
 								"sex": "male",
 								"profile": "Demo Profile",
-								"avatar_url": "",
+								"avatar_url": "http://localhost:3344/raw/image/10/avatar_20191226131519858696.jpg",
 								"birth_time": "2019-12-18",
 								"authority": "admin",
         						"phone_number": "13512345678"
@@ -165,18 +168,19 @@ func (u *userCtrl) UpdateUser(c *gin.Context) {
 		return
 	}
 	avatarFile, avatarHeader, err2 := c.Request.FormFile("avatar")
-	if err2 == nil {
+	if err2 == nil && avatarFile != nil {
 		supported, ext := util.ImageUtil.CheckImageExt(avatarHeader.Filename)
 		if !supported {
 			c.JSON(http.StatusBadRequest, dto.Result{}.Error(http.StatusBadRequest).SetMessage(exception.ImageNotSupportedError.Error()))
 			return
 		}
-		savePath := fmt.Sprintf("./usr/image/%s/avatar_%s.jpg", strconv.Itoa(authUser.Uid), util.CommonUtil.CurrentTimeUuid())
+		filename := fmt.Sprintf("avatar_%s.jpg", util.CommonUtil.CurrentTimeUuid())
+		savePath := fmt.Sprintf("./usr/image/%d/%s", authUser.Uid, filename)
 		if err := util.ImageUtil.SaveAsJpg(avatarFile, ext, savePath); err != nil {
 			c.JSON(http.StatusInternalServerError, dto.Result{}.Error(http.StatusInternalServerError).SetMessage(exception.ImageSaveError.Error()))
 			return
 		}
-		authUser.AvatarUrl = savePath
+		authUser.AvatarUrl = filename
 	}
 
 	authUser.Username = username
@@ -197,7 +201,7 @@ func (u *userCtrl) UpdateUser(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, dto.Result{}.Ok().SetData(authUser).PutData("phone_number", phoneNumber))
+	c.JSON(http.StatusOK, dto.Result{}.Ok().AddConverter(po.User{}.AvatarUrlConverter()).SetData(authUser).PutData("phone_number", phoneNumber))
 }
 
 // @Router 				/user/ [DELETE] [Auth]

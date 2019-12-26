@@ -11,7 +11,8 @@ var (
 	FormParamError  = errors.New("request form data error")
 	JsonParamError  = errors.New("request raw json error")
 
-	FormatError = errors.New("request format error")
+	FormatError           = errors.New("request format error")
+	RequestSizeLargeError = errors.New("request body too large")
 )
 
 // Authorization
@@ -59,10 +60,10 @@ var (
 
 // File
 var (
+	ImageNotFoundError     = errors.New("image not found")
 	ImageSaveError         = errors.New("image save failed")
 	ImageNotSupportedError = errors.New("image type not supported")
 
 	VideoUploadError   = errors.New("video upload failed")
 	FileExtensionError = errors.New("extension not supported")
-	FileNotFoundError  = errors.New("file not exist")
 )

@@ -12,7 +12,7 @@ var SubDao = new(subDao)
 
 func (u *subDao) QuerySubscriberUsers(uid int, page int) ([]po.User, int, DbStatus) {
 	user := &po.User{Uid: uid}
-	if DB.NewRecord(user) {
+	if UserDao.QueryByUid(uid) == nil {
 		return nil, 0, DbNotFound
 	}
 	asDb := DB.Model(user).Association("Subscribers")
@@ -27,7 +27,7 @@ func (u *subDao) QuerySubscriberUsers(uid int, page int) ([]po.User, int, DbStat
 
 func (u *subDao) QuerySubscribingUsers(uid int, page int) ([]po.User, int, DbStatus) {
 	user := &po.User{Uid: uid}
-	if DB.NewRecord(user) {
+	if UserDao.QueryByUid(uid) == nil {
 		return nil, 0, DbNotFound
 	}
 	asDb := DB.Model(user).Association("Subscribings")
@@ -54,13 +54,13 @@ func (u *subDao) QuerySubCnt(uid int) (int, int, DbStatus) {
 	return subscribingCnt, subscriberCnt, DbSuccess
 }
 
-func (u *subDao) SubscribeUser(userUid int, upUid int) DbStatus {
-	user := &po.User{Uid: userUid}
-	upUser := &po.User{Uid: upUid}
-	if DB.NewRecord(user) || DB.NewRecord(upUser) {
+func (u *subDao) SubscribeUser(meUid int, toUid int) DbStatus {
+	meUser := &po.User{Uid: meUid}
+	toUser := &po.User{Uid: toUid}
+	if UserDao.QueryByUid(meUid) == nil || UserDao.QueryByUid(toUid) == nil {
 		return DbNotFound
 	}
-	if err := DB.Model(upUser).Association("Subscribers").Append(user).Error; err != nil {
+	if err := DB.Model(toUser).Association("Subscribers").Append(meUser).Error; err != nil {
 		if IsNotFoundError(err) {
 			return DbNotFound
 		} else {
@@ -71,13 +71,13 @@ func (u *subDao) SubscribeUser(userUid int, upUid int) DbStatus {
 	return DbSuccess
 }
 
-func (u *subDao) UnSubscribeUser(userUid int, upUid int) DbStatus {
-	user := &po.User{Uid: userUid}
-	upUser := &po.User{Uid: upUid}
-	if DB.NewRecord(user) || DB.NewRecord(upUser) {
+func (u *subDao) UnSubscribeUser(meUid int, toUid int) DbStatus {
+	meUser := &po.User{Uid: meUid}
+	toUser := &po.User{Uid: toUid}
+	if UserDao.QueryByUid(meUid) == nil || UserDao.QueryByUid(toUid) == nil {
 		return DbNotFound
 	}
-	if err := DB.Model(upUser).Association("Subscribers").Delete(user).Error; err != nil {
+	if err := DB.Model(toUser).Association("Subscribers").Delete(meUser).Error; err != nil {
 		if IsNotFoundError(err) {
 			return DbNotFound
 		} else {

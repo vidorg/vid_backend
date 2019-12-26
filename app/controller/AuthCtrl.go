@@ -39,7 +39,7 @@ var AuthCtrl = new(authCtrl)
 									"username": "aoihosizora",
 									"sex": "unknown",
 									"profile": "",
-									"avatar_url": "",
+									"avatar_url": "http://localhost:3344/raw/image/default/avatar.jpg",
 									"birth_time": "2000-01-01",
 									"authority": "normal"
 								},
@@ -76,7 +76,7 @@ func (u *authCtrl) Login(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, dto.Result{}.Ok().PutData("user", passRecord.User).PutData("token", token))
+	c.JSON(http.StatusOK, dto.Result{}.Ok().AddConverter(po.User{}.AvatarUrlConverter()).PutData("user", passRecord.User).PutData("token", token))
 }
 
 // @Router 				/auth/register [POST]
@@ -97,7 +97,7 @@ func (u *authCtrl) Login(c *gin.Context) {
 								"username": "aoihosizora",
 								"sex": "unknown",
 								"profile": "",
-								"avatar_url": "",
+								"avatar_url": "http://localhost:3344/raw/image/default/avatar.jpg",
 								"birth_time": "2000-01-01",
 								"authority": "normal"
 							}
@@ -117,7 +117,7 @@ func (u *authCtrl) Register(c *gin.Context) {
 	passRecord := &po.PassRecord{
 		EncryptedPass: util.PassUtil.MD5Encode(password),
 		User: &po.User{
-			Username: username,
+			Username:   username,
 			RegisterIP: c.ClientIP(),
 		},
 	}
@@ -130,7 +130,7 @@ func (u *authCtrl) Register(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, dto.Result{}.Ok().SetData(passRecord.User))
+	c.JSON(http.StatusOK, dto.Result{}.Ok().AddConverter(po.User{}.AvatarUrlConverter()).SetData(passRecord.User))
 }
 
 // @Router 				/auth/password [PUT] [Auth]
@@ -190,12 +190,12 @@ func (u *authCtrl) ModifyPassword(c *gin.Context) {
 								"username": "aoihosizora",
 								"sex": "unknown",
 								"profile": "",
-								"avatar_url": "",
+								"avatar_url": "http://localhost:3344/raw/image/default/avatar.jpg",
 								"birth_time": "2000-01-01",
 								"authority": "normal"
 							}
  						} */
 func (u *authCtrl) CurrentUser(c *gin.Context) {
 	authUser := middleware.GetAuthUser(c)
-	c.JSON(http.StatusOK, dto.Result{}.Ok().SetData(authUser))
+	c.JSON(http.StatusOK, dto.Result{}.Ok().AddConverter(po.User{}.AvatarUrlConverter()).SetData(authUser))
 }

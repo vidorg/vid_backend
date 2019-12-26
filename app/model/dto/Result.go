@@ -56,7 +56,7 @@ func (r *Result) SetMessage(message string) *Result {
 }
 
 func (r *Result) SetData(data interface{}) *Result {
-	data = r.convert(data)
+	r.convert(data)
 	r.Data = vo.OrderMap{}.FromObject(data)
 	return r
 }
@@ -65,7 +65,7 @@ func (r *Result) PutData(field string, data interface{}) *Result {
 	if r.Data == nil {
 		r.Data = vo.NewOrderMap()
 	}
-	data = r.convert(data)
+	r.convert(data)
 	r.Data.Put(field, data)
 	return r
 }
@@ -74,7 +74,7 @@ func (r *Result) SetPage(count int, page int, data interface{}) *Result {
 	if r.Data == nil {
 		r.Data = vo.NewOrderMap()
 	}
-	data = r.convert(data)
+	r.convert(data)
 	r.Data.Put("count", count)
 	r.Data.Put("page", page)
 	r.Data.Put("data", data)

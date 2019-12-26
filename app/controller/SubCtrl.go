@@ -2,6 +2,7 @@ package controller
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/shomali11/util/xconditions"
 	"net/http"
 	"strconv"
 	"vid/app/controller/exception"
@@ -9,6 +10,7 @@ import (
 	"vid/app/database/dao"
 	"vid/app/middleware"
 	"vid/app/model/dto"
+	"vid/app/model/po"
 )
 
 type subCtrl struct{}
@@ -35,7 +37,7 @@ var SubCtrl = new(subCtrl)
 										"username": "User2",
 										"sex": "unknown",
 										"profile": "",
-										"avatar_url": "",
+										"avatar_url": "http://localhost:3344/raw/image/default/avatar.jpg",
 										"birth_time": "2000-01-01",
 										"authority": "normal"
 									}
@@ -43,17 +45,19 @@ var SubCtrl = new(subCtrl)
 							}
  						} */
 func (u *subCtrl) QuerySubscriberUsers(c *gin.Context) {
-	uidString, _ := c.Params.Get("uid")
+	uidString := c.Param("uid")
 	uid, err := strconv.Atoi(uidString)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, dto.Result{}.Error(http.StatusBadRequest).SetMessage(exception.RouteParamError.Error()))
 		return
 	}
-	pageString := c.Query("page")
+	pageString := c.DefaultQuery("page", "1")
 	page, err := strconv.Atoi(pageString)
-	if err != nil || page == 0 {
-		page = 1
+	if err != nil {
+		c.JSON(http.StatusBadRequest, dto.Result{}.Error(http.StatusBadRequest).SetMessage(exception.QueryParamError.Error()))
+		return
 	}
+	page = xconditions.IfThenElse(page == 0, 1, page).(int)
 
 	users, count, status := dao.SubDao.QuerySubscriberUsers(uid, page)
 	if status == database.DbNotFound {
@@ -61,7 +65,7 @@ func (u *subCtrl) QuerySubscriberUsers(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, dto.Result{}.Ok().SetPage(count, page, users))
+	c.JSON(http.StatusOK, dto.Result{}.Ok().AddConverter(po.User{}.AvatarUrlConverter()).SetPage(count, page, users))
 }
 
 // @Router 				/user/{uid}/subscribing [GET]
@@ -84,7 +88,7 @@ func (u *subCtrl) QuerySubscriberUsers(c *gin.Context) {
 										"username": "User1",
 										"sex": "male",
 										"profile": "",
-										"avatar_url": "",
+										"avatar_url": "http://localhost:3344/raw/image/default/avatar.jpg",
 										"birth_time": "2000-01-01",
 										"authority": "admin"
 									}
@@ -92,17 +96,19 @@ func (u *subCtrl) QuerySubscriberUsers(c *gin.Context) {
 							}
  						} */
 func (u *subCtrl) QuerySubscribingUsers(c *gin.Context) {
-	uidString, _ := c.Params.Get("uid")
+	uidString := c.Param("uid")
 	uid, err := strconv.Atoi(uidString)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, dto.Result{}.Error(http.StatusBadRequest).SetMessage(exception.RouteParamError.Error()))
 		return
 	}
-	pageString := c.Query("page")
+	pageString := c.DefaultQuery("page", "1")
 	page, err := strconv.Atoi(pageString)
-	if err != nil || page == 0 {
-		page = 1
+	if err != nil {
+		c.JSON(http.StatusBadRequest, dto.Result{}.Error(http.StatusBadRequest).SetMessage(exception.QueryParamError.Error()))
+		return
 	}
+	page = xconditions.IfThenElse(page == 0, 1, page).(int)
 
 	users, count, status := dao.SubDao.QuerySubscribingUsers(uid, page)
 	if status == database.DbNotFound {
@@ -110,16 +116,15 @@ func (u *subCtrl) QuerySubscribingUsers(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK,
-		dto.Result{}.Ok().SetPage(count, page, users))
+	c.JSON(http.StatusOK, dto.Result{}.Ok().AddConverter(po.User{}.AvatarUrlConverter()).SetPage(count, page, users))
 }
 
-// @Router 				/user/subscribing/{uid} [POST] [Auth]
+// @Router 				/user/subscribing?to [PUT] [Auth]
 // @Summary 			关注用户
 // @Description 		关注某一用户
-// @Param 				uid query integer true "关注用户id"
+// @Param 				to query integer true "关注用户id"
 // @Accept 				multipart/form-data
-// @ErrorCode 			400 request route param error
+// @ErrorCode 			400 request query param error
 // @ErrorCode 			400 subscribe oneself invalid
 // @ErrorCode 			404 user not found
 // @ErrorCode 			500 subscribe failed
@@ -127,26 +132,26 @@ func (u *subCtrl) QuerySubscribingUsers(c *gin.Context) {
 							"code": 200,
 							"message": "success",
 							"data": {
-								"me": 10,
-								"up": 3,
+								"me_uid": 10,
+								"to_uid": 3,
 								"action": "subscribe"
 							}
  						} */
 func (u *subCtrl) SubscribeUser(c *gin.Context) {
 	authUser := middleware.GetAuthUser(c)
 
-	upUidString, _ := c.Params.Get("uid")
-	upUid, err := strconv.Atoi(upUidString)
+	toUidString := c.Query("to")
+	toUid, err := strconv.Atoi(toUidString)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, dto.Result{}.Error(http.StatusBadRequest).SetMessage(exception.RouteParamError.Error()))
+		c.JSON(http.StatusBadRequest, dto.Result{}.Error(http.StatusBadRequest).SetMessage(exception.QueryParamError.Error()))
 		return
 	}
-	if authUser.Uid == upUid {
+	if authUser.Uid == toUid {
 		c.JSON(http.StatusBadRequest, dto.Result{}.Error(http.StatusBadRequest).SetMessage(exception.SubscribeSelfError.Error()))
 		return
 	}
 
-	status := dao.SubDao.SubscribeUser(authUser.Uid, upUid)
+	status := dao.SubDao.SubscribeUser(authUser.Uid, toUid)
 	if status == database.DbNotFound {
 		c.JSON(http.StatusNotFound, dto.Result{}.Error(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()))
 		return
@@ -155,37 +160,37 @@ func (u *subCtrl) SubscribeUser(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, dto.Result{}.Ok().PutData("me", authUser.Uid).PutData("up", upUid).PutData("action", "subscribe"))
+	c.JSON(http.StatusOK, dto.Result{}.Ok().PutData("me_uid", authUser.Uid).PutData("to_uid", toUid).PutData("action", "subscribe"))
 }
 
-// @Router 				/user/subscribing/{uid} [DELETE] [Auth]
+// @Router 				/user/subscribing?to [DELETE] [Auth]
 // @Summary 			取消关注用户
 // @Description 		取消关注某一用户
-// @Param 				uid query integer true "取消关注用户id"
+// @Param 				to query integer true "取消关注用户id"
 // @Accept 				multipart/form-data
-// @ErrorCode			400 request route param error
+// @ErrorCode			400 request query param error
 // @ErrorCode			404 user not found
 // @ErrorCode			500 unsubscribe failed
 /* @Success 200 		{
 							"code": 200,
 							"message": "success",
 							"data": {
-								"me": 10,
-								"up": 3,
+								"me_uid": 10,
+								"to_uid": 3,
 								"action": "unsubscribe"
 							}
  						} */
 func (u *subCtrl) UnSubscribeUser(c *gin.Context) {
 	authUser := middleware.GetAuthUser(c)
 
-	upUidString, _ := c.Params.Get("uid")
-	upUid, err := strconv.Atoi(upUidString)
+	toUidString := c.Query("to")
+	toUid, err := strconv.Atoi(toUidString)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, dto.Result{}.Error(http.StatusBadRequest).SetMessage(exception.RouteParamError.Error()))
+		c.JSON(http.StatusBadRequest, dto.Result{}.Error(http.StatusBadRequest).SetMessage(exception.QueryParamError.Error()))
 		return
 	}
 
-	status := dao.SubDao.UnSubscribeUser(authUser.Uid, upUid)
+	status := dao.SubDao.UnSubscribeUser(authUser.Uid, toUid)
 	if status == database.DbNotFound {
 		c.JSON(http.StatusNotFound, dto.Result{}.Error(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()))
 		return
@@ -195,5 +200,5 @@ func (u *subCtrl) UnSubscribeUser(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK,
-		dto.Result{}.Ok().PutData("me", authUser.Uid).PutData("up", upUid).PutData("action", "unsubscribe"))
+		dto.Result{}.Ok().PutData("me_uid", authUser.Uid).PutData("to_uid", toUid).PutData("action", "unsubscribe"))
 }

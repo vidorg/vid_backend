@@ -2,6 +2,7 @@ package controller
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/shomali11/util/xconditions"
 	"net/http"
 	"strconv"
 	"time"
@@ -24,20 +25,46 @@ var VideoCtrl = new(videoCtrl)
 // @Description 		管理员查询所有视频，返回分页数据，Admin
 // @Param 				page query integer false "分页"
 // @Accept 				multipart/form-data
+// @ErrorCode			400 request query param error
 // @ErrorCode 			401 need admin authority
 /* @Success 200 		{
 							"code": 200,
 							"message": "success",
-							"data": {}
+							"data": {
+								"count": 1,
+								"page": 1,
+								"data": [
+									{
+										"vid": 10,
+										"title": "VideoTitle",
+										"description": "VideoDesc",
+										"video_url": "",
+										"cover_url": "",
+										"upload_time": "2019-12-26",
+										"author": {
+											"uid": 10,
+											"username": "aoihosizora",
+											"sex": "male",
+											"profile": "Demo Profile",
+											"avatar_url": "avatar_20191226131519858696.jpg",
+											"birth_time": "2019-12-26",
+											"authority": "admin"
+										}
+									}
+								]
+							}
  						} */
 func (v *videoCtrl) QueryAllVideos(c *gin.Context) {
-	pageString := c.Query("page")
+	pageString := c.DefaultQuery("page", "1")
 	page, err := strconv.Atoi(pageString)
-	if err != nil || page == 0 {
-		page = 1
+	if err != nil {
+		c.JSON(http.StatusBadRequest, dto.Result{}.Error(http.StatusBadRequest).SetMessage(exception.QueryParamError.Error()))
+		return
 	}
+	page = xconditions.IfThenElse(page == 0, 1, page).(int)
+
 	videos, count := dao.VideoDao.QueryAll(page)
-	c.JSON(http.StatusOK, dto.Result{}.Ok().SetPage(count, page, videos))
+	c.JSON(http.StatusOK, dto.Result{}.Ok().AddConverter(po.User{}.AvatarUrlConverter()).SetPage(count, page, videos))
 }
 
 // @Router 				/video/uid/{uid}?page [GET]
@@ -47,11 +74,34 @@ func (v *videoCtrl) QueryAllVideos(c *gin.Context) {
 // @Param 				page query integer false "分页"
 // @Accept 				multipart/form-data
 // @ErrorCode			400 request route param error
+// @ErrorCode			400 request query param error
 // @ErrorCode			404 user not found
 /* @Success 200 		{
 							"code": 200,
 							"message": "success",
-							"data": {}
+							"data": {
+								"count": 1,
+								"page": 1,
+								"data": [
+									{
+										"vid": 10,
+										"title": "VideoTitle",
+										"description": "VideoDesc",
+										"video_url": "",
+										"cover_url": "",
+										"upload_time": "2019-12-26",
+										"author": {
+											"uid": 10,
+											"username": "aoihosizora",
+											"sex": "male",
+											"profile": "Demo Profile",
+											"avatar_url": "avatar_20191226131519858696.jpg",
+											"birth_time": "2019-12-26",
+											"authority": "admin"
+										}
+									}
+								]
+							}
  						} */
 func (v *videoCtrl) QueryVideosByUid(c *gin.Context) {
 	uidString := c.Param("uid")
@@ -60,11 +110,13 @@ func (v *videoCtrl) QueryVideosByUid(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, dto.Result{}.Error(http.StatusBadRequest).SetMessage(exception.RouteParamError.Error()))
 		return
 	}
-	pageString := c.Query("page")
+	pageString := c.DefaultQuery("page", "1")
 	page, err := strconv.Atoi(pageString)
-	if err != nil || page == 0 {
-		page = 1
+	if err != nil {
+		c.JSON(http.StatusBadRequest, dto.Result{}.Error(http.StatusBadRequest).SetMessage(exception.QueryParamError.Error()))
+		return
 	}
+	page = xconditions.IfThenElse(page == 0, 1, page).(int)
 
 	users, count, status := dao.VideoDao.QueryByUid(uid, page)
 	if status == database.DbNotFound {
@@ -72,7 +124,7 @@ func (v *videoCtrl) QueryVideosByUid(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, dto.Result{}.Ok().SetPage(count, page, users))
+	c.JSON(http.StatusOK, dto.Result{}.Ok().AddConverter(po.User{}.AvatarUrlConverter()).SetPage(count, page, users))
 }
 
 // @Router 				/video/vid/{vid} [GET]
@@ -85,7 +137,23 @@ func (v *videoCtrl) QueryVideosByUid(c *gin.Context) {
 /* @Success 200 		{
 							"code": 200,
 							"message": "success",
-							"data": {}
+							"data": {
+								"vid": 10,
+								"title": "VideoTitle",
+								"description": "VideoDesc",
+								"video_url": "",
+								"cover_url": "",
+								"upload_time": "2019-12-26",
+								"author": {
+									"uid": 10,
+									"username": "aoihosizora",
+									"sex": "male",
+									"profile": "Demo Profile",
+									"avatar_url": "avatar_20191226131519858696.jpg",
+									"birth_time": "2019-12-26",
+									"authority": "admin"
+								}
+							}
  						} */
 func (v *videoCtrl) QueryVideoByVid(c *gin.Context) {
 	vidString := c.Param("vid")
@@ -101,7 +169,7 @@ func (v *videoCtrl) QueryVideoByVid(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, dto.Result{}.Ok().SetData(video))
+	c.JSON(http.StatusOK, dto.Result{}.Ok().AddConverter(po.User{}.AvatarUrlConverter()).SetData(video))
 }
 
 // @Router 				/video/ [POST] [Auth]
@@ -119,7 +187,23 @@ func (v *videoCtrl) QueryVideoByVid(c *gin.Context) {
 /* @Success 200 		{
 							"code": 200,
 							"message": "success",
-							"data": {}
+							"data": {
+								"vid": 10,
+								"title": "VideoTitle",
+								"description": "VideoDesc",
+								"video_url": "",
+								"cover_url": "",
+								"upload_time": "2019-12-26",
+								"author": {
+									"uid": 10,
+									"username": "aoihosizora",
+									"sex": "male",
+									"profile": "Demo Profile",
+									"avatar_url": "avatar_20191226131519858696.jpg",
+									"birth_time": "2019-12-26",
+									"authority": "admin"
+								}
+							}
  						} */
 func (v *videoCtrl) InsertVideo(c *gin.Context) {
 	authUser := middleware.GetAuthUser(c)
@@ -157,7 +241,7 @@ func (v *videoCtrl) InsertVideo(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, dto.Result{}.Ok().SetData(video))
+	c.JSON(http.StatusOK, dto.Result{}.Ok().AddConverter(po.User{}.AvatarUrlConverter()).SetData(video))
 }
 
 // @Router 				/video/{vid} [POST] [Auth]
@@ -176,7 +260,23 @@ func (v *videoCtrl) InsertVideo(c *gin.Context) {
 /* @Success 200 		{
 							"code": 200,
 							"message": "success",
-							"data": {}
+							"data": {
+								"vid": 10,
+								"title": "VideoTitle",
+								"description": "VideoDesc",
+								"video_url": "",
+								"cover_url": "",
+								"upload_time": "2019-12-26",
+								"author": {
+									"uid": 10,
+									"username": "aoihosizora",
+									"sex": "male",
+									"profile": "Demo Profile",
+									"avatar_url": "avatar_20191226131519858696.jpg",
+									"birth_time": "2019-12-26",
+									"authority": "admin"
+								}
+							}
  						} */
 func (v *videoCtrl) UpdateVideo(c *gin.Context) {
 	authUser := middleware.GetAuthUser(c)
@@ -213,7 +313,7 @@ func (v *videoCtrl) UpdateVideo(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, dto.Result{}.Ok().SetData(video))
+	c.JSON(http.StatusOK, dto.Result{}.Ok().AddConverter(po.User{}.AvatarUrlConverter()).SetData(video))
 }
 
 // @Router 				/video/{vid} [DELETE] [Auth]
