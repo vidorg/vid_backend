@@ -45,7 +45,7 @@ func (OrderMap) FromObject(object interface{}) *OrderMap {
 		tag := relType.Field(i).Tag.Get("json")
 		omitempty := strings.Index(tag, "omitempty") != -1
 
-		field := strings.SplitN(tag, ",", -1)[0]
+		field := strings.Split(tag, ",")[0]
 		value := elem.Field(i).Interface()
 
 		if field != "-" && (!omitempty || value != nil) {

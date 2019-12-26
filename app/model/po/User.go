@@ -3,6 +3,7 @@ package po
 import (
 	"fmt"
 	"reflect"
+	"strings"
 	"vid/app/model/dto"
 	"vid/app/model/enum"
 	"vid/app/model/vo"
@@ -32,12 +33,13 @@ func (User) AvatarUrlConverter() dto.Converter {
 	return dto.Converter{
 		FieldType: reflect.TypeOf(&User{}),
 		Converter: func(obj interface{}) {
-			fmt.Println(reflect.TypeOf(obj))
 			if content, ok := obj.(*User); ok {
-				if content.AvatarUrl == "" {
-					content.AvatarUrl = "http://localhost:3344/raw/image/default/avatar.jpg"
-				} else {
-					content.AvatarUrl = fmt.Sprintf("http://localhost:3344/raw/image/%d/%s", content.Uid, content.AvatarUrl)
+				if !strings.HasPrefix(content.AvatarUrl, "http") {
+					if content.AvatarUrl == "" {
+						content.AvatarUrl = "http://localhost:3344/raw/image/default/avatar.jpg"
+					} else {
+						content.AvatarUrl = fmt.Sprintf("http://localhost:3344/raw/image/%d/%s", content.Uid, content.AvatarUrl)
+					}
 				}
 			}
 		},

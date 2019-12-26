@@ -1,7 +1,9 @@
 package dto
 
 import (
+	"github.com/shomali11/util/xconditions"
 	"reflect"
+	"strings"
 )
 
 type Converter struct {
@@ -9,45 +11,40 @@ type Converter struct {
 	Converter func(interface{})
 }
 
+// !!
 // data must be pointer / slice / array / struct
 func (r *Result) convert(data interface{}) {
 	dataType := reflect.TypeOf(data)
 
-	if dataType.Kind() == reflect.Slice || dataType.Kind() == reflect.Array { // []
-		sliceValue := reflect.ValueOf(data) // value of slice element
+	if dataType.Kind() == reflect.Slice || dataType.Kind() == reflect.Array {
+		elsVal := reflect.ValueOf(data)
+		for i := 0; i < elsVal.Len(); i++ {
+			val := elsVal.Index(i)
+			r.convert(xconditions.IfThenElse(val.Type().Kind() == reflect.Ptr, val.Interface(), val.Addr().Interface()))
+		}
+	} else {
 		for _, converter := range r.Converter {
-			isTypeEq := dataType.Elem() == converter.FieldType                 // same type
-			isTypePtr := reflect.PtrTo(dataType.Elem()) == converter.FieldType // convert is ptr, element type is plain
-
-			if isTypeEq || isTypePtr {
-				for i := 0; i < sliceValue.Len(); i++ {
-					if isTypeEq {
-						r.convert(sliceValue.Index(i).Interface()) // slice is pointer
-					} else if isTypePtr {
-						r.convert(sliceValue.Index(i).Addr().Interface()) // take slice element pointer
-					}
-				}
+			if dataType == converter.FieldType {
+				converter.Converter(data)
 			}
 		}
-	} else { // {}
-		for _, converter := range r.Converter {
-			if dataType == converter.FieldType { // only support pointer
-				converter.Converter(data) // <<<
-			}
-		}
-		if dataType.Kind() == reflect.Struct { // recursion
-			dataValue := reflect.ValueOf(data) // value of struct field
-			for _, converter := range r.Converter {
-				for i := 0; i < dataType.NumField(); i++ {
-					isTypeEq := dataValue.Field(i).Type() == converter.FieldType                 // same type
-					isTypePtr := reflect.PtrTo(dataValue.Field(i).Type()) == converter.FieldType // convert is ptr, field type is plain
 
-					if isTypeEq {
-						r.convert(dataValue.Field(i)) // value is pointer
-					} else if isTypePtr {
-						r.convert(dataValue.Field(i).Addr().Interface()) // take struct field pointer
-					}
+		dataValue := reflect.ValueOf(data)
+		if dataType.Kind() == reflect.Ptr {
+			dataValue = dataValue.Elem()
+		}
+		dataType = dataValue.Type()
+
+		if dataType.Kind() == reflect.Struct {
+			for i := 0; i < dataType.NumField(); i++ {
+				// fmt.Println(dataType.Field(i).Type, dataType.Field(i).Name)
+				jsonTag := dataType.Field(i).Tag.Get("json")
+				// !!
+				if jsonTag == "" || strings.Split(jsonTag, ",")[0] == "-" {
+					continue
 				}
+				val := dataValue.Field(i)
+				r.convert(xconditions.IfThenElse(val.Type().Kind() == reflect.Ptr, val.Interface(), val.Addr().Interface()))
 			}
 		}
 	}
