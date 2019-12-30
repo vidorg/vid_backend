@@ -9,6 +9,7 @@ import (
 	"vid/app/middleware"
 	"vid/app/model"
 	"vid/app/model/dto"
+	"vid/app/model/dto/common"
 	"vid/app/model/po"
 	"vid/app/util"
 
@@ -51,7 +52,7 @@ func (u *authCtrl) Login(c *gin.Context) {
 	password, exist2 := c.GetPostForm("password")
 	expireString := c.PostForm("expire")
 	if !exist1 || !exist2 {
-		c.JSON(http.StatusBadRequest, dto.Result{}.Error(http.StatusBadRequest).SetMessage(exception.FormParamError.Error()))
+		c.JSON(http.StatusBadRequest, common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.FormParamError.Error()))
 		return
 	}
 	expire := util.JwtExpire
@@ -61,22 +62,22 @@ func (u *authCtrl) Login(c *gin.Context) {
 
 	passRecord := dao.PassDao.QueryByUsername(username)
 	if passRecord == nil {
-		c.JSON(http.StatusNotFound, dto.Result{}.Error(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()))
+		c.JSON(http.StatusNotFound, common.Result{}.Error(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()))
 		return
 	}
 
 	if !util.PassUtil.MD5Check(password, passRecord.EncryptedPass) {
-		c.JSON(http.StatusUnauthorized, dto.Result{}.Error(http.StatusUnauthorized).SetMessage(exception.PasswordError.Error()))
+		c.JSON(http.StatusUnauthorized, common.Result{}.Error(http.StatusUnauthorized).SetMessage(exception.PasswordError.Error()))
 		return
 	}
 
 	token, err := util.PassUtil.GenToken(passRecord.User.Uid, expire)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, dto.Result{}.Error(http.StatusInternalServerError).SetMessage(exception.LoginError.Error()))
+		c.JSON(http.StatusInternalServerError, common.Result{}.Error(http.StatusInternalServerError).SetMessage(exception.LoginError.Error()))
 		return
 	}
 
-	c.JSON(http.StatusOK, dto.Result{}.Ok().AddConverter(po.User{}.UrlConverter()).PutData("user", passRecord.User).PutData("token", token))
+	c.JSON(http.StatusOK, common.Result{}.Ok().PutData("user", dto.UserDto{}.FromPo(passRecord.User, true)).PutData("token", token))
 }
 
 // @Router 				/auth/register [POST]
@@ -106,11 +107,11 @@ func (u *authCtrl) Register(c *gin.Context) {
 	username, exist1 := c.GetPostForm("username")
 	password, exist2 := c.GetPostForm("password")
 	if !exist1 || !exist2 {
-		c.JSON(http.StatusBadRequest, dto.Result{}.Error(http.StatusBadRequest).SetMessage(exception.FormParamError.Error()))
+		c.JSON(http.StatusBadRequest, common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.FormParamError.Error()))
 		return
 	}
 	if !model.FormatCheck.Username(username) || !model.FormatCheck.Password(password) {
-		c.JSON(http.StatusBadRequest, dto.Result{}.Error(http.StatusBadRequest).SetMessage(exception.FormatError.Error()))
+		c.JSON(http.StatusBadRequest, common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.FormatError.Error()))
 		return
 	}
 
@@ -123,14 +124,14 @@ func (u *authCtrl) Register(c *gin.Context) {
 	}
 	status := dao.PassDao.Insert(passRecord)
 	if status == database.DbExisted {
-		c.JSON(http.StatusInternalServerError, dto.Result{}.Error(http.StatusInternalServerError).SetMessage(exception.UserNameUsedError.Error()))
+		c.JSON(http.StatusInternalServerError, common.Result{}.Error(http.StatusInternalServerError).SetMessage(exception.UserNameUsedError.Error()))
 		return
 	} else if status == database.DbFailed {
-		c.JSON(http.StatusInternalServerError, dto.Result{}.Error(http.StatusInternalServerError).SetMessage(exception.RegisterError.Error()))
+		c.JSON(http.StatusInternalServerError, common.Result{}.Error(http.StatusInternalServerError).SetMessage(exception.RegisterError.Error()))
 		return
 	}
 
-	c.JSON(http.StatusOK, dto.Result{}.Ok().AddConverter(po.User{}.UrlConverter()).SetData(passRecord.User))
+	c.JSON(http.StatusOK, common.Result{}.Ok().SetData(dto.UserDto{}.FromPo(passRecord.User, true)))
 }
 
 // @Router 				/auth/password [PUT] [Auth]
@@ -151,11 +152,11 @@ func (u *authCtrl) ModifyPassword(c *gin.Context) {
 
 	password, exist := c.GetPostForm("password")
 	if !exist {
-		c.JSON(http.StatusBadRequest, dto.Result{}.Error(http.StatusBadRequest).SetMessage(exception.FormParamError.Error()))
+		c.JSON(http.StatusBadRequest, common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.FormParamError.Error()))
 		return
 	}
 	if !model.FormatCheck.Password(password) {
-		c.JSON(http.StatusBadRequest, dto.Result{}.Error(http.StatusBadRequest).SetMessage(exception.FormatError.Error()))
+		c.JSON(http.StatusBadRequest, common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.FormatError.Error()))
 		return
 	}
 
@@ -167,15 +168,15 @@ func (u *authCtrl) ModifyPassword(c *gin.Context) {
 	status := dao.PassDao.Update(passRecord)
 	if status == database.DbNotFound {
 		c.JSON(http.StatusNotFound,
-			dto.Result{}.Error(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()))
+			common.Result{}.Error(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()))
 		return
 	} else if status == database.DbFailed {
 		c.JSON(http.StatusInternalServerError,
-			dto.Result{}.Error(http.StatusInternalServerError).SetMessage(exception.UpdatePassError.Error()))
+			common.Result{}.Error(http.StatusInternalServerError).SetMessage(exception.UpdatePassError.Error()))
 		return
 	}
 
-	c.JSON(http.StatusOK, dto.Result{}.Ok())
+	c.JSON(http.StatusOK, common.Result{}.Ok())
 }
 
 // @Router 				/auth/ [GET] [Auth]
@@ -197,5 +198,5 @@ func (u *authCtrl) ModifyPassword(c *gin.Context) {
  						} */
 func (u *authCtrl) CurrentUser(c *gin.Context) {
 	authUser := middleware.GetAuthUser(c)
-	c.JSON(http.StatusOK, dto.Result{}.Ok().AddConverter(po.User{}.UrlConverter()).SetData(authUser))
+	c.JSON(http.StatusOK, common.Result{}.Ok().SetData(dto.UserDto{}.FromPo(authUser, true)))
 }

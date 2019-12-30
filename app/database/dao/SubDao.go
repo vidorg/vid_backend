@@ -10,7 +10,7 @@ type subDao struct{}
 
 var SubDao = new(subDao)
 
-func (u *subDao) QuerySubscriberUsers(uid int, page int) ([]po.User, int, DbStatus) {
+func (u *subDao) QuerySubscriberUsers(uid int, page int) ([]*po.User, int, DbStatus) {
 	user := &po.User{Uid: uid}
 	if UserDao.QueryByUid(uid) == nil {
 		return nil, 0, DbNotFound
@@ -20,12 +20,12 @@ func (u *subDao) QuerySubscriberUsers(uid int, page int) ([]po.User, int, DbStat
 		return nil, 0, DbNotFound
 	}
 	count := asDb.Count()
-	var users []po.User
+	var users []*po.User
 	DB.Limit(PageSize).Offset((page-1)*PageSize).Model(user).Related(&users, "Subscribers")
 	return users, count, DbSuccess
 }
 
-func (u *subDao) QuerySubscribingUsers(uid int, page int) ([]po.User, int, DbStatus) {
+func (u *subDao) QuerySubscribingUsers(uid int, page int) ([]*po.User, int, DbStatus) {
 	user := &po.User{Uid: uid}
 	if UserDao.QueryByUid(uid) == nil {
 		return nil, 0, DbNotFound
@@ -35,7 +35,7 @@ func (u *subDao) QuerySubscribingUsers(uid int, page int) ([]po.User, int, DbSta
 		return nil, 0, DbNotFound
 	}
 	count := asDb.Count()
-	var users []po.User
+	var users []*po.User
 	DB.Limit(PageSize).Offset((page-1)*PageSize).Model(user).Related(&users, "Subscribings")
 	return users, count, DbSuccess
 }

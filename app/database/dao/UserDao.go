@@ -10,7 +10,7 @@ type userDao struct{}
 
 var UserDao = new(userDao)
 
-func (u *userDao) QueryAll(page int) (users []po.User, count int) {
+func (u *userDao) QueryAll(page int) (users []*po.User, count int) {
 	DB.Model(&po.User{}).Count(&count)
 	DB.Limit(PageSize).Offset((page - 1) * PageSize).Find(&users)
 	return users, count

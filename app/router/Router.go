@@ -5,7 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"vid/app/middleware"
-	"vid/app/model/dto"
+	"vid/app/model/dto/common"
 	"vid/app/router/group"
 )
 
@@ -21,16 +21,14 @@ func SetupRouters() *gin.Engine {
 	group.SetupAuthGroup(router)
 	group.SetupUserGroup(router)
 	group.SetupVideoGroup(router)
-	// SetupSearchGroup(router)
-	// SetupPlaylistGroup(router)
 	group.SetupRawGroup(router)
 
 	router.NoMethod(func(c *gin.Context) {
-		c.JSON(http.StatusMethodNotAllowed, dto.Result{}.Error(http.StatusMethodNotAllowed).
+		c.JSON(http.StatusMethodNotAllowed, common.Result{}.Error(http.StatusMethodNotAllowed).
 			SetMessage("method not allowed"))
 	})
 	router.NoRoute(func(c *gin.Context) {
-		c.JSON(http.StatusNotFound, dto.Result{}.Error(http.StatusNotFound).
+		c.JSON(http.StatusNotFound, common.Result{}.Error(http.StatusNotFound).
 			SetMessage(fmt.Sprintf("route %s %s is not found", c.Request.Method, c.Request.URL.Path)))
 	})
 

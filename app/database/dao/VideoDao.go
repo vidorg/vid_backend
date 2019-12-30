@@ -10,18 +10,18 @@ type videoDao struct{}
 
 var VideoDao = new(videoDao)
 
-func (v *videoDao) QueryAll(page int) (videos []po.Video, count int) {
+func (v *videoDao) QueryAll(page int) (videos []*po.Video, count int) {
 	DB.Model(&po.Video{}).Count(&count)
 	DB.Limit(PageSize).Offset((page - 1) * PageSize).Find(&videos)
 	for idx := range videos {
 		author := &po.User{}
-		DB.Where(&po.User{Uid: videos[idx].AuthorUid}).Find(author)
+		DB.Model(&po.User{}).Where(&po.User{Uid: videos[idx].AuthorUid}).Find(author)
 		videos[idx].Author = author
 	}
 	return videos, count
 }
 
-func (v *videoDao) QueryByUid(uid int, page int) (videos []po.Video, count int, status DbStatus) {
+func (v *videoDao) QueryByUid(uid int, page int) (videos []*po.Video, count int, status DbStatus) {
 	author := UserDao.QueryByUid(uid)
 	if author == nil {
 		return nil, 0, DbNotFound
@@ -39,8 +39,9 @@ func (v *videoDao) QueryCount(uid int) (int, DbStatus) {
 	if DB.NewRecord(&po.User{Uid: uid}) {
 		return 0, DbNotFound
 	}
+	video := &po.Video{AuthorUid: uid}
 	var count int
-	DB.Where(&po.Video{AuthorUid: uid}).Count(&count)
+	DB.Model(video).Where(video).Count(&count)
 	return count, DbSuccess
 }
 

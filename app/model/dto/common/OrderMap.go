@@ -1,4 +1,4 @@
-package vo
+package common
 
 import (
 	"github.com/emirpasic/gods/maps/linkedhashmap"

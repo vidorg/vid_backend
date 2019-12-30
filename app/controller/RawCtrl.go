@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"strconv"
 	"vid/app/controller/exception"
-	"vid/app/model/dto"
+	"vid/app/model/dto/common"
 	"vid/app/util"
 
 	"github.com/gin-gonic/gin"
@@ -34,7 +34,7 @@ func (r *rawCtrl) RawImage(c *gin.Context) {
 		var err error
 		uid, err = strconv.Atoi(uidString)
 		if err != nil {
-			c.JSON(http.StatusBadRequest, dto.Result{}.Error(http.StatusBadRequest).SetMessage(exception.RouteParamError.Error()))
+			c.JSON(http.StatusBadRequest, common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.RouteParamError.Error()))
 			return
 		}
 	}
@@ -42,7 +42,7 @@ func (r *rawCtrl) RawImage(c *gin.Context) {
 
 	filePath := xconditions.IfThenElse(uid == -1, fmt.Sprintf("./usr/default/%s", filename), fmt.Sprintf("./usr/image/%d/%s", uid, filename)).(string)
 	if !util.CommonUtil.IsFileOrDirExist(filePath) {
-		c.JSON(http.StatusNotFound, dto.Result{}.Error(http.StatusBadRequest).SetMessage(exception.ImageNotFoundError.Error()))
+		c.JSON(http.StatusNotFound, common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.ImageNotFoundError.Error()))
 		return
 	}
 

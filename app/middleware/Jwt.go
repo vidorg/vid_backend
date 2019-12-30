@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"strings"
 	"vid/app/database/dao"
-	"vid/app/model/dto"
+	"vid/app/model/dto/common"
 	"vid/app/model/enum"
 	"vid/app/model/po"
 	"vid/app/util"
@@ -18,13 +18,13 @@ func JWTMiddleware(needAdmin bool) gin.HandlerFunc {
 		authHeader := c.Request.Header.Get("Authorization")
 		user, err := JWTCheck(authHeader)
 		if err != nil {
-			c.JSON(http.StatusUnauthorized, dto.Result{}.Error(http.StatusUnauthorized).SetMessage(err.Error()))
+			c.JSON(http.StatusUnauthorized, common.Result{}.Error(http.StatusUnauthorized).SetMessage(err.Error()))
 			c.Abort()
 			return
 		}
 
 		if needAdmin && user.Authority != enum.AuthAdmin {
-			c.JSON(http.StatusUnauthorized, dto.Result{}.Error(http.StatusUnauthorized).SetMessage(exception.NeedAdminError.Error()))
+			c.JSON(http.StatusUnauthorized, common.Result{}.Error(http.StatusUnauthorized).SetMessage(exception.NeedAdminError.Error()))
 			c.Abort()
 			return
 		}
@@ -59,7 +59,7 @@ func JWTCheck(authHeader string) (*po.User, error) {
 		}
 	}
 
-	// No User
+	// Check user & Admin
 	user := dao.UserDao.QueryByUid(claims.UserID)
 	if user == nil {
 		return nil, exception.AuthorizationError
@@ -70,12 +70,16 @@ func JWTCheck(authHeader string) (*po.User, error) {
 
 func GetAuthUser(c *gin.Context) *po.User {
 	_user, exist := c.Get("user")
-	if !exist { // Non-Auth
-		return nil
+	if !exist { // Has not Auth
+		JWTMiddleware(false)(c)
+		_user, exist = c.Get("user")
+		if !exist { // Non-Auth
+			return nil
+		}
 	}
 	user, ok := _user.(*po.User)
 	if !ok { // Auth Failed
-		c.JSON(http.StatusUnauthorized, dto.Result{}.Error(http.StatusUnauthorized).SetMessage(exception.AuthorizationError.Error()))
+		c.JSON(http.StatusUnauthorized, common.Result{}.Error(http.StatusUnauthorized).SetMessage(exception.AuthorizationError.Error()))
 		c.Abort()
 		return nil
 	}

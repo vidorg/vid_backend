@@ -10,7 +10,7 @@ import (
 	"vid/app/database/dao"
 	"vid/app/middleware"
 	"vid/app/model/dto"
-	"vid/app/model/po"
+	"vid/app/model/dto/common"
 )
 
 type subCtrl struct{}
@@ -48,24 +48,24 @@ func (u *subCtrl) QuerySubscriberUsers(c *gin.Context) {
 	uidString := c.Param("uid")
 	uid, err := strconv.Atoi(uidString)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, dto.Result{}.Error(http.StatusBadRequest).SetMessage(exception.RouteParamError.Error()))
+		c.JSON(http.StatusBadRequest, common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.RouteParamError.Error()))
 		return
 	}
 	pageString := c.DefaultQuery("page", "1")
 	page, err := strconv.Atoi(pageString)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, dto.Result{}.Error(http.StatusBadRequest).SetMessage(exception.QueryParamError.Error()))
+		c.JSON(http.StatusBadRequest, common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.QueryParamError.Error()))
 		return
 	}
 	page = xconditions.IfThenElse(page == 0, 1, page).(int)
 
 	users, count, status := dao.SubDao.QuerySubscriberUsers(uid, page)
 	if status == database.DbNotFound {
-		c.JSON(http.StatusNotFound, dto.Result{}.Error(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()))
+		c.JSON(http.StatusNotFound, common.Result{}.Error(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()))
 		return
 	}
 
-	c.JSON(http.StatusOK, dto.Result{}.Ok().AddConverter(po.User{}.UrlConverter()).SetPage(count, page, users))
+	c.JSON(http.StatusOK, common.Result{}.Ok().SetPage(count, page, dto.UserDto{}.FromPos(users)))
 }
 
 // @Router 				/user/{uid}/subscribing [GET]
@@ -99,24 +99,24 @@ func (u *subCtrl) QuerySubscribingUsers(c *gin.Context) {
 	uidString := c.Param("uid")
 	uid, err := strconv.Atoi(uidString)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, dto.Result{}.Error(http.StatusBadRequest).SetMessage(exception.RouteParamError.Error()))
+		c.JSON(http.StatusBadRequest, common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.RouteParamError.Error()))
 		return
 	}
 	pageString := c.DefaultQuery("page", "1")
 	page, err := strconv.Atoi(pageString)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, dto.Result{}.Error(http.StatusBadRequest).SetMessage(exception.QueryParamError.Error()))
+		c.JSON(http.StatusBadRequest, common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.QueryParamError.Error()))
 		return
 	}
 	page = xconditions.IfThenElse(page == 0, 1, page).(int)
 
 	users, count, status := dao.SubDao.QuerySubscribingUsers(uid, page)
 	if status == database.DbNotFound {
-		c.JSON(http.StatusNotFound, dto.Result{}.Error(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()))
+		c.JSON(http.StatusNotFound, common.Result{}.Error(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()))
 		return
 	}
 
-	c.JSON(http.StatusOK, dto.Result{}.Ok().AddConverter(po.User{}.UrlConverter()).SetPage(count, page, users))
+	c.JSON(http.StatusOK, common.Result{}.Ok().SetPage(count, page, dto.UserDto{}.FromPos(users)))
 }
 
 // @Router 				/user/subscribing?to [PUT] [Auth]
@@ -143,24 +143,24 @@ func (u *subCtrl) SubscribeUser(c *gin.Context) {
 	toUidString := c.Query("to")
 	toUid, err := strconv.Atoi(toUidString)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, dto.Result{}.Error(http.StatusBadRequest).SetMessage(exception.QueryParamError.Error()))
+		c.JSON(http.StatusBadRequest, common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.QueryParamError.Error()))
 		return
 	}
 	if authUser.Uid == toUid {
-		c.JSON(http.StatusBadRequest, dto.Result{}.Error(http.StatusBadRequest).SetMessage(exception.SubscribeSelfError.Error()))
+		c.JSON(http.StatusBadRequest, common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.SubscribeSelfError.Error()))
 		return
 	}
 
 	status := dao.SubDao.SubscribeUser(authUser.Uid, toUid)
 	if status == database.DbNotFound {
-		c.JSON(http.StatusNotFound, dto.Result{}.Error(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()))
+		c.JSON(http.StatusNotFound, common.Result{}.Error(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()))
 		return
 	} else if status == database.DbFailed {
-		c.JSON(http.StatusInternalServerError, dto.Result{}.Error(http.StatusInternalServerError).SetMessage(exception.SubscribeError.Error()))
+		c.JSON(http.StatusInternalServerError, common.Result{}.Error(http.StatusInternalServerError).SetMessage(exception.SubscribeError.Error()))
 		return
 	}
 
-	c.JSON(http.StatusOK, dto.Result{}.Ok().PutData("me_uid", authUser.Uid).PutData("to_uid", toUid).PutData("action", "subscribe"))
+	c.JSON(http.StatusOK, common.Result{}.Ok().PutData("me_uid", authUser.Uid).PutData("to_uid", toUid).PutData("action", "subscribe"))
 }
 
 // @Router 				/user/subscribing?to [DELETE] [Auth]
@@ -186,19 +186,19 @@ func (u *subCtrl) UnSubscribeUser(c *gin.Context) {
 	toUidString := c.Query("to")
 	toUid, err := strconv.Atoi(toUidString)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, dto.Result{}.Error(http.StatusBadRequest).SetMessage(exception.QueryParamError.Error()))
+		c.JSON(http.StatusBadRequest, common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.QueryParamError.Error()))
 		return
 	}
 
 	status := dao.SubDao.UnSubscribeUser(authUser.Uid, toUid)
 	if status == database.DbNotFound {
-		c.JSON(http.StatusNotFound, dto.Result{}.Error(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()))
+		c.JSON(http.StatusNotFound, common.Result{}.Error(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()))
 		return
 	} else if status == database.DbFailed {
-		c.JSON(http.StatusInternalServerError, dto.Result{}.Error(http.StatusInternalServerError).SetMessage(exception.UnSubscribeError.Error()))
+		c.JSON(http.StatusInternalServerError, common.Result{}.Error(http.StatusInternalServerError).SetMessage(exception.UnSubscribeError.Error()))
 		return
 	}
 
 	c.JSON(http.StatusOK,
-		dto.Result{}.Ok().PutData("me_uid", authUser.Uid).PutData("to_uid", toUid).PutData("action", "unsubscribe"))
+		common.Result{}.Ok().PutData("me_uid", authUser.Uid).PutData("to_uid", toUid).PutData("action", "unsubscribe"))
 }

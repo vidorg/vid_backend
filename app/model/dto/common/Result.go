@@ -1,20 +1,13 @@
-package dto
+package common
 
 import (
 	"net/http"
-	"vid/app/model/vo"
 )
 
 type Result struct {
-	Code      int          `json:"code"`
-	Message   string       `json:"message"`
-	Data      *vo.OrderMap `json:"data,omitempty"` // map[string]interface{}
-	Converter []Converter  `json:"-"`
-}
-
-func (r *Result) AddConverter(converter Converter) *Result {
-	r.Converter = append(r.Converter, converter)
-	return r
+	Code      int       `json:"code"`
+	Message   string    `json:"message"`
+	Data      *OrderMap `json:"data,omitempty"` // map[string]interface{}
 }
 
 func (Result) Ok() *Result {
@@ -56,25 +49,22 @@ func (r *Result) SetMessage(message string) *Result {
 }
 
 func (r *Result) SetData(data interface{}) *Result {
-	r.convert(data)
-	r.Data = vo.OrderMap{}.FromObject(data)
+	r.Data = OrderMap{}.FromObject(data)
 	return r
 }
 
 func (r *Result) PutData(field string, data interface{}) *Result {
 	if r.Data == nil {
-		r.Data = vo.NewOrderMap()
+		r.Data = NewOrderMap()
 	}
-	r.convert(data)
 	r.Data.Put(field, data)
 	return r
 }
 
 func (r *Result) SetPage(count int, page int, data interface{}) *Result {
 	if r.Data == nil {
-		r.Data = vo.NewOrderMap()
+		r.Data = NewOrderMap()
 	}
-	r.convert(data)
 	r.Data.Put("count", count)
 	r.Data.Put("page", page)
 	r.Data.Put("data", data)

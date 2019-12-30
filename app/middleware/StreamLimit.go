@@ -6,7 +6,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"vid/app/controller/exception"
-	"vid/app/model/dto"
+	"vid/app/model/dto/common"
 )
 
 func StreamLimitMiddleware(maxSize int64) gin.HandlerFunc {
@@ -24,7 +24,7 @@ func StreamLimitMiddleware(maxSize int64) gin.HandlerFunc {
 				_ = bufRw.Flush()
 				_ = conn.Close()
 			}
-			c.JSON(http.StatusRequestEntityTooLarge, dto.Result{}.Error(http.StatusRequestEntityTooLarge).SetMessage(exception.RequestSizeLargeError.Error()))
+			c.JSON(http.StatusRequestEntityTooLarge, common.Result{}.Error(http.StatusRequestEntityTooLarge).SetMessage(exception.RequestSizeLargeError.Error()))
 			c.Abort()
 		}
 	}

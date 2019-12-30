@@ -12,9 +12,8 @@ import (
 	"vid/app/middleware"
 	"vid/app/model"
 	"vid/app/model/dto"
+	"vid/app/model/dto/common"
 	"vid/app/model/enum"
-	"vid/app/model/po"
-	"vid/app/model/vo"
 	"vid/app/util"
 )
 
@@ -37,12 +36,12 @@ var UserCtrl = new(userCtrl)
 								"page": 1,
 								"data": [
 									{
-										"uid": 1,
-										"username": "User1",
+										"uid": 10,
+										"username": "aoihosizora",
 										"sex": "male",
-										"profile": "",
+										"profile": "Demo Profile",
 										"avatar_url": "http://localhost:3344/raw/image/default/avatar.jpg",
-										"birth_time": "2000-01-01",
+										"birth_time": "2019-12-26",
 										"authority": "admin"
 									}
 								]
@@ -52,13 +51,13 @@ func (u *userCtrl) QueryAllUsers(c *gin.Context) {
 	pageString := c.DefaultQuery("page", "1")
 	page, err := strconv.Atoi(pageString)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, dto.Result{}.Error(http.StatusBadRequest).SetMessage(exception.QueryParamError.Error()))
+		c.JSON(http.StatusBadRequest, common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.QueryParamError.Error()))
 		return
 	}
 	page = xconditions.IfThenElse(page == 0, 1, page).(int)
 
 	users, count := dao.UserDao.QueryAll(page)
-	c.JSON(http.StatusOK, dto.Result{}.Ok().AddConverter(po.User{}.UrlConverter()).SetPage(count, page, users))
+	c.JSON(http.StatusOK, common.Result{}.Ok().SetPage(count, page, dto.UserDto{}.FromPos(users)))
 }
 
 // @Router 				/user/{uid} [GET]
@@ -75,16 +74,17 @@ func (u *userCtrl) QueryAllUsers(c *gin.Context) {
 								"user": {
 									"uid": 10,
 									"username": "aoihosizora",
-									"sex": "unknown",
-									"profile": "",
+									"sex": "male",
+									"profile": "Demo Profile",
 									"avatar_url": "http://localhost:3344/raw/image/default/avatar.jpg",
-									"birth_time": "2000-01-01",
+									"birth_time": "2019-12-26",
 									"authority": "admin"
+									"phone_number": "13512345678"
 								},
 								"extra": {
-									"subscribing_cnt": 1,
+									"subscribing_cnt": 3,
 									"subscriber_cnt": 2,
-									"video_cnt": 0,
+									"video_cnt": 3,
 									"playlist_cnt": 0
 								}
 							}
@@ -93,31 +93,29 @@ func (u *userCtrl) QueryUser(c *gin.Context) {
 	uidString := c.Param("uid")
 	uid, err := strconv.Atoi(uidString)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, dto.Result{}.Error(http.StatusBadRequest).SetMessage(exception.RouteParamError.Error()))
+		c.JSON(http.StatusBadRequest, common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.RouteParamError.Error()))
 		return
 	}
 
 	user := dao.UserDao.QueryByUid(uid)
 	if user == nil {
-		c.JSON(http.StatusNotFound, dto.Result{}.Error(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()))
+		c.JSON(http.StatusNotFound, common.Result{}.Error(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()))
 		return
 	}
 	authUser := middleware.GetAuthUser(c)
 	isSelfOrAdmin := authUser != nil && (authUser.Uid == uid || authUser.Authority == enum.AuthAdmin)
-	if !isSelfOrAdmin {
-		user.PhoneNumber = ""
-	}
+	userDto := dto.UserDto{}.FromPo(user, isSelfOrAdmin)
+
 	subscribingCnt, subscriberCnt, _ := dao.SubDao.QuerySubCnt(user.Uid)
 	videoCnt, _ := dao.VideoDao.QueryCount(user.Uid)
 	extraInfo := &dto.UserExtraInfo{
-		PhoneNumber:      user.PhoneNumber,
 		SubscribingCount: subscribingCnt,
 		SubscriberCount:  subscriberCnt,
 		VideoCount:       videoCnt,
 		PlaylistCount:    0, // TODO
 	}
 
-	c.JSON(http.StatusOK, dto.Result{}.Ok().AddConverter(po.User{}.UrlConverter()).PutData("user", user).PutData("extra", extraInfo))
+	c.JSON(http.StatusOK, common.Result{}.Ok().PutData("user", userDto).PutData("extra", extraInfo))
 }
 
 // @Router 				/user/ [PUT] [Auth]
@@ -146,10 +144,10 @@ func (u *userCtrl) QueryUser(c *gin.Context) {
 								"username": "aoihosizora",
 								"sex": "male",
 								"profile": "Demo Profile",
-								"avatar_url": "http://localhost:3344/raw/image/10/avatar_20191226131519858696.jpg",
-								"birth_time": "2019-12-18",
+								"avatar_url": "http://localhost:3344/raw/image/default/avatar.jpg",
+								"birth_time": "2019-12-26",
 								"authority": "admin",
-        						"phone_number": "13512345678"
+								"phone_number": "13512345678"
 							}
  						} */
 func (u *userCtrl) UpdateUser(c *gin.Context) {
@@ -159,51 +157,51 @@ func (u *userCtrl) UpdateUser(c *gin.Context) {
 	profile, exist2 := c.GetPostForm("profile")
 	sex, exist3 := c.GetPostForm("sex")
 	birthTimeStr, exist4 := c.GetPostForm("birth_time")
-	birthTime, err1 := vo.JsonDate{}.Parse(birthTimeStr)
+	birthTime, err1 := common.JsonDate{}.Parse(birthTimeStr)
 	phoneNumber, exist5 := c.GetPostForm("phone_number")
 	if !exist1 || !exist2 || !exist3 || !exist4 || !exist5 {
-		c.JSON(http.StatusBadRequest, dto.Result{}.Error(http.StatusBadRequest).SetMessage(exception.FormParamError.Error()))
+		c.JSON(http.StatusBadRequest, common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.FormParamError.Error()))
 		return
 	}
 	if !model.FormatCheck.Username(username) || !model.FormatCheck.UserProfile(profile) || !model.FormatCheck.PhoneNumber(phoneNumber) || err1 != nil {
-		c.JSON(http.StatusBadRequest, dto.Result{}.Error(http.StatusBadRequest).SetMessage(exception.FormatError.Error()))
+		c.JSON(http.StatusBadRequest, common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.FormatError.Error()))
 		return
 	}
 	avatarFile, avatarHeader, err2 := c.Request.FormFile("avatar")
 	if err2 == nil && avatarFile != nil {
 		supported, ext := util.ImageUtil.CheckImageExt(avatarHeader.Filename)
 		if !supported {
-			c.JSON(http.StatusBadRequest, dto.Result{}.Error(http.StatusBadRequest).SetMessage(exception.ImageNotSupportedError.Error()))
+			c.JSON(http.StatusBadRequest, common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.ImageNotSupportedError.Error()))
 			return
 		}
 		filename := fmt.Sprintf("avatar_%s.jpg", util.CommonUtil.CurrentTimeUuid())
 		savePath := fmt.Sprintf("./usr/image/%d/%s", authUser.Uid, filename)
 		if err := util.ImageUtil.SaveAsJpg(avatarFile, ext, savePath); err != nil {
-			c.JSON(http.StatusInternalServerError, dto.Result{}.Error(http.StatusInternalServerError).SetMessage(exception.ImageSaveError.Error()))
+			c.JSON(http.StatusInternalServerError, common.Result{}.Error(http.StatusInternalServerError).SetMessage(exception.ImageSaveError.Error()))
 			return
 		}
 		authUser.AvatarUrl = filename
 	}
 
 	authUser.Username = username
-	authUser.Sex = enum.StringToSex(sex)
+	authUser.Sex = enum.SexType("").FromString(sex)
 	authUser.Profile = profile
 	authUser.BirthTime = birthTime
 	authUser.PhoneNumber = phoneNumber
 
 	status := dao.UserDao.Update(authUser)
 	if status == database.DbNotFound {
-		c.JSON(http.StatusNotFound, dto.Result{}.Error(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()))
+		c.JSON(http.StatusNotFound, common.Result{}.Error(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()))
 		return
 	} else if status == database.DbExisted {
-		c.JSON(http.StatusBadRequest, dto.Result{}.Error(http.StatusBadRequest).SetMessage(exception.UserNameUsedError.Error()))
+		c.JSON(http.StatusBadRequest, common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.UserNameUsedError.Error()))
 		return
 	} else if status == database.DbFailed {
-		c.JSON(http.StatusInternalServerError, dto.Result{}.Error(http.StatusInternalServerError).SetMessage(exception.UserUpdateError.Error()))
+		c.JSON(http.StatusInternalServerError, common.Result{}.Error(http.StatusInternalServerError).SetMessage(exception.UserUpdateError.Error()))
 		return
 	}
 
-	c.JSON(http.StatusOK, dto.Result{}.Ok().AddConverter(po.User{}.UrlConverter()).SetData(authUser).PutData("phone_number", phoneNumber))
+	c.JSON(http.StatusOK, common.Result{}.Ok().SetData(dto.UserDto{}.FromPo(authUser, true)).PutData("phone_number", phoneNumber))
 }
 
 // @Router 				/user/ [DELETE] [Auth]
@@ -221,12 +219,12 @@ func (u *userCtrl) DeleteUser(c *gin.Context) {
 
 	status := dao.UserDao.Delete(authUser.Uid)
 	if status == database.DbNotFound {
-		c.JSON(http.StatusNotFound, dto.Result{}.Error(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()))
+		c.JSON(http.StatusNotFound, common.Result{}.Error(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()))
 		return
 	} else if status == database.DbFailed {
-		c.JSON(http.StatusInternalServerError, dto.Result{}.Error(http.StatusInternalServerError).SetMessage(exception.UserDeleteError.Error()))
+		c.JSON(http.StatusInternalServerError, common.Result{}.Error(http.StatusInternalServerError).SetMessage(exception.UserDeleteError.Error()))
 		return
 	}
 
-	c.JSON(http.StatusOK, dto.Result{}.Ok())
+	c.JSON(http.StatusOK, common.Result{}.Ok())
 }
