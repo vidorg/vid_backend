@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 	"vid/app/model/dto/common"
+	"vid/app/model/enum"
 	"vid/app/model/po"
 )
 
@@ -21,7 +22,7 @@ type VideoDto struct {
 func (VideoDto) FromPo(video *po.Video) *VideoDto {
 	if !strings.HasPrefix(video.CoverUrl, "http") {
 		if video.CoverUrl == "" {
-			video.CoverUrl = "http://localhost:3344/raw/image/default/avatar.jpg"
+			video.CoverUrl = "http://localhost:3344/raw/image/default/cover.jpg"
 		} else {
 			video.CoverUrl = fmt.Sprintf("http://localhost:3344/raw/image/%d/%s", video.AuthorUid, video.CoverUrl)
 		}
@@ -34,7 +35,7 @@ func (VideoDto) FromPo(video *po.Video) *VideoDto {
 		CoverUrl:    video.CoverUrl,
 		UploadTime:  video.UploadTime.String(),
 		UpdateTime:  common.JsonDateTime(video.UpdatedAt).String(),
-		Author:      UserDto{}.FromPo(video.Author, false),
+		Author:      UserDto{}.FromPo(video.Author, enum.DtoOptionNone),
 	}
 }
 

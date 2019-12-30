@@ -106,7 +106,7 @@ def parseResp(content) -> []:
         status, code = sp[0], sp[1]
         j = ' '.join(sp[2:]).strip(' \t')
         try:
-            j = json.dumps(json.loads(j), indent=2)
+            j = json.dumps(json.loads(j), indent=4)
         except:
             pass
         c.append({
@@ -170,6 +170,7 @@ def parse_ctrl(content, out_yaml, auth_param, auth_error):
             parameters = parseParam(content)
             c = parseResp(content)
             accept = parseArray(content, 'accept')
+            tags = parseArray(content, 'tag')
             desc = parseMultiLine(content, 'description')
             if desc == '' and 'description' in plains:
                 desc = plains['description']
@@ -192,6 +193,7 @@ def parse_ctrl(content, out_yaml, auth_param, auth_error):
                 responses.update(auth_error)
 
             yml = {
+                'tags': tags,
                 'summary': plains['summary'],
                 'description': desc,
                 'consumes': accept,
@@ -243,4 +245,4 @@ def main():
 if __name__ == "__main__":
     main()
 
-# python ./docs/parse_yaml.py main.go ./docs/api.yaml
+# python api_yaml.py main.go ./docs/api.yaml

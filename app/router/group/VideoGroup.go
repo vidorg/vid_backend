@@ -15,8 +15,7 @@ func SetupVideoGroup(router *gin.Engine) {
 	videoGroup := router.Group("/video")
 	{
 		videoGroup.GET("/", jwtAdmin, VideoCtrl.QueryAllVideos)
-		videoGroup.GET("/vid/:vid", VideoCtrl.QueryVideoByVid)
-		videoGroup.GET("/uid/:uid", VideoCtrl.QueryVideosByUid)
+		videoGroup.GET("/:vid", VideoCtrl.QueryVideoByVid)
 
 		videoGroup.POST("/", jwt, limit, VideoCtrl.InsertVideo)    // 2M cover
 		videoGroup.PUT("/:vid", jwt, limit, VideoCtrl.UpdateVideo) // 2M cover

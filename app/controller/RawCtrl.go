@@ -19,6 +19,7 @@ var RawCtrl = new(rawCtrl)
 // @Router 				/raw/image/{uid}/{filename} [GET]
 // @Summary 			获取图片
 // @Description 		获取用户头像图片以及视频封面
+// @Tag					Raw
 // @Param 				uid path string true "用户id，或者default"
 // @Param 				filename path string true "图片文件名，jpg后缀名"
 // @Accept 				multipart/form-data

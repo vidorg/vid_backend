@@ -26,16 +26,20 @@ paths:
       - application/json
       responses:
         '200':
-          description: "```json\n{\n  \"code\": 200,\n  \"message\": \"success\",\n\
-            \  \"data\": {\n    \"uid\": 10,\n    \"username\": \"aoihosizora\",\n\
-            \    \"sex\": \"unknown\",\n    \"profile\": \"\",\n    \"avatar_url\"\
-            : \"http://localhost:3344/raw/image/default/avatar.jpg\",\n    \"birth_time\"\
-            : \"2000-01-01\",\n    \"authority\": \"normal\"\n  }\n}\n```"
+          description: "```json\n{\n       \"code\": 200,\n       \"message\": \"\
+            success\",\n       \"data\": {\n        \"uid\": 10,\n        \"username\"\
+            : \"aoihosizora\",\n        \"sex\": \"unknown\",\n        \"profile\"\
+            : \"\",\n        \"avatar_url\": \"http://localhost:3344/raw/image/default/avatar.jpg\"\
+            ,\n        \"birth_time\": \"2000-01-01\",\n        \"authority\": \"\
+            normal\"\n        \"phone_number\": \"13512345678\"\n       }\n      \
+            \ }\n```"
         '401': &id002
           description: '"authorization failed" / "token has expired"'
       security:
       - basicAuth: ''
       summary: 查看当前登录用户
+      tags:
+      - Authorization
   /auth/login:
     post:
       consumes:
@@ -62,12 +66,13 @@ paths:
       - application/json
       responses:
         '200':
-          description: "```json\n{\n  \"code\": 200,\n  \"message\": \"success\",\n\
-            \  \"data\": {\n    \"user\": {\n      \"uid\": 10,\n      \"username\"\
-            : \"aoihosizora\",\n      \"sex\": \"unknown\",\n      \"profile\": \"\
-            \",\n      \"avatar_url\": \"http://localhost:3344/raw/image/default/avatar.jpg\"\
-            ,\n      \"birth_time\": \"2000-01-01\",\n      \"authority\": \"normal\"\
-            \n    },\n    \"token\": \"Bearer xxx\"\n  }\n}\n```"
+          description: "```json\n{\n       \"code\": 200,\n       \"message\": \"\
+            success\",\n       \"data\": {\n        \"user\": {\n         \"uid\"\
+            : 10,\n         \"username\": \"aoihosizora\",\n         \"sex\": \"unknown\"\
+            ,\n         \"profile\": \"\",\n         \"avatar_url\": \"http://localhost:3344/raw/image/default/avatar.jpg\"\
+            ,\n         \"birth_time\": \"2000-01-01\",\n         \"authority\": \"\
+            normal\"\n         \"phone_number\": \"13512345678\"\n        },\n   \
+            \     \"token\": \"Bearer xxx\"\n       }\n       }\n```"
         '400':
           description: '"request form data error"'
         '401':
@@ -77,6 +82,8 @@ paths:
         '500':
           description: '"login failed"'
       summary: 登录
+      tags:
+      - Authorization
   /auth/password:
     put:
       consumes:
@@ -100,8 +107,8 @@ paths:
       - application/json
       responses:
         '200':
-          description: "```json\n{\n  \"code\": 200,\n  \"message\": \"success\"\n\
-            }\n```"
+          description: "```json\n{\n    \"code\": 200,\n    \"message\": \"success\"\
+            \n}\n```"
         '400':
           description: '"request form data error" / "request format error"'
         '401': *id002
@@ -112,6 +119,8 @@ paths:
       security:
       - basicAuth: ''
       summary: 修改密码
+      tags:
+      - Authorization
   /auth/register:
     post:
       consumes:
@@ -145,16 +154,20 @@ paths:
       - application/json
       responses:
         '200':
-          description: "```json\n{\n  \"code\": 200,\n  \"message\": \"success\",\n\
-            \  \"data\": {\n    \"uid\": 10,\n    \"username\": \"aoihosizora\",\n\
-            \    \"sex\": \"unknown\",\n    \"profile\": \"\",\n    \"avatar_url\"\
-            : \"http://localhost:3344/raw/image/default/avatar.jpg\",\n    \"birth_time\"\
-            : \"2000-01-01\",\n    \"authority\": \"normal\"\n  }\n}\n```"
+          description: "```json\n{\n       \"code\": 200,\n       \"message\": \"\
+            success\",\n       \"data\": {\n        \"uid\": 10,\n        \"username\"\
+            : \"aoihosizora\",\n        \"sex\": \"unknown\",\n        \"profile\"\
+            : \"\",\n        \"avatar_url\": \"http://localhost:3344/raw/image/default/avatar.jpg\"\
+            ,\n        \"birth_time\": \"2000-01-01\",\n        \"authority\": \"\
+            normal\"\n        \"phone_number\": \"13512345678\"\n       }\n      \
+            \ }\n```"
         '400':
           description: '"request form data error" / "request format error"'
         '500':
           description: '"username has been used" / "register failed"'
       summary: 注册
+      tags:
+      - Authorization
   /raw/image/{uid}/{filename}:
     get:
       consumes:
@@ -183,6 +196,8 @@ paths:
         '404':
           description: '"image not found"'
       summary: 获取图片
+      tags:
+      - Raw
   /user/:
     delete:
       consumes:
@@ -195,8 +210,8 @@ paths:
       - application/json
       responses:
         '200':
-          description: "```json\n{\n  \"code\": 200,\n  \"message\": \"success\"\n\
-            }\n```"
+          description: "```json\n{\n    \"code\": 200,\n    \"message\": \"success\"\
+            \n}\n```"
         '401': *id002
         '404':
           description: '"user not found"'
@@ -205,6 +220,8 @@ paths:
       security:
       - basicAuth: ''
       summary: 删除用户
+      tags:
+      - User
     put:
       consumes:
       - multipart/form-data
@@ -262,12 +279,12 @@ paths:
       - application/json
       responses:
         '200':
-          description: "```json\n{\n  \"code\": 200,\n  \"message\": \"success\",\n\
-            \  \"data\": {\n    \"uid\": 10,\n    \"username\": \"aoihosizora\",\n\
-            \    \"sex\": \"male\",\n    \"profile\": \"Demo Profile\",\n    \"avatar_url\"\
-            : \"http://localhost:3344/raw/image/10/avatar_20191226131519858696.jpg\"\
-            ,\n    \"birth_time\": \"2019-12-18\",\n    \"authority\": \"admin\",\n\
-            \    \"phone_number\": \"13512345678\"\n  }\n}\n```"
+          description: "```json\n{\n    \"code\": 200,\n    \"message\": \"success\"\
+            ,\n    \"data\": {\n        \"uid\": 10,\n        \"username\": \"aoihosizora\"\
+            ,\n        \"sex\": \"male\",\n        \"profile\": \"Demo Profile\",\n\
+            \        \"avatar_url\": \"http://localhost:3344/raw/image/default/avatar.jpg\"\
+            ,\n        \"birth_time\": \"2019-12-26\",\n        \"authority\": \"\
+            admin\",\n        \"phone_number\": \"13512345678\"\n    }\n}\n```"
         '400':
           description: '"request form data error" / "request format error" / "request
             body too large" / "username has been used" / "image type not supported"'
@@ -279,6 +296,8 @@ paths:
       security:
       - basicAuth: ''
       summary: 更新用户
+      tags:
+      - User
   /user/subscribing?to:
     delete:
       consumes:
@@ -296,9 +315,9 @@ paths:
       - application/json
       responses:
         '200':
-          description: "```json\n{\n  \"code\": 200,\n  \"message\": \"success\",\n\
-            \  \"data\": {\n    \"me_uid\": 10,\n    \"to_uid\": 3,\n    \"action\"\
-            : \"unsubscribe\"\n  }\n}\n```"
+          description: "```json\n{\n    \"code\": 200,\n    \"message\": \"success\"\
+            ,\n    \"data\": {\n        \"me_uid\": 10,\n        \"to_uid\": 3,\n\
+            \        \"action\": \"unsubscribe\"\n    }\n}\n```"
         '400':
           description: '"request query param error"'
         '401': *id002
@@ -309,6 +328,8 @@ paths:
       security:
       - basicAuth: ''
       summary: 取消关注用户
+      tags:
+      - Subscribe
     put:
       consumes:
       - multipart/form-data
@@ -325,9 +346,9 @@ paths:
       - application/json
       responses:
         '200':
-          description: "```json\n{\n  \"code\": 200,\n  \"message\": \"success\",\n\
-            \  \"data\": {\n    \"me_uid\": 10,\n    \"to_uid\": 3,\n    \"action\"\
-            : \"subscribe\"\n  }\n}\n```"
+          description: "```json\n{\n    \"code\": 200,\n    \"message\": \"success\"\
+            ,\n    \"data\": {\n        \"me_uid\": 10,\n        \"to_uid\": 3,\n\
+            \        \"action\": \"subscribe\"\n    }\n}\n```"
         '400':
           description: '"request query param error" / "subscribe oneself invalid"'
         '401': *id002
@@ -338,6 +359,8 @@ paths:
       security:
       - basicAuth: ''
       summary: 关注用户
+      tags:
+      - Subscribe
   /user/{uid}:
     get:
       consumes:
@@ -354,19 +377,22 @@ paths:
       - application/json
       responses:
         '200':
-          description: "```json\n{\n  \"code\": 200,\n  \"message\": \"success\",\n\
-            \  \"data\": {\n    \"user\": {\n      \"uid\": 10,\n      \"username\"\
-            : \"aoihosizora\",\n      \"sex\": \"unknown\",\n      \"profile\": \"\
-            \",\n      \"avatar_url\": \"http://localhost:3344/raw/image/default/avatar.jpg\"\
-            ,\n      \"birth_time\": \"2000-01-01\",\n      \"authority\": \"admin\"\
-            \n    },\n    \"extra\": {\n      \"subscribing_cnt\": 1,\n      \"subscriber_cnt\"\
-            : 2,\n      \"video_cnt\": 0,\n      \"playlist_cnt\": 0\n    }\n  }\n\
-            }\n```"
+          description: "```json\n{\n       \"code\": 200,\n       \"message\": \"\
+            success\",\n       \"data\": {\n        \"user\": {\n         \"uid\"\
+            : 10,\n         \"username\": \"aoihosizora\",\n         \"sex\": \"male\"\
+            ,\n         \"profile\": \"Demo Profile\",\n         \"avatar_url\": \"\
+            http://localhost:3344/raw/image/default/avatar.jpg\",\n         \"birth_time\"\
+            : \"2019-12-26\",\n         \"authority\": \"admin\"\n         \"phone_number\"\
+            : \"13512345678\"\n        },\n        \"extra\": {\n         \"subscribing_cnt\"\
+            : 3,\n         \"subscriber_cnt\": 2,\n         \"video_cnt\": 3,\n  \
+            \       \"playlist_cnt\": 0\n        }\n       }\n       }\n```"
         '400':
           description: '"request route param error"'
         '404':
           description: '"user not found"'
       summary: 查询用户
+      tags:
+      - User
   /user/{uid}/subscriber:
     get:
       consumes:
@@ -388,18 +414,21 @@ paths:
       - application/json
       responses:
         '200':
-          description: "```json\n{\n  \"code\": 200,\n  \"message\": \"success\",\n\
-            \  \"data\": {\n    \"count\": 1,\n    \"page\": 1,\n    \"data\": [\n\
-            \      {\n        \"uid\": 2,\n        \"username\": \"User2\",\n    \
-            \    \"sex\": \"unknown\",\n        \"profile\": \"\",\n        \"avatar_url\"\
-            : \"http://localhost:3344/raw/image/default/avatar.jpg\",\n        \"\
-            birth_time\": \"2000-01-01\",\n        \"authority\": \"normal\"\n   \
-            \   }\n    ]\n  }\n}\n```"
+          description: "```json\n{\n    \"code\": 200,\n    \"message\": \"success\"\
+            ,\n    \"data\": {\n        \"count\": 1,\n        \"page\": 1,\n    \
+            \    \"data\": [\n            {\n                \"uid\": 2,\n       \
+            \         \"username\": \"User2\",\n                \"sex\": \"unknown\"\
+            ,\n                \"profile\": \"\",\n                \"avatar_url\"\
+            : \"http://localhost:3344/raw/image/default/avatar.jpg\",\n          \
+            \      \"birth_time\": \"2000-01-01\",\n                \"authority\"\
+            : \"normal\"\n            }\n        ]\n    }\n}\n```"
         '400':
           description: '"request route param error"'
         '404':
           description: '"user not found"'
       summary: 用户粉丝
+      tags:
+      - Subscribe
   /user/{uid}/subscribing:
     get:
       consumes:
@@ -421,18 +450,64 @@ paths:
       - application/json
       responses:
         '200':
-          description: "```json\n{\n  \"code\": 200,\n  \"message\": \"success\",\n\
-            \  \"data\": {\n    \"count\": 1,\n    \"page\": 1,\n    \"data\": [\n\
-            \      {\n        \"uid\": 1,\n        \"username\": \"User1\",\n    \
-            \    \"sex\": \"male\",\n        \"profile\": \"\",\n        \"avatar_url\"\
-            : \"http://localhost:3344/raw/image/default/avatar.jpg\",\n        \"\
-            birth_time\": \"2000-01-01\",\n        \"authority\": \"admin\"\n    \
-            \  }\n    ]\n  }\n}\n```"
+          description: "```json\n{\n    \"code\": 200,\n    \"message\": \"success\"\
+            ,\n    \"data\": {\n        \"count\": 1,\n        \"page\": 1,\n    \
+            \    \"data\": [\n            {\n                \"uid\": 1,\n       \
+            \         \"username\": \"User1\",\n                \"sex\": \"male\"\
+            ,\n                \"profile\": \"\",\n                \"avatar_url\"\
+            : \"http://localhost:3344/raw/image/default/avatar.jpg\",\n          \
+            \      \"birth_time\": \"2000-01-01\",\n                \"authority\"\
+            : \"admin\"\n            }\n        ]\n    }\n}\n```"
         '400':
           description: '"request route param error"'
         '404':
           description: '"user not found"'
       summary: 用户关注
+      tags:
+      - Subscribe
+  /user/{uid}/video?page:
+    get:
+      consumes:
+      - multipart/form-data
+      description: 查询作者为用户的所有视频，返回分页数据
+      operationId: -user-{uid}-video?page-get
+      parameters:
+      - description: 用户id
+        in: path
+        name: uid
+        required: true
+        type: integer
+      - description: 分页
+        in: query
+        name: page
+        required: false
+        type: integer
+      produces:
+      - application/json
+      responses:
+        '200':
+          description: "```json\n{\n    \"code\": 200,\n    \"message\": \"success\"\
+            ,\n    \"data\": {\n        \"count\": 1,\n        \"page\": 1,\n    \
+            \    \"data\": [\n            {\n                \"vid\": 10,\n      \
+            \          \"title\": \"Video Title\",\n                \"description\"\
+            : \"Video Demo Description\",\n                \"video_url\": \"\",\n\
+            \                \"cover_url\": \"http://localhost:3344/raw/image/default/cover.jpg\"\
+            ,\n                \"upload_time\": \"2019-12-26 14:14:04\",\n       \
+            \         \"update_time\": \"2019-12-30 21:04:51\",\n                \"\
+            author\": {\n                    \"uid\": 10,\n                    \"\
+            username\": \"aoihosizora\",\n                    \"sex\": \"male\",\n\
+            \                    \"profile\": \"Demo Profile\",\n                \
+            \    \"avatar_url\": \"http://localhost:3344/raw/image/10/avatar_20191230205334869693.jpg\"\
+            ,\n                    \"birth_time\": \"2019-12-26\",\n             \
+            \       \"authority\": \"admin\"\n                }\n            }\n \
+            \       ]\n    }\n}\n```"
+        '400':
+          description: '"request route param error" / "request query param error"'
+        '404':
+          description: '"user not found"'
+      summary: 查询用户视频
+      tags:
+      - Video
   /user?page:
     get:
       consumes:
@@ -450,19 +525,23 @@ paths:
       - application/json
       responses:
         '200':
-          description: "```json\n{\n  \"code\": 200,\n  \"message\": \"success\",\n\
-            \  \"data\": {\n    \"count\": 1,\n    \"page\": 1,\n    \"data\": [\n\
-            \      {\n        \"uid\": 1,\n        \"username\": \"User1\",\n    \
-            \    \"sex\": \"male\",\n        \"profile\": \"\",\n        \"avatar_url\"\
-            : \"http://localhost:3344/raw/image/default/avatar.jpg\",\n        \"\
-            birth_time\": \"2000-01-01\",\n        \"authority\": \"admin\"\n    \
-            \  }\n    ]\n  }\n}\n```"
+          description: "```json\n{\n    \"code\": 200,\n    \"message\": \"success\"\
+            ,\n    \"data\": {\n        \"count\": 1,\n        \"page\": 1,\n    \
+            \    \"data\": [\n            {\n                \"uid\": 10,\n      \
+            \          \"username\": \"aoihosizora\",\n                \"sex\": \"\
+            male\",\n                \"profile\": \"Demo Profile\",\n            \
+            \    \"avatar_url\": \"http://localhost:3344/raw/image/default/avatar.jpg\"\
+            ,\n                \"birth_time\": \"2019-12-26\",\n                \"\
+            authority\": \"admin\"\n            }\n        ]\n    }\n}\n```"
         '400':
           description: '"request query param error"'
         '401': *id002
       security:
       - basicAuth: ''
       summary: 查询所有用户
+      tags:
+      - User
+      - Administration
   /video/:
     post:
       consumes:
@@ -507,15 +586,17 @@ paths:
       - application/json
       responses:
         '200':
-          description: "```json\n{\n  \"code\": 200,\n  \"message\": \"success\",\n\
-            \  \"data\": {\n    \"vid\": 10,\n    \"title\": \"VideoTitle\",\n   \
-            \ \"description\": \"VideoDesc\",\n    \"video_url\": \"\",\n    \"cover_url\"\
-            : \"http://localhost:3344/raw/image/default/cover.jpg\",\n    \"upload_time\"\
-            : \"2019-12-26\",\n    \"author\": {\n      \"uid\": 10,\n      \"username\"\
-            : \"aoihosizora\",\n      \"sex\": \"male\",\n      \"profile\": \"Demo\
-            \ Profile\",\n      \"avatar_url\": \"http://localhost:3344/raw/image/default/avatar.jpg\"\
-            ,\n      \"birth_time\": \"2019-12-26\",\n      \"authority\": \"admin\"\
-            \n    }\n  }\n}\n```"
+          description: "```json\n{\n    \"code\": 200,\n    \"message\": \"success\"\
+            ,\n    \"data\": {\n        \"vid\": 10,\n        \"title\": \"Video Title\"\
+            ,\n        \"description\": \"Video Demo Description\",\n        \"video_url\"\
+            : \"\",\n        \"cover_url\": \"http://localhost:3344/raw/image/default/cover.jpg\"\
+            ,\n        \"upload_time\": \"2019-12-26 14:14:04\",\n        \"update_time\"\
+            : \"2019-12-30 21:04:51\",\n        \"author\": {\n            \"uid\"\
+            : 10,\n            \"username\": \"aoihosizora\",\n            \"sex\"\
+            : \"male\",\n            \"profile\": \"Demo Profile\",\n            \"\
+            avatar_url\": \"http://localhost:3344/raw/image/default/avatar.jpg\",\n\
+            \            \"birth_time\": \"2019-12-26\",\n            \"authority\"\
+            : \"admin\"\n        }\n    }\n}\n```"
         '400':
           description: '"request form data error" / "request format error" / "request
             body too large" / "image type not supported" / "video resource has been
@@ -526,73 +607,8 @@ paths:
       security:
       - basicAuth: ''
       summary: 新建视频
-  /video/uid/{uid}?page:
-    get:
-      consumes:
-      - multipart/form-data
-      description: 查询作者为用户的所有视频，返回分页数据
-      operationId: -video-uid-{uid}?page-get
-      parameters:
-      - description: 用户id
-        in: path
-        name: uid
-        required: true
-        type: integer
-      - description: 分页
-        in: query
-        name: page
-        required: false
-        type: integer
-      produces:
-      - application/json
-      responses:
-        '200':
-          description: "```json\n{\n  \"code\": 200,\n  \"message\": \"success\",\n\
-            \  \"data\": {\n    \"count\": 1,\n    \"page\": 1,\n    \"data\": [\n\
-            \      {\n        \"vid\": 10,\n        \"title\": \"VideoTitle\",\n \
-            \       \"description\": \"VideoDesc\",\n        \"video_url\": \"\",\n\
-            \        \"cover_url\": \"http://localhost:3344/raw/image/default/cover.jpg\"\
-            ,\n        \"upload_time\": \"2019-12-26\",\n        \"author\": {\n \
-            \         \"uid\": 10,\n          \"username\": \"aoihosizora\",\n   \
-            \       \"sex\": \"male\",\n          \"profile\": \"Demo Profile\",\n\
-            \          \"avatar_url\": \"http://localhost:3344/raw/image/default/avatar.jpg\"\
-            ,\n          \"birth_time\": \"2019-12-26\",\n          \"authority\"\
-            : \"admin\"\n        }\n      }\n    ]\n  }\n}\n```"
-        '400':
-          description: '"request route param error" / "request query param error"'
-        '404':
-          description: '"user not found"'
-      summary: 查询用户视频
-  /video/vid/{vid}:
-    get:
-      consumes:
-      - multipart/form-data
-      description: 查询视频信息
-      operationId: -video-vid-{vid}-get
-      parameters:
-      - description: 视频id
-        in: path
-        name: vid
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        '200':
-          description: "```json\n{\n  \"code\": 200,\n  \"message\": \"success\",\n\
-            \  \"data\": {\n    \"vid\": 10,\n    \"title\": \"VideoTitle\",\n   \
-            \ \"description\": \"VideoDesc\",\n    \"video_url\": \"\",\n    \"cover_url\"\
-            : \"http://localhost:3344/raw/image/default/cover.jpg\",\n    \"upload_time\"\
-            : \"2019-12-26\",\n    \"author\": {\n      \"uid\": 10,\n      \"username\"\
-            : \"aoihosizora\",\n      \"sex\": \"male\",\n      \"profile\": \"Demo\
-            \ Profile\",\n      \"avatar_url\": \"http://localhost:3344/raw/image/default/avatar.jpg\"\
-            ,\n      \"birth_time\": \"2019-12-26\",\n      \"authority\": \"admin\"\
-            \n    }\n  }\n}\n```"
-        '400':
-          description: '"request route param error"'
-        '404':
-          description: '"video not found"'
-      summary: 查询视频
+      tags:
+      - Video
   /video/{vid}:
     delete:
       consumes:
@@ -610,8 +626,8 @@ paths:
       - application/json
       responses:
         '200':
-          description: "```json\n{\n  \"code\": 200,\n  \"message\": \"success\"\n\
-            }\n```"
+          description: "```json\n{\n    \"code\": 200,\n    \"message\": \"success\"\
+            \n}\n```"
         '400':
           description: '"request route param error"'
         '401': *id002
@@ -622,6 +638,41 @@ paths:
       security:
       - basicAuth: ''
       summary: 删除视频
+      tags:
+      - Video
+    get:
+      consumes:
+      - multipart/form-data
+      description: 查询视频信息
+      operationId: -video-{vid}-get
+      parameters:
+      - description: 视频id
+        in: path
+        name: vid
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        '200':
+          description: "```json\n{\n    \"code\": 200,\n    \"message\": \"success\"\
+            ,\n    \"data\": {\n        \"vid\": 10,\n        \"title\": \"Video Title\"\
+            ,\n        \"description\": \"Video Demo Description\",\n        \"video_url\"\
+            : \"\",\n        \"cover_url\": \"http://localhost:3344/raw/image/default/cover.jpg\"\
+            ,\n        \"upload_time\": \"2019-12-26 14:14:04\",\n        \"update_time\"\
+            : \"2019-12-30 21:04:51\",\n        \"author\": {\n            \"uid\"\
+            : 10,\n            \"username\": \"aoihosizora\",\n            \"sex\"\
+            : \"male\",\n            \"profile\": \"Demo Profile\",\n            \"\
+            avatar_url\": \"http://localhost:3344/raw/image/default/avatar.jpg\",\n\
+            \            \"birth_time\": \"2019-12-26\",\n            \"authority\"\
+            : \"admin\"\n        }\n    }\n}\n```"
+        '400':
+          description: '"request route param error"'
+        '404':
+          description: '"video not found"'
+      summary: 查询视频
+      tags:
+      - Video
     post:
       consumes:
       - multipart/form-data
@@ -665,15 +716,17 @@ paths:
       - application/json
       responses:
         '200':
-          description: "```json\n{\n  \"code\": 200,\n  \"message\": \"success\",\n\
-            \  \"data\": {\n    \"vid\": 10,\n    \"title\": \"VideoTitle\",\n   \
-            \ \"description\": \"VideoDesc\",\n    \"video_url\": \"\",\n    \"cover_url\"\
-            : \"http://localhost:3344/raw/image/default/cover.jpg\",\n    \"upload_time\"\
-            : \"2019-12-26\",\n    \"author\": {\n      \"uid\": 10,\n      \"username\"\
-            : \"aoihosizora\",\n      \"sex\": \"male\",\n      \"profile\": \"Demo\
-            \ Profile\",\n      \"avatar_url\": \"http://localhost:3344/raw/image/default/avatar.jpg\"\
-            ,\n      \"birth_time\": \"2019-12-26\",\n      \"authority\": \"admin\"\
-            \n    }\n  }\n}\n```"
+          description: "```json\n{\n    \"code\": 200,\n    \"message\": \"success\"\
+            ,\n    \"data\": {\n        \"vid\": 10,\n        \"title\": \"Video Title\"\
+            ,\n        \"description\": \"Video Demo Description\",\n        \"video_url\"\
+            : \"\",\n        \"cover_url\": \"http://localhost:3344/raw/image/10/cover_20191230210451040811.jpg\"\
+            ,\n        \"upload_time\": \"2019-12-26 14:14:04\",\n        \"update_time\"\
+            : \"2019-12-30 21:04:51\",\n        \"author\": {\n            \"uid\"\
+            : 10,\n            \"username\": \"aoihosizora\",\n            \"sex\"\
+            : \"male\",\n            \"profile\": \"Demo Profile\",\n            \"\
+            avatar_url\": \"http://localhost:3344/raw/image/default/avatar.jpg\",\n\
+            \            \"birth_time\": \"2019-12-26\",\n            \"authority\"\
+            : \"admin\"\n        }\n    }\n}\n```"
         '400':
           description: '"request route param error" / "request form data error" /
             "request format error" / "request body too large" / "image type not supported"'
@@ -685,6 +738,8 @@ paths:
       security:
       - basicAuth: ''
       summary: 更新视频
+      tags:
+      - Video
   /video?page:
     get:
       consumes:
@@ -702,21 +757,28 @@ paths:
       - application/json
       responses:
         '200':
-          description: "```json\n{\n  \"code\": 200,\n  \"message\": \"success\",\n\
-            \  \"data\": {\n    \"count\": 1,\n    \"page\": 1,\n    \"data\": [\n\
-            \      {\n        \"vid\": 10,\n        \"title\": \"VideoTitle\",\n \
-            \       \"description\": \"VideoDesc\",\n        \"video_url\": \"\",\n\
-            \        \"cover_url\": \"http://localhost:3344/raw/image/default/cover.jpg\"\
-            ,\n        \"upload_time\": \"2019-12-26\",\n        \"author\": {\n \
-            \         \"uid\": 10,\n          \"username\": \"aoihosizora\",\n   \
-            \       \"sex\": \"male\",\n          \"profile\": \"Demo Profile\",\n\
-            \          \"avatar_url\": \"http://localhost:3344/raw/image/default/avatar.jpg\"\
-            ,\n          \"birth_time\": \"2019-12-26\",\n          \"authority\"\
-            : \"admin\"\n        }\n      }\n    ]\n  }\n}\n```"
+          description: "```json\n{\n    \"code\": 200,\n    \"message\": \"success\"\
+            ,\n    \"data\": {\n        \"count\": 1,\n        \"page\": 1,\n    \
+            \    \"data\": [\n            {\n                \"vid\": 10,\n      \
+            \          \"title\": \"Video Title\",\n                \"description\"\
+            : \"Video Demo Description\",\n                \"video_url\": \"\",\n\
+            \                \"cover_url\": \"http://localhost:3344/raw/image/default/cover.jpg\"\
+            ,\n                \"upload_time\": \"2019-12-26 14:14:04\",\n       \
+            \         \"update_time\": \"2019-12-30 21:04:51\",\n                \"\
+            author\": {\n                    \"uid\": 10,\n                    \"\
+            username\": \"aoihosizora\",\n                    \"sex\": \"male\",\n\
+            \                    \"profile\": \"Demo Profile\",\n                \
+            \    \"avatar_url\": \"http://localhost:3344/raw/image/10/avatar_20191230205334869693.jpg\"\
+            ,\n                    \"birth_time\": \"2019-12-26\",\n             \
+            \       \"authority\": \"admin\"\n                }\n            }\n \
+            \       ]\n    }\n}\n```"
         '400':
           description: '"request query param error"'
         '401': *id002
       security:
       - basicAuth: ''
       summary: 查询所有视频
+      tags:
+      - Video
+      - Administration
 swagger: '2.0'

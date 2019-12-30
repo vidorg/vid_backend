@@ -20,6 +20,7 @@ var SubCtrl = new(subCtrl)
 // @Router 				/user/{uid}/subscriber [GET]
 // @Summary 			用户粉丝
 // @Description 		查询用户所有粉丝，返回分页数据
+// @Tag					Subscribe
 // @Param 				uid path integer true "查询的用户id"
 // @Param 				page query integer false "分页"
 // @Accept 				multipart/form-data
@@ -65,12 +66,14 @@ func (u *subCtrl) QuerySubscriberUsers(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, common.Result{}.Ok().SetPage(count, page, dto.UserDto{}.FromPos(users)))
+	authUser := middleware.GetAuthUser(c)
+	c.JSON(http.StatusOK, common.Result{}.Ok().SetPage(count, page, dto.UserDto{}.FromPosThroughUser(users, authUser, uid)))
 }
 
 // @Router 				/user/{uid}/subscribing [GET]
 // @Summary 			用户关注
 // @Description 		查询用户所有关注，返回分页数据
+// @Tag					Subscribe
 // @Param 				uid path integer true "查询的用户id"
 // @Param 				page query integer false "分页"
 // @Accept 				multipart/form-data
@@ -116,12 +119,14 @@ func (u *subCtrl) QuerySubscribingUsers(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, common.Result{}.Ok().SetPage(count, page, dto.UserDto{}.FromPos(users)))
+	authUser := middleware.GetAuthUser(c)
+	c.JSON(http.StatusOK, common.Result{}.Ok().SetPage(count, page, dto.UserDto{}.FromPosThroughUser(users, authUser, uid)))
 }
 
 // @Router 				/user/subscribing?to [PUT] [Auth]
 // @Summary 			关注用户
 // @Description 		关注某一用户
+// @Tag					Subscribe
 // @Param 				to query integer true "关注用户id"
 // @Accept 				multipart/form-data
 // @ErrorCode 			400 request query param error
@@ -166,6 +171,7 @@ func (u *subCtrl) SubscribeUser(c *gin.Context) {
 // @Router 				/user/subscribing?to [DELETE] [Auth]
 // @Summary 			取消关注用户
 // @Description 		取消关注某一用户
+// @Tag					Subscribe
 // @Param 				to query integer true "取消关注用户id"
 // @Accept 				multipart/form-data
 // @ErrorCode			400 request query param error

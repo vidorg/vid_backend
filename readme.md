@@ -4,23 +4,31 @@
 + `Golang` 1.11.5
 
 ### Documents
-+ Run following code to generate the swagger 
++ Run following code to generate the swagger api document
+
++ See
 [api.md](https://github.com/vidorg/Vid_Backend/tree/master/docs/api.md) and
-[yaml doc](https://github.com/vidorg/vid_backend/blob/master/docs/api.yaml) and 
-[html doc](https://github.com/vidorg/vid_backend/blob/master/docs/api.html)
+[api.yaml](https://github.com/vidorg/vid_backend/blob/master/docs/api.yaml) and 
+[api.html](https://github.com/vidorg/vid_backend/blob/master/docs/api.html)
+
 ```bash
 sh gendoc.sh
 
 # yaml:
-# python ./docs/parse_yaml.py main.go ./docs/api.yaml
+# python ./api_yaml.py main.go ./docs/api.yaml
 
 # html:
-# python ./docs/to_html.py ./docs/api.yaml ./docs/api.html
+# python ./api_html.py ./docs/api.yaml ./docs/api.html
+
+# markdown
+# npm i -g swagger-markdown
+# swagger-markdown -i ./docs/api.yaml -o ./docs/api.md
 ```
 
 ### Run
+
 ```bash
-cd vid_backend
+# cd vid_backend
 go run main.go
 ```
 

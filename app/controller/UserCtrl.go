@@ -24,6 +24,8 @@ var UserCtrl = new(userCtrl)
 // @Router 				/user?page [GET] [Auth]
 // @Summary 			查询所有用户
 // @Description 		管理员查询所有用户，返回分页数据，Admin
+// @Tag					User
+// @Tag					Administration
 // @Param 				page query integer false "分页"
 // @Accept 				multipart/form-data
 // @ErrorCode			400 request query param error
@@ -57,12 +59,13 @@ func (u *userCtrl) QueryAllUsers(c *gin.Context) {
 	page = xconditions.IfThenElse(page == 0, 1, page).(int)
 
 	users, count := dao.UserDao.QueryAll(page)
-	c.JSON(http.StatusOK, common.Result{}.Ok().SetPage(count, page, dto.UserDto{}.FromPos(users)))
+	c.JSON(http.StatusOK, common.Result{}.Ok().SetPage(count, page, dto.UserDto{}.FromPos(users, enum.DtoOptionAll)))
 }
 
 // @Router 				/user/{uid} [GET]
 // @Summary 			查询用户
 // @Description 		查询用户信息
+// @Tag					User
 // @Param 				uid path integer true "用户id"
 // @Accept 				multipart/form-data
 // @ErrorCode			400 request route param error
@@ -103,8 +106,6 @@ func (u *userCtrl) QueryUser(c *gin.Context) {
 		return
 	}
 	authUser := middleware.GetAuthUser(c)
-	isSelfOrAdmin := authUser != nil && (authUser.Uid == uid || authUser.Authority == enum.AuthAdmin)
-	userDto := dto.UserDto{}.FromPo(user, isSelfOrAdmin)
 
 	subscribingCnt, subscriberCnt, _ := dao.SubDao.QuerySubCnt(user.Uid)
 	videoCnt, _ := dao.VideoDao.QueryCount(user.Uid)
@@ -115,12 +116,13 @@ func (u *userCtrl) QueryUser(c *gin.Context) {
 		PlaylistCount:    0, // TODO
 	}
 
-	c.JSON(http.StatusOK, common.Result{}.Ok().PutData("user", userDto).PutData("extra", extraInfo))
+	c.JSON(http.StatusOK, common.Result{}.Ok().PutData("user", dto.UserDto{}.FromPoThroughUser(user, authUser, uid)).PutData("extra", extraInfo))
 }
 
 // @Router 				/user/ [PUT] [Auth]
 // @Summary 			更新用户
 // @Description 		更新用户信息
+// @Tag					User
 // @Param 				username formData string true "用户名" minLength(8) maxLength(30)
 // @Param 				sex formData string true "用户性别" enum(male, female, unknown)
 // @Param 				profile formData string true "用户简介" minLength(0) maxLength(255)
@@ -201,12 +203,13 @@ func (u *userCtrl) UpdateUser(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, common.Result{}.Ok().SetData(dto.UserDto{}.FromPo(authUser, true)).PutData("phone_number", phoneNumber))
+	c.JSON(http.StatusOK, common.Result{}.Ok().SetData(dto.UserDto{}.FromPo(authUser, enum.DtoOptionAll)))
 }
 
 // @Router 				/user/ [DELETE] [Auth]
 // @Summary 			删除用户
 // @Description 		删除用户所有信息
+// @Tag					User
 // @Accept 				multipart/form-data
 // @ErrorCode 			404 user not found
 // @ErrorCode 			500 user delete failed

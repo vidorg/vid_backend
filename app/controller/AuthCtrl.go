@@ -10,6 +10,7 @@ import (
 	"vid/app/model"
 	"vid/app/model/dto"
 	"vid/app/model/dto/common"
+	"vid/app/model/enum"
 	"vid/app/model/po"
 	"vid/app/util"
 
@@ -23,6 +24,7 @@ var AuthCtrl = new(authCtrl)
 // @Router 				/auth/login [POST]
 // @Summary 			登录
 // @Description 		用户登录
+// @Tag					Authorization
 // @Param 				username formData string true "用户名"
 // @Param 				password formData string true "用户密码"
 // @Param 				expire formData integer false "登录有效期，默认为七天"
@@ -43,6 +45,7 @@ var AuthCtrl = new(authCtrl)
 									"avatar_url": "http://localhost:3344/raw/image/default/avatar.jpg",
 									"birth_time": "2000-01-01",
 									"authority": "normal"
+									"phone_number": "13512345678"
 								},
 								"token": "Bearer xxx"
 							}
@@ -77,12 +80,13 @@ func (u *authCtrl) Login(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, common.Result{}.Ok().PutData("user", dto.UserDto{}.FromPo(passRecord.User, true)).PutData("token", token))
+	c.JSON(http.StatusOK, common.Result{}.Ok().PutData("user", dto.UserDto{}.FromPo(passRecord.User, enum.DtoOptionAll)).PutData("token", token))
 }
 
 // @Router 				/auth/register [POST]
 // @Summary 			注册
 // @Description 		用户注册
+// @Tag					Authorization
 // @Param 				username formData string true "用户名" minLength(5) maxLength(30)
 // @Param 				password formData string true "用户密码" minLength(8) maxLength(30)
 // @Accept 				multipart/form-data
@@ -101,6 +105,7 @@ func (u *authCtrl) Login(c *gin.Context) {
 								"avatar_url": "http://localhost:3344/raw/image/default/avatar.jpg",
 								"birth_time": "2000-01-01",
 								"authority": "normal"
+								"phone_number": "13512345678"
 							}
  						} */
 func (u *authCtrl) Register(c *gin.Context) {
@@ -131,12 +136,13 @@ func (u *authCtrl) Register(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, common.Result{}.Ok().SetData(dto.UserDto{}.FromPo(passRecord.User, true)))
+	c.JSON(http.StatusOK, common.Result{}.Ok().SetData(dto.UserDto{}.FromPo(passRecord.User, enum.DtoOptionAll)))
 }
 
 // @Router 				/auth/password [PUT] [Auth]
 // @Summary 			修改密码
 // @Description 		用户修改密码
+// @Tag					Authorization
 // @Param 				password formData string true "用户密码" minLength(8) maxLength(30)
 // @Accept 				multipart/form-data
 // @ErrorCode			400 request form data error
@@ -182,6 +188,7 @@ func (u *authCtrl) ModifyPassword(c *gin.Context) {
 // @Router 				/auth/ [GET] [Auth]
 // @Summary 			查看当前登录用户
 // @Description 		根据认证令牌，查看当前登录用户
+// @Tag					Authorization
 // @Accept 				multipart/form-data
 /* @Success 200 		{
 							"code": 200,
@@ -194,9 +201,10 @@ func (u *authCtrl) ModifyPassword(c *gin.Context) {
 								"avatar_url": "http://localhost:3344/raw/image/default/avatar.jpg",
 								"birth_time": "2000-01-01",
 								"authority": "normal"
+								"phone_number": "13512345678"
 							}
  						} */
 func (u *authCtrl) CurrentUser(c *gin.Context) {
 	authUser := middleware.GetAuthUser(c)
-	c.JSON(http.StatusOK, common.Result{}.Ok().SetData(dto.UserDto{}.FromPo(authUser, true)))
+	c.JSON(http.StatusOK, common.Result{}.Ok().SetData(dto.UserDto{}.FromPo(authUser, enum.DtoOptionAll)))
 }

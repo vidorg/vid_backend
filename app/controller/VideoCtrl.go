@@ -25,6 +25,8 @@ var VideoCtrl = new(videoCtrl)
 // @Router 				/video?page [GET] [Auth]
 // @Summary 			查询所有视频
 // @Description 		管理员查询所有视频，返回分页数据，Admin
+// @Tag					Video
+// @Tag					Administration
 // @Param 				page query integer false "分页"
 // @Accept 				multipart/form-data
 // @ErrorCode			400 request query param error
@@ -70,9 +72,10 @@ func (v *videoCtrl) QueryAllVideos(c *gin.Context) {
 	c.JSON(http.StatusOK, common.Result{}.Ok().SetPage(count, page, dto.VideoDto{}.FromPos(videos)))
 }
 
-// @Router 				/video/uid/{uid}?page [GET]
+// @Router 				/user/{uid}/video?page [GET]
 // @Summary 			查询用户视频
 // @Description 		查询作者为用户的所有视频，返回分页数据
+// @Tag					Video
 // @Param 				uid path integer true "用户id"
 // @Param 				page query integer false "分页"
 // @Accept 				multipart/form-data
@@ -131,9 +134,10 @@ func (v *videoCtrl) QueryVideosByUid(c *gin.Context) {
 	c.JSON(http.StatusOK, common.Result{}.Ok().SetPage(count, page, dto.VideoDto{}.FromPos(videos)))
 }
 
-// @Router 				/video/vid/{vid} [GET]
+// @Router 				/video/{vid} [GET]
 // @Summary 			查询视频
 // @Description 		查询视频信息
+// @Tag					Video
 // @Param 				vid path integer true "视频id"
 // @Accept 				multipart/form-data
 // @ErrorCode			400 request route param error
@@ -180,6 +184,7 @@ func (v *videoCtrl) QueryVideoByVid(c *gin.Context) {
 // @Router 				/video/ [POST] [Auth]
 // @Summary 			新建视频
 // @Description 		新建用户视频
+// @Tag					Video
 // @Param 				title formData string true "视频标题" minLength(5) maxLength(100)
 // @Param 				description formData string true "视频简介" minLength(0) maxLength(255)
 // @Param 				video_url formData string true "视频资源链接"
@@ -271,6 +276,7 @@ func (v *videoCtrl) InsertVideo(c *gin.Context) {
 // @Router 				/video/{vid} [POST] [Auth]
 // @Summary 			更新视频
 // @Description 		更新用户视频信息
+// @Tag					Video
 // @Param 				vid path string true "更新视频id"
 // @Param 				title formData string false "视频标题" minLength(5) maxLength(100)
 // @Param 				description formData string false "视频简介" minLength(0) maxLength(255)
@@ -362,6 +368,7 @@ func (v *videoCtrl) UpdateVideo(c *gin.Context) {
 // @Router 				/video/{vid} [DELETE] [Auth]
 // @Summary 			删除视频
 // @Description 		删除用户视频
+// @Tag					Video
 // @Param 				vid path string true "删除视频id"
 // @Accept 				multipart/form-data
 // @ErrorCode			400 request route param error
