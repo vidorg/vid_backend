@@ -2,7 +2,6 @@ package controller
 
 import (
 	"net/http"
-	"strconv"
 	"vid/app/controller/exception"
 	"vid/app/database"
 	"vid/app/database/dao"
@@ -10,6 +9,7 @@ import (
 	"vid/app/model"
 	"vid/app/model/dto"
 	"vid/app/model/dto/common"
+	"vid/app/model/dto/in"
 	"vid/app/model/enum"
 	"vid/app/model/po"
 	"vid/app/util"
@@ -47,40 +47,39 @@ var AuthCtrl = new(authCtrl)
 									"authority": "normal"
 									"phone_number": "13512345678"
 								},
-								"token": "Bearer xxx"
+								"token": "Bearer xxx",
+								"expire": 604800
 							}
  						} */
 func (u *authCtrl) Login(c *gin.Context) {
-	username, exist1 := c.GetPostForm("username")
-	password, exist2 := c.GetPostForm("password")
-	expireString := c.PostForm("expire")
-	if !exist1 || !exist2 {
+	passwordParam := in.PasswordParam{}
+	if err := c.ShouldBind(&passwordParam); err != nil {
 		c.JSON(http.StatusBadRequest, common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.FormParamError.Error()))
 		return
 	}
-	expire := util.JwtExpire
-	if val, err := strconv.Atoi(expireString); err == nil {
-		expire = int64(val)
+	if passwordParam.Expire <= 0 {
+		passwordParam.Expire = util.JwtExpire
 	}
 
-	passRecord := dao.PassDao.QueryByUsername(username)
+	passRecord := dao.PassDao.QueryByUsername(passwordParam.Username)
 	if passRecord == nil {
 		c.JSON(http.StatusNotFound, common.Result{}.Error(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()))
 		return
 	}
 
-	if !util.PassUtil.MD5Check(password, passRecord.EncryptedPass) {
+	if !util.PassUtil.MD5Check(passwordParam.Password, passRecord.EncryptedPass) {
 		c.JSON(http.StatusUnauthorized, common.Result{}.Error(http.StatusUnauthorized).SetMessage(exception.PasswordError.Error()))
 		return
 	}
 
-	token, err := util.PassUtil.GenToken(passRecord.User.Uid, expire)
+	token, err := util.PassUtil.GenToken(passRecord.User.Uid, passwordParam.Expire)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, common.Result{}.Error(http.StatusInternalServerError).SetMessage(exception.LoginError.Error()))
 		return
 	}
 
-	c.JSON(http.StatusOK, common.Result{}.Ok().PutData("user", dto.UserDto{}.FromPo(passRecord.User, enum.DtoOptionAll)).PutData("token", token))
+	c.JSON(http.StatusOK, common.Result{}.Ok().PutData("user", dto.UserDto{}.FromPo(passRecord.User, enum.DtoOptionAll)).
+		PutData("token", token).PutData("expire", passwordParam.Expire))
 }
 
 // @Router 				/auth/register [POST]
@@ -109,21 +108,20 @@ func (u *authCtrl) Login(c *gin.Context) {
 							}
  						} */
 func (u *authCtrl) Register(c *gin.Context) {
-	username, exist1 := c.GetPostForm("username")
-	password, exist2 := c.GetPostForm("password")
-	if !exist1 || !exist2 {
+	passwordParam := in.PasswordParam{}
+	if err := c.ShouldBind(&passwordParam); err != nil {
 		c.JSON(http.StatusBadRequest, common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.FormParamError.Error()))
 		return
 	}
-	if !model.FormatCheck.Username(username) || !model.FormatCheck.Password(password) {
+	if !model.FormatCheck.Username(passwordParam.Username) || !model.FormatCheck.Password(passwordParam.Password) {
 		c.JSON(http.StatusBadRequest, common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.FormatError.Error()))
 		return
 	}
 
-	passRecord := &po.PassRecord{
-		EncryptedPass: util.PassUtil.MD5Encode(password),
+	passRecord := &po.Password{
+		EncryptedPass: util.PassUtil.MD5Encode(passwordParam.Password),
 		User: &po.User{
-			Username:   username,
+			Username:   passwordParam.Username,
 			RegisterIP: c.ClientIP(),
 		},
 	}
@@ -166,7 +164,7 @@ func (u *authCtrl) ModifyPassword(c *gin.Context) {
 		return
 	}
 
-	passRecord := &po.PassRecord{
+	passRecord := &po.Password{
 		EncryptedPass: util.PassUtil.MD5Encode(password),
 		User:          authUser,
 		Uid:           authUser.Uid,

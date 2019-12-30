@@ -12,7 +12,7 @@ func (s SexType) String() string {
 	return string(s)
 }
 
-func (SexType) FromString(sexString string) SexType {
+func StringToSexType(sexString string) SexType {
 	if sexString == string(SexMale) {
 		return SexMale
 	} else if sexString == string(SexFemale) {

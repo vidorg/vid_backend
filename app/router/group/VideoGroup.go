@@ -8,8 +8,8 @@ import (
 
 func SetupVideoGroup(router *gin.Engine) {
 
-	jwt := middleware.JWTMiddleware(false)
-	jwtAdmin := middleware.JWTMiddleware(true)
+	jwt := middleware.JwtMiddleware(false)
+	jwtAdmin := middleware.JwtMiddleware(true)
 	limit := middleware.StreamLimitMiddleware(2 << 20)
 
 	videoGroup := router.Group("/video")

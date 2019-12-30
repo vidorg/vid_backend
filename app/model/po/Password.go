@@ -1,6 +1,6 @@
 package po
 
-type PassRecord struct {
+type Password struct {
 	Uid           int    `gorm:"primary_key"`
 	EncryptedPass string `gorm:"type:char(48);not null"`
 
@@ -9,6 +9,6 @@ type PassRecord struct {
 	GormTime
 }
 
-func (PassRecord) TableName() string {
+func (Password) TableName() string {
 	return "tbl_password"
 }

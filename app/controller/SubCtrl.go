@@ -46,19 +46,17 @@ var SubCtrl = new(subCtrl)
 							}
  						} */
 func (u *subCtrl) QuerySubscriberUsers(c *gin.Context) {
-	uidString := c.Param("uid")
-	uid, err := strconv.Atoi(uidString)
+	uid, err := strconv.Atoi(c.Param("uid"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.RouteParamError.Error()))
 		return
 	}
-	pageString := c.DefaultQuery("page", "1")
-	page, err := strconv.Atoi(pageString)
+	page, err := strconv.Atoi(c.DefaultQuery("page", "1"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.QueryParamError.Error()))
 		return
 	}
-	page = xconditions.IfThenElse(page == 0, 1, page).(int)
+	page = xconditions.IfThenElse(page < 1, 1, page).(int)
 
 	users, count, status := dao.SubDao.QuerySubscriberUsers(uid, page)
 	if status == database.DbNotFound {
@@ -99,19 +97,17 @@ func (u *subCtrl) QuerySubscriberUsers(c *gin.Context) {
 							}
  						} */
 func (u *subCtrl) QuerySubscribingUsers(c *gin.Context) {
-	uidString := c.Param("uid")
-	uid, err := strconv.Atoi(uidString)
+	uid, err := strconv.Atoi(c.Param("uid"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.RouteParamError.Error()))
 		return
 	}
-	pageString := c.DefaultQuery("page", "1")
-	page, err := strconv.Atoi(pageString)
+	page, err := strconv.Atoi(c.DefaultQuery("page", "1"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.QueryParamError.Error()))
 		return
 	}
-	page = xconditions.IfThenElse(page == 0, 1, page).(int)
+	page = xconditions.IfThenElse(page < 1, 1, page).(int)
 
 	users, count, status := dao.SubDao.QuerySubscribingUsers(uid, page)
 	if status == database.DbNotFound {
@@ -145,8 +141,7 @@ func (u *subCtrl) QuerySubscribingUsers(c *gin.Context) {
 func (u *subCtrl) SubscribeUser(c *gin.Context) {
 	authUser := middleware.GetAuthUser(c)
 
-	toUidString := c.Query("to")
-	toUid, err := strconv.Atoi(toUidString)
+	toUid, err := strconv.Atoi(c.Query("to"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.QueryParamError.Error()))
 		return
@@ -189,8 +184,7 @@ func (u *subCtrl) SubscribeUser(c *gin.Context) {
 func (u *subCtrl) UnSubscribeUser(c *gin.Context) {
 	authUser := middleware.GetAuthUser(c)
 
-	toUidString := c.Query("to")
-	toUid, err := strconv.Atoi(toUidString)
+	toUid, err := strconv.Atoi(c.Query("to"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.QueryParamError.Error()))
 		return

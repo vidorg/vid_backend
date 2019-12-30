@@ -13,6 +13,7 @@ import (
 	"vid/app/model"
 	"vid/app/model/dto"
 	"vid/app/model/dto/common"
+	"vid/app/model/dto/in"
 	"vid/app/model/enum"
 	"vid/app/util"
 )
@@ -50,13 +51,12 @@ var UserCtrl = new(userCtrl)
 							}
  						} */
 func (u *userCtrl) QueryAllUsers(c *gin.Context) {
-	pageString := c.DefaultQuery("page", "1")
-	page, err := strconv.Atoi(pageString)
+	page, err := strconv.Atoi(c.DefaultQuery("page", "1"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.QueryParamError.Error()))
 		return
 	}
-	page = xconditions.IfThenElse(page == 0, 1, page).(int)
+	page = xconditions.IfThenElse(page < 1, 1, page).(int)
 
 	users, count := dao.UserDao.QueryAll(page)
 	c.JSON(http.StatusOK, common.Result{}.Ok().SetPage(count, page, dto.UserDto{}.FromPos(users, enum.DtoOptionAll)))
@@ -93,8 +93,7 @@ func (u *userCtrl) QueryAllUsers(c *gin.Context) {
 							}
  						} */
 func (u *userCtrl) QueryUser(c *gin.Context) {
-	uidString := c.Param("uid")
-	uid, err := strconv.Atoi(uidString)
+	uid, err := strconv.Atoi(c.Param("uid"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.RouteParamError.Error()))
 		return
@@ -105,8 +104,6 @@ func (u *userCtrl) QueryUser(c *gin.Context) {
 		c.JSON(http.StatusNotFound, common.Result{}.Error(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()))
 		return
 	}
-	authUser := middleware.GetAuthUser(c)
-
 	subscribingCnt, subscriberCnt, _ := dao.SubDao.QuerySubCnt(user.Uid)
 	videoCnt, _ := dao.VideoDao.QueryCount(user.Uid)
 	extraInfo := &dto.UserExtraInfo{
@@ -116,6 +113,7 @@ func (u *userCtrl) QueryUser(c *gin.Context) {
 		PlaylistCount:    0, // TODO
 	}
 
+	authUser := middleware.GetAuthUser(c)
 	c.JSON(http.StatusOK, common.Result{}.Ok().PutData("user", dto.UserDto{}.FromPoThroughUser(user, authUser, uid)).PutData("extra", extraInfo))
 }
 
@@ -155,17 +153,12 @@ func (u *userCtrl) QueryUser(c *gin.Context) {
 func (u *userCtrl) UpdateUser(c *gin.Context) {
 	authUser := middleware.GetAuthUser(c)
 
-	username, exist1 := c.GetPostForm("username")
-	profile, exist2 := c.GetPostForm("profile")
-	sex, exist3 := c.GetPostForm("sex")
-	birthTimeStr, exist4 := c.GetPostForm("birth_time")
-	birthTime, err1 := common.JsonDate{}.Parse(birthTimeStr)
-	phoneNumber, exist5 := c.GetPostForm("phone_number")
-	if !exist1 || !exist2 || !exist3 || !exist4 || !exist5 {
+	userParam := in.UserParam{}
+	if err := c.ShouldBind(&userParam); err != nil {
 		c.JSON(http.StatusBadRequest, common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.FormParamError.Error()))
 		return
 	}
-	if !model.FormatCheck.Username(username) || !model.FormatCheck.UserProfile(profile) || !model.FormatCheck.PhoneNumber(phoneNumber) || err1 != nil {
+	if !model.FormatCheck.Username(userParam.Username) || !model.FormatCheck.UserProfile(userParam.Profile) || !model.FormatCheck.PhoneNumber(userParam.PhoneNumber) {
 		c.JSON(http.StatusBadRequest, common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.FormatError.Error()))
 		return
 	}
@@ -185,11 +178,11 @@ func (u *userCtrl) UpdateUser(c *gin.Context) {
 		authUser.AvatarUrl = filename
 	}
 
-	authUser.Username = username
-	authUser.Sex = enum.SexType("").FromString(sex)
-	authUser.Profile = profile
-	authUser.BirthTime = birthTime
-	authUser.PhoneNumber = phoneNumber
+	authUser.Username = userParam.Username
+	authUser.Sex = enum.StringToSexType(userParam.Sex)
+	authUser.Profile = userParam.Profile
+	authUser.BirthTime = common.JsonDate(userParam.BirthTime)
+	authUser.PhoneNumber = userParam.PhoneNumber
 
 	status := dao.UserDao.Update(authUser)
 	if status == database.DbNotFound {

@@ -13,10 +13,10 @@ import (
 	"vid/app/controller/exception"
 )
 
-func JWTMiddleware(needAdmin bool) gin.HandlerFunc {
+func JwtMiddleware(needAdmin bool) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		authHeader := c.Request.Header.Get("Authorization")
-		user, err := JWTCheck(authHeader)
+		user, err := JwtCheck(authHeader)
 		if err != nil {
 			c.JSON(http.StatusUnauthorized, common.Result{}.Error(http.StatusUnauthorized).SetMessage(err.Error()))
 			c.Abort()
@@ -33,7 +33,7 @@ func JWTMiddleware(needAdmin bool) gin.HandlerFunc {
 	}
 }
 
-func JWTCheck(authHeader string) (*po.User, error) {
+func JwtCheck(authHeader string) (*po.User, error) {
 	// No Head
 	if authHeader == "" {
 		return nil, exception.AuthorizationError
@@ -71,7 +71,7 @@ func JWTCheck(authHeader string) (*po.User, error) {
 func GetAuthUser(c *gin.Context) *po.User {
 	_user, exist := c.Get("user")
 	if !exist { // Has not Auth
-		JWTMiddleware(false)(c)
+		JwtMiddleware(false)(c)
 		_user, exist = c.Get("user")
 		if !exist { // Non-Auth
 			return nil

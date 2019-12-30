@@ -14,6 +14,7 @@ import (
 	"vid/app/model"
 	"vid/app/model/dto"
 	"vid/app/model/dto/common"
+	"vid/app/model/dto/in"
 	"vid/app/model/po"
 	"vid/app/util"
 )
@@ -60,13 +61,12 @@ var VideoCtrl = new(videoCtrl)
 							}
  						} */
 func (v *videoCtrl) QueryAllVideos(c *gin.Context) {
-	pageString := c.DefaultQuery("page", "1")
-	page, err := strconv.Atoi(pageString)
+	page, err := strconv.Atoi(c.DefaultQuery("page", "1"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.QueryParamError.Error()))
 		return
 	}
-	page = xconditions.IfThenElse(page == 0, 1, page).(int)
+	page = xconditions.IfThenElse(page < 1, 1, page).(int)
 
 	videos, count := dao.VideoDao.QueryAll(page)
 	c.JSON(http.StatusOK, common.Result{}.Ok().SetPage(count, page, dto.VideoDto{}.FromPos(videos)))
@@ -111,19 +111,17 @@ func (v *videoCtrl) QueryAllVideos(c *gin.Context) {
 							}
  						} */
 func (v *videoCtrl) QueryVideosByUid(c *gin.Context) {
-	uidString := c.Param("uid")
-	uid, err := strconv.Atoi(uidString)
+	uid, err := strconv.Atoi(c.Param("uid"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.RouteParamError.Error()))
 		return
 	}
-	pageString := c.DefaultQuery("page", "1")
-	page, err := strconv.Atoi(pageString)
+	page, err := strconv.Atoi(c.DefaultQuery("page", "1"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.QueryParamError.Error()))
 		return
 	}
-	page = xconditions.IfThenElse(page == 0, 1, page).(int)
+	page = xconditions.IfThenElse(page < 1, 1, page).(int)
 
 	videos, count, status := dao.VideoDao.QueryByUid(uid, page)
 	if status == database.DbNotFound {
@@ -165,8 +163,7 @@ func (v *videoCtrl) QueryVideosByUid(c *gin.Context) {
 							}
  						} */
 func (v *videoCtrl) QueryVideoByVid(c *gin.Context) {
-	vidString := c.Param("vid")
-	vid, err := strconv.Atoi(vidString)
+	vid, err := strconv.Atoi(c.Param("vid"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.RouteParamError.Error()))
 		return
@@ -222,15 +219,12 @@ func (v *videoCtrl) QueryVideoByVid(c *gin.Context) {
 func (v *videoCtrl) InsertVideo(c *gin.Context) {
 	authUser := middleware.GetAuthUser(c)
 
-	title, exist1 := c.GetPostForm("title")
-	description, exist2 := c.GetPostForm("description")
-	videoUrl, exist3 := c.GetPostForm("video_url")
-	if !exist1 || !exist2 || !exist3 {
-		c.JSON(http.StatusBadRequest,
-			common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.FormParamError.Error()))
+	videoParam := in.VideoParam{}
+	if err := c.ShouldBind(&videoParam); err != nil {
+		c.JSON(http.StatusBadRequest, common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.FormParamError.Error()))
 		return
 	}
-	if !model.FormatCheck.VideoTitle(title) || !model.FormatCheck.VideoDesc(description) {
+	if !model.FormatCheck.VideoTitle(videoParam.Title) || !model.FormatCheck.VideoDesc(videoParam.Description) {
 		c.JSON(http.StatusBadRequest,
 			common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.FormatError.Error()))
 		return
@@ -253,10 +247,10 @@ func (v *videoCtrl) InsertVideo(c *gin.Context) {
 	}
 
 	video := &po.Video{
-		Title:       title,
-		Description: description,
+		Title:       videoParam.Title,
+		Description: videoParam.Description,
 		CoverUrl:    coverUrl,
-		VideoUrl:    videoUrl, // TODO
+		VideoUrl:    videoParam.VideoUrl, // TODO
 		UploadTime:  common.JsonDateTime(time.Now()),
 		AuthorUid:   authUser.Uid,
 		Author:      authUser,
@@ -315,19 +309,17 @@ func (v *videoCtrl) InsertVideo(c *gin.Context) {
 func (v *videoCtrl) UpdateVideo(c *gin.Context) {
 	authUser := middleware.GetAuthUser(c)
 
-	vidString := c.Param("vid")
-	vid, err := strconv.Atoi(vidString)
+	vid, err := strconv.Atoi(c.Param("vid"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.RouteParamError.Error()))
 		return
 	}
-	title, exist1 := c.GetPostForm("title")
-	description, exist2 := c.GetPostForm("description")
-	if !exist1 || !exist2 {
+	videoParam := in.VideoParam{}
+	if err := c.ShouldBind(&videoParam); err != nil {
 		c.JSON(http.StatusBadRequest, common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.FormParamError.Error()))
 		return
 	}
-	if !model.FormatCheck.VideoTitle(title) || !model.FormatCheck.VideoDesc(description) {
+	if !model.FormatCheck.VideoTitle(videoParam.Title) || !model.FormatCheck.VideoDesc(videoParam.Description) {
 		c.JSON(http.StatusBadRequest, common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.FormatError.Error()))
 		return
 	}
@@ -349,8 +341,13 @@ func (v *videoCtrl) UpdateVideo(c *gin.Context) {
 	}
 
 	video := dao.VideoDao.QueryByVid(vid)
-	video.Title = title
-	video.Description = description
+	if video == nil {
+		c.JSON(http.StatusNotFound, common.Result{}.Error(http.StatusNotFound).SetMessage(exception.VideoNotFoundError.Error()))
+		return
+	}
+	video.Title = videoParam.Title
+	video.Description = videoParam.Description
+	video.VideoUrl = videoParam.VideoUrl
 	video.CoverUrl = xconditions.IfThenElse(coverUrl == "", video.CoverUrl, coverUrl).(string)
 
 	status := dao.VideoDao.Update(video, authUser.Uid)
@@ -381,8 +378,7 @@ func (v *videoCtrl) UpdateVideo(c *gin.Context) {
 func (v *videoCtrl) DeleteVideo(c *gin.Context) {
 	authUser := middleware.GetAuthUser(c)
 
-	vidString := c.Param("vid")
-	vid, err := strconv.Atoi(vidString)
+	vid, err := strconv.Atoi(c.Param("vid"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.RouteParamError.Error()))
 		return

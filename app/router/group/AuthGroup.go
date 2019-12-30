@@ -9,7 +9,7 @@ import (
 
 func SetupAuthGroup(router *gin.Engine) {
 
-	jwt := middleware.JWTMiddleware(false)
+	jwt := middleware.JwtMiddleware(false)
 
 	authGroup := router.Group("/auth")
 	{
