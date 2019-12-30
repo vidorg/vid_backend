@@ -8,8 +8,6 @@ import (
 
 type HTTPConfig struct {
 	Port int `yaml:"port"`
-	// ReadTimeout  time.Duration `yaml:"read-timeout"`
-	// WriteTimeout time.Duration `yaml:"write-timeout"`
 }
 
 type DatabaseConfig struct {

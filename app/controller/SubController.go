@@ -13,9 +13,9 @@ import (
 	"vid/app/model/dto/common"
 )
 
-type subCtrl struct{}
+type subController struct{}
 
-var SubCtrl = new(subCtrl)
+var SubController = new(subController)
 
 // @Router 				/user/{uid}/subscriber [GET]
 // @Summary 			用户粉丝
@@ -24,7 +24,7 @@ var SubCtrl = new(subCtrl)
 // @Param 				uid path integer true "查询的用户id"
 // @Param 				page query integer false "分页"
 // @Accept 				multipart/form-data
-// @ErrorCode			400 request route param error
+// @ErrorCode			400 request param error
 // @ErrorCode			404 user not found
 /* @Success 200 		{
 							"code": 200,
@@ -45,15 +45,15 @@ var SubCtrl = new(subCtrl)
 								]
 							}
  						} */
-func (u *subCtrl) QuerySubscriberUsers(c *gin.Context) {
+func (u *subController) QuerySubscriberUsers(c *gin.Context) {
 	uid, err := strconv.Atoi(c.Param("uid"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.RouteParamError.Error()))
+		c.JSON(http.StatusBadRequest, common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.RequestParamError.Error()))
 		return
 	}
 	page, err := strconv.Atoi(c.DefaultQuery("page", "1"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.QueryParamError.Error()))
+		c.JSON(http.StatusBadRequest, common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.RequestParamError.Error()))
 		return
 	}
 	page = xconditions.IfThenElse(page < 1, 1, page).(int)
@@ -75,7 +75,7 @@ func (u *subCtrl) QuerySubscriberUsers(c *gin.Context) {
 // @Param 				uid path integer true "查询的用户id"
 // @Param 				page query integer false "分页"
 // @Accept 				multipart/form-data
-// @ErrorCode			400 request route param error
+// @ErrorCode			400 request param error
 // @ErrorCode			404 user not found
 /* @Success 200 		{
 							"code": 200,
@@ -96,15 +96,15 @@ func (u *subCtrl) QuerySubscriberUsers(c *gin.Context) {
 								]
 							}
  						} */
-func (u *subCtrl) QuerySubscribingUsers(c *gin.Context) {
+func (u *subController) QuerySubscribingUsers(c *gin.Context) {
 	uid, err := strconv.Atoi(c.Param("uid"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.RouteParamError.Error()))
+		c.JSON(http.StatusBadRequest, common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.RequestParamError.Error()))
 		return
 	}
 	page, err := strconv.Atoi(c.DefaultQuery("page", "1"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.QueryParamError.Error()))
+		c.JSON(http.StatusBadRequest, common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.RequestParamError.Error()))
 		return
 	}
 	page = xconditions.IfThenElse(page < 1, 1, page).(int)
@@ -125,7 +125,7 @@ func (u *subCtrl) QuerySubscribingUsers(c *gin.Context) {
 // @Tag					Subscribe
 // @Param 				to query integer true "关注用户id"
 // @Accept 				multipart/form-data
-// @ErrorCode 			400 request query param error
+// @ErrorCode 			400 request param error
 // @ErrorCode 			400 subscribe oneself invalid
 // @ErrorCode 			404 user not found
 // @ErrorCode 			500 subscribe failed
@@ -138,12 +138,12 @@ func (u *subCtrl) QuerySubscribingUsers(c *gin.Context) {
 								"action": "subscribe"
 							}
  						} */
-func (u *subCtrl) SubscribeUser(c *gin.Context) {
+func (u *subController) SubscribeUser(c *gin.Context) {
 	authUser := middleware.GetAuthUser(c)
 
 	toUid, err := strconv.Atoi(c.Query("to"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.QueryParamError.Error()))
+		c.JSON(http.StatusBadRequest, common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.RequestParamError.Error()))
 		return
 	}
 	if authUser.Uid == toUid {
@@ -169,7 +169,7 @@ func (u *subCtrl) SubscribeUser(c *gin.Context) {
 // @Tag					Subscribe
 // @Param 				to query integer true "取消关注用户id"
 // @Accept 				multipart/form-data
-// @ErrorCode			400 request query param error
+// @ErrorCode			400 request param error
 // @ErrorCode			404 user not found
 // @ErrorCode			500 unsubscribe failed
 /* @Success 200 		{
@@ -181,12 +181,12 @@ func (u *subCtrl) SubscribeUser(c *gin.Context) {
 								"action": "unsubscribe"
 							}
  						} */
-func (u *subCtrl) UnSubscribeUser(c *gin.Context) {
+func (u *subController) UnSubscribeUser(c *gin.Context) {
 	authUser := middleware.GetAuthUser(c)
 
 	toUid, err := strconv.Atoi(c.Query("to"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.QueryParamError.Error()))
+		c.JSON(http.StatusBadRequest, common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.RequestParamError.Error()))
 		return
 	}
 

@@ -13,14 +13,14 @@ import (
 	"vid/app/model"
 	"vid/app/model/dto"
 	"vid/app/model/dto/common"
-	"vid/app/model/dto/in"
+	"vid/app/model/dto/param"
 	"vid/app/model/enum"
 	"vid/app/util"
 )
 
-type userCtrl struct{}
+type userController struct{}
 
-var UserCtrl = new(userCtrl)
+var UserController = new(userController)
 
 // @Router 				/user?page [GET] [Auth]
 // @Summary 			查询所有用户
@@ -29,7 +29,7 @@ var UserCtrl = new(userCtrl)
 // @Tag					Administration
 // @Param 				page query integer false "分页"
 // @Accept 				multipart/form-data
-// @ErrorCode			400 request query param error
+// @ErrorCode			400 request param error
 // @ErrorCode			401 need admin authority
 /* @Success 200 		{
 							"code": 200,
@@ -50,10 +50,10 @@ var UserCtrl = new(userCtrl)
 								]
 							}
  						} */
-func (u *userCtrl) QueryAllUsers(c *gin.Context) {
+func (u *userController) QueryAllUsers(c *gin.Context) {
 	page, err := strconv.Atoi(c.DefaultQuery("page", "1"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.QueryParamError.Error()))
+		c.JSON(http.StatusBadRequest, common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.RequestParamError.Error()))
 		return
 	}
 	page = xconditions.IfThenElse(page < 1, 1, page).(int)
@@ -68,7 +68,7 @@ func (u *userCtrl) QueryAllUsers(c *gin.Context) {
 // @Tag					User
 // @Param 				uid path integer true "用户id"
 // @Accept 				multipart/form-data
-// @ErrorCode			400 request route param error
+// @ErrorCode			400 request param error
 // @ErrorCode			404 user not found
 /* @Success 200 		{
 							"code": 200,
@@ -92,10 +92,10 @@ func (u *userCtrl) QueryAllUsers(c *gin.Context) {
 								}
 							}
  						} */
-func (u *userCtrl) QueryUser(c *gin.Context) {
+func (u *userController) QueryUser(c *gin.Context) {
 	uid, err := strconv.Atoi(c.Param("uid"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.RouteParamError.Error()))
+		c.JSON(http.StatusBadRequest, common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.RequestParamError.Error()))
 		return
 	}
 
@@ -128,7 +128,7 @@ func (u *userCtrl) QueryUser(c *gin.Context) {
 // @Param 				phone_number formData string true "用户手机号码"
 // @Param 				avatar formData file false "用户头像，默认不修改"
 // @Accept 				multipart/form-data
-// @ErrorCode 			400 request form data error
+// @ErrorCode 			400 request param error
 // @ErrorCode 			400 request format error
 // @ErrorCode 			400 request body too large
 // @ErrorCode 			400 username has been used
@@ -150,16 +150,16 @@ func (u *userCtrl) QueryUser(c *gin.Context) {
 								"phone_number": "13512345678"
 							}
  						} */
-func (u *userCtrl) UpdateUser(c *gin.Context) {
+func (u *userController) UpdateUser(c *gin.Context) {
 	authUser := middleware.GetAuthUser(c)
 
-	userParam := in.UserParam{}
+	userParam := param.UserParam{}
 	if err := c.ShouldBind(&userParam); err != nil {
-		c.JSON(http.StatusBadRequest, common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.FormParamError.Error()))
+		c.JSON(http.StatusBadRequest, common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.RequestParamError.Error()))
 		return
 	}
 	if !model.FormatCheck.Username(userParam.Username) || !model.FormatCheck.UserProfile(userParam.Profile) || !model.FormatCheck.PhoneNumber(userParam.PhoneNumber) {
-		c.JSON(http.StatusBadRequest, common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.FormatError.Error()))
+		c.JSON(http.StatusBadRequest, common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.RequestFormatError.Error()))
 		return
 	}
 	avatarFile, avatarHeader, err2 := c.Request.FormFile("avatar")
@@ -210,7 +210,7 @@ func (u *userCtrl) UpdateUser(c *gin.Context) {
 							"code": 200,
 							"message": "success"
  						} */
-func (u *userCtrl) DeleteUser(c *gin.Context) {
+func (u *userController) DeleteUser(c *gin.Context) {
 	authUser := middleware.GetAuthUser(c)
 
 	status := dao.UserDao.Delete(authUser.Uid)

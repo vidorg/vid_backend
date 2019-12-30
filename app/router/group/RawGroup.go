@@ -9,6 +9,6 @@ func SetupRawGroup(router *gin.Engine) {
 
 	rawGroup := router.Group("/raw")
 	{
-		rawGroup.GET("/image/:uid/:filename", RawCtrl.RawImage)
+		rawGroup.GET("/image/:uid/:filename", RawController.RawImage)
 	}
 }

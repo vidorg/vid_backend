@@ -61,8 +61,8 @@ https://github.com/vidorg
 
 | Code | Description |
 | ---- | ----------- |
-| 200 | ```json {        "code": 200,        "message": "success",        "data": {         "user": {          "uid": 10,          "username": "aoihosizora",          "sex": "unknown",          "profile": "",          "avatar_url": "http://localhost:3344/raw/image/default/avatar.jpg",          "birth_time": "2000-01-01",          "authority": "normal"          "phone_number": "13512345678"         },         "token": "Bearer xxx"        }        } ``` |
-| 400 | "request form data error" |
+| 200 | ```json {        "code": 200,        "message": "success",        "data": {         "user": {          "uid": 10,          "username": "aoihosizora",          "sex": "unknown",          "profile": "",          "avatar_url": "http://localhost:3344/raw/image/default/avatar.jpg",          "birth_time": "2000-01-01",          "authority": "normal"          "phone_number": "13512345678"         },         "token": "Bearer xxx",         "expire": 604800        }        } ``` |
+| 400 | "request param error" |
 | 401 | "password error" |
 | 404 | "user not found" |
 | 500 | "login failed" |
@@ -90,7 +90,7 @@ https://github.com/vidorg
 | Code | Description |
 | ---- | ----------- |
 | 200 | ```json {     "code": 200,     "message": "success" } ``` |
-| 400 | "request form data error" / "request format error" |
+| 400 | "request param error" / "request format error" |
 | 401 | "authorization failed" / "token has expired" |
 | 404 | "user not found" |
 | 500 | "update password failed" |
@@ -124,7 +124,7 @@ https://github.com/vidorg
 | Code | Description |
 | ---- | ----------- |
 | 200 | ```json {        "code": 200,        "message": "success",        "data": {         "uid": 10,         "username": "aoihosizora",         "sex": "unknown",         "profile": "",         "avatar_url": "http://localhost:3344/raw/image/default/avatar.jpg",         "birth_time": "2000-01-01",         "authority": "normal"         "phone_number": "13512345678"        }        } ``` |
-| 400 | "request form data error" / "request format error" |
+| 400 | "request param error" / "request format error" |
 | 500 | "username has been used" / "register failed" |
 
 ### /raw/image/{uid}/{filename}
@@ -150,7 +150,7 @@ https://github.com/vidorg
 | Code | Description |
 | ---- | ----------- |
 | 200 | ```json | Key | Value |       | --- | --- |        | Content-Type | image/jpeg | ``` |
-| 400 | "request route param error" |
+| 400 | "request param error" |
 | 404 | "image not found" |
 
 ### /user/
@@ -211,7 +211,7 @@ https://github.com/vidorg
 | Code | Description |
 | ---- | ----------- |
 | 200 | ```json {     "code": 200,     "message": "success",     "data": {         "uid": 10,         "username": "aoihosizora",         "sex": "male",         "profile": "Demo Profile",         "avatar_url": "http://localhost:3344/raw/image/default/avatar.jpg",         "birth_time": "2019-12-26",         "authority": "admin",         "phone_number": "13512345678"     } } ``` |
-| 400 | "request form data error" / "request format error" / "request body too large" / "username has been used" / "image type not supported" |
+| 400 | "request param error" / "request format error" / "request body too large" / "username has been used" / "image type not supported" |
 | 401 | "authorization failed" / "token has expired" |
 | 404 | "user not found" |
 | 500 | "image save failed" / "user update failed" |
@@ -245,7 +245,7 @@ https://github.com/vidorg
 | Code | Description |
 | ---- | ----------- |
 | 200 | ```json {     "code": 200,     "message": "success",     "data": {         "me_uid": 10,         "to_uid": 3,         "action": "unsubscribe"     } } ``` |
-| 400 | "request query param error" |
+| 400 | "request param error" |
 | 401 | "authorization failed" / "token has expired" |
 | 404 | "user not found" |
 | 500 | "unsubscribe failed" |
@@ -277,7 +277,7 @@ https://github.com/vidorg
 | Code | Description |
 | ---- | ----------- |
 | 200 | ```json {     "code": 200,     "message": "success",     "data": {         "me_uid": 10,         "to_uid": 3,         "action": "subscribe"     } } ``` |
-| 400 | "request query param error" / "subscribe oneself invalid" |
+| 400 | "request param error" / "subscribe oneself invalid" |
 | 401 | "authorization failed" / "token has expired" |
 | 404 | "user not found" |
 | 500 | "subscribe failed" |
@@ -310,7 +310,7 @@ https://github.com/vidorg
 | Code | Description |
 | ---- | ----------- |
 | 200 | ```json {        "code": 200,        "message": "success",        "data": {         "user": {          "uid": 10,          "username": "aoihosizora",          "sex": "male",          "profile": "Demo Profile",          "avatar_url": "http://localhost:3344/raw/image/default/avatar.jpg",          "birth_time": "2019-12-26",          "authority": "admin"          "phone_number": "13512345678"         },         "extra": {          "subscribing_cnt": 3,          "subscriber_cnt": 2,          "video_cnt": 3,          "playlist_cnt": 0         }        }        } ``` |
-| 400 | "request route param error" |
+| 400 | "request param error" |
 | 404 | "user not found" |
 
 ### /user/{uid}/subscriber
@@ -336,7 +336,7 @@ https://github.com/vidorg
 | Code | Description |
 | ---- | ----------- |
 | 200 | ```json {     "code": 200,     "message": "success",     "data": {         "count": 1,         "page": 1,         "data": [             {                 "uid": 2,                 "username": "User2",                 "sex": "unknown",                 "profile": "",                 "avatar_url": "http://localhost:3344/raw/image/default/avatar.jpg",                 "birth_time": "2000-01-01",                 "authority": "normal"             }         ]     } } ``` |
-| 400 | "request route param error" |
+| 400 | "request param error" |
 | 404 | "user not found" |
 
 ### /user/{uid}/subscribing
@@ -362,7 +362,7 @@ https://github.com/vidorg
 | Code | Description |
 | ---- | ----------- |
 | 200 | ```json {     "code": 200,     "message": "success",     "data": {         "count": 1,         "page": 1,         "data": [             {                 "uid": 1,                 "username": "User1",                 "sex": "male",                 "profile": "",                 "avatar_url": "http://localhost:3344/raw/image/default/avatar.jpg",                 "birth_time": "2000-01-01",                 "authority": "admin"             }         ]     } } ``` |
-| 400 | "request route param error" |
+| 400 | "request param error" |
 | 404 | "user not found" |
 
 ### /user/{uid}/video?page
@@ -388,7 +388,7 @@ https://github.com/vidorg
 | Code | Description |
 | ---- | ----------- |
 | 200 | ```json {     "code": 200,     "message": "success",     "data": {         "count": 1,         "page": 1,         "data": [             {                 "vid": 10,                 "title": "Video Title",                 "description": "Video Demo Description",                 "video_url": "",                 "cover_url": "http://localhost:3344/raw/image/default/cover.jpg",                 "upload_time": "2019-12-26 14:14:04",                 "update_time": "2019-12-30 21:04:51",                 "author": {                     "uid": 10,                     "username": "aoihosizora",                     "sex": "male",                     "profile": "Demo Profile",                     "avatar_url": "http://localhost:3344/raw/image/10/avatar_20191230205334869693.jpg",                     "birth_time": "2019-12-26",                     "authority": "admin"                 }             }         ]     } } ``` |
-| 400 | "request route param error" / "request query param error" |
+| 400 | "request param error" |
 | 404 | "user not found" |
 
 ### /user?page
@@ -414,7 +414,7 @@ https://github.com/vidorg
 | Code | Description |
 | ---- | ----------- |
 | 200 | ```json {     "code": 200,     "message": "success",     "data": {         "count": 1,         "page": 1,         "data": [             {                 "uid": 10,                 "username": "aoihosizora",                 "sex": "male",                 "profile": "Demo Profile",                 "avatar_url": "http://localhost:3344/raw/image/default/avatar.jpg",                 "birth_time": "2019-12-26",                 "authority": "admin"             }         ]     } } ``` |
-| 400 | "request query param error" |
+| 400 | "request param error" |
 | 401 | "authorization failed" / "token has expired" |
 
 ##### Security
@@ -449,7 +449,7 @@ https://github.com/vidorg
 | Code | Description |
 | ---- | ----------- |
 | 200 | ```json {     "code": 200,     "message": "success",     "data": {         "vid": 10,         "title": "Video Title",         "description": "Video Demo Description",         "video_url": "",         "cover_url": "http://localhost:3344/raw/image/default/cover.jpg",         "upload_time": "2019-12-26 14:14:04",         "update_time": "2019-12-30 21:04:51",         "author": {             "uid": 10,             "username": "aoihosizora",             "sex": "male",             "profile": "Demo Profile",             "avatar_url": "http://localhost:3344/raw/image/default/avatar.jpg",             "birth_time": "2019-12-26",             "authority": "admin"         }     } } ``` |
-| 400 | "request form data error" / "request format error" / "request body too large" / "image type not supported" / "video resource has been used" |
+| 400 | "request param error" / "request format error" / "request body too large" / "image type not supported" / "video resource has been used" |
 | 401 | "authorization failed" / "token has expired" |
 | 500 | "image save failed" / "video insert failed" |
 
@@ -482,7 +482,7 @@ https://github.com/vidorg
 | Code | Description |
 | ---- | ----------- |
 | 200 | ```json {     "code": 200,     "message": "success" } ``` |
-| 400 | "request route param error" |
+| 400 | "request param error" |
 | 401 | "authorization failed" / "token has expired" |
 | 404 | "video not found" |
 | 500 | "video delete failed" |
@@ -513,7 +513,7 @@ https://github.com/vidorg
 | Code | Description |
 | ---- | ----------- |
 | 200 | ```json {     "code": 200,     "message": "success",     "data": {         "vid": 10,         "title": "Video Title",         "description": "Video Demo Description",         "video_url": "",         "cover_url": "http://localhost:3344/raw/image/default/cover.jpg",         "upload_time": "2019-12-26 14:14:04",         "update_time": "2019-12-30 21:04:51",         "author": {             "uid": 10,             "username": "aoihosizora",             "sex": "male",             "profile": "Demo Profile",             "avatar_url": "http://localhost:3344/raw/image/default/avatar.jpg",             "birth_time": "2019-12-26",             "authority": "admin"         }     } } ``` |
-| 400 | "request route param error" |
+| 400 | "request param error" |
 | 404 | "video not found" |
 
 #### POST
@@ -540,7 +540,7 @@ https://github.com/vidorg
 | Code | Description |
 | ---- | ----------- |
 | 200 | ```json {     "code": 200,     "message": "success",     "data": {         "vid": 10,         "title": "Video Title",         "description": "Video Demo Description",         "video_url": "",         "cover_url": "http://localhost:3344/raw/image/10/cover_20191230210451040811.jpg",         "upload_time": "2019-12-26 14:14:04",         "update_time": "2019-12-30 21:04:51",         "author": {             "uid": 10,             "username": "aoihosizora",             "sex": "male",             "profile": "Demo Profile",             "avatar_url": "http://localhost:3344/raw/image/default/avatar.jpg",             "birth_time": "2019-12-26",             "authority": "admin"         }     } } ``` |
-| 400 | "request route param error" / "request form data error" / "request format error" / "request body too large" / "image type not supported" |
+| 400 | "request param error" / "request format error" / "request body too large" / "image type not supported" |
 | 401 | "authorization failed" / "token has expired" |
 | 404 | "video not found" |
 | 500 | "image save failed" / "video update failed" |
@@ -574,7 +574,7 @@ https://github.com/vidorg
 | Code | Description |
 | ---- | ----------- |
 | 200 | ```json {     "code": 200,     "message": "success",     "data": {         "count": 1,         "page": 1,         "data": [             {                 "vid": 10,                 "title": "Video Title",                 "description": "Video Demo Description",                 "video_url": "",                 "cover_url": "http://localhost:3344/raw/image/default/cover.jpg",                 "upload_time": "2019-12-26 14:14:04",                 "update_time": "2019-12-30 21:04:51",                 "author": {                     "uid": 10,                     "username": "aoihosizora",                     "sex": "male",                     "profile": "Demo Profile",                     "avatar_url": "http://localhost:3344/raw/image/10/avatar_20191230205334869693.jpg",                     "birth_time": "2019-12-26",                     "authority": "admin"                 }             }         ]     } } ``` |
-| 400 | "request query param error" |
+| 400 | "request param error" |
 | 401 | "authorization failed" / "token has expired" |
 
 ##### Security

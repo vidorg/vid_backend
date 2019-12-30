@@ -14,14 +14,14 @@ import (
 	"vid/app/model"
 	"vid/app/model/dto"
 	"vid/app/model/dto/common"
-	"vid/app/model/dto/in"
+	"vid/app/model/dto/param"
 	"vid/app/model/po"
 	"vid/app/util"
 )
 
-type videoCtrl struct{}
+type videoController struct{}
 
-var VideoCtrl = new(videoCtrl)
+var VideoController = new(videoController)
 
 // @Router 				/video?page [GET] [Auth]
 // @Summary 			查询所有视频
@@ -30,7 +30,7 @@ var VideoCtrl = new(videoCtrl)
 // @Tag					Administration
 // @Param 				page query integer false "分页"
 // @Accept 				multipart/form-data
-// @ErrorCode			400 request query param error
+// @ErrorCode			400 request param error
 // @ErrorCode 			401 need admin authority
 /* @Success 200 		{
 							"code": 200,
@@ -60,10 +60,10 @@ var VideoCtrl = new(videoCtrl)
 								]
 							}
  						} */
-func (v *videoCtrl) QueryAllVideos(c *gin.Context) {
+func (v *videoController) QueryAllVideos(c *gin.Context) {
 	page, err := strconv.Atoi(c.DefaultQuery("page", "1"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.QueryParamError.Error()))
+		c.JSON(http.StatusBadRequest, common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.RequestParamError.Error()))
 		return
 	}
 	page = xconditions.IfThenElse(page < 1, 1, page).(int)
@@ -79,8 +79,7 @@ func (v *videoCtrl) QueryAllVideos(c *gin.Context) {
 // @Param 				uid path integer true "用户id"
 // @Param 				page query integer false "分页"
 // @Accept 				multipart/form-data
-// @ErrorCode			400 request route param error
-// @ErrorCode			400 request query param error
+// @ErrorCode			400 request param error
 // @ErrorCode			404 user not found
 /* @Success 200 		{
 							"code": 200,
@@ -110,15 +109,15 @@ func (v *videoCtrl) QueryAllVideos(c *gin.Context) {
 								]
 							}
  						} */
-func (v *videoCtrl) QueryVideosByUid(c *gin.Context) {
+func (v *videoController) QueryVideosByUid(c *gin.Context) {
 	uid, err := strconv.Atoi(c.Param("uid"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.RouteParamError.Error()))
+		c.JSON(http.StatusBadRequest, common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.RequestParamError.Error()))
 		return
 	}
 	page, err := strconv.Atoi(c.DefaultQuery("page", "1"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.QueryParamError.Error()))
+		c.JSON(http.StatusBadRequest, common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.RequestParamError.Error()))
 		return
 	}
 	page = xconditions.IfThenElse(page < 1, 1, page).(int)
@@ -138,7 +137,7 @@ func (v *videoCtrl) QueryVideosByUid(c *gin.Context) {
 // @Tag					Video
 // @Param 				vid path integer true "视频id"
 // @Accept 				multipart/form-data
-// @ErrorCode			400 request route param error
+// @ErrorCode			400 request param error
 // @ErrorCode			404 video not found
 /* @Success 200 		{
 							"code": 200,
@@ -162,10 +161,10 @@ func (v *videoCtrl) QueryVideosByUid(c *gin.Context) {
 								}
 							}
  						} */
-func (v *videoCtrl) QueryVideoByVid(c *gin.Context) {
+func (v *videoController) QueryVideoByVid(c *gin.Context) {
 	vid, err := strconv.Atoi(c.Param("vid"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.RouteParamError.Error()))
+		c.JSON(http.StatusBadRequest, common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.RequestParamError.Error()))
 		return
 	}
 
@@ -187,7 +186,7 @@ func (v *videoCtrl) QueryVideoByVid(c *gin.Context) {
 // @Param 				video_url formData string true "视频资源链接"
 // @Param 				cover formData file false "视频封面"
 // @Accept 				multipart/form-data
-// @ErrorCode 			400 request form data error
+// @ErrorCode 			400 request param error
 // @ErrorCode 			400 request format error
 // @ErrorCode 			400 request body too large
 // @ErrorCode 			400 image type not supported
@@ -216,17 +215,16 @@ func (v *videoCtrl) QueryVideoByVid(c *gin.Context) {
 								}
 							}
  						} */
-func (v *videoCtrl) InsertVideo(c *gin.Context) {
+func (v *videoController) InsertVideo(c *gin.Context) {
 	authUser := middleware.GetAuthUser(c)
 
-	videoParam := in.VideoParam{}
+	videoParam := param.VideoParam{}
 	if err := c.ShouldBind(&videoParam); err != nil {
-		c.JSON(http.StatusBadRequest, common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.FormParamError.Error()))
+		c.JSON(http.StatusBadRequest, common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.RequestParamError.Error()))
 		return
 	}
 	if !model.FormatCheck.VideoTitle(videoParam.Title) || !model.FormatCheck.VideoDesc(videoParam.Description) {
-		c.JSON(http.StatusBadRequest,
-			common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.FormatError.Error()))
+		c.JSON(http.StatusBadRequest, common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.RequestFormatError.Error()))
 		return
 	}
 	coverUrl := ""
@@ -276,8 +274,7 @@ func (v *videoCtrl) InsertVideo(c *gin.Context) {
 // @Param 				description formData string false "视频简介" minLength(0) maxLength(255)
 // @Param 				cover formData file false "视频封面"
 // @Accept 				multipart/form-data
-// @ErrorCode 			400 request route param error
-// @ErrorCode 			400 request form data error
+// @ErrorCode 			400 request param error
 // @ErrorCode 			400 request format error
 // @ErrorCode 			400 request body too large
 // @ErrorCode 			400 image type not supported
@@ -306,21 +303,21 @@ func (v *videoCtrl) InsertVideo(c *gin.Context) {
 								}
 							}
  						} */
-func (v *videoCtrl) UpdateVideo(c *gin.Context) {
+func (v *videoController) UpdateVideo(c *gin.Context) {
 	authUser := middleware.GetAuthUser(c)
 
 	vid, err := strconv.Atoi(c.Param("vid"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.RouteParamError.Error()))
+		c.JSON(http.StatusBadRequest, common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.RequestParamError.Error()))
 		return
 	}
-	videoParam := in.VideoParam{}
+	videoParam := param.VideoParam{}
 	if err := c.ShouldBind(&videoParam); err != nil {
-		c.JSON(http.StatusBadRequest, common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.FormParamError.Error()))
+		c.JSON(http.StatusBadRequest, common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.RequestParamError.Error()))
 		return
 	}
 	if !model.FormatCheck.VideoTitle(videoParam.Title) || !model.FormatCheck.VideoDesc(videoParam.Description) {
-		c.JSON(http.StatusBadRequest, common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.FormatError.Error()))
+		c.JSON(http.StatusBadRequest, common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.RequestFormatError.Error()))
 		return
 	}
 	coverUrl := ""
@@ -368,19 +365,19 @@ func (v *videoCtrl) UpdateVideo(c *gin.Context) {
 // @Tag					Video
 // @Param 				vid path string true "删除视频id"
 // @Accept 				multipart/form-data
-// @ErrorCode			400 request route param error
+// @ErrorCode			400 request param error
 // @ErrorCode			404 video not found
 // @ErrorCode			500 video delete failed
 /* @Success 200 		{
 							"code": 200,
 							"message": "success"
  						} */
-func (v *videoCtrl) DeleteVideo(c *gin.Context) {
+func (v *videoController) DeleteVideo(c *gin.Context) {
 	authUser := middleware.GetAuthUser(c)
 
 	vid, err := strconv.Atoi(c.Param("vid"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.RouteParamError.Error()))
+		c.JSON(http.StatusBadRequest, common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.RequestParamError.Error()))
 		return
 	}
 

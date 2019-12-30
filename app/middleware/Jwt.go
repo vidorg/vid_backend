@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"github.com/dgrijalva/jwt-go"
 	"net/http"
 	"strings"
 	"vid/app/database/dao"
@@ -13,6 +14,16 @@ import (
 	"vid/app/controller/exception"
 )
 
+var (
+	JwtSecret []byte
+	JwtExpire int64
+)
+
+type Claims struct {
+	UserID int `json:"user_id"`
+	jwt.StandardClaims
+}
+
 func JwtMiddleware(needAdmin bool) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		authHeader := c.Request.Header.Get("Authorization")
@@ -22,12 +33,12 @@ func JwtMiddleware(needAdmin bool) gin.HandlerFunc {
 			c.Abort()
 			return
 		}
-
 		if needAdmin && user.Authority != enum.AuthAdmin {
 			c.JSON(http.StatusUnauthorized, common.Result{}.Error(http.StatusUnauthorized).SetMessage(exception.NeedAdminError.Error()))
 			c.Abort()
 			return
 		}
+
 		c.Set("user", user)
 		c.Next()
 	}
@@ -46,7 +57,7 @@ func JwtCheck(authHeader string) (*po.User, error) {
 	}
 
 	// Token Parse Err
-	claims, err := util.PassUtil.ParseToken(parts[1])
+	claims, err := util.AuthUtil.ParseToken(parts[1])
 	if err != nil {
 		if strings.Index(err.Error(), "token is expired by") != -1 {
 			// Token Expired

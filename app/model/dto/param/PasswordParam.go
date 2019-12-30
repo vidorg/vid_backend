@@ -1,4 +1,4 @@
-package in
+package param
 
 type PasswordParam struct {
 	Username string `form:"username" json:"username" binding:"required"`

@@ -13,9 +13,9 @@ func SetupAuthGroup(router *gin.Engine) {
 
 	authGroup := router.Group("/auth")
 	{
-		authGroup.POST("/login", AuthCtrl.Login)
-		authGroup.POST("/register", AuthCtrl.Register)
-		authGroup.PUT("/password", jwt, AuthCtrl.ModifyPassword)
-		authGroup.GET("/", jwt, AuthCtrl.CurrentUser)
+		authGroup.POST("/login", AuthController.Login)
+		authGroup.POST("/register", AuthController.Register)
+		authGroup.PUT("/password", jwt, AuthController.ModifyPassword)
+		authGroup.GET("/", jwt, AuthController.CurrentUser)
 	}
 }

@@ -72,9 +72,10 @@ paths:
             ,\n         \"profile\": \"\",\n         \"avatar_url\": \"http://localhost:3344/raw/image/default/avatar.jpg\"\
             ,\n         \"birth_time\": \"2000-01-01\",\n         \"authority\": \"\
             normal\"\n         \"phone_number\": \"13512345678\"\n        },\n   \
-            \     \"token\": \"Bearer xxx\"\n       }\n       }\n```"
+            \     \"token\": \"Bearer xxx\",\n        \"expire\": 604800\n       }\n\
+            \       }\n```"
         '400':
-          description: '"request form data error"'
+          description: '"request param error"'
         '401':
           description: '"password error"'
         '404':
@@ -110,7 +111,7 @@ paths:
           description: "```json\n{\n    \"code\": 200,\n    \"message\": \"success\"\
             \n}\n```"
         '400':
-          description: '"request form data error" / "request format error"'
+          description: '"request param error" / "request format error"'
         '401': *id002
         '404':
           description: '"user not found"'
@@ -162,7 +163,7 @@ paths:
             normal\"\n        \"phone_number\": \"13512345678\"\n       }\n      \
             \ }\n```"
         '400':
-          description: '"request form data error" / "request format error"'
+          description: '"request param error" / "request format error"'
         '500':
           description: '"username has been used" / "register failed"'
       summary: 注册
@@ -192,7 +193,7 @@ paths:
           description: "```json\n| Key | Value |\n      | --- | --- |\n       | Content-Type\
             \ | image/jpeg |\n```"
         '400':
-          description: '"request route param error"'
+          description: '"request param error"'
         '404':
           description: '"image not found"'
       summary: 获取图片
@@ -286,7 +287,7 @@ paths:
             ,\n        \"birth_time\": \"2019-12-26\",\n        \"authority\": \"\
             admin\",\n        \"phone_number\": \"13512345678\"\n    }\n}\n```"
         '400':
-          description: '"request form data error" / "request format error" / "request
+          description: '"request param error" / "request format error" / "request
             body too large" / "username has been used" / "image type not supported"'
         '401': *id002
         '404':
@@ -319,7 +320,7 @@ paths:
             ,\n    \"data\": {\n        \"me_uid\": 10,\n        \"to_uid\": 3,\n\
             \        \"action\": \"unsubscribe\"\n    }\n}\n```"
         '400':
-          description: '"request query param error"'
+          description: '"request param error"'
         '401': *id002
         '404':
           description: '"user not found"'
@@ -350,7 +351,7 @@ paths:
             ,\n    \"data\": {\n        \"me_uid\": 10,\n        \"to_uid\": 3,\n\
             \        \"action\": \"subscribe\"\n    }\n}\n```"
         '400':
-          description: '"request query param error" / "subscribe oneself invalid"'
+          description: '"request param error" / "subscribe oneself invalid"'
         '401': *id002
         '404':
           description: '"user not found"'
@@ -387,7 +388,7 @@ paths:
             : 3,\n         \"subscriber_cnt\": 2,\n         \"video_cnt\": 3,\n  \
             \       \"playlist_cnt\": 0\n        }\n       }\n       }\n```"
         '400':
-          description: '"request route param error"'
+          description: '"request param error"'
         '404':
           description: '"user not found"'
       summary: 查询用户
@@ -423,7 +424,7 @@ paths:
             \      \"birth_time\": \"2000-01-01\",\n                \"authority\"\
             : \"normal\"\n            }\n        ]\n    }\n}\n```"
         '400':
-          description: '"request route param error"'
+          description: '"request param error"'
         '404':
           description: '"user not found"'
       summary: 用户粉丝
@@ -459,7 +460,7 @@ paths:
             \      \"birth_time\": \"2000-01-01\",\n                \"authority\"\
             : \"admin\"\n            }\n        ]\n    }\n}\n```"
         '400':
-          description: '"request route param error"'
+          description: '"request param error"'
         '404':
           description: '"user not found"'
       summary: 用户关注
@@ -502,7 +503,7 @@ paths:
             \       \"authority\": \"admin\"\n                }\n            }\n \
             \       ]\n    }\n}\n```"
         '400':
-          description: '"request route param error" / "request query param error"'
+          description: '"request param error"'
         '404':
           description: '"user not found"'
       summary: 查询用户视频
@@ -534,7 +535,7 @@ paths:
             ,\n                \"birth_time\": \"2019-12-26\",\n                \"\
             authority\": \"admin\"\n            }\n        ]\n    }\n}\n```"
         '400':
-          description: '"request query param error"'
+          description: '"request param error"'
         '401': *id002
       security:
       - basicAuth: ''
@@ -598,7 +599,7 @@ paths:
             \            \"birth_time\": \"2019-12-26\",\n            \"authority\"\
             : \"admin\"\n        }\n    }\n}\n```"
         '400':
-          description: '"request form data error" / "request format error" / "request
+          description: '"request param error" / "request format error" / "request
             body too large" / "image type not supported" / "video resource has been
             used"'
         '401': *id002
@@ -629,7 +630,7 @@ paths:
           description: "```json\n{\n    \"code\": 200,\n    \"message\": \"success\"\
             \n}\n```"
         '400':
-          description: '"request route param error"'
+          description: '"request param error"'
         '401': *id002
         '404':
           description: '"video not found"'
@@ -667,7 +668,7 @@ paths:
             \            \"birth_time\": \"2019-12-26\",\n            \"authority\"\
             : \"admin\"\n        }\n    }\n}\n```"
         '400':
-          description: '"request route param error"'
+          description: '"request param error"'
         '404':
           description: '"video not found"'
       summary: 查询视频
@@ -728,8 +729,8 @@ paths:
             \            \"birth_time\": \"2019-12-26\",\n            \"authority\"\
             : \"admin\"\n        }\n    }\n}\n```"
         '400':
-          description: '"request route param error" / "request form data error" /
-            "request format error" / "request body too large" / "image type not supported"'
+          description: '"request param error" / "request format error" / "request
+            body too large" / "image type not supported"'
         '401': *id002
         '404':
           description: '"video not found"'
@@ -773,7 +774,7 @@ paths:
             \       \"authority\": \"admin\"\n                }\n            }\n \
             \       ]\n    }\n}\n```"
         '400':
-          description: '"request query param error"'
+          description: '"request param error"'
         '401': *id002
       security:
       - basicAuth: ''

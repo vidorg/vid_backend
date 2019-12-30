@@ -65,4 +65,3 @@ CREATE TABLE `tbl_video`
     UNIQUE KEY `video_url` (`video_url`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8;
-

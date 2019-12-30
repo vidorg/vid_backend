@@ -12,9 +12,9 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type rawCtrl struct{}
+type rawController struct{}
 
-var RawCtrl = new(rawCtrl)
+var RawController = new(rawController)
 
 // @Router 				/raw/image/{uid}/{filename} [GET]
 // @Summary 			获取图片
@@ -23,26 +23,26 @@ var RawCtrl = new(rawCtrl)
 // @Param 				uid path string true "用户id，或者default"
 // @Param 				filename path string true "图片文件名，jpg后缀名"
 // @Accept 				multipart/form-data
-// @ErrorCode 			400 request route param error
+// @ErrorCode 			400 request param error
 // @ErrorCode 			404 image not found
 /* @Success 200 		| Key | Value |
 						| --- | --- |
  						| Content-Type | image/jpeg | */
-func (r *rawCtrl) RawImage(c *gin.Context) {
+func (r *rawController) RawImage(c *gin.Context) {
 	uidString := c.Param("uid")
 	uid := -1
 	if uidString != "default" {
 		var err error
 		uid, err = strconv.Atoi(uidString)
 		if err != nil {
-			c.JSON(http.StatusBadRequest, common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.RouteParamError.Error()))
+			c.JSON(http.StatusBadRequest, common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.RequestParamError.Error()))
 			return
 		}
 	}
 	filename := c.Param("filename")
 
 	filePath := xconditions.IfThenElse(uid == -1, fmt.Sprintf("./usr/default/%s", filename), fmt.Sprintf("./usr/image/%d/%s", uid, filename)).(string)
-	if !util.CommonUtil.IsFileOrDirExist(filePath) {
+	if !util.CommonUtil.IsDirOrFileExist(filePath) {
 		c.JSON(http.StatusNotFound, common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.ImageNotFoundError.Error()))
 		return
 	}

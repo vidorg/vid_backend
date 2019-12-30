@@ -6,13 +6,9 @@ import (
 
 // Request
 var (
-	RouteParamError = errors.New("request route param error")
-	QueryParamError = errors.New("request query param error")
-	FormParamError  = errors.New("request form data error")
-	// JsonParamError  = errors.New("request raw json error")
-
-	FormatError           = errors.New("request format error")
-	RequestSizeLargeError = errors.New("request body too large")
+	RequestParamError  = errors.New("request param error")
+	RequestFormatError = errors.New("request format error")
+	RequestSizeError   = errors.New("request body too large")
 )
 
 // Authorization
@@ -22,7 +18,7 @@ var (
 
 	PasswordError   = errors.New("password error")
 	LoginError      = errors.New("login failed")
-	RegisterError   = errors.New("register failed")
+	RegisterError   = errors.New("register failed") // C
 	UpdatePassError = errors.New("update password failed")
 
 	NeedAdminError = errors.New("need admin authority")

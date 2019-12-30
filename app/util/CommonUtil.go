@@ -20,14 +20,14 @@ func (c *commonUtil) CurrentTimeUuid() string {
 	return strings.Replace(time.Now().Format("20060102150405.000000"), ".", "", -1)
 }
 
-func (c *commonUtil) IsFileOrDirExist(filename string) bool {
+func (c *commonUtil) IsDirOrFileExist(filename string) bool {
 	_, err := os.Stat(filename)
 	return err == nil
 }
 
 func (c *commonUtil) CheckCreateDir(filename string) bool {
 	dir := path.Dir(filename)
-	if !c.IsFileOrDirExist(dir) {
+	if !c.IsDirOrFileExist(dir) {
 		err := os.MkdirAll(dir, os.ModePerm) // 0777
 		return err == nil
 	}

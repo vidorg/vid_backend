@@ -3,15 +3,16 @@ package middleware
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"vid/app/model/dto/common"
 )
 
-type CORSOptions struct {
+type CorsOptions struct {
 	Origin string
 }
 
-// CORSMiddleware middleware from https://github.com/gin-gonic/gin/issues/29#issuecomment-89132826
-func CORSMiddleware(options CORSOptions) gin.HandlerFunc {
+func CorsMiddleware(options CorsOptions) gin.HandlerFunc {
 	return func(c *gin.Context) {
+		// https://github.com/gin-gonic/gin/issues/29#issuecomment-89132826
 		c.Writer.Header().Set("Access-Control-Allow-Origin", "http://127.0.0.1") // allow any origin domain
 		if options.Origin != "" {
 			c.Writer.Header().Set("Access-Control-Allow-Origin", options.Origin)
@@ -23,7 +24,7 @@ func CORSMiddleware(options CORSOptions) gin.HandlerFunc {
 		c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
 
 		if c.Request.Method != "GET" && c.Request.Method != "POST" && c.Request.Method != "PUT" && c.Request.Method != "DELETE" {
-			c.AbortWithStatus(http.StatusMethodNotAllowed)
+			c.JSON(http.StatusMethodNotAllowed, common.Result{}.Error(http.StatusMethodNotAllowed).SetMessage("method not allowed"))
 		} else {
 			c.Next()
 		}

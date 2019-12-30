@@ -9,7 +9,7 @@ import (
 	"vid/app/model"
 	"vid/app/model/dto"
 	"vid/app/model/dto/common"
-	"vid/app/model/dto/in"
+	"vid/app/model/dto/param"
 	"vid/app/model/enum"
 	"vid/app/model/po"
 	"vid/app/util"
@@ -17,9 +17,9 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type authCtrl struct{}
+type authController struct{}
 
-var AuthCtrl = new(authCtrl)
+var AuthController = new(authController)
 
 // @Router 				/auth/login [POST]
 // @Summary 			登录
@@ -29,7 +29,7 @@ var AuthCtrl = new(authCtrl)
 // @Param 				password formData string true "用户密码"
 // @Param 				expire formData integer false "登录有效期，默认为七天"
 // @Accept 				multipart/form-data
-// @ErrorCode 			400 request form data error
+// @ErrorCode 			400 request param error
 // @ErrorCode 			401 password error
 // @ErrorCode 			404 user not found
 // @ErrorCode 			500 login failed
@@ -51,14 +51,14 @@ var AuthCtrl = new(authCtrl)
 								"expire": 604800
 							}
  						} */
-func (u *authCtrl) Login(c *gin.Context) {
-	passwordParam := in.PasswordParam{}
+func (u *authController) Login(c *gin.Context) {
+	passwordParam := param.PasswordParam{}
 	if err := c.ShouldBind(&passwordParam); err != nil {
-		c.JSON(http.StatusBadRequest, common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.FormParamError.Error()))
+		c.JSON(http.StatusBadRequest, common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.RequestParamError.Error()))
 		return
 	}
 	if passwordParam.Expire <= 0 {
-		passwordParam.Expire = util.JwtExpire
+		passwordParam.Expire = middleware.JwtExpire
 	}
 
 	passRecord := dao.PassDao.QueryByUsername(passwordParam.Username)
@@ -67,12 +67,12 @@ func (u *authCtrl) Login(c *gin.Context) {
 		return
 	}
 
-	if !util.PassUtil.MD5Check(passwordParam.Password, passRecord.EncryptedPass) {
+	if !util.AuthUtil.MD5Check(passwordParam.Password, passRecord.EncryptedPass) {
 		c.JSON(http.StatusUnauthorized, common.Result{}.Error(http.StatusUnauthorized).SetMessage(exception.PasswordError.Error()))
 		return
 	}
 
-	token, err := util.PassUtil.GenToken(passRecord.User.Uid, passwordParam.Expire)
+	token, err := util.AuthUtil.GenerateToken(passRecord.User.Uid, passwordParam.Expire)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, common.Result{}.Error(http.StatusInternalServerError).SetMessage(exception.LoginError.Error()))
 		return
@@ -89,7 +89,7 @@ func (u *authCtrl) Login(c *gin.Context) {
 // @Param 				username formData string true "用户名" minLength(5) maxLength(30)
 // @Param 				password formData string true "用户密码" minLength(8) maxLength(30)
 // @Accept 				multipart/form-data
-// @ErrorCode			400 request form data error
+// @ErrorCode			400 request param error
 // @ErrorCode			400 request format error
 // @ErrorCode			500 username has been used
 // @ErrorCode			500 register failed
@@ -107,19 +107,19 @@ func (u *authCtrl) Login(c *gin.Context) {
 								"phone_number": "13512345678"
 							}
  						} */
-func (u *authCtrl) Register(c *gin.Context) {
-	passwordParam := in.PasswordParam{}
+func (u *authController) Register(c *gin.Context) {
+	passwordParam := param.PasswordParam{}
 	if err := c.ShouldBind(&passwordParam); err != nil {
-		c.JSON(http.StatusBadRequest, common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.FormParamError.Error()))
+		c.JSON(http.StatusBadRequest, common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.RequestParamError.Error()))
 		return
 	}
 	if !model.FormatCheck.Username(passwordParam.Username) || !model.FormatCheck.Password(passwordParam.Password) {
-		c.JSON(http.StatusBadRequest, common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.FormatError.Error()))
+		c.JSON(http.StatusBadRequest, common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.RequestFormatError.Error()))
 		return
 	}
 
 	passRecord := &po.Password{
-		EncryptedPass: util.PassUtil.MD5Encode(passwordParam.Password),
+		EncryptedPass: util.AuthUtil.MD5Encode(passwordParam.Password),
 		User: &po.User{
 			Username:   passwordParam.Username,
 			RegisterIP: c.ClientIP(),
@@ -143,7 +143,7 @@ func (u *authCtrl) Register(c *gin.Context) {
 // @Tag					Authorization
 // @Param 				password formData string true "用户密码" minLength(8) maxLength(30)
 // @Accept 				multipart/form-data
-// @ErrorCode			400 request form data error
+// @ErrorCode			400 request param error
 // @ErrorCode			400 request format error
 // @ErrorCode			404 user not found
 // @ErrorCode			500 update password failed
@@ -151,21 +151,21 @@ func (u *authCtrl) Register(c *gin.Context) {
 							"code": 200,
 							"message": "success"
  						} */
-func (u *authCtrl) ModifyPassword(c *gin.Context) {
+func (u *authController) ModifyPassword(c *gin.Context) {
 	authUser := middleware.GetAuthUser(c)
 
 	password, exist := c.GetPostForm("password")
 	if !exist {
-		c.JSON(http.StatusBadRequest, common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.FormParamError.Error()))
+		c.JSON(http.StatusBadRequest, common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.RequestParamError.Error()))
 		return
 	}
 	if !model.FormatCheck.Password(password) {
-		c.JSON(http.StatusBadRequest, common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.FormatError.Error()))
+		c.JSON(http.StatusBadRequest, common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.RequestFormatError.Error()))
 		return
 	}
 
 	passRecord := &po.Password{
-		EncryptedPass: util.PassUtil.MD5Encode(password),
+		EncryptedPass: util.AuthUtil.MD5Encode(password),
 		User:          authUser,
 		Uid:           authUser.Uid,
 	}
@@ -202,7 +202,7 @@ func (u *authCtrl) ModifyPassword(c *gin.Context) {
 								"phone_number": "13512345678"
 							}
  						} */
-func (u *authCtrl) CurrentUser(c *gin.Context) {
+func (u *authController) CurrentUser(c *gin.Context) {
 	authUser := middleware.GetAuthUser(c)
 	c.JSON(http.StatusOK, common.Result{}.Ok().SetData(dto.UserDto{}.FromPo(authUser, enum.DtoOptionAll)))
 }

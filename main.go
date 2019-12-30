@@ -2,14 +2,13 @@ package main
 
 import (
 	"fmt"
+	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
 	"vid/app/config"
 	"vid/app/database"
+	"vid/app/middleware"
 	"vid/app/router"
-	"vid/app/util"
-
-	"github.com/gin-gonic/gin"
 
 	_ "vid/docs"
 
@@ -42,8 +41,8 @@ func main() {
 	database.SetupDBConn(cfg.DatabaseConfig)
 
 	// Jwt
-	util.JwtSecret = []byte(cfg.JwtConfig.Secret)
-	util.JwtExpire = cfg.JwtConfig.Expire
+	middleware.JwtSecret = []byte(cfg.JwtConfig.Secret)
+	middleware.JwtExpire = cfg.JwtConfig.Expire
 
 	// Router & Middleware
 	appRouter := router.SetupRouters()

@@ -14,7 +14,7 @@ func SetupRouters() *gin.Engine {
 
 	router.HandleMethodNotAllowed = true
 	router.Use(gin.Recovery())
-	router.Use(middleware.CORSMiddleware(middleware.CORSOptions{
+	router.Use(middleware.CorsMiddleware(middleware.CorsOptions{
 		Origin: "",
 	}))
 
@@ -24,12 +24,10 @@ func SetupRouters() *gin.Engine {
 	group.SetupRawGroup(router)
 
 	router.NoMethod(func(c *gin.Context) {
-		c.JSON(http.StatusMethodNotAllowed, common.Result{}.Error(http.StatusMethodNotAllowed).
-			SetMessage("method not allowed"))
+		c.JSON(http.StatusMethodNotAllowed, common.Result{}.Error(http.StatusMethodNotAllowed).SetMessage("method not allowed"))
 	})
 	router.NoRoute(func(c *gin.Context) {
-		c.JSON(http.StatusNotFound, common.Result{}.Error(http.StatusNotFound).
-			SetMessage(fmt.Sprintf("route %s %s is not found", c.Request.Method, c.Request.URL.Path)))
+		c.JSON(http.StatusNotFound, common.Result{}.Error(http.StatusNotFound).SetMessage(fmt.Sprintf("route %s %s is not found", c.Request.Method, c.Request.URL.Path)))
 	})
 
 	return router
