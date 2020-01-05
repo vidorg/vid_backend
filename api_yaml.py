@@ -109,11 +109,11 @@ def parseResp(content, demo_json) -> []:
         j = ' '.join(sp[2:]).strip(' \t')
 
         # parse demo model
-        dms = re.compile(r'@\$(.+?)\$').findall(j)
+        dms = re.compile(r'\${(.+?)}').findall(j)
         for dm in dms:
             if demo_json is not None and dm in demo_json:
                 try:
-                    j = j.replace(f'@${dm}$', json.dumps(demo_json[dm]))
+                    j = j.replace('${%s}' % dm, json.dumps(demo_json[dm]))
                 except:
                     pass
         # to string

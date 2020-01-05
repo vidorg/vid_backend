@@ -45,8 +45,9 @@ func (u *UserDao) QueryByUsername(username string) *po.User {
 
 func (u *UserDao) Exist(uid int) bool {
 	user := &po.User{Uid: uid}
-	rdb := u.db.Model(&po.User{}).Where(user)
-	return !rdb.RecordNotFound()
+	cnt := 0
+	u.db.Model(&po.User{}).Where(user).Count(&cnt)
+	return cnt != 0
 }
 
 func (u *UserDao) Update(user *po.User) database.DbStatus {

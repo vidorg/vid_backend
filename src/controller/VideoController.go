@@ -46,7 +46,7 @@ func VideoController(config *config.ServerConfig) *videoController {
 								"count": 1,
 								"page": 1,
 								"data": [
-									@$video$
+									${video}
 								]
 							}
  						} */
@@ -77,7 +77,7 @@ func (v *videoController) QueryAllVideos(c *gin.Context) {
 								"count": 1,
 								"page": 1,
 								"data": [
-									@$video$
+									${video}
 								]
 							}
  						} */
@@ -109,7 +109,7 @@ func (v *videoController) QueryVideosByUid(c *gin.Context) {
 /* @Success 200 		{
 							"code": 200,
 							"message": "success",
-							"data": @$video$
+							"data": ${video}
 							}
  						} */
 func (v *videoController) QueryVideoByVid(c *gin.Context) {
@@ -147,7 +147,7 @@ func (v *videoController) QueryVideoByVid(c *gin.Context) {
 /* @Success 200 		{
 							"code": 200,
 							"message": "success",
-							"data": @$video$
+							"data": ${video}
 							}
  						} */
 func (v *videoController) InsertVideo(c *gin.Context) {
@@ -166,7 +166,7 @@ func (v *videoController) InsertVideo(c *gin.Context) {
 			return
 		}
 		filename := fmt.Sprintf("cover_%s.jpg", util.CommonUtil.CurrentTimeUuid())
-		savePath := fmt.Sprintf("./usr/image/%d/%s", authUser.Uid, filename)
+		savePath := fmt.Sprintf("./usr/image/%s", filename)
 		if err := util.ImageUtil.SaveAsJpg(coverFile, ext, savePath); err != nil {
 			common.Result{}.Error(http.StatusInternalServerError).SetMessage(exception.ImageSaveError.Error()).JSON(c)
 			return
@@ -214,7 +214,7 @@ func (v *videoController) InsertVideo(c *gin.Context) {
 /* @Success 200 		{
 							"code": 200,
 							"message": "success",
-							"data": @$video$
+							"data": ${video}
  						} */
 func (v *videoController) UpdateVideo(c *gin.Context) {
 	authUser := middleware.GetAuthUser(c, v.config)

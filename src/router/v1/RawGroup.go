@@ -11,6 +11,6 @@ func SetupRawGroup(api *gin.RouterGroup, config *config.ServerConfig) {
 
 	rawGroup := api.Group("/raw")
 	{
-		rawGroup.GET("/image/:uid/:filename", rawCtrl.RawImage)
+		rawGroup.GET("/image/:filename", rawCtrl.RawImage)
 	}
 }

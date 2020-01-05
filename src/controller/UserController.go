@@ -49,7 +49,7 @@ func UserController(config *config.ServerConfig) *userController {
 								"count": 1,
 								"page": 1,
 								"data": [
-									@$user$
+									${user}
 								]
 							}
  						} */
@@ -77,7 +77,7 @@ func (u *userController) QueryAllUsers(c *gin.Context) {
 							"code": 200,
 							"message": "success",
 							"data": {
-								"user": @$user$,
+								"user": ${user},
 								"extra": {
 									"subscribing_cnt": 3,
 									"subscriber_cnt": 2,
@@ -132,7 +132,7 @@ func (u *userController) QueryUser(c *gin.Context) {
 /* @Success 200 		{
 							"code": 200,
 							"message": "success",
-							"data": @$user$
+							"data": ${user}
  						} */
 func (u *userController) UpdateUser(c *gin.Context) {
 	authUser := middleware.GetAuthUser(c, u.config)
@@ -148,7 +148,7 @@ func (u *userController) UpdateUser(c *gin.Context) {
 			return
 		}
 		filename := fmt.Sprintf("avatar_%s.jpg", util.CommonUtil.CurrentTimeUuid())
-		savePath := fmt.Sprintf("./usr/image/%d/%s", authUser.Uid, filename)
+		savePath := fmt.Sprintf("./usr/image/%s", filename)
 		if err := util.ImageUtil.SaveAsJpg(avatarFile, ext, savePath); err != nil {
 			common.Result{}.Error(http.StatusInternalServerError).SetMessage(exception.ImageSaveError.Error()).JSON(c)
 			return

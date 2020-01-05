@@ -25,10 +25,9 @@ func SetupUserGroup(api *gin.RouterGroup, config *config.ServerConfig) {
 
 		userGroup.GET("/:uid/video", videoCtrl.QueryVideosByUid)
 
-		userGroup.PUT("/subscribing", jwt, subCtrl.SubscribeUser)
-		userGroup.DELETE("/subscribing", jwt, subCtrl.UnSubscribeUser)
-
 		userGroup.GET("/:uid/subscriber", subCtrl.QuerySubscriberUsers)
 		userGroup.GET("/:uid/subscribing", subCtrl.QuerySubscribingUsers)
+		userGroup.PUT("/subscribing", jwt, subCtrl.SubscribeUser)
+		userGroup.DELETE("/subscribing", jwt, subCtrl.UnSubscribeUser)
 	}
 }

@@ -181,18 +181,13 @@ paths:
       summary: 注册
       tags:
       - Authorization
-  /v1/raw/image/{uid}/{filename}:
+  /v1/raw/image/{filename}:
     get:
       consumes:
       - multipart/form-data
       description: 获取用户头像图片以及视频封面
-      operationId: -v1-raw-image-{uid}-{filename}-get
+      operationId: -v1-raw-image-{filename}-get
       parameters:
-      - description: 用户id，或者default
-        in: path
-        name: uid
-        required: true
-        type: string
       - description: 图片文件名，jpg后缀名
         in: path
         name: filename
@@ -203,8 +198,6 @@ paths:
       responses:
         '200':
           description: "```json\n{\n    \"Content-Type\": \"image/jpeg\"\n}\n```"
-        '400':
-          description: '"request param error"'
         '404':
           description: '"image not found"'
       summary: 获取图片

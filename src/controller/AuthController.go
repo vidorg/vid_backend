@@ -44,7 +44,7 @@ func AuthController(config *config.ServerConfig) *authController {
 							"code": 200,
 							"message": "success",
 							"data": {
-								"user": @$user$,
+								"user": ${user},
 								"token": "Bearer xxx",
 								"expire": 604800
 							}
@@ -93,7 +93,7 @@ func (a *authController) Login(c *gin.Context) {
 /* @Success 200 		{
 							"code": 200,
 							"message": "success",
-							"data": @$user$
+							"data": ${user}
  						} */
 func (a *authController) Register(c *gin.Context) {
 	registerParam := &param.RegisterParam{}
@@ -178,7 +178,7 @@ func (a *authController) ModifyPassword(c *gin.Context) {
 /* @Success 200 		{
 							"code": 200,
 							"message": "success",
-							"data": @$user$
+							"data": ${user}
  						} */
 func (a *authController) CurrentUser(c *gin.Context) {
 	authUser := middleware.GetAuthUser(c, a.config)

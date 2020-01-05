@@ -22,9 +22,9 @@ type VideoDto struct {
 func (VideoDto) FromPo(video *po.Video) *VideoDto {
 	if !strings.HasPrefix(video.CoverUrl, "http") {
 		if video.CoverUrl == "" {
-			video.CoverUrl = "http://localhost:3344/raw/image/default/cover.jpg"
+			video.CoverUrl = "http://localhost:3344/v1/raw/image/cover.jpg"
 		} else {
-			video.CoverUrl = fmt.Sprintf("http://localhost:3344/raw/image/%d/%s", video.AuthorUid, video.CoverUrl)
+			video.CoverUrl = fmt.Sprintf("http://localhost:3344/v1/raw/image/%s", video.CoverUrl)
 		}
 	}
 	return &VideoDto{

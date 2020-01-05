@@ -43,7 +43,7 @@ func SubController(config *config.ServerConfig) *subController {
 								"count": 1,
 								"page": 1,
 								"data": [
-									@$user$
+									${user}
 								]
 							}
  						} */
@@ -81,7 +81,7 @@ func (s *subController) QuerySubscriberUsers(c *gin.Context) {
 								"count": 1,
 								"page": 1,
 								"data": [
-									@$user$
+									${user}
 								]
 							}
  						} */

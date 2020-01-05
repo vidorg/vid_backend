@@ -29,11 +29,10 @@ func (c *commonUtil) IsDirOrFileExist(filename string) bool {
 	return err == nil
 }
 
-func (c *commonUtil) CheckCreateDir(filename string) bool {
+func (c *commonUtil) CheckCreateDir(filename string) error {
 	dir := path.Dir(filename)
 	if !c.IsDirOrFileExist(dir) {
-		err := os.MkdirAll(dir, os.ModePerm) // 0777
-		return err == nil
+		return os.MkdirAll(dir, os.ModePerm) // 0777
 	}
-	return true
+	return nil
 }

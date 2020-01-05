@@ -23,6 +23,10 @@ func (i *imageUtil) CheckImageExt(filename string) (bool, string) {
 }
 
 func (i *imageUtil) SaveAsJpg(imageFile multipart.File, ext string, filePath string) error {
+	if err := CommonUtil.CheckCreateDir(filePath); err != nil {
+		return err
+	}
+
 	jpgImgFile, err := os.Create(filePath)
 	defer func() {
 		jpgImgFile.Close()

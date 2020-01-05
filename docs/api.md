@@ -149,7 +149,7 @@ Ping
 | 400 | "request param error" / "request format error" |
 | 500 | "username has been used" / "register failed" |
 
-### /v1/raw/image/{uid}/{filename}
+### /v1/raw/image/{filename}
 
 #### GET
 ##### Summary:
@@ -164,7 +164,6 @@ Ping
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ---- |
-| uid | path | 用户id，或者default | Yes | string |
 | filename | path | 图片文件名，jpg后缀名 | Yes | string |
 
 ##### Responses
@@ -172,7 +171,6 @@ Ping
 | Code | Description |
 | ---- | ----------- |
 | 200 | ```json {     "Content-Type": "image/jpeg" } ``` |
-| 400 | "request param error" |
 | 404 | "image not found" |
 
 ### /v1/user/
