@@ -3,10 +3,10 @@ package middleware
 import (
 	"bytes"
 	"github.com/gin-gonic/gin"
-	"io/ioutil"
-	"net/http"
 	"github.com/vidorg/vid_backend/src/controller/exception"
 	"github.com/vidorg/vid_backend/src/model/dto/common"
+	"io/ioutil"
+	"net/http"
 )
 
 func LimitMiddleware(maxSize int64) gin.HandlerFunc {

@@ -4,9 +4,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/shomali11/util/xconditions"
-	"net/http"
-	"strconv"
-	"time"
+	"github.com/vidorg/vid_backend/src/config"
 	"github.com/vidorg/vid_backend/src/controller/exception"
 	"github.com/vidorg/vid_backend/src/database"
 	"github.com/vidorg/vid_backend/src/database/dao"
@@ -17,11 +15,22 @@ import (
 	"github.com/vidorg/vid_backend/src/model/dto/param"
 	"github.com/vidorg/vid_backend/src/model/po"
 	"github.com/vidorg/vid_backend/src/util"
+	"net/http"
+	"strconv"
+	"time"
 )
 
-type videoController struct{}
+type videoController struct {
+	config   *config.ServerConfig
+	videoDao *dao.VideoDao
+}
 
-var VideoController = new(videoController)
+func VideoController(config *config.ServerConfig) *videoController {
+	return &videoController{
+		config:   config,
+		videoDao: dao.VideoRepository(config.DatabaseConfig),
+	}
+}
 
 // @Router 				/video?page [GET] [Auth]
 // @Summary 			查询所有视频
@@ -68,7 +77,7 @@ func (v *videoController) QueryAllVideos(c *gin.Context) {
 	}
 	page = xconditions.IfThenElse(page < 1, 1, page).(int)
 
-	videos, count := dao.VideoDao.QueryAll(page)
+	videos, count := v.videoDao.QueryAll(page)
 	c.JSON(http.StatusOK, common.Result{}.Ok().SetPage(count, page, dto.VideoDto{}.FromPos(videos)))
 }
 
@@ -122,8 +131,8 @@ func (v *videoController) QueryVideosByUid(c *gin.Context) {
 	}
 	page = xconditions.IfThenElse(page < 1, 1, page).(int)
 
-	videos, count, status := dao.VideoDao.QueryByUid(uid, page)
-	if status == database.DbNotFound {
+	videos, count := v.videoDao.QueryByUid(uid, page)
+	if videos == nil {
 		c.JSON(http.StatusNotFound, common.Result{}.Error(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()))
 		return
 	}
@@ -168,7 +177,7 @@ func (v *videoController) QueryVideoByVid(c *gin.Context) {
 		return
 	}
 
-	video := dao.VideoDao.QueryByVid(vid)
+	video := v.videoDao.QueryByVid(vid)
 	if video == nil {
 		c.JSON(http.StatusNotFound, common.Result{}.Error(http.StatusNotFound).SetMessage(exception.VideoNotFoundError.Error()))
 		return
@@ -216,7 +225,7 @@ func (v *videoController) QueryVideoByVid(c *gin.Context) {
 							}
  						} */
 func (v *videoController) InsertVideo(c *gin.Context) {
-	authUser := middleware.GetAuthUser(c)
+	authUser := middleware.GetAuthUser(c, v.config)
 
 	videoParam := param.VideoParam{}
 	if err := c.ShouldBind(&videoParam); err != nil {
@@ -253,7 +262,7 @@ func (v *videoController) InsertVideo(c *gin.Context) {
 		AuthorUid:   authUser.Uid,
 		Author:      authUser,
 	}
-	status := dao.VideoDao.Insert(video)
+	status := v.videoDao.Insert(video)
 	if status == database.DbExisted {
 		c.JSON(http.StatusInternalServerError, common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.VideoExistError.Error()))
 		return
@@ -304,7 +313,7 @@ func (v *videoController) InsertVideo(c *gin.Context) {
 							}
  						} */
 func (v *videoController) UpdateVideo(c *gin.Context) {
-	authUser := middleware.GetAuthUser(c)
+	authUser := middleware.GetAuthUser(c, v.config)
 
 	vid, err := strconv.Atoi(c.Param("vid"))
 	if err != nil {
@@ -337,7 +346,7 @@ func (v *videoController) UpdateVideo(c *gin.Context) {
 		coverUrl = filename
 	}
 
-	video := dao.VideoDao.QueryByVid(vid)
+	video := v.videoDao.QueryByVid(vid)
 	if video == nil {
 		c.JSON(http.StatusNotFound, common.Result{}.Error(http.StatusNotFound).SetMessage(exception.VideoNotFoundError.Error()))
 		return
@@ -347,7 +356,7 @@ func (v *videoController) UpdateVideo(c *gin.Context) {
 	video.VideoUrl = videoParam.VideoUrl
 	video.CoverUrl = xconditions.IfThenElse(coverUrl == "", video.CoverUrl, coverUrl).(string)
 
-	status := dao.VideoDao.Update(video, authUser.Uid)
+	status := v.videoDao.Update(video, authUser.Uid)
 	if status == database.DbNotFound {
 		c.JSON(http.StatusNotFound, common.Result{}.Error(http.StatusNotFound).SetMessage(exception.VideoNotFoundError.Error()))
 		return
@@ -373,7 +382,7 @@ func (v *videoController) UpdateVideo(c *gin.Context) {
 							"message": "success"
  						} */
 func (v *videoController) DeleteVideo(c *gin.Context) {
-	authUser := middleware.GetAuthUser(c)
+	authUser := middleware.GetAuthUser(c, v.config)
 
 	vid, err := strconv.Atoi(c.Param("vid"))
 	if err != nil {
@@ -381,7 +390,7 @@ func (v *videoController) DeleteVideo(c *gin.Context) {
 		return
 	}
 
-	status := dao.VideoDao.Delete(vid, authUser.Uid)
+	status := v.videoDao.Delete(vid, authUser.Uid)
 	if status == database.DbNotFound {
 		c.JSON(http.StatusNotFound, common.Result{}.Error(http.StatusNotFound).SetMessage(exception.VideoNotFoundError.Error()))
 		return

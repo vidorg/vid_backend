@@ -2,9 +2,9 @@ package dto
 
 import (
 	"fmt"
-	"strings"
 	"github.com/vidorg/vid_backend/src/model/enum"
 	"github.com/vidorg/vid_backend/src/model/po"
+	"strings"
 )
 
 type UserDto struct {

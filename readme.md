@@ -1,7 +1,7 @@
 # vid_backend
 
 ### Environment
-+ `Golang` 1.11.5
++ `Golang 1.13.5 windows/amd64`
 
 ### Documents
 + Run following code to generate the swagger api document

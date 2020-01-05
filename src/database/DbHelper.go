@@ -10,31 +10,28 @@ import (
 	"log"
 )
 
-var DB *gorm.DB
-
-var PageSize int
-
-func SetupDBConn(cfg *config.DatabaseConfig) {
+func SetupDBConn(cfg *config.DatabaseConfig) *gorm.DB{
 	dbParams := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=%s&parseTime=True&loc=Local",
 		cfg.User, cfg.Password,
 		cfg.Host, cfg.Port,
 		cfg.Name, cfg.Charset,
 	)
-	PageSize = cfg.PageSize
-	var err error
-	DB, err = gorm.Open("mysql", dbParams)
+	db, err := gorm.Open("mysql", dbParams)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalln("Failed to connect mysql:", err)
 	}
-	DB.LogMode(cfg.IsLog)
-	DB.SingularTable(true)
+
+	db.LogMode(cfg.IsLog)
+	db.SingularTable(true)
 	gorm.DefaultTableNameHandler = func(db *gorm.DB, defaultTableName string) string {
 		return "tbl_" + defaultTableName
 	}
 
-	DB.AutoMigrate(&po.User{})
-	DB.AutoMigrate(&po.Password{})
-	DB.AutoMigrate(&po.Video{})
+	db.AutoMigrate(&po.User{})
+	db.AutoMigrate(&po.Password{})
+	db.AutoMigrate(&po.Video{})
+
+	return db
 }
 
 func IsDuplicateError(err error) bool {

@@ -1,48 +1,59 @@
 package dao
 
 import (
-	"log"
-	. "github.com/vidorg/vid_backend/src/database"
+	"github.com/jinzhu/gorm"
+	"github.com/vidorg/vid_backend/src/config"
+	"github.com/vidorg/vid_backend/src/database"
 	"github.com/vidorg/vid_backend/src/model/po"
 )
 
-type passDao struct{}
+type PassDao struct {
+	db       *gorm.DB
+	pageSize int
+}
 
-var PassDao = new(passDao)
+func PassRepository(config *config.DatabaseConfig) *PassDao {
+	return &PassDao{
+		db:       database.SetupDBConn(config),
+		pageSize: config.PageSize,
+	}
+}
 
-func (p *passDao) QueryByUsername(username string) *po.Password {
+func (p *PassDao) QueryByUsername(username string) *po.Password {
 	user := &po.User{Username: username}
-	if DB.Where(user).First(user).RecordNotFound() {
+	rdb := p.db.Model(&po.User{}).Where(user).First(user)
+	if rdb.RecordNotFound() {
 		return nil
 	}
 	pass := &po.Password{Uid: user.Uid}
-	if DB.Where(pass).First(pass).RecordNotFound() {
+	rdb = p.db.Model(&po.Password{}).Where(pass).First(pass)
+	if rdb.RecordNotFound() {
 		return nil
 	}
 	pass.User = user
 	return pass
 }
 
-func (p *passDao) Insert(pass *po.Password) DbStatus {
-	if err := DB.Create(pass).Error; err != nil {
-		if IsDuplicateError(err) {
-			return DbExisted
+func (p *PassDao) Insert(pass *po.Password) database.DbStatus {
+	rdb := p.db.Model(&po.Password{}).Create(pass)
+	if rdb.Error != nil {
+		if database.IsDuplicateError(rdb.Error) {
+			return database.DbExisted
 		} else {
-			log.Println(err)
-			return DbFailed
+			return database.DbFailed
 		}
 	}
-	return DbSuccess
+	return database.DbSuccess
 }
 
-func (p *passDao) Update(pass *po.Password) DbStatus {
-	if err := DB.Model(pass).Update(pass).Error; err != nil {
-		if IsNotFoundError(err) {
-			return DbNotFound
+func (p *PassDao) Update(pass *po.Password) database.DbStatus {
+	rdb := p.db.Model(&po.User{}).Update(pass)
+	if rdb.Error != nil {
+		if database.IsNotFoundError(rdb.Error) {
+			return database.DbNotFound
 		} else {
-			log.Println(err)
-			return DbFailed
+			return database.DbFailed
 		}
 	}
-	return DbSuccess
+	return database.DbSuccess
 }

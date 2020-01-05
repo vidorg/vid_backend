@@ -2,30 +2,26 @@ package middleware
 
 import (
 	"github.com/dgrijalva/jwt-go"
-	"net/http"
-	"strings"
+	"github.com/gin-gonic/gin"
 	"github.com/vidorg/vid_backend/src/config"
+	"github.com/vidorg/vid_backend/src/controller/exception"
 	"github.com/vidorg/vid_backend/src/database/dao"
 	"github.com/vidorg/vid_backend/src/model/dto/common"
 	"github.com/vidorg/vid_backend/src/model/enum"
 	"github.com/vidorg/vid_backend/src/model/po"
 	"github.com/vidorg/vid_backend/src/util"
-
-	"github.com/gin-gonic/gin"
-	"github.com/vidorg/vid_backend/src/controller/exception"
+	"net/http"
 )
-
-var JwtConfig *config.JwtConfig
 
 type Claims struct {
 	UserID int
 	jwt.StandardClaims
 }
 
-func JwtMiddleware(needAdmin bool) gin.HandlerFunc {
+func JwtMiddleware(needAdmin bool, config *config.ServerConfig) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		authHeader := c.Request.Header.Get("Authorization")
-		user, err := JwtCheck(authHeader)
+		user, err := JwtCheck(authHeader, config)
 		if err != nil {
 			c.JSON(http.StatusUnauthorized, common.Result{}.Error(http.StatusUnauthorized).SetMessage(err.Error()))
 			c.Abort()
@@ -42,22 +38,15 @@ func JwtMiddleware(needAdmin bool) gin.HandlerFunc {
 	}
 }
 
-func JwtCheck(authHeader string) (*po.User, error) {
-	// No Head
+func JwtCheck(authHeader string, config *config.ServerConfig) (*po.User, error) {
 	if authHeader == "" {
 		return nil, exception.AuthorizationError
 	}
 
-	// No Token Magic
-	parts := strings.Split(authHeader, " ")
-	if !(len(parts) == 2 && parts[0] == "Bearer") {
-		return nil, exception.AuthorizationError
-	}
-
-	// Token Parse Err
-	claims, err := util.AuthUtil.ParseToken(parts[1])
+	// parse
+	claims, err := util.AuthUtil.ParseToken(authHeader, config.JwtConfig)
 	if err != nil {
-		if strings.Index(err.Error(), "token is expired by") != -1 {
+		if util.AuthUtil.IsTokenExpireError(err) {
 			// Token Expired
 			return nil, exception.TokenExpiredError
 		} else {
@@ -68,8 +57,8 @@ func JwtCheck(authHeader string) (*po.User, error) {
 		}
 	}
 
-	// Check user & Admin
-	user := dao.UserDao.QueryByUid(claims.UserID)
+	// check dao & admin
+	user := dao.UserRepository(config.DatabaseConfig).QueryByUid(claims.UserID)
 	if user == nil {
 		return nil, exception.AuthorizationError
 	}
@@ -77,10 +66,10 @@ func JwtCheck(authHeader string) (*po.User, error) {
 	return user, nil
 }
 
-func GetAuthUser(c *gin.Context) *po.User {
+func GetAuthUser(c *gin.Context, config *config.ServerConfig) *po.User {
 	_user, exist := c.Get("user")
 	if !exist { // Has not Auth
-		JwtMiddleware(false)(c)
+		JwtMiddleware(false, config)(c)
 		_user, exist = c.Get("user")
 		if !exist { // Non-Auth
 			return nil

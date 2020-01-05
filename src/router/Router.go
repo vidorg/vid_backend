@@ -3,22 +3,23 @@ package router
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/vidorg/vid_backend/src/config"
 	"github.com/vidorg/vid_backend/src/middleware"
 	"github.com/vidorg/vid_backend/src/model/dto/common"
 	"github.com/vidorg/vid_backend/src/router/group"
 	"net/http"
 )
 
-func SetupRouters(router *gin.Engine) {
+func SetupRouters(router *gin.Engine, config *config.ServerConfig) {
 	router.HandleMethodNotAllowed = true
 
 	router.Use(gin.Recovery())
 	router.Use(middleware.CorsMiddleware())
 
-	group.SetupAuthGroup(router)
-	group.SetupUserGroup(router)
-	group.SetupVideoGroup(router)
-	group.SetupRawGroup(router)
+	group.SetupAuthGroup(router, config)
+	group.SetupUserGroup(router, config)
+	group.SetupVideoGroup(router, config)
+	group.SetupRawGroup(router, config)
 
 	router.GET("/ping", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"ping": "pong"})

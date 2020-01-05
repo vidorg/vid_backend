@@ -4,8 +4,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/shomali11/util/xconditions"
-	"net/http"
-	"strconv"
+	"github.com/vidorg/vid_backend/src/config"
 	"github.com/vidorg/vid_backend/src/controller/exception"
 	"github.com/vidorg/vid_backend/src/database"
 	"github.com/vidorg/vid_backend/src/database/dao"
@@ -16,11 +15,25 @@ import (
 	"github.com/vidorg/vid_backend/src/model/dto/param"
 	"github.com/vidorg/vid_backend/src/model/enum"
 	"github.com/vidorg/vid_backend/src/util"
+	"net/http"
+	"strconv"
 )
 
-type userController struct{}
+type userController struct {
+	config   *config.ServerConfig
+	userDao  *dao.UserDao
+	videoDao *dao.VideoDao
+	subDao   *dao.SubDao
+}
 
-var UserController = new(userController)
+func UserController(config *config.ServerConfig) *userController {
+	return &userController{
+		config:   config,
+		userDao:  dao.UserRepository(config.DatabaseConfig),
+		videoDao: dao.VideoRepository(config.DatabaseConfig),
+		subDao:   dao.SubRepository(config.DatabaseConfig),
+	}
+}
 
 // @Router 				/user?page [GET] [Auth]
 // @Summary 			查询所有用户
@@ -58,7 +71,7 @@ func (u *userController) QueryAllUsers(c *gin.Context) {
 	}
 	page = xconditions.IfThenElse(page < 1, 1, page).(int)
 
-	users, count := dao.UserDao.QueryAll(page)
+	users, count := u.userDao.QueryAll(page)
 	c.JSON(http.StatusOK, common.Result{}.Ok().SetPage(count, page, dto.UserDto{}.FromPos(users, enum.DtoOptionAll)))
 }
 
@@ -99,13 +112,13 @@ func (u *userController) QueryUser(c *gin.Context) {
 		return
 	}
 
-	user := dao.UserDao.QueryByUid(uid)
+	user := u.userDao.QueryByUid(uid)
 	if user == nil {
 		c.JSON(http.StatusNotFound, common.Result{}.Error(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()))
 		return
 	}
-	subscribingCnt, subscriberCnt, _ := dao.SubDao.QuerySubCnt(user.Uid)
-	videoCnt, _ := dao.VideoDao.QueryCount(user.Uid)
+	subscribingCnt, subscriberCnt, _ := u.subDao.QuerySubCnt(user.Uid)
+	videoCnt, _ := u.videoDao.QueryCount(user.Uid)
 	extraInfo := &dto.UserExtraInfo{
 		SubscribingCount: subscribingCnt,
 		SubscriberCount:  subscriberCnt,
@@ -113,7 +126,7 @@ func (u *userController) QueryUser(c *gin.Context) {
 		PlaylistCount:    0, // TODO
 	}
 
-	authUser := middleware.GetAuthUser(c)
+	authUser := middleware.GetAuthUser(c, u.config)
 	c.JSON(http.StatusOK, common.Result{}.Ok().PutData("user", dto.UserDto{}.FromPoThroughUser(user, authUser, uid)).PutData("extra", extraInfo))
 }
 
@@ -151,7 +164,7 @@ func (u *userController) QueryUser(c *gin.Context) {
 							}
  						} */
 func (u *userController) UpdateUser(c *gin.Context) {
-	authUser := middleware.GetAuthUser(c)
+	authUser := middleware.GetAuthUser(c, u.config)
 
 	userParam := param.UserParam{}
 	if err := c.ShouldBind(&userParam); err != nil {
@@ -184,7 +197,7 @@ func (u *userController) UpdateUser(c *gin.Context) {
 	authUser.BirthTime = common.JsonDate(userParam.BirthTime)
 	authUser.PhoneNumber = userParam.PhoneNumber
 
-	status := dao.UserDao.Update(authUser)
+	status := u.userDao.Update(authUser)
 	if status == database.DbNotFound {
 		c.JSON(http.StatusNotFound, common.Result{}.Error(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()))
 		return
@@ -211,9 +224,9 @@ func (u *userController) UpdateUser(c *gin.Context) {
 							"message": "success"
  						} */
 func (u *userController) DeleteUser(c *gin.Context) {
-	authUser := middleware.GetAuthUser(c)
+	authUser := middleware.GetAuthUser(c, u.config)
 
-	status := dao.UserDao.Delete(authUser.Uid)
+	status := u.userDao.Delete(authUser.Uid)
 	if status == database.DbNotFound {
 		c.JSON(http.StatusNotFound, common.Result{}.Error(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()))
 		return

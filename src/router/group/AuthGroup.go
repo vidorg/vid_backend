@@ -1,21 +1,22 @@
 package group
 
 import (
-	. "github.com/vidorg/vid_backend/src/controller"
-	"github.com/vidorg/vid_backend/src/middleware"
-
 	"github.com/gin-gonic/gin"
+	"github.com/vidorg/vid_backend/src/config"
+	"github.com/vidorg/vid_backend/src/controller"
+	"github.com/vidorg/vid_backend/src/middleware"
 )
 
-func SetupAuthGroup(router *gin.Engine) {
+func SetupAuthGroup(router *gin.Engine, config *config.ServerConfig) {
+	authCtrl := controller.AuthController(config)
 
-	jwt := middleware.JwtMiddleware(false)
+	jwt := middleware.JwtMiddleware(false, config)
 
 	authGroup := router.Group("/auth")
 	{
-		authGroup.POST("/login", AuthController.Login)
-		authGroup.POST("/register", AuthController.Register)
-		authGroup.PUT("/password", jwt, AuthController.ModifyPassword)
-		authGroup.GET("/", jwt, AuthController.CurrentUser)
+		authGroup.POST("/login", authCtrl.Login)
+		authGroup.POST("/register", authCtrl.Register)
+		authGroup.PUT("/password", jwt, authCtrl.ModifyPassword)
+		authGroup.GET("/", jwt, authCtrl.CurrentUser)
 	}
 }

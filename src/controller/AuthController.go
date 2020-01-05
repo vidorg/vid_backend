@@ -1,6 +1,8 @@
 package controller
 
 import (
+	"github.com/gin-gonic/gin"
+	"github.com/vidorg/vid_backend/src/config"
 	"github.com/vidorg/vid_backend/src/controller/exception"
 	"github.com/vidorg/vid_backend/src/database"
 	"github.com/vidorg/vid_backend/src/database/dao"
@@ -13,13 +15,19 @@ import (
 	"github.com/vidorg/vid_backend/src/model/po"
 	"github.com/vidorg/vid_backend/src/util"
 	"net/http"
-
-	"github.com/gin-gonic/gin"
 )
 
-type authController struct{}
+type authController struct {
+	config  *config.ServerConfig
+	passDao *dao.PassDao
+}
 
-var AuthController = new(authController)
+func AuthController(config *config.ServerConfig) *authController {
+	return &authController{
+		config:  config,
+		passDao: dao.PassRepository(config.DatabaseConfig),
+	}
+}
 
 // @Router 				/auth/login [POST]
 // @Summary 			登录
@@ -51,17 +59,17 @@ var AuthController = new(authController)
 								"expire": 604800
 							}
  						} */
-func (u *authController) Login(c *gin.Context) {
+func (a *authController) Login(c *gin.Context) {
 	passwordParam := param.PasswordParam{}
 	if err := c.ShouldBind(&passwordParam); err != nil {
 		c.JSON(http.StatusBadRequest, common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.RequestParamError.Error()))
 		return
 	}
 	if passwordParam.Expire <= 0 {
-		passwordParam.Expire = middleware.JwtConfig.Expire
+		passwordParam.Expire = a.config.JwtConfig.Expire
 	}
 
-	passRecord := dao.PassDao.QueryByUsername(passwordParam.Username)
+	passRecord := a.passDao.QueryByUsername(passwordParam.Username)
 	if passRecord == nil {
 		c.JSON(http.StatusNotFound, common.Result{}.Error(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()))
 		return
@@ -72,7 +80,7 @@ func (u *authController) Login(c *gin.Context) {
 		return
 	}
 
-	token, err := util.AuthUtil.GenerateToken(passRecord.User.Uid, passwordParam.Expire)
+	token, err := util.AuthUtil.GenerateToken(passRecord.User.Uid, passwordParam.Expire, a.config.JwtConfig)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, common.Result{}.Error(http.StatusInternalServerError).SetMessage(exception.LoginError.Error()))
 		return
@@ -107,7 +115,7 @@ func (u *authController) Login(c *gin.Context) {
 								"phone_number": "13512345678"
 							}
  						} */
-func (u *authController) Register(c *gin.Context) {
+func (a *authController) Register(c *gin.Context) {
 	passwordParam := param.PasswordParam{}
 	if err := c.ShouldBind(&passwordParam); err != nil {
 		c.JSON(http.StatusBadRequest, common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.RequestParamError.Error()))
@@ -130,7 +138,7 @@ func (u *authController) Register(c *gin.Context) {
 			RegisterIP: c.ClientIP(),
 		},
 	}
-	status := dao.PassDao.Insert(passRecord)
+	status := a.passDao.Insert(passRecord)
 	if status == database.DbExisted {
 		c.JSON(http.StatusInternalServerError, common.Result{}.Error(http.StatusInternalServerError).SetMessage(exception.UserNameUsedError.Error()))
 		return
@@ -156,8 +164,8 @@ func (u *authController) Register(c *gin.Context) {
 							"code": 200,
 							"message": "success"
  						} */
-func (u *authController) ModifyPassword(c *gin.Context) {
-	authUser := middleware.GetAuthUser(c)
+func (a *authController) ModifyPassword(c *gin.Context) {
+	authUser := middleware.GetAuthUser(c, a.config)
 
 	password, exist := c.GetPostForm("password")
 	if !exist {
@@ -179,7 +187,7 @@ func (u *authController) ModifyPassword(c *gin.Context) {
 		User:          authUser,
 		Uid:           authUser.Uid,
 	}
-	status := dao.PassDao.Update(passRecord)
+	status := a.passDao.Update(passRecord)
 	if status == database.DbNotFound {
 		c.JSON(http.StatusNotFound,
 			common.Result{}.Error(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()))
@@ -212,7 +220,7 @@ func (u *authController) ModifyPassword(c *gin.Context) {
 								"phone_number": "13512345678"
 							}
  						} */
-func (u *authController) CurrentUser(c *gin.Context) {
-	authUser := middleware.GetAuthUser(c)
+func (a *authController) CurrentUser(c *gin.Context) {
+	authUser := middleware.GetAuthUser(c, a.config)
 	c.JSON(http.StatusOK, common.Result{}.Ok().SetData(dto.UserDto{}.FromPo(authUser, enum.DtoOptionAll)))
 }

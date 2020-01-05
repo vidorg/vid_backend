@@ -2,19 +2,25 @@ package controller
 
 import (
 	"fmt"
+	"github.com/gin-gonic/gin"
 	"github.com/shomali11/util/xconditions"
-	"net/http"
-	"strconv"
+	"github.com/vidorg/vid_backend/src/config"
 	"github.com/vidorg/vid_backend/src/controller/exception"
 	"github.com/vidorg/vid_backend/src/model/dto/common"
 	"github.com/vidorg/vid_backend/src/util"
-
-	"github.com/gin-gonic/gin"
+	"net/http"
+	"strconv"
 )
 
-type rawController struct{}
+type rawController struct {
+	config *config.ServerConfig
+}
 
-var RawController = new(rawController)
+func RawController(config *config.ServerConfig) *rawController {
+	return &rawController{
+		config: config,
+	}
+}
 
 // @Router 				/raw/image/{uid}/{filename} [GET]
 // @Summary 			获取图片

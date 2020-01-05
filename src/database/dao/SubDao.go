@@ -1,89 +1,94 @@
 package dao
 
 import (
-	"log"
-	. "github.com/vidorg/vid_backend/src/database"
+	"github.com/jinzhu/gorm"
+	"github.com/vidorg/vid_backend/src/config"
+	"github.com/vidorg/vid_backend/src/database"
 	"github.com/vidorg/vid_backend/src/model/po"
 )
 
-type subDao struct{}
-
-var SubDao = new(subDao)
-
-func (u *subDao) QuerySubscriberUsers(uid int, page int) ([]*po.User, int, DbStatus) {
-	user := &po.User{Uid: uid}
-	if UserDao.QueryByUid(uid) == nil {
-		return nil, 0, DbNotFound
-	}
-	asDb := DB.Model(user).Association("Subscribers")
-	if err := asDb.Error; err != nil {
-		return nil, 0, DbNotFound
-	}
-	count := asDb.Count()
-	var users []*po.User
-	DB.Limit(PageSize).Offset((page-1)*PageSize).Model(user).Related(&users, "Subscribers")
-	return users, count, DbSuccess
+type SubDao struct {
+	db              *gorm.DB
+	pageSize        int
+	userDao         *UserDao
+	colSubscribers  string
+	colSubscribings string
 }
 
-func (u *subDao) QuerySubscribingUsers(uid int, page int) ([]*po.User, int, DbStatus) {
-	user := &po.User{Uid: uid}
-	if UserDao.QueryByUid(uid) == nil {
-		return nil, 0, DbNotFound
+func SubRepository(config *config.DatabaseConfig) *SubDao {
+	return &SubDao{
+		db:       database.SetupDBConn(config),
+		pageSize: config.PageSize,
+		userDao:  UserRepository(config),
+
+		colSubscribers:  "Subscribers",
+		colSubscribings: "Subscribings",
 	}
-	asDb := DB.Model(user).Association("Subscribings")
-	if err := asDb.Error; err != nil {
-		return nil, 0, DbNotFound
-	}
-	count := asDb.Count()
-	var users []*po.User
-	DB.Limit(PageSize).Offset((page-1)*PageSize).Model(user).Related(&users, "Subscribings")
-	return users, count, DbSuccess
 }
 
-func (u *subDao) QuerySubCnt(uid int) (int, int, DbStatus) {
+func (s *SubDao) QuerySubscriberUsers(uid int, page int) (users []*po.User, count int) {
 	user := &po.User{Uid: uid}
-	if DB.NewRecord(user) {
-		return 0, 0, DbNotFound
+	rdb := s.db.Model(&po.User{}).Where(user)
+	if rdb.RecordNotFound() {
+		return nil, 0
 	}
-	asDb := DB.Model(user).Association("Subscribings")
-	if err := asDb.Error; err != nil {
-		return 0, 0, DbNotFound
-	}
-	subscribingCnt := asDb.Count()
-	subscriberCnt := DB.Model(user).Association("Subscribers").Count()
-	return subscribingCnt, subscriberCnt, DbSuccess
+	count = rdb.Association(s.colSubscribers).Count()
+	s.db.Model(&po.User{}).Limit(s.pageSize).Offset((page-1)*s.pageSize).Where(user).Related(&users, s.colSubscribers)
+	return users, count
 }
 
-func (u *subDao) SubscribeUser(meUid int, toUid int) DbStatus {
-	meUser := &po.User{Uid: meUid}
-	toUser := &po.User{Uid: toUid}
-	if UserDao.QueryByUid(meUid) == nil || UserDao.QueryByUid(toUid) == nil {
-		return DbNotFound
+func (s *SubDao) QuerySubscribingUsers(uid int, page int) (users []*po.User, count int) {
+	user := &po.User{Uid: uid}
+	rdb := s.db.Model(&po.User{}).Where(user)
+	if rdb.RecordNotFound() {
+		return nil, 0
 	}
-	if err := DB.Model(toUser).Association("Subscribers").Append(meUser).Error; err != nil {
-		if IsNotFoundError(err) {
-			return DbNotFound
+	count = rdb.Association(s.colSubscribings).Count()
+	s.db.Model(&po.User{}).Limit(s.pageSize).Offset((page-1)*s.pageSize).Where(user).Related(&users, s.colSubscribings)
+	return users, count
+}
+
+func (s *SubDao) QuerySubCnt(uid int) (subscribingCnt int, subscriberCnt int, status database.DbStatus) {
+	user := &po.User{Uid: uid}
+	rdb := s.db.Model(&po.User{}).Where(user)
+	if rdb.RecordNotFound() {
+		return 0, 0, database.DbNotFound
+	}
+	subscribingCnt = rdb.Association(s.colSubscribings).Count()
+	subscriberCnt = rdb.Association(s.colSubscribers).Count()
+	return subscribingCnt, subscriberCnt, database.DbSuccess
+}
+
+func (s *SubDao) SubscribeUser(meUid int, toUid int) database.DbStatus {
+	rdb := s.db.Model(&po.User{}).Where(&po.User{Uid: toUid})
+	if rdb.RecordNotFound() {
+		return database.DbNotFound
+	}
+
+	ass := rdb.Association(s.colSubscribers).Append(&po.User{Uid: meUid})
+	if ass.Error != nil {
+		if database.IsNotFoundError(ass.Error) {
+			return database.DbNotFound
 		} else {
-			log.Println(err)
-			return DbFailed
+			return database.DbFailed
 		}
 	}
-	return DbSuccess
+	return database.DbSuccess
 }
 
-func (u *subDao) UnSubscribeUser(meUid int, toUid int) DbStatus {
-	meUser := &po.User{Uid: meUid}
-	toUser := &po.User{Uid: toUid}
-	if UserDao.QueryByUid(meUid) == nil || UserDao.QueryByUid(toUid) == nil {
-		return DbNotFound
+func (s *SubDao) UnSubscribeUser(meUid int, toUid int) database.DbStatus {
+	rdb := s.db.Model(&po.User{}).Where(&po.User{Uid: toUid})
+	if rdb.RecordNotFound() {
+		return database.DbNotFound
 	}
-	if err := DB.Model(toUser).Association("Subscribers").Delete(meUser).Error; err != nil {
-		if IsNotFoundError(err) {
-			return DbNotFound
+
+	ass := rdb.Association(s.colSubscribers).Delete(&po.User{Uid: meUid})
+	if ass.Error != nil {
+		if database.IsNotFoundError(ass.Error) {
+			return database.DbNotFound
 		} else {
-			log.Println(err)
-			return DbFailed
+			return database.DbFailed
 		}
 	}
-	return DbSuccess
+	return database.DbSuccess
 }
