@@ -13,11 +13,12 @@ func (s SexType) String() string {
 }
 
 func StringToSexType(sexString string) SexType {
-	if sexString == string(SexMale) {
+	switch sexString {
+	case SexMale.String():
 		return SexMale
-	} else if sexString == string(SexFemale) {
+	case SexFemale.String():
 		return SexFemale
-	} else {
+	default:
 		return SexUnknown
 	}
 }

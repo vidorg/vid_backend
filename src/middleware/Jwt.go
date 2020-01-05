@@ -1,7 +1,6 @@
 package middleware
 
 import (
-	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"github.com/vidorg/vid_backend/src/config"
 	"github.com/vidorg/vid_backend/src/controller/exception"
@@ -12,11 +11,6 @@ import (
 	"github.com/vidorg/vid_backend/src/util"
 	"net/http"
 )
-
-type Claims struct {
-	UserID int
-	jwt.StandardClaims
-}
 
 func JwtMiddleware(needAdmin bool, config *config.ServerConfig) gin.HandlerFunc {
 	return func(c *gin.Context) {

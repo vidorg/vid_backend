@@ -31,7 +31,7 @@ var (
 	UserDeleteError   = errors.New("user delete failed") // D
 	UserNotFoundError = errors.New("user not found")     // R
 
-	UserNameUsedError  = errors.New("username has been used")
+	UsernameUsedError  = errors.New("username has been used")
 	SubscribeSelfError = errors.New("subscribe oneself invalid")
 	SubscribeError     = errors.New("subscribe failed")
 	UnSubscribeError   = errors.New("unsubscribe failed")

@@ -75,3 +75,7 @@ func (r *Result) SetPage(count int, page int, data interface{}) *Result {
 func (r *Result) JSON(c *gin.Context) {
 	c.JSON(r.Code, r)
 }
+
+func (r *Result) XML(c *gin.Context) {
+	c.XML(r.Code, r)
+}

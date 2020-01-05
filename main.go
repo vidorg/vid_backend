@@ -61,6 +61,7 @@ func run() {
 		ginpprof.Wrap(engine)
 	}
 
+	router.SetupDefinedValidation()
 	router.SetupRouters(engine, cfg)
 	engine.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 

@@ -9,14 +9,12 @@ import (
 	"github.com/vidorg/vid_backend/src/database"
 	"github.com/vidorg/vid_backend/src/database/dao"
 	"github.com/vidorg/vid_backend/src/middleware"
-	"github.com/vidorg/vid_backend/src/model"
 	"github.com/vidorg/vid_backend/src/model/dto"
 	"github.com/vidorg/vid_backend/src/model/dto/common"
 	"github.com/vidorg/vid_backend/src/model/dto/param"
 	"github.com/vidorg/vid_backend/src/model/enum"
 	"github.com/vidorg/vid_backend/src/util"
 	"net/http"
-	"strconv"
 )
 
 type userController struct {
@@ -64,15 +62,15 @@ func UserController(config *config.ServerConfig) *userController {
 							}
  						} */
 func (u *userController) QueryAllUsers(c *gin.Context) {
-	page, err := strconv.Atoi(c.DefaultQuery("page", "1"))
-	if err != nil {
-		c.JSON(http.StatusBadRequest, common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.RequestParamError.Error()))
+	page, ok := param.BindQueryPage(c)
+	if !ok {
+		common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.RequestParamError.Error()).JSON(c)
 		return
 	}
 	page = xconditions.IfThenElse(page < 1, 1, page).(int)
 
 	users, count := u.userDao.QueryAll(page)
-	c.JSON(http.StatusOK, common.Result{}.Ok().SetPage(count, page, dto.UserDto{}.FromPos(users, enum.DtoOptionAll)))
+	common.Result{}.Ok().SetPage(count, page, dto.UserDto{}.FromPos(users, enum.DtoOptionAll)).JSON(c)
 }
 
 // @Router 				/user/{uid} [GET]
@@ -106,15 +104,15 @@ func (u *userController) QueryAllUsers(c *gin.Context) {
 							}
  						} */
 func (u *userController) QueryUser(c *gin.Context) {
-	uid, err := strconv.Atoi(c.Param("uid"))
-	if err != nil {
-		c.JSON(http.StatusBadRequest, common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.RequestParamError.Error()))
+	uid, ok := param.BindRouteId(c, "uid")
+	if !ok {
+		common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.RequestParamError.Error()).JSON(c)
 		return
 	}
 
 	user := u.userDao.QueryByUid(uid)
 	if user == nil {
-		c.JSON(http.StatusNotFound, common.Result{}.Error(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()))
+		common.Result{}.Error(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()).JSON(c)
 		return
 	}
 	subscribingCnt, subscriberCnt, _ := u.subDao.QuerySubCnt(user.Uid)
@@ -123,11 +121,11 @@ func (u *userController) QueryUser(c *gin.Context) {
 		SubscribingCount: subscribingCnt,
 		SubscriberCount:  subscriberCnt,
 		VideoCount:       videoCnt,
-		PlaylistCount:    0, // TODO
 	}
 
 	authUser := middleware.GetAuthUser(c, u.config)
-	c.JSON(http.StatusOK, common.Result{}.Ok().PutData("user", dto.UserDto{}.FromPoThroughUser(user, authUser, uid)).PutData("extra", extraInfo))
+	// Mapping from po through the authorization and administration
+	common.Result{}.Ok().PutData("user", dto.UserDto{}.FromPoThroughAuth(user, authUser)).PutData("extra", extraInfo).JSON(c)
 }
 
 // @Router 				/user/ [PUT] [Auth]
@@ -165,27 +163,21 @@ func (u *userController) QueryUser(c *gin.Context) {
  						} */
 func (u *userController) UpdateUser(c *gin.Context) {
 	authUser := middleware.GetAuthUser(c, u.config)
-
-	userParam := param.UserParam{}
-	if err := c.ShouldBind(&userParam); err != nil {
-		c.JSON(http.StatusBadRequest, common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.RequestParamError.Error()))
+	userParam := &param.UserParam{}
+	if err := c.ShouldBind(userParam); err != nil {
+		common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.WrapValidationError(err).Error()).JSON(c)
 		return
 	}
-	if !model.FormatCheck.Username(userParam.Username) || !model.FormatCheck.UserProfile(userParam.Profile) || !model.FormatCheck.PhoneNumber(userParam.PhoneNumber) {
-		c.JSON(http.StatusBadRequest, common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.RequestFormatError.Error()))
-		return
-	}
-	avatarFile, avatarHeader, err2 := c.Request.FormFile("avatar")
-	if err2 == nil && avatarFile != nil {
+	if avatarFile, avatarHeader, err := c.Request.FormFile("avatar"); err == nil && avatarFile != nil {
 		supported, ext := util.ImageUtil.CheckImageExt(avatarHeader.Filename)
 		if !supported {
-			c.JSON(http.StatusBadRequest, common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.ImageNotSupportedError.Error()))
+			common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.ImageNotSupportedError.Error()).JSON(c)
 			return
 		}
 		filename := fmt.Sprintf("avatar_%s.jpg", util.CommonUtil.CurrentTimeUuid())
 		savePath := fmt.Sprintf("./usr/image/%d/%s", authUser.Uid, filename)
 		if err := util.ImageUtil.SaveAsJpg(avatarFile, ext, savePath); err != nil {
-			c.JSON(http.StatusInternalServerError, common.Result{}.Error(http.StatusInternalServerError).SetMessage(exception.ImageSaveError.Error()))
+			common.Result{}.Error(http.StatusInternalServerError).SetMessage(exception.ImageSaveError.Error()).JSON(c)
 			return
 		}
 		authUser.AvatarUrl = filename
@@ -199,17 +191,17 @@ func (u *userController) UpdateUser(c *gin.Context) {
 
 	status := u.userDao.Update(authUser)
 	if status == database.DbNotFound {
-		c.JSON(http.StatusNotFound, common.Result{}.Error(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()))
+		common.Result{}.Error(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()).JSON(c)
 		return
 	} else if status == database.DbExisted {
-		c.JSON(http.StatusBadRequest, common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.UserNameUsedError.Error()))
+		common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.UsernameUsedError.Error()).JSON(c)
 		return
 	} else if status == database.DbFailed {
-		c.JSON(http.StatusInternalServerError, common.Result{}.Error(http.StatusInternalServerError).SetMessage(exception.UserUpdateError.Error()))
+		common.Result{}.Error(http.StatusInternalServerError).SetMessage(exception.UserUpdateError.Error()).JSON(c)
 		return
 	}
 
-	c.JSON(http.StatusOK, common.Result{}.Ok().SetData(dto.UserDto{}.FromPo(authUser, enum.DtoOptionAll)))
+	common.Result{}.Ok().SetData(dto.UserDto{}.FromPo(authUser, enum.DtoOptionAll)).JSON(c)
 }
 
 // @Router 				/user/ [DELETE] [Auth]
@@ -228,12 +220,12 @@ func (u *userController) DeleteUser(c *gin.Context) {
 
 	status := u.userDao.Delete(authUser.Uid)
 	if status == database.DbNotFound {
-		c.JSON(http.StatusNotFound, common.Result{}.Error(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()))
+		common.Result{}.Error(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()).JSON(c)
 		return
 	} else if status == database.DbFailed {
-		c.JSON(http.StatusInternalServerError, common.Result{}.Error(http.StatusInternalServerError).SetMessage(exception.UserDeleteError.Error()))
+		common.Result{}.Error(http.StatusInternalServerError).SetMessage(exception.UserDeleteError.Error()).JSON(c)
 		return
 	}
 
-	c.JSON(http.StatusOK, common.Result{}.Ok())
+	common.Result{}.Ok().JSON(c)
 }

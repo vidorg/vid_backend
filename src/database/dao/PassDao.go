@@ -19,14 +19,14 @@ func PassRepository(config *config.DatabaseConfig) *PassDao {
 	}
 }
 
-func (p *PassDao) QueryByUsername(username string) *po.Password {
+func (p *PassDao) QueryByUsername(username string) *po.PassRecord {
 	user := &po.User{Username: username}
 	rdb := p.db.Model(&po.User{}).Where(user).First(user)
 	if rdb.RecordNotFound() {
 		return nil
 	}
-	pass := &po.Password{Uid: user.Uid}
-	rdb = p.db.Model(&po.Password{}).Where(pass).First(pass)
+	pass := &po.PassRecord{Uid: user.Uid}
+	rdb = p.db.Model(&po.PassRecord{}).Where(pass).First(pass)
 	if rdb.RecordNotFound() {
 		return nil
 	}
@@ -34,8 +34,8 @@ func (p *PassDao) QueryByUsername(username string) *po.Password {
 	return pass
 }
 
-func (p *PassDao) Insert(pass *po.Password) database.DbStatus {
-	rdb := p.db.Model(&po.Password{}).Create(pass)
+func (p *PassDao) Insert(pass *po.PassRecord) database.DbStatus {
+	rdb := p.db.Model(&po.PassRecord{}).Create(pass)
 	if rdb.Error != nil {
 		if database.IsDuplicateError(rdb.Error) {
 			return database.DbExisted
@@ -46,7 +46,7 @@ func (p *PassDao) Insert(pass *po.Password) database.DbStatus {
 	return database.DbSuccess
 }
 
-func (p *PassDao) Update(pass *po.Password) database.DbStatus {
+func (p *PassDao) Update(pass *po.PassRecord) database.DbStatus {
 	rdb := p.db.Model(&po.User{}).Update(pass)
 	if rdb.Error != nil {
 		if database.IsNotFoundError(rdb.Error) {

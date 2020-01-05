@@ -28,7 +28,7 @@ func SetupDBConn(cfg *config.DatabaseConfig) *gorm.DB{
 	}
 
 	db.AutoMigrate(&po.User{})
-	db.AutoMigrate(&po.Password{})
+	db.AutoMigrate(&po.PassRecord{})
 	db.AutoMigrate(&po.Video{})
 
 	return db

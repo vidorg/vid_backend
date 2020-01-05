@@ -15,15 +15,15 @@ func SetupRouters(router *gin.Engine, config *config.ServerConfig) {
 
 	router.Use(gin.Recovery())
 	router.Use(middleware.CorsMiddleware())
+	router.GET("/ping", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{"ping": "pong"})
+	})
 
 	group.SetupAuthGroup(router, config)
 	group.SetupUserGroup(router, config)
 	group.SetupVideoGroup(router, config)
 	group.SetupRawGroup(router, config)
 
-	router.GET("/ping", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{"ping": "pong"})
-	})
 	router.NoMethod(func(c *gin.Context) {
 		common.Result{}.Error(http.StatusMethodNotAllowed).SetMessage("method not allowed").JSON(c)
 	})

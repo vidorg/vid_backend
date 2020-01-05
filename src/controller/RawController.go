@@ -41,7 +41,7 @@ func (r *rawController) RawImage(c *gin.Context) {
 		var err error
 		uid, err = strconv.Atoi(uidString)
 		if err != nil {
-			c.JSON(http.StatusBadRequest, common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.RequestParamError.Error()))
+			common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.RequestParamError.Error()).JSON(c)
 			return
 		}
 	}
@@ -49,7 +49,7 @@ func (r *rawController) RawImage(c *gin.Context) {
 
 	filePath := xconditions.IfThenElse(uid == -1, fmt.Sprintf("./usr/default/%s", filename), fmt.Sprintf("./usr/image/%d/%s", uid, filename)).(string)
 	if !util.CommonUtil.IsDirOrFileExist(filePath) {
-		c.JSON(http.StatusNotFound, common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.ImageNotFoundError.Error()))
+		common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.ImageNotFoundError.Error()).JSON(c)
 		return
 	}
 

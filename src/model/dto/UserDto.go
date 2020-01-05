@@ -62,12 +62,11 @@ func (UserDto) FromPos(users []*po.User, option enum.DtoOption, otherOption ...i
 // 没有认证: DtoOptionNone
 // 已经认证 && (管理员 || 本人): DtoOptionAll
 // 已经认证 && 非管理员 && 非本人: DtoOptionNone
-func (UserDto) FromPoThroughUser(user *po.User, authUser *po.User, uid int) *UserDto {
-	// IsSelfOrAdmin
-	if authUser != nil && (authUser.Authority == enum.AuthAdmin || authUser.Uid == uid) {
-		return UserDto{}.FromPo(user, enum.DtoOptionAll)
+func (UserDto) FromPoThroughAuth(retUser *po.User, authUser *po.User) *UserDto {
+	if authUser != nil && (authUser.Authority == enum.AuthAdmin || authUser.Uid == retUser.Uid) { // IsSelfOrAdmin
+		return UserDto{}.FromPo(retUser, enum.DtoOptionAll)
 	} else {
-		return UserDto{}.FromPo(user, enum.DtoOptionNone)
+		return UserDto{}.FromPo(retUser, enum.DtoOptionNone)
 	}
 }
 
@@ -76,7 +75,7 @@ func (UserDto) FromPoThroughUser(user *po.User, authUser *po.User, uid int) *Use
 // 没有认证: DtoOptionNone
 // 已经认证 && 管理员: DtoOptionAll
 // 已经认证 && 非管理员: DtoOptionOnlySelf
-func (UserDto) FromPosThroughUser(users []*po.User, authUser *po.User, uid int) []*UserDto {
+func (UserDto) FromPosThroughUser(users []*po.User, authUser *po.User) []*UserDto {
 	if authUser == nil { // None
 		return UserDto{}.FromPos(users, enum.DtoOptionNone)
 	}

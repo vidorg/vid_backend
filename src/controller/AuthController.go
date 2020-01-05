@@ -7,7 +7,6 @@ import (
 	"github.com/vidorg/vid_backend/src/database"
 	"github.com/vidorg/vid_backend/src/database/dao"
 	"github.com/vidorg/vid_backend/src/middleware"
-	"github.com/vidorg/vid_backend/src/model"
 	"github.com/vidorg/vid_backend/src/model/dto"
 	"github.com/vidorg/vid_backend/src/model/dto/common"
 	"github.com/vidorg/vid_backend/src/model/dto/param"
@@ -60,34 +59,33 @@ func AuthController(config *config.ServerConfig) *authController {
 							}
  						} */
 func (a *authController) Login(c *gin.Context) {
-	passwordParam := param.PasswordParam{}
-	if err := c.ShouldBind(&passwordParam); err != nil {
-		c.JSON(http.StatusBadRequest, common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.RequestParamError.Error()))
+	loginParam := &param.LoginParam{}
+	if err := c.ShouldBind(loginParam); err != nil {
+		common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.RequestParamError.Error()).JSON(c)
 		return
 	}
-	if passwordParam.Expire <= 0 {
-		passwordParam.Expire = a.config.JwtConfig.Expire
+	if loginParam.Expire <= 0 {
+		loginParam.Expire = a.config.JwtConfig.Expire
 	}
 
-	passRecord := a.passDao.QueryByUsername(passwordParam.Username)
+	passRecord := a.passDao.QueryByUsername(loginParam.Username)
 	if passRecord == nil {
-		c.JSON(http.StatusNotFound, common.Result{}.Error(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()))
+		common.Result{}.Error(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()).JSON(c)
 		return
 	}
 
-	if !util.AuthUtil.CheckPassword(passwordParam.Password, passRecord.EncryptedPass) {
-		c.JSON(http.StatusUnauthorized, common.Result{}.Error(http.StatusUnauthorized).SetMessage(exception.PasswordError.Error()))
+	if !util.AuthUtil.CheckPassword(loginParam.Password, passRecord.EncryptedPass) {
+		common.Result{}.Error(http.StatusUnauthorized).SetMessage(exception.PasswordError.Error()).JSON(c)
 		return
 	}
 
-	token, err := util.AuthUtil.GenerateToken(passRecord.User.Uid, passwordParam.Expire, a.config.JwtConfig)
+	token, err := util.AuthUtil.GenerateToken(passRecord.User.Uid, loginParam.Expire, a.config.JwtConfig)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, common.Result{}.Error(http.StatusInternalServerError).SetMessage(exception.LoginError.Error()))
+		common.Result{}.Error(http.StatusInternalServerError).SetMessage(exception.LoginError.Error()).JSON(c)
 		return
 	}
 
-	c.JSON(http.StatusOK, common.Result{}.Ok().PutData("user", dto.UserDto{}.FromPo(passRecord.User, enum.DtoOptionAll)).
-		PutData("token", token).PutData("expire", passwordParam.Expire))
+	common.Result{}.Ok().PutData("user", dto.UserDto{}.FromPo(passRecord.User, enum.DtoOptionAll)).PutData("token", token).PutData("expire", loginParam.Expire).JSON(c)
 }
 
 // @Router 				/auth/register [POST]
@@ -116,38 +114,34 @@ func (a *authController) Login(c *gin.Context) {
 							}
  						} */
 func (a *authController) Register(c *gin.Context) {
-	passwordParam := param.PasswordParam{}
-	if err := c.ShouldBind(&passwordParam); err != nil {
-		c.JSON(http.StatusBadRequest, common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.RequestParamError.Error()))
-		return
-	}
-	if !model.FormatCheck.Username(passwordParam.Username) || !model.FormatCheck.Password(passwordParam.Password) {
-		c.JSON(http.StatusBadRequest, common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.RequestFormatError.Error()))
+	registerParam := &param.RegisterParam{}
+	if err := c.ShouldBind(registerParam); err != nil {
+		common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.WrapValidationError(err).Error()).JSON(c)
 		return
 	}
 
-	encrypted, err := util.AuthUtil.EncryptPassword(passwordParam.Password)
+	encrypted, err := util.AuthUtil.EncryptPassword(registerParam.Password)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, common.Result{}.Error(http.StatusInternalServerError).SetMessage(exception.RegisterError.Error()))
+		common.Result{}.Error(http.StatusInternalServerError).SetMessage(exception.RegisterError.Error()).JSON(c)
 		return
 	}
-	passRecord := &po.Password{
+	passRecord := &po.PassRecord{
 		EncryptedPass: encrypted,
 		User: &po.User{
-			Username:   passwordParam.Username,
+			Username:   registerParam.Username,
 			RegisterIP: c.ClientIP(),
 		},
 	}
 	status := a.passDao.Insert(passRecord)
 	if status == database.DbExisted {
-		c.JSON(http.StatusInternalServerError, common.Result{}.Error(http.StatusInternalServerError).SetMessage(exception.UserNameUsedError.Error()))
+		common.Result{}.Error(http.StatusInternalServerError).SetMessage(exception.UsernameUsedError.Error()).JSON(c)
 		return
 	} else if status == database.DbFailed {
-		c.JSON(http.StatusInternalServerError, common.Result{}.Error(http.StatusInternalServerError).SetMessage(exception.RegisterError.Error()))
+		common.Result{}.Error(http.StatusInternalServerError).SetMessage(exception.RegisterError.Error()).JSON(c)
 		return
 	}
 
-	c.JSON(http.StatusOK, common.Result{}.Ok().SetData(dto.UserDto{}.FromPo(passRecord.User, enum.DtoOptionAll)))
+	common.Result{}.Ok().SetData(dto.UserDto{}.FromPo(passRecord.User, enum.DtoOptionAll)).JSON(c)
 }
 
 // @Router 				/auth/password [PUT] [Auth]
@@ -166,39 +160,32 @@ func (a *authController) Register(c *gin.Context) {
  						} */
 func (a *authController) ModifyPassword(c *gin.Context) {
 	authUser := middleware.GetAuthUser(c, a.config)
-
-	password, exist := c.GetPostForm("password")
-	if !exist {
-		c.JSON(http.StatusBadRequest, common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.RequestParamError.Error()))
-		return
-	}
-	if !model.FormatCheck.Password(password) {
-		c.JSON(http.StatusBadRequest, common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.RequestFormatError.Error()))
+	passParam := &param.PassParam{}
+	if err := c.ShouldBind(passParam); err != nil {
+		common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.WrapValidationError(err).Error()).JSON(c)
 		return
 	}
 
-	encrypted, err := util.AuthUtil.EncryptPassword(password)
+	encrypted, err := util.AuthUtil.EncryptPassword(passParam.Password)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, common.Result{}.Error(http.StatusInternalServerError).SetMessage(exception.UpdatePassError.Error()))
+		common.Result{}.Error(http.StatusInternalServerError).SetMessage(exception.UpdatePassError.Error()).JSON(c)
 		return
 	}
-	passRecord := &po.Password{
+	passRecord := &po.PassRecord{
 		EncryptedPass: encrypted,
-		User:          authUser,
 		Uid:           authUser.Uid,
+		User:          authUser,
 	}
 	status := a.passDao.Update(passRecord)
 	if status == database.DbNotFound {
-		c.JSON(http.StatusNotFound,
-			common.Result{}.Error(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()))
+		common.Result{}.Error(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()).JSON(c)
 		return
 	} else if status == database.DbFailed {
-		c.JSON(http.StatusInternalServerError,
-			common.Result{}.Error(http.StatusInternalServerError).SetMessage(exception.UpdatePassError.Error()))
+		common.Result{}.Error(http.StatusInternalServerError).SetMessage(exception.UpdatePassError.Error()).JSON(c)
 		return
 	}
 
-	c.JSON(http.StatusOK, common.Result{}.Ok())
+	common.Result{}.Ok().JSON(c)
 }
 
 // @Router 				/auth/ [GET] [Auth]
@@ -222,5 +209,5 @@ func (a *authController) ModifyPassword(c *gin.Context) {
  						} */
 func (a *authController) CurrentUser(c *gin.Context) {
 	authUser := middleware.GetAuthUser(c, a.config)
-	c.JSON(http.StatusOK, common.Result{}.Ok().SetData(dto.UserDto{}.FromPo(authUser, enum.DtoOptionAll)))
+	common.Result{}.Ok().SetData(dto.UserDto{}.FromPo(authUser, enum.DtoOptionAll)).JSON(c)
 }

@@ -1,7 +1,7 @@
 package util
 
 import (
-	// "golang.org/x/image/bmp"
+	"golang.org/x/image/bmp"
 	"image"
 	"image/color"
 	"image/draw"
@@ -37,7 +37,7 @@ func (i *imageUtil) SaveAsJpg(imageFile multipart.File, ext string, filePath str
 		decodeImage, err = i.DecodePng(imageFile)
 		break
 	case "bmp":
-		// decodeImage, err = bmp.Decode(imageFile)
+		decodeImage, err = bmp.Decode(imageFile)
 		break
 	case "gif":
 		decodeImage, err = gif.Decode(imageFile)
