@@ -27,7 +27,7 @@ func SubController(config *config.ServerConfig) *subController {
 	}
 }
 
-// @Router 				/user/{uid}/subscriber [GET]
+// @Router 				/v1/user/{uid}/subscriber [GET]
 // @Summary 			用户粉丝
 // @Description 		查询用户所有粉丝，返回分页数据
 // @Tag					Subscribe
@@ -43,15 +43,7 @@ func SubController(config *config.ServerConfig) *subController {
 								"count": 1,
 								"page": 1,
 								"data": [
-									{
-										"uid": 2,
-										"username": "User2",
-										"sex": "unknown",
-										"profile": "",
-										"avatar_url": "http://localhost:3344/raw/image/default/avatar.jpg",
-										"birth_time": "2000-01-01",
-										"authority": "normal"
-									}
+									@$user$
 								]
 							}
  						} */
@@ -73,7 +65,7 @@ func (s *subController) QuerySubscriberUsers(c *gin.Context) {
 	common.Result{}.Ok().SetPage(count, page, dto.UserDto{}.FromPosThroughUser(users, authUser)).JSON(c)
 }
 
-// @Router 				/user/{uid}/subscribing [GET]
+// @Router 				/v1/user/{uid}/subscribing [GET]
 // @Summary 			用户关注
 // @Description 		查询用户所有关注，返回分页数据
 // @Tag					Subscribe
@@ -89,15 +81,7 @@ func (s *subController) QuerySubscriberUsers(c *gin.Context) {
 								"count": 1,
 								"page": 1,
 								"data": [
-									{
-										"uid": 1,
-										"username": "User1",
-										"sex": "male",
-										"profile": "",
-										"avatar_url": "http://localhost:3344/raw/image/default/avatar.jpg",
-										"birth_time": "2000-01-01",
-										"authority": "admin"
-									}
+									@$user$
 								]
 							}
  						} */
@@ -119,7 +103,7 @@ func (s *subController) QuerySubscribingUsers(c *gin.Context) {
 	common.Result{}.Ok().SetPage(count, page, dto.UserDto{}.FromPosThroughUser(users, authUser)).JSON(c)
 }
 
-// @Router 				/user/subscribing [PUT] [Auth]
+// @Router 				/v1/user/subscribing [PUT] [Auth]
 // @Summary 			关注用户
 // @Description 		关注某一用户
 // @Tag					Subscribe
@@ -163,7 +147,7 @@ func (s *subController) SubscribeUser(c *gin.Context) {
 	common.Result{}.Ok().PutData("me_uid", authUser.Uid).PutData("to_uid", subParam.Uid).PutData("action", "subscribe").JSON(c)
 }
 
-// @Router 				/user/subscribing [DELETE] [Auth]
+// @Router 				/v1/user/subscribing [DELETE] [Auth]
 // @Summary 			取消关注用户
 // @Description 		取消关注某一用户
 // @Tag					Subscribe

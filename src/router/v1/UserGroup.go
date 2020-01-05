@@ -1,4 +1,4 @@
-package group
+package v1
 
 import (
 	"github.com/gin-gonic/gin"
@@ -7,7 +7,7 @@ import (
 	"github.com/vidorg/vid_backend/src/middleware"
 )
 
-func SetupUserGroup(router *gin.Engine, config *config.ServerConfig) {
+func SetupUserGroup(api *gin.RouterGroup, config *config.ServerConfig) {
 	userCtrl := controller.UserController(config)
 	videoCtrl := controller.VideoController(config)
 	subCtrl := controller.SubController(config)
@@ -16,7 +16,7 @@ func SetupUserGroup(router *gin.Engine, config *config.ServerConfig) {
 	jwtAdmin := middleware.JwtMiddleware(true, config)
 	limit := middleware.LimitMiddleware(2 << 20)
 
-	userGroup := router.Group("/user")
+	userGroup := api.Group("/user")
 	{
 		userGroup.GET("/", jwtAdmin, userCtrl.QueryAllUsers)
 		userGroup.GET("/:uid", userCtrl.QueryUser)

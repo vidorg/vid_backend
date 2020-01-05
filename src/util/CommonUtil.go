@@ -20,6 +20,10 @@ func (c *commonUtil) CurrentTimeUuid() string {
 	return strings.Replace(time.Now().Format("20060102150405.000000"), ".", "", -1)
 }
 
+func (c *commonUtil) CurrentTimeString() string {
+	return time.Now().Format("20060102150405")
+}
+
 func (c *commonUtil) IsDirOrFileExist(filename string) bool {
 	_, err := os.Stat(filename)
 	return err == nil

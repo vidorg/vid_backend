@@ -1,8 +1,9 @@
-import os
-import sys
-import re
-import yaml
 import json
+import os
+import re
+import sys
+
+import yaml
 
 
 def parsePlain(content) -> {}:
@@ -44,6 +45,7 @@ def parseMultiLine(content, field) -> str:
         return ''
     cn = re.sub(r'( \t|\t |\t)', '', tupls[0][1])
     return cn
+
 
 ###
 
@@ -95,7 +97,7 @@ def parseParam(content, need_re=True) -> []:
     return params
 
 
-def parseResp(content) -> []:
+def parseResp(content, demo_json) -> []:
     # /* @ (~~~~~~) */
     tokens = re.compile(
         r'/\* @(success|Success|failed|Failed)(.+?)\*/', re.DOTALL).findall(content)
@@ -105,6 +107,16 @@ def parseResp(content) -> []:
         sp = re.split(r'[ \t]', token)
         status, code = sp[0], sp[1]
         j = ' '.join(sp[2:]).strip(' \t')
+
+        # parse demo model
+        dms = re.compile(r'@\$(.+?)\$').findall(j)
+        for dm in dms:
+            if demo_json is not None and dm in demo_json:
+                try:
+                    j = j.replace(f'@${dm}$', json.dumps(demo_json[dm]))
+                except:
+                    pass
+        # to string
         try:
             j = json.dumps(json.loads(j), indent=4)
         except:
@@ -141,10 +153,14 @@ def parseErrorCode(content, need_re=True) -> str:
             }
     return ec
 
+
 ###
 
 
 def parse_main(content):
+    """
+    parse main.go swagger information
+    """
     plain = parsePlain(content)
     out = {}
     if 'basepath' in plain:
@@ -159,7 +175,24 @@ def parse_main(content):
     return out
 
 
-def parse_ctrl(content, out_yaml, auth_param, auth_error):
+def parse_demo_response(path) -> {}:
+    """
+    parse demo.json model default response
+    """
+    demo_json = open(path, 'r', encoding='utf-8').read()
+    try:
+        return json.loads(demo_json)
+    except:
+        return None
+
+
+def parse_ctrl(content, out_yaml, auth_param, auth_error, demo_json):
+    """
+    parse each of the .go file, go through all functions and parse information
+    :param auth_param: common auth param (header)
+    :param auth_error: common auth error (401...)
+    :param demo_json:  common demo response json model
+    """
     if 'paths' not in out_yaml:
         out_yaml['paths'] = {}
 
@@ -168,7 +201,7 @@ def parse_ctrl(content, out_yaml, auth_param, auth_error):
         try:
             plains = parsePlain(content)
             parameters = parseParam(content)
-            c = parseResp(content)
+            c = parseResp(content, demo_json)
             accept = parseArray(content, 'accept')
             tags = parseArray(content, 'tag')
             desc = parseMultiLine(content, 'description')
@@ -222,8 +255,17 @@ def main():
             if f.split('.')[-1] == 'go':
                 all_files.append(os.path.join(root, f))
 
-    content = open(sys.argv[1], 'r', encoding='utf-8').read()
+    content = open(main_file, 'r', encoding='utf-8').read()
+    print(f"> Parsing {main_file}...")
     out_yaml = parse_main(content)
+
+    # Demo response
+    if 'response' in out_yaml['info']:
+        demo_path = out_yaml['info'].pop('response')['demopath']
+        print(f"> Parsing {demo_path}...")
+        demo_json = parse_demo_response(demo_path)
+    else:
+        demo_json = None
 
     # Global Auth
     if 'authorization' in out_yaml['info']:
@@ -234,9 +276,10 @@ def main():
     else:
         auth_param, auth_error = None, None
 
+    print(f"> Parsing *.go...")
     for f in all_files:
         content = open(f, 'r', encoding='utf-8').read()
-        parse_ctrl(content, out_yaml, auth_param, auth_error)
+        parse_ctrl(content, out_yaml, auth_param, auth_error, demo_json)
 
     with open(sys.argv[2], 'w', encoding='utf-8') as f:
         yaml.dump(out_yaml, stream=f, encoding='utf-8', allow_unicode=True)

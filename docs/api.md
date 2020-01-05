@@ -8,7 +8,29 @@ https://github.com/vidorg
 
 **License:** [MIT](https://github.com/vidorg/vid_backend/blob/master/LICENSE)
 
-### /auth/
+### /ping
+
+#### GET
+##### Summary:
+
+Ping
+
+##### Description:
+
+Ping
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+
+##### Responses
+
+| Code | Description |
+| ---- | ----------- |
+| 200 | ```json {     "ping": "pong" } ``` |
+
+### /v1/auth/
 
 #### GET
 ##### Summary:
@@ -29,7 +51,7 @@ https://github.com/vidorg
 
 | Code | Description |
 | ---- | ----------- |
-| 200 | ```json {        "code": 200,        "message": "success",        "data": {         "uid": 10,         "username": "aoihosizora",         "sex": "unknown",         "profile": "",         "avatar_url": "http://localhost:3344/raw/image/default/avatar.jpg",         "birth_time": "2000-01-01",         "authority": "normal"         "phone_number": "13512345678"        }        } ``` |
+| 200 | ```json {     "code": 200,     "message": "success",     "data": {         "uid": 10,         "username": "aoihosizora",         "sex": "male",         "profile": "Demo profile",         "avatar_url": "http://localhost:3344/raw/image/default/avatar.jpg",         "birth_time": "2001-02-03",         "authority": "normal",         "phone_number": "13512345678"     } } ``` |
 | 401 | "authorization failed" / "token has expired" |
 
 ##### Security
@@ -38,7 +60,7 @@ https://github.com/vidorg
 | --- | --- |
 | basicAuth | |
 
-### /auth/login
+### /v1/auth/login
 
 #### POST
 ##### Summary:
@@ -61,13 +83,13 @@ https://github.com/vidorg
 
 | Code | Description |
 | ---- | ----------- |
-| 200 | ```json {        "code": 200,        "message": "success",        "data": {         "user": {          "uid": 10,          "username": "aoihosizora",          "sex": "unknown",          "profile": "",          "avatar_url": "http://localhost:3344/raw/image/default/avatar.jpg",          "birth_time": "2000-01-01",          "authority": "normal"          "phone_number": "13512345678"         },         "token": "Bearer xxx",         "expire": 604800        }        } ``` |
+| 200 | ```json {     "code": 200,     "message": "success",     "data": {         "user": {             "uid": 10,             "username": "aoihosizora",             "sex": "male",             "profile": "Demo profile",             "avatar_url": "http://localhost:3344/raw/image/default/avatar.jpg",             "birth_time": "2001-02-03",             "authority": "normal",             "phone_number": "13512345678"         },         "token": "Bearer xxx",         "expire": 604800     } } ``` |
 | 400 | "request param error" |
 | 401 | "password error" |
 | 404 | "user not found" |
 | 500 | "login failed" |
 
-### /auth/password
+### /v1/auth/password
 
 #### PUT
 ##### Summary:
@@ -101,7 +123,7 @@ https://github.com/vidorg
 | --- | --- |
 | basicAuth | |
 
-### /auth/register
+### /v1/auth/register
 
 #### POST
 ##### Summary:
@@ -123,11 +145,11 @@ https://github.com/vidorg
 
 | Code | Description |
 | ---- | ----------- |
-| 200 | ```json {        "code": 200,        "message": "success",        "data": {         "uid": 10,         "username": "aoihosizora",         "sex": "unknown",         "profile": "",         "avatar_url": "http://localhost:3344/raw/image/default/avatar.jpg",         "birth_time": "2000-01-01",         "authority": "normal"         "phone_number": "13512345678"        }        } ``` |
+| 200 | ```json {     "code": 200,     "message": "success",     "data": {         "uid": 10,         "username": "aoihosizora",         "sex": "male",         "profile": "Demo profile",         "avatar_url": "http://localhost:3344/raw/image/default/avatar.jpg",         "birth_time": "2001-02-03",         "authority": "normal",         "phone_number": "13512345678"     } } ``` |
 | 400 | "request param error" / "request format error" |
 | 500 | "username has been used" / "register failed" |
 
-### /raw/image/{uid}/{filename}
+### /v1/raw/image/{uid}/{filename}
 
 #### GET
 ##### Summary:
@@ -149,11 +171,11 @@ https://github.com/vidorg
 
 | Code | Description |
 | ---- | ----------- |
-| 200 | ```json | Key | Value |       | --- | --- |        | Content-Type | image/jpeg | ``` |
+| 200 | ```json {     "Content-Type": "image/jpeg" } ``` |
 | 400 | "request param error" |
 | 404 | "image not found" |
 
-### /user/
+### /v1/user/
 
 #### DELETE
 ##### Summary:
@@ -210,7 +232,7 @@ https://github.com/vidorg
 
 | Code | Description |
 | ---- | ----------- |
-| 200 | ```json {     "code": 200,     "message": "success",     "data": {         "uid": 10,         "username": "aoihosizora",         "sex": "male",         "profile": "Demo Profile",         "avatar_url": "http://localhost:3344/raw/image/default/avatar.jpg",         "birth_time": "2019-12-26",         "authority": "admin",         "phone_number": "13512345678"     } } ``` |
+| 200 | ```json {     "code": 200,     "message": "success",     "data": {         "uid": 10,         "username": "aoihosizora",         "sex": "male",         "profile": "Demo profile",         "avatar_url": "http://localhost:3344/raw/image/default/avatar.jpg",         "birth_time": "2001-02-03",         "authority": "normal",         "phone_number": "13512345678"     } } ``` |
 | 400 | "request param error" / "request format error" / "request body too large" / "username has been used" / "image type not supported" |
 | 401 | "authorization failed" / "token has expired" |
 | 404 | "user not found" |
@@ -222,7 +244,7 @@ https://github.com/vidorg
 | --- | --- |
 | basicAuth | |
 
-### /user/subscribing?to
+### /v1/user/subscribing
 
 #### DELETE
 ##### Summary:
@@ -238,14 +260,14 @@ https://github.com/vidorg
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ---- |
 | Authorization | header | 用户登录令牌 | Yes | string |
-| to | query | 取消关注用户id | Yes | integer |
+| to | formData | 取消关注用户id | Yes | integer |
 
 ##### Responses
 
 | Code | Description |
 | ---- | ----------- |
 | 200 | ```json {     "code": 200,     "message": "success",     "data": {         "me_uid": 10,         "to_uid": 3,         "action": "unsubscribe"     } } ``` |
-| 400 | "request param error" |
+| 400 | "request param error" / "request format error" |
 | 401 | "authorization failed" / "token has expired" |
 | 404 | "user not found" |
 | 500 | "unsubscribe failed" |
@@ -270,14 +292,14 @@ https://github.com/vidorg
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ---- |
 | Authorization | header | 用户登录令牌 | Yes | string |
-| to | query | 关注用户id | Yes | integer |
+| to | formData | 关注用户id | Yes | integer |
 
 ##### Responses
 
 | Code | Description |
 | ---- | ----------- |
 | 200 | ```json {     "code": 200,     "message": "success",     "data": {         "me_uid": 10,         "to_uid": 3,         "action": "subscribe"     } } ``` |
-| 400 | "request param error" / "subscribe oneself invalid" |
+| 400 | "request param error" / "request format error" / "subscribe oneself invalid" |
 | 401 | "authorization failed" / "token has expired" |
 | 404 | "user not found" |
 | 500 | "subscribe failed" |
@@ -288,7 +310,7 @@ https://github.com/vidorg
 | --- | --- |
 | basicAuth | |
 
-### /user/{uid}
+### /v1/user/{uid}
 
 #### GET
 ##### Summary:
@@ -309,11 +331,11 @@ https://github.com/vidorg
 
 | Code | Description |
 | ---- | ----------- |
-| 200 | ```json {        "code": 200,        "message": "success",        "data": {         "user": {          "uid": 10,          "username": "aoihosizora",          "sex": "male",          "profile": "Demo Profile",          "avatar_url": "http://localhost:3344/raw/image/default/avatar.jpg",          "birth_time": "2019-12-26",          "authority": "admin"          "phone_number": "13512345678"         },         "extra": {          "subscribing_cnt": 3,          "subscriber_cnt": 2,          "video_cnt": 3,          "playlist_cnt": 0         }        }        } ``` |
+| 200 | ```json {     "code": 200,     "message": "success",     "data": {         "user": {             "uid": 10,             "username": "aoihosizora",             "sex": "male",             "profile": "Demo profile",             "avatar_url": "http://localhost:3344/raw/image/default/avatar.jpg",             "birth_time": "2001-02-03",             "authority": "normal",             "phone_number": "13512345678"         },         "extra": {             "subscribing_cnt": 3,             "subscriber_cnt": 2,             "video_cnt": 3         }     } } ``` |
 | 400 | "request param error" |
 | 404 | "user not found" |
 
-### /user/{uid}/subscriber
+### /v1/user/{uid}/subscriber
 
 #### GET
 ##### Summary:
@@ -335,11 +357,11 @@ https://github.com/vidorg
 
 | Code | Description |
 | ---- | ----------- |
-| 200 | ```json {     "code": 200,     "message": "success",     "data": {         "count": 1,         "page": 1,         "data": [             {                 "uid": 2,                 "username": "User2",                 "sex": "unknown",                 "profile": "",                 "avatar_url": "http://localhost:3344/raw/image/default/avatar.jpg",                 "birth_time": "2000-01-01",                 "authority": "normal"             }         ]     } } ``` |
+| 200 | ```json {     "code": 200,     "message": "success",     "data": {         "count": 1,         "page": 1,         "data": [             {                 "uid": 10,                 "username": "aoihosizora",                 "sex": "male",                 "profile": "Demo profile",                 "avatar_url": "http://localhost:3344/raw/image/default/avatar.jpg",                 "birth_time": "2001-02-03",                 "authority": "normal",                 "phone_number": "13512345678"             }         ]     } } ``` |
 | 400 | "request param error" |
 | 404 | "user not found" |
 
-### /user/{uid}/subscribing
+### /v1/user/{uid}/subscribing
 
 #### GET
 ##### Summary:
@@ -361,11 +383,11 @@ https://github.com/vidorg
 
 | Code | Description |
 | ---- | ----------- |
-| 200 | ```json {     "code": 200,     "message": "success",     "data": {         "count": 1,         "page": 1,         "data": [             {                 "uid": 1,                 "username": "User1",                 "sex": "male",                 "profile": "",                 "avatar_url": "http://localhost:3344/raw/image/default/avatar.jpg",                 "birth_time": "2000-01-01",                 "authority": "admin"             }         ]     } } ``` |
+| 200 | ```json {     "code": 200,     "message": "success",     "data": {         "count": 1,         "page": 1,         "data": [             {                 "uid": 10,                 "username": "aoihosizora",                 "sex": "male",                 "profile": "Demo profile",                 "avatar_url": "http://localhost:3344/raw/image/default/avatar.jpg",                 "birth_time": "2001-02-03",                 "authority": "normal",                 "phone_number": "13512345678"             }         ]     } } ``` |
 | 400 | "request param error" |
 | 404 | "user not found" |
 
-### /user/{uid}/video?page
+### /v1/user/{uid}/video?page
 
 #### GET
 ##### Summary:
@@ -387,11 +409,11 @@ https://github.com/vidorg
 
 | Code | Description |
 | ---- | ----------- |
-| 200 | ```json {     "code": 200,     "message": "success",     "data": {         "count": 1,         "page": 1,         "data": [             {                 "vid": 10,                 "title": "Video Title",                 "description": "Video Demo Description",                 "video_url": "",                 "cover_url": "http://localhost:3344/raw/image/default/cover.jpg",                 "upload_time": "2019-12-26 14:14:04",                 "update_time": "2019-12-30 21:04:51",                 "author": {                     "uid": 10,                     "username": "aoihosizora",                     "sex": "male",                     "profile": "Demo Profile",                     "avatar_url": "http://localhost:3344/raw/image/10/avatar_20191230205334869693.jpg",                     "birth_time": "2019-12-26",                     "authority": "admin"                 }             }         ]     } } ``` |
+| 200 | ```json {     "code": 200,     "message": "success",     "data": {         "count": 1,         "page": 1,         "data": [             {                 "vid": 10,                 "title": "Video Title",                 "description": "Video Demo Description",                 "video_url": "",                 "cover_url": "http://localhost:3344/raw/image/default/cover.jpg",                 "upload_time": "2019-12-26 14:14:04",                 "update_time": "2019-12-30 21:04:51",                 "author": {                     "uid": 10,                     "username": "aoihosizora",                     "sex": "male",                     "profile": "Demo profile",                     "avatar_url": "http://localhost:3344/raw/image/default/avatar.jpg",                     "birth_time": "2001-02-03",                     "authority": "normal"                 }             }         ]     } } ``` |
 | 400 | "request param error" |
 | 404 | "user not found" |
 
-### /user?page
+### /v1/user?page
 
 #### GET
 ##### Summary:
@@ -413,7 +435,7 @@ https://github.com/vidorg
 
 | Code | Description |
 | ---- | ----------- |
-| 200 | ```json {     "code": 200,     "message": "success",     "data": {         "count": 1,         "page": 1,         "data": [             {                 "uid": 10,                 "username": "aoihosizora",                 "sex": "male",                 "profile": "Demo Profile",                 "avatar_url": "http://localhost:3344/raw/image/default/avatar.jpg",                 "birth_time": "2019-12-26",                 "authority": "admin"             }         ]     } } ``` |
+| 200 | ```json {     "code": 200,     "message": "success",     "data": {         "count": 1,         "page": 1,         "data": [             {                 "uid": 10,                 "username": "aoihosizora",                 "sex": "male",                 "profile": "Demo profile",                 "avatar_url": "http://localhost:3344/raw/image/default/avatar.jpg",                 "birth_time": "2001-02-03",                 "authority": "normal",                 "phone_number": "13512345678"             }         ]     } } ``` |
 | 400 | "request param error" |
 | 401 | "authorization failed" / "token has expired" |
 
@@ -423,7 +445,7 @@ https://github.com/vidorg
 | --- | --- |
 | basicAuth | |
 
-### /video/
+### /v1/video/
 
 #### POST
 ##### Summary:
@@ -448,7 +470,7 @@ https://github.com/vidorg
 
 | Code | Description |
 | ---- | ----------- |
-| 200 | ```json {     "code": 200,     "message": "success",     "data": {         "vid": 10,         "title": "Video Title",         "description": "Video Demo Description",         "video_url": "",         "cover_url": "http://localhost:3344/raw/image/default/cover.jpg",         "upload_time": "2019-12-26 14:14:04",         "update_time": "2019-12-30 21:04:51",         "author": {             "uid": 10,             "username": "aoihosizora",             "sex": "male",             "profile": "Demo Profile",             "avatar_url": "http://localhost:3344/raw/image/default/avatar.jpg",             "birth_time": "2019-12-26",             "authority": "admin"         }     } } ``` |
+| 200 | ```json {        "code": 200,        "message": "success",        "data": {"vid": 10, "title": "Video Title", "description": "Video Demo Description", "video_url": "", "cover_url": "http://localhost:3344/raw/image/default/cover.jpg", "upload_time": "2019-12-26 14:14:04", "update_time": "2019-12-30 21:04:51", "author": {"uid": 10, "username": "aoihosizora", "sex": "male", "profile": "Demo profile", "avatar_url": "http://localhost:3344/raw/image/default/avatar.jpg", "birth_time": "2001-02-03", "authority": "normal"}}        }        } ``` |
 | 400 | "request param error" / "request format error" / "request body too large" / "image type not supported" / "video resource has been used" |
 | 401 | "authorization failed" / "token has expired" |
 | 500 | "image save failed" / "video insert failed" |
@@ -459,7 +481,7 @@ https://github.com/vidorg
 | --- | --- |
 | basicAuth | |
 
-### /video/{vid}
+### /v1/video/{vid}
 
 #### DELETE
 ##### Summary:
@@ -512,7 +534,7 @@ https://github.com/vidorg
 
 | Code | Description |
 | ---- | ----------- |
-| 200 | ```json {     "code": 200,     "message": "success",     "data": {         "vid": 10,         "title": "Video Title",         "description": "Video Demo Description",         "video_url": "",         "cover_url": "http://localhost:3344/raw/image/default/cover.jpg",         "upload_time": "2019-12-26 14:14:04",         "update_time": "2019-12-30 21:04:51",         "author": {             "uid": 10,             "username": "aoihosizora",             "sex": "male",             "profile": "Demo Profile",             "avatar_url": "http://localhost:3344/raw/image/default/avatar.jpg",             "birth_time": "2019-12-26",             "authority": "admin"         }     } } ``` |
+| 200 | ```json {        "code": 200,        "message": "success",        "data": {"vid": 10, "title": "Video Title", "description": "Video Demo Description", "video_url": "", "cover_url": "http://localhost:3344/raw/image/default/cover.jpg", "upload_time": "2019-12-26 14:14:04", "update_time": "2019-12-30 21:04:51", "author": {"uid": 10, "username": "aoihosizora", "sex": "male", "profile": "Demo profile", "avatar_url": "http://localhost:3344/raw/image/default/avatar.jpg", "birth_time": "2001-02-03", "authority": "normal"}}        }        } ``` |
 | 400 | "request param error" |
 | 404 | "video not found" |
 
@@ -539,7 +561,7 @@ https://github.com/vidorg
 
 | Code | Description |
 | ---- | ----------- |
-| 200 | ```json {     "code": 200,     "message": "success",     "data": {         "vid": 10,         "title": "Video Title",         "description": "Video Demo Description",         "video_url": "",         "cover_url": "http://localhost:3344/raw/image/10/cover_20191230210451040811.jpg",         "upload_time": "2019-12-26 14:14:04",         "update_time": "2019-12-30 21:04:51",         "author": {             "uid": 10,             "username": "aoihosizora",             "sex": "male",             "profile": "Demo Profile",             "avatar_url": "http://localhost:3344/raw/image/default/avatar.jpg",             "birth_time": "2019-12-26",             "authority": "admin"         }     } } ``` |
+| 200 | ```json {     "code": 200,     "message": "success",     "data": {         "vid": 10,         "title": "Video Title",         "description": "Video Demo Description",         "video_url": "",         "cover_url": "http://localhost:3344/raw/image/default/cover.jpg",         "upload_time": "2019-12-26 14:14:04",         "update_time": "2019-12-30 21:04:51",         "author": {             "uid": 10,             "username": "aoihosizora",             "sex": "male",             "profile": "Demo profile",             "avatar_url": "http://localhost:3344/raw/image/default/avatar.jpg",             "birth_time": "2001-02-03",             "authority": "normal"         }     } } ``` |
 | 400 | "request param error" / "request format error" / "request body too large" / "image type not supported" |
 | 401 | "authorization failed" / "token has expired" |
 | 404 | "video not found" |
@@ -551,7 +573,7 @@ https://github.com/vidorg
 | --- | --- |
 | basicAuth | |
 
-### /video?page
+### /v1/video?page
 
 #### GET
 ##### Summary:
@@ -573,7 +595,7 @@ https://github.com/vidorg
 
 | Code | Description |
 | ---- | ----------- |
-| 200 | ```json {     "code": 200,     "message": "success",     "data": {         "count": 1,         "page": 1,         "data": [             {                 "vid": 10,                 "title": "Video Title",                 "description": "Video Demo Description",                 "video_url": "",                 "cover_url": "http://localhost:3344/raw/image/default/cover.jpg",                 "upload_time": "2019-12-26 14:14:04",                 "update_time": "2019-12-30 21:04:51",                 "author": {                     "uid": 10,                     "username": "aoihosizora",                     "sex": "male",                     "profile": "Demo Profile",                     "avatar_url": "http://localhost:3344/raw/image/10/avatar_20191230205334869693.jpg",                     "birth_time": "2019-12-26",                     "authority": "admin"                 }             }         ]     } } ``` |
+| 200 | ```json {     "code": 200,     "message": "success",     "data": {         "count": 1,         "page": 1,         "data": [             {                 "vid": 10,                 "title": "Video Title",                 "description": "Video Demo Description",                 "video_url": "",                 "cover_url": "http://localhost:3344/raw/image/default/cover.jpg",                 "upload_time": "2019-12-26 14:14:04",                 "update_time": "2019-12-30 21:04:51",                 "author": {                     "uid": 10,                     "username": "aoihosizora",                     "sex": "male",                     "profile": "Demo profile",                     "avatar_url": "http://localhost:3344/raw/image/default/avatar.jpg",                     "birth_time": "2001-02-03",                     "authority": "normal"                 }             }         ]     } } ``` |
 | 400 | "request param error" |
 | 401 | "authorization failed" / "token has expired" |
 

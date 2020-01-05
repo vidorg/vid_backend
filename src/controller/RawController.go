@@ -22,7 +22,7 @@ func RawController(config *config.ServerConfig) *rawController {
 	}
 }
 
-// @Router 				/raw/image/{uid}/{filename} [GET]
+// @Router 				/v1/raw/image/{uid}/{filename} [GET]
 // @Summary 			获取图片
 // @Description 		获取用户头像图片以及视频封面
 // @Tag					Raw
@@ -31,9 +31,9 @@ func RawController(config *config.ServerConfig) *rawController {
 // @Accept 				multipart/form-data
 // @ErrorCode 			400 request param error
 // @ErrorCode 			404 image not found
-/* @Success 200 		| Key | Value |
-						| --- | --- |
- 						| Content-Type | image/jpeg | */
+/* @Success 200 		{
+							"Content-Type": "image/jpeg"
+ 						} */
 func (r *rawController) RawImage(c *gin.Context) {
 	uidString := c.Param("uid")
 	uid := -1

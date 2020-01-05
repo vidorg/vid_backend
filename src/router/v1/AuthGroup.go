@@ -1,4 +1,4 @@
-package group
+package v1
 
 import (
 	"github.com/gin-gonic/gin"
@@ -7,12 +7,12 @@ import (
 	"github.com/vidorg/vid_backend/src/middleware"
 )
 
-func SetupAuthGroup(router *gin.Engine, config *config.ServerConfig) {
+func SetupAuthGroup(api *gin.RouterGroup, config *config.ServerConfig) {
 	authCtrl := controller.AuthController(config)
 
 	jwt := middleware.JwtMiddleware(false, config)
 
-	authGroup := router.Group("/auth")
+	authGroup := api.Group("/auth")
 	{
 		authGroup.POST("/login", authCtrl.Login)
 		authGroup.POST("/register", authCtrl.Register)

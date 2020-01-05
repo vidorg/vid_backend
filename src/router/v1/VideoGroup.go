@@ -1,4 +1,4 @@
-package group
+package v1
 
 import (
 	"github.com/gin-gonic/gin"
@@ -7,14 +7,14 @@ import (
 	"github.com/vidorg/vid_backend/src/middleware"
 )
 
-func SetupVideoGroup(router *gin.Engine, config *config.ServerConfig) {
+func SetupVideoGroup(api *gin.RouterGroup, config *config.ServerConfig) {
 	videoCtrl := controller.VideoController(config)
 
 	jwt := middleware.JwtMiddleware(false, config)
 	jwtAdmin := middleware.JwtMiddleware(true, config)
 	limit := middleware.LimitMiddleware(2 << 20)
 
-	videoGroup := router.Group("/video")
+	videoGroup := api.Group("/video")
 	{
 		videoGroup.GET("/", jwtAdmin, videoCtrl.QueryAllVideos)
 		videoGroup.GET("/:vid", videoCtrl.QueryVideoByVid)

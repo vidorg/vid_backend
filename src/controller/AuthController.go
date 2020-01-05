@@ -28,7 +28,7 @@ func AuthController(config *config.ServerConfig) *authController {
 	}
 }
 
-// @Router 				/auth/login [POST]
+// @Router 				/v1/auth/login [POST]
 // @Summary 			登录
 // @Description 		用户登录
 // @Tag					Authorization
@@ -44,16 +44,7 @@ func AuthController(config *config.ServerConfig) *authController {
 							"code": 200,
 							"message": "success",
 							"data": {
-								"user": {
-									"uid": 10,
-									"username": "aoihosizora",
-									"sex": "unknown",
-									"profile": "",
-									"avatar_url": "http://localhost:3344/raw/image/default/avatar.jpg",
-									"birth_time": "2000-01-01",
-									"authority": "normal"
-									"phone_number": "13512345678"
-								},
+								"user": @$user$,
 								"token": "Bearer xxx",
 								"expire": 604800
 							}
@@ -88,7 +79,7 @@ func (a *authController) Login(c *gin.Context) {
 	common.Result{}.Ok().PutData("user", dto.UserDto{}.FromPo(passRecord.User, enum.DtoOptionAll)).PutData("token", token).PutData("expire", loginParam.Expire).JSON(c)
 }
 
-// @Router 				/auth/register [POST]
+// @Router 				/v1/auth/register [POST]
 // @Summary 			注册
 // @Description 		用户注册
 // @Tag					Authorization
@@ -102,16 +93,7 @@ func (a *authController) Login(c *gin.Context) {
 /* @Success 200 		{
 							"code": 200,
 							"message": "success",
-							"data": {
-								"uid": 10,
-								"username": "aoihosizora",
-								"sex": "unknown",
-								"profile": "",
-								"avatar_url": "http://localhost:3344/raw/image/default/avatar.jpg",
-								"birth_time": "2000-01-01",
-								"authority": "normal"
-								"phone_number": "13512345678"
-							}
+							"data": @$user$
  						} */
 func (a *authController) Register(c *gin.Context) {
 	registerParam := &param.RegisterParam{}
@@ -144,7 +126,7 @@ func (a *authController) Register(c *gin.Context) {
 	common.Result{}.Ok().SetData(dto.UserDto{}.FromPo(passRecord.User, enum.DtoOptionAll)).JSON(c)
 }
 
-// @Router 				/auth/password [PUT] [Auth]
+// @Router 				/v1/auth/password [PUT] [Auth]
 // @Summary 			修改密码
 // @Description 		用户修改密码
 // @Tag					Authorization
@@ -188,7 +170,7 @@ func (a *authController) ModifyPassword(c *gin.Context) {
 	common.Result{}.Ok().JSON(c)
 }
 
-// @Router 				/auth/ [GET] [Auth]
+// @Router 				/v1/auth/ [GET] [Auth]
 // @Summary 			查看当前登录用户
 // @Description 		根据认证令牌，查看当前登录用户
 // @Tag					Authorization
@@ -196,16 +178,7 @@ func (a *authController) ModifyPassword(c *gin.Context) {
 /* @Success 200 		{
 							"code": 200,
 							"message": "success",
-							"data": {
-								"uid": 10,
-								"username": "aoihosizora",
-								"sex": "unknown",
-								"profile": "",
-								"avatar_url": "http://localhost:3344/raw/image/default/avatar.jpg",
-								"birth_time": "2000-01-01",
-								"authority": "normal"
-								"phone_number": "13512345678"
-							}
+							"data": @$user$
  						} */
 func (a *authController) CurrentUser(c *gin.Context) {
 	authUser := middleware.GetAuthUser(c, a.config)

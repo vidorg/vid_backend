@@ -30,7 +30,7 @@ func VideoController(config *config.ServerConfig) *videoController {
 	}
 }
 
-// @Router 				/video?page [GET] [Auth]
+// @Router 				/v1/video?page [GET] [Auth]
 // @Summary 			查询所有视频
 // @Description 		管理员查询所有视频，返回分页数据，Admin
 // @Tag					Video
@@ -46,24 +46,7 @@ func VideoController(config *config.ServerConfig) *videoController {
 								"count": 1,
 								"page": 1,
 								"data": [
-									{
-										"vid": 10,
-										"title": "Video Title",
-										"description": "Video Demo Description",
-										"video_url": "",
-										"cover_url": "http://localhost:3344/raw/image/default/cover.jpg",
-										"upload_time": "2019-12-26 14:14:04",
-										"update_time": "2019-12-30 21:04:51",
-										"author": {
-											"uid": 10,
-											"username": "aoihosizora",
-											"sex": "male",
-											"profile": "Demo Profile",
-                    						"avatar_url": "http://localhost:3344/raw/image/10/avatar_20191230205334869693.jpg",
-											"birth_time": "2019-12-26",
-											"authority": "admin"
-										}
-									}
+									@$video$
 								]
 							}
  						} */
@@ -78,7 +61,7 @@ func (v *videoController) QueryAllVideos(c *gin.Context) {
 	common.Result{}.Ok().SetPage(count, page, dto.VideoDto{}.FromPos(videos)).JSON(c)
 }
 
-// @Router 				/user/{uid}/video?page [GET]
+// @Router 				/v1/user/{uid}/video?page [GET]
 // @Summary 			查询用户视频
 // @Description 		查询作者为用户的所有视频，返回分页数据
 // @Tag					Video
@@ -94,24 +77,7 @@ func (v *videoController) QueryAllVideos(c *gin.Context) {
 								"count": 1,
 								"page": 1,
 								"data": [
-									{
-										"vid": 10,
-										"title": "Video Title",
-										"description": "Video Demo Description",
-										"video_url": "",
-										"cover_url": "http://localhost:3344/raw/image/default/cover.jpg",
-										"upload_time": "2019-12-26 14:14:04",
-										"update_time": "2019-12-30 21:04:51",
-										"author": {
-											"uid": 10,
-											"username": "aoihosizora",
-											"sex": "male",
-											"profile": "Demo Profile",
-                    						"avatar_url": "http://localhost:3344/raw/image/10/avatar_20191230205334869693.jpg",
-											"birth_time": "2019-12-26",
-											"authority": "admin"
-										}
-									}
+									@$video$
 								]
 							}
  						} */
@@ -132,7 +98,7 @@ func (v *videoController) QueryVideosByUid(c *gin.Context) {
 	common.Result{}.Ok().SetPage(count, page, dto.VideoDto{}.FromPos(videos)).JSON(c)
 }
 
-// @Router 				/video/{vid} [GET]
+// @Router 				/v1/video/{vid} [GET]
 // @Summary 			查询视频
 // @Description 		查询视频信息
 // @Tag					Video
@@ -143,23 +109,7 @@ func (v *videoController) QueryVideosByUid(c *gin.Context) {
 /* @Success 200 		{
 							"code": 200,
 							"message": "success",
-							"data": {
-								"vid": 10,
-								"title": "Video Title",
-								"description": "Video Demo Description",
-								"video_url": "",
-								"cover_url": "http://localhost:3344/raw/image/default/cover.jpg",
-								"upload_time": "2019-12-26 14:14:04",
-								"update_time": "2019-12-30 21:04:51",
-								"author": {
-									"uid": 10,
-									"username": "aoihosizora",
-									"sex": "male",
-									"profile": "Demo Profile",
-									"avatar_url": "http://localhost:3344/raw/image/default/avatar.jpg",
-									"birth_time": "2019-12-26",
-									"authority": "admin"
-								}
+							"data": @$video$
 							}
  						} */
 func (v *videoController) QueryVideoByVid(c *gin.Context) {
@@ -178,7 +128,7 @@ func (v *videoController) QueryVideoByVid(c *gin.Context) {
 	common.Result{}.Ok().SetData(dto.VideoDto{}.FromPo(video)).JSON(c)
 }
 
-// @Router 				/video/ [POST] [Auth]
+// @Router 				/v1/video/ [POST] [Auth]
 // @Summary 			新建视频
 // @Description 		新建用户视频
 // @Tag					Video
@@ -197,23 +147,7 @@ func (v *videoController) QueryVideoByVid(c *gin.Context) {
 /* @Success 200 		{
 							"code": 200,
 							"message": "success",
-							"data": {
-								"vid": 10,
-								"title": "Video Title",
-								"description": "Video Demo Description",
-								"video_url": "",
-								"cover_url": "http://localhost:3344/raw/image/default/cover.jpg",
-								"upload_time": "2019-12-26 14:14:04",
-								"update_time": "2019-12-30 21:04:51",
-								"author": {
-									"uid": 10,
-									"username": "aoihosizora",
-									"sex": "male",
-									"profile": "Demo Profile",
-									"avatar_url": "http://localhost:3344/raw/image/default/avatar.jpg",
-									"birth_time": "2019-12-26",
-									"authority": "admin"
-								}
+							"data": @$video$
 							}
  						} */
 func (v *videoController) InsertVideo(c *gin.Context) {
@@ -261,7 +195,7 @@ func (v *videoController) InsertVideo(c *gin.Context) {
 	common.Result{}.Ok().SetData(dto.VideoDto{}.FromPo(video)).JSON(c)
 }
 
-// @Router 				/video/{vid} [POST] [Auth]
+// @Router 				/v1/video/{vid} [POST] [Auth]
 // @Summary 			更新视频
 // @Description 		更新用户视频信息
 // @Tag					Video
@@ -280,24 +214,7 @@ func (v *videoController) InsertVideo(c *gin.Context) {
 /* @Success 200 		{
 							"code": 200,
 							"message": "success",
-							"data": {
-								"vid": 10,
-								"title": "Video Title",
-								"description": "Video Demo Description",
-								"video_url": "",
-								"cover_url": "http://localhost:3344/raw/image/10/cover_20191230210451040811.jpg",
-								"upload_time": "2019-12-26 14:14:04",
-								"update_time": "2019-12-30 21:04:51",
-								"author": {
-									"uid": 10,
-									"username": "aoihosizora",
-									"sex": "male",
-									"profile": "Demo Profile",
-									"avatar_url": "http://localhost:3344/raw/image/default/avatar.jpg",
-									"birth_time": "2019-12-26",
-									"authority": "admin"
-								}
-							}
+							"data": @$video$
  						} */
 func (v *videoController) UpdateVideo(c *gin.Context) {
 	authUser := middleware.GetAuthUser(c, v.config)
@@ -350,7 +267,7 @@ func (v *videoController) UpdateVideo(c *gin.Context) {
 	common.Result{}.Ok().SetData(dto.VideoDto{}.FromPo(video)).JSON(c)
 }
 
-// @Router 				/video/{vid} [DELETE] [Auth]
+// @Router 				/v1/video/{vid} [DELETE] [Auth]
 // @Summary 			删除视频
 // @Description 		删除用户视频
 // @Tag					Video

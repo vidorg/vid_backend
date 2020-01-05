@@ -1,4 +1,4 @@
-package group
+package v1
 
 import (
 	"github.com/gin-gonic/gin"
@@ -6,10 +6,10 @@ import (
 	"github.com/vidorg/vid_backend/src/controller"
 )
 
-func SetupRawGroup(router *gin.Engine, config *config.ServerConfig) {
+func SetupRawGroup(api *gin.RouterGroup, config *config.ServerConfig) {
 	rawCtrl := controller.RawController(config)
 
-	rawGroup := router.Group("/raw")
+	rawGroup := api.Group("/raw")
 	{
 		rawGroup.GET("/image/:uid/:filename", rawCtrl.RawImage)
 	}

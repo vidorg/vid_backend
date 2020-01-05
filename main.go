@@ -3,15 +3,9 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/DeanThompson/ginpprof"
-	"github.com/gin-gonic/gin"
-	"github.com/swaggo/files"
-	"github.com/swaggo/gin-swagger"
-	_ "github.com/vidorg/vid_backend/docs"
 	"github.com/vidorg/vid_backend/src/config"
 	"github.com/vidorg/vid_backend/src/router"
 	"log"
-	"net/http"
 )
 
 var (
@@ -43,38 +37,22 @@ func main() {
 // @license.url 			https://github.com/vidorg/vid_backend/blob/master/LICENSE
 // @swagger 				2.0
 
+// @response.demopath		./src/model/dto/demo.json
 // @authorization.param 	Authorization header string true "用户登录令牌"
 // @authorization.error		401 authorization failed
 // @authorization.error		401 token has expired
 
 func run() {
-	// Config
 	cfg, err := config.Load(configPath)
 	if err != nil {
 		log.Fatalln("Failed to load yaml config file:", err)
 	}
 
-	// Setup
-	gin.SetMode(cfg.RunMode)
-	engine := gin.Default()
-	if cfg.RunMode == "debug" {
-		ginpprof.Wrap(engine)
-	}
-
-	router.SetupDefinedValidation()
-	router.SetupRouters(engine, cfg)
-	engine.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
-
-	// Serve
-	s := &http.Server{
-		Addr:    fmt.Sprintf(":%d", cfg.HTTPConfig.Port),
-		Handler: engine,
-	}
+	server := router.InitServer(cfg)
 
 	fmt.Println()
 	log.Printf("Server init on port :%d\n", cfg.HTTPConfig.Port)
-	if err := s.ListenAndServe(); err != nil {
+	if err := server.ListenAndServe(); err != nil {
 		log.Fatalln("Failed to listen and serve:", err)
 	}
 }
-

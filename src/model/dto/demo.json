@@ -1,0 +1,30 @@
+{
+  "user": {
+    "uid": 10,
+    "username": "aoihosizora",
+    "sex": "male",
+    "profile": "Demo profile",
+    "avatar_url": "http://localhost:3344/raw/image/default/avatar.jpg",
+    "birth_time": "2001-02-03",
+    "authority": "normal",
+    "phone_number": "13512345678"
+  },
+  "video": {
+    "vid": 10,
+    "title": "Video Title",
+    "description": "Video Demo Description",
+    "video_url": "",
+    "cover_url": "http://localhost:3344/raw/image/default/cover.jpg",
+    "upload_time": "2019-12-26 14:14:04",
+    "update_time": "2019-12-30 21:04:51",
+    "author": {
+      "uid": 10,
+      "username": "aoihosizora",
+      "sex": "male",
+      "profile": "Demo profile",
+      "avatar_url": "http://localhost:3344/raw/image/default/avatar.jpg",
+      "birth_time": "2001-02-03",
+      "authority": "normal"
+    }
+  }
+}

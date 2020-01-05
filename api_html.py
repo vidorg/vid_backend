@@ -1,6 +1,7 @@
-import yaml
 import json
 import sys
+
+import yaml
 
 TEMPLATE = """
 <!DOCTYPE html>
@@ -23,6 +24,10 @@ TEMPLATE = """
       margin:0;
       background: #fafafa;
     }
+    .markdown pre>code.language-json {
+        font-family: consolas;
+        font-style: italic;
+    }
     </style>
 </head>
 <body>
@@ -32,21 +37,20 @@ TEMPLATE = """
     <script>
     window.onload = function() {
         var spec = %s;
-            const ui = SwaggerUIBundle({
-                spec: spec,
-                dom_id: '#swagger-ui',
-                validatorUrl: null,
-                deepLinking: true,
-                presets: [
-                    SwaggerUIBundle.presets.apis,
-                    SwaggerUIStandalonePreset
-                ],
-                plugins: [
-                    SwaggerUIBundle.plugins.DownloadUrl
-                ],
-                layout: "StandaloneLayout"
-            })
-        window.ui = ui
+        window.ui = SwaggerUIBundle({
+            spec: spec,
+            dom_id: '#swagger-ui',
+            validatorUrl: null,
+            deepLinking: true,
+            presets: [
+                SwaggerUIBundle.presets.apis,
+                SwaggerUIStandalonePreset
+            ],
+            plugins: [
+                SwaggerUIBundle.plugins.DownloadUrl
+            ],
+            layout: "StandaloneLayout"
+        });
     }
     </script>
 </body>

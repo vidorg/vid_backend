@@ -28,7 +28,7 @@ func (Result) Error(code int) *Result {
 	case http.StatusNotFound:
 		message = "not found"
 	case http.StatusInternalServerError:
-		message = "internal server error"
+		message = "internal router error"
 	default:
 		message = "unknown error"
 	}

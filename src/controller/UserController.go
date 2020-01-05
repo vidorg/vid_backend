@@ -33,7 +33,7 @@ func UserController(config *config.ServerConfig) *userController {
 	}
 }
 
-// @Router 				/user?page [GET] [Auth]
+// @Router 				/v1/user?page [GET] [Auth]
 // @Summary 			查询所有用户
 // @Description 		管理员查询所有用户，返回分页数据，Admin
 // @Tag					User
@@ -49,15 +49,7 @@ func UserController(config *config.ServerConfig) *userController {
 								"count": 1,
 								"page": 1,
 								"data": [
-									{
-										"uid": 10,
-										"username": "aoihosizora",
-										"sex": "male",
-										"profile": "Demo Profile",
-										"avatar_url": "http://localhost:3344/raw/image/default/avatar.jpg",
-										"birth_time": "2019-12-26",
-										"authority": "admin"
-									}
+									@$user$
 								]
 							}
  						} */
@@ -73,7 +65,7 @@ func (u *userController) QueryAllUsers(c *gin.Context) {
 	common.Result{}.Ok().SetPage(count, page, dto.UserDto{}.FromPos(users, enum.DtoOptionAll)).JSON(c)
 }
 
-// @Router 				/user/{uid} [GET]
+// @Router 				/v1/user/{uid} [GET]
 // @Summary 			查询用户
 // @Description 		查询用户信息
 // @Tag					User
@@ -85,21 +77,11 @@ func (u *userController) QueryAllUsers(c *gin.Context) {
 							"code": 200,
 							"message": "success",
 							"data": {
-								"user": {
-									"uid": 10,
-									"username": "aoihosizora",
-									"sex": "male",
-									"profile": "Demo Profile",
-									"avatar_url": "http://localhost:3344/raw/image/default/avatar.jpg",
-									"birth_time": "2019-12-26",
-									"authority": "admin"
-									"phone_number": "13512345678"
-								},
+								"user": @$user$,
 								"extra": {
 									"subscribing_cnt": 3,
 									"subscriber_cnt": 2,
-									"video_cnt": 3,
-									"playlist_cnt": 0
+									"video_cnt": 3
 								}
 							}
  						} */
@@ -128,7 +110,7 @@ func (u *userController) QueryUser(c *gin.Context) {
 	common.Result{}.Ok().PutData("user", dto.UserDto{}.FromPoThroughAuth(user, authUser)).PutData("extra", extraInfo).JSON(c)
 }
 
-// @Router 				/user/ [PUT] [Auth]
+// @Router 				/v1/user/ [PUT] [Auth]
 // @Summary 			更新用户
 // @Description 		更新用户信息
 // @Tag					User
@@ -150,16 +132,7 @@ func (u *userController) QueryUser(c *gin.Context) {
 /* @Success 200 		{
 							"code": 200,
 							"message": "success",
-							"data": {
-								"uid": 10,
-								"username": "aoihosizora",
-								"sex": "male",
-								"profile": "Demo Profile",
-								"avatar_url": "http://localhost:3344/raw/image/default/avatar.jpg",
-								"birth_time": "2019-12-26",
-								"authority": "admin",
-								"phone_number": "13512345678"
-							}
+							"data": @$user$
  						} */
 func (u *userController) UpdateUser(c *gin.Context) {
 	authUser := middleware.GetAuthUser(c, u.config)
@@ -204,7 +177,7 @@ func (u *userController) UpdateUser(c *gin.Context) {
 	common.Result{}.Ok().SetData(dto.UserDto{}.FromPo(authUser, enum.DtoOptionAll)).JSON(c)
 }
 
-// @Router 				/user/ [DELETE] [Auth]
+// @Router 				/v1/user/ [DELETE] [Auth]
 // @Summary 			删除用户
 // @Description 		删除用户所有信息
 // @Tag					User
