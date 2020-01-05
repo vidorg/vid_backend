@@ -1,8 +1,10 @@
-module vid
+module github.com/vidorg/vid_backend
 
 require (
+	github.com/DeanThompson/ginpprof v0.0.0-20190408063150-3be636683586
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/emirpasic/gods v1.12.0
+	github.com/gin-contrib/cors v1.3.0
 	github.com/gin-gonic/gin v1.4.0
 	github.com/go-openapi/jsonreference v0.19.3 // indirect
 	github.com/go-openapi/spec v0.19.3 // indirect
@@ -18,8 +20,16 @@ require (
 	github.com/swaggo/gin-swagger v1.2.0
 	github.com/swaggo/swag v1.6.3
 	github.com/ugorji/go v1.1.7 // indirect
+	golang.org/x/crypto v0.0.0-20190611184440-5c40567a22f8
 	golang.org/x/net v0.0.0-20191011234655-491137f69257 // indirect
 	golang.org/x/tools v0.0.0-20191012152004-8de300cfc20a // indirect
 	gopkg.in/check.v1 v1.0.0-20190902080502-41f04d3bba15 // indirect
 	gopkg.in/yaml.v2 v2.2.4
 )
+
+replace (
+	golang.org/x/crypto => github.com/golang/crypto v0.0.0-20191227163750-53104e6ec876
+	golang.org/x/sys => github.com/golang/sys v0.0.0-20200102141924-c96a22e43c9c
+)
+
+go 1.13
