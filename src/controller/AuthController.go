@@ -17,14 +17,16 @@ import (
 )
 
 type authController struct {
-	config  *config.ServerConfig
-	passDao *dao.PassDao
+	config   *config.ServerConfig
+	passDao  *dao.PassDao
+	tokenDao *dao.TokenDao
 }
 
 func AuthController(config *config.ServerConfig) *authController {
 	return &authController{
-		config:  config,
-		passDao: dao.PassRepository(config.DatabaseConfig),
+		config:   config,
+		passDao:  dao.PassRepository(config.MySqlConfig),
+		tokenDao: dao.TokenRepository(config.RedisConfig, config.JwtConfig.RedisHeader),
 	}
 }
 
@@ -72,6 +74,12 @@ func (a *authController) Login(c *gin.Context) {
 
 	token, err := util.AuthUtil.GenerateToken(passRecord.User.Uid, loginParam.Expire, a.config.JwtConfig)
 	if err != nil {
+		common.Result{}.Error(http.StatusInternalServerError).SetMessage(exception.LoginError.Error()).JSON(c)
+		return
+	}
+
+	ok := a.tokenDao.Insert(token, passRecord.Uid, loginParam.Expire)
+	if !ok {
 		common.Result{}.Error(http.StatusInternalServerError).SetMessage(exception.LoginError.Error()).JSON(c)
 		return
 	}
@@ -126,6 +134,43 @@ func (a *authController) Register(c *gin.Context) {
 	common.Result{}.Ok().SetData(dto.UserDto{}.FromPo(passRecord.User, enum.DtoOptionAll)).JSON(c)
 }
 
+// @Router				/v1/auth/ [GET] [Auth]
+// @Summary				当前登录用户
+// @Description			根据认证信息，查看当前登录用户
+// @Tag					Authorization
+// @Accept				multipart/form-data
+/* @Success 200			{
+							"code": 200,
+							"message": "success",
+							"data": ${user}
+ 						} */
+func (a *authController) CurrentUser(c *gin.Context) {
+	authUser := middleware.GetAuthUser(c, a.config)
+	common.Result{}.Ok().SetData(dto.UserDto{}.FromPo(authUser, enum.DtoOptionAll)).JSON(c)
+}
+
+// @Router				/v1/auth/logout [POST] [Auth]
+// @Summary				注销
+// @Description			用户注销，删除认证信息
+// @Tag					Authorization
+// @Accept				multipart/form-data
+// @ErrorCode			500 logout failed
+/* @Success 200			{
+							"code": 200,
+							"message": "success"
+ 						} */
+func (a *authController) Logout(c *gin.Context) {
+	authHeader := c.GetHeader("Authorization")
+
+	ok := a.tokenDao.Delete(authHeader)
+	if !ok {
+		common.Result{}.Error(http.StatusInternalServerError).SetMessage(exception.LogoutError.Error()).JSON(c)
+		return
+	}
+
+	common.Result{}.Ok().JSON(c)
+}
+
 // @Router				/v1/auth/password [PUT] [Auth]
 // @Summary				修改密码
 // @Description			用户修改密码
@@ -140,8 +185,9 @@ func (a *authController) Register(c *gin.Context) {
 							"code": 200,
 							"message": "success"
  						} */
-func (a *authController) ModifyPassword(c *gin.Context) {
+func (a *authController) UpdatePassword(c *gin.Context) {
 	authUser := middleware.GetAuthUser(c, a.config)
+	authHeader := c.GetHeader("Authorization")
 	passParam := &param.PassParam{}
 	if err := c.ShouldBind(passParam); err != nil {
 		common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.WrapValidationError(err).Error()).JSON(c)
@@ -165,21 +211,8 @@ func (a *authController) ModifyPassword(c *gin.Context) {
 		common.Result{}.Error(http.StatusInternalServerError).SetMessage(exception.UpdatePassError.Error()).JSON(c)
 		return
 	}
+	// Delete token but ignore result
+	_ = a.tokenDao.Delete(authHeader)
 
 	common.Result{}.Ok().JSON(c)
-}
-
-// @Router				/v1/auth/ [GET] [Auth]
-// @Summary				查看当前登录用户
-// @Description			根据认证信息，查看当前登录用户
-// @Tag					Authorization
-// @Accept				multipart/form-data
-/* @Success 200			{
-							"code": 200,
-							"message": "success",
-							"data": ${user}
- 						} */
-func (a *authController) CurrentUser(c *gin.Context) {
-	authUser := middleware.GetAuthUser(c, a.config)
-	common.Result{}.Ok().SetData(dto.UserDto{}.FromPo(authUser, enum.DtoOptionAll)).JSON(c)
 }

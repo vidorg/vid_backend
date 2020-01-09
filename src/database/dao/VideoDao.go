@@ -13,7 +13,7 @@ type VideoDao struct {
 	userDao  *UserDao
 }
 
-func VideoRepository(config *config.DatabaseConfig) *VideoDao {
+func VideoRepository(config *config.MySqlConfig) *VideoDao {
 	return &VideoDao{
 		db:       database.SetupDBConn(config),
 		pageSize: config.PageSize,
@@ -23,7 +23,7 @@ func VideoRepository(config *config.DatabaseConfig) *VideoDao {
 
 func (v *VideoDao) QueryAll(page int) (videos []*po.Video, count int) {
 	v.db.Model(&po.Video{}).Count(&count)
-	v.db.Limit(v.pageSize).Offset((page - 1) * v.pageSize).Find(&videos)
+	v.db.Model(&po.Video{}).Limit(v.pageSize).Offset((page - 1) * v.pageSize).Find(&videos)
 	for idx := range videos {
 		author := &po.User{}
 		v.db.Where(&po.User{Uid: videos[idx].AuthorUid}).Find(author)
@@ -38,8 +38,8 @@ func (v *VideoDao) QueryByUid(uid int, page int) (videos []*po.Video, count int,
 		return nil, 0, database.DbNotFound
 	}
 	video := &po.Video{AuthorUid: uid}
-	v.db.Where(video).Count(&count)
-	v.db.Limit(v.pageSize).Offset((page - 1) * v.pageSize).Where(video).Find(&videos)
+	v.db.Model(&po.Video{}).Where(video).Count(&count)
+	v.db.Model(&po.Video{}).Limit(v.pageSize).Offset((page - 1) * v.pageSize).Where(video).Find(&videos)
 	for idx := range videos {
 		videos[idx].Author = author
 	}
@@ -73,12 +73,12 @@ func (v *VideoDao) QueryByVid(vid int) *po.Video {
 func (v *VideoDao) Exist(vid int) bool {
 	video := &po.Video{Vid: vid}
 	cnt := 0
-	v.db.Where(video).Count(&cnt)
+	v.db.Model(&po.Video{}).Where(video).Count(&cnt)
 	return cnt > 0
 }
 
 func (v *VideoDao) Insert(video *po.Video) database.DbStatus {
-	rdb := v.db.Model(&po.Video{}).Create(video)
+	rdb := v.db.Model(&po.Video{}).Model(&po.Video{}).Create(video)
 	if database.IsDuplicateError(rdb.Error) {
 		return database.DbExisted
 	} else if rdb.Error != nil || rdb.RowsAffected == 0 {
@@ -103,7 +103,7 @@ func (v *VideoDao) Update(video *po.Video) database.DbStatus {
 
 func (v *VideoDao) Delete(vid int, uid int) database.DbStatus {
 	video := &po.Video{Vid: vid, AuthorUid: uid}
-	rdb := v.db.Model(video).Delete(video)
+	rdb := v.db.Model(&po.Video{}).Delete(video)
 	if rdb.Error != nil {
 		return database.DbFailed
 	} else if rdb.RowsAffected == 0 {

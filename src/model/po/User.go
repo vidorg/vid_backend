@@ -15,7 +15,7 @@ type User struct {
 	BirthTime   common.JsonDate `gorm:"not_null;type:datetime;default:'2000-01-01 00:00:00'"`
 	Authority   enum.AuthType   `gorm:"not_null;type:enum('admin', 'normal');default:'normal'"`
 	RegisterIP  string          `gorm:"type:varchar(15)"` // 15
-	PhoneNumber string          `gorm:"type:varchar(15)"` // 15
+	PhoneNumber string          `gorm:"type:varchar(11)"` // 11
 
 	// tbl_subscribe
 	Subscribings []*User `gorm:"many2many:subscribe;jointable_foreignkey:subscriber_uid;association_jointable_foreignkey:up_uid"` // up_uid -> subscriber_uid

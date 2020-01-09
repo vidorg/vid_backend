@@ -19,6 +19,7 @@ var (
 	PasswordError   = errors.New("password error")
 	LoginError      = errors.New("login failed")
 	RegisterError   = errors.New("register failed") // C
+	LogoutError     = errors.New("logout failed")
 	UpdatePassError = errors.New("update password failed")
 
 	NeedAdminError = errors.New("need admin authority")

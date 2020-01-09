@@ -1,6 +1,7 @@
 .idea/
 .docs/
 .ionide/
+*.rdb
 
 build/
 assets/docs/

@@ -8,19 +8,19 @@ import (
 )
 
 type SubDao struct {
-	db       *gorm.DB
-	pageSize int
-	userDao  *UserDao
+	config  *config.MySqlConfig
+	db      *gorm.DB
+	userDao *UserDao
 
 	colSubscribers  string
 	colSubscribings string
 }
 
-func SubRepository(config *config.DatabaseConfig) *SubDao {
+func SubRepository(config *config.MySqlConfig) *SubDao {
 	return &SubDao{
-		db:       database.SetupDBConn(config),
-		pageSize: config.PageSize,
-		userDao:  UserRepository(config),
+		config:  config,
+		db:      database.SetupDBConn(config),
+		userDao: UserRepository(config),
 
 		colSubscribers:  "Subscribers",
 		colSubscribings: "Subscribings",
@@ -34,7 +34,7 @@ func (s *SubDao) QuerySubscriberUsers(uid int, page int) (users []*po.User, coun
 		return nil, 0, database.DbNotFound
 	}
 	count = s.db.Model(user).Association(s.colSubscribers).Count() // 开始关联模式
-	s.db.Limit(s.pageSize).Offset((page-1)*s.pageSize).Model(user).Related(&users, s.colSubscribers)
+	s.db.Limit(s.config.PageSize).Offset((page-1)*s.config.PageSize).Model(user).Related(&users, s.colSubscribers)
 	return users, count, database.DbSuccess
 }
 
@@ -44,7 +44,7 @@ func (s *SubDao) QuerySubscribingUsers(uid int, page int) (users []*po.User, cou
 		return nil, 0, database.DbNotFound
 	}
 	count = s.db.Model(user).Association(s.colSubscribings).Count()
-	s.db.Limit(s.pageSize).Offset((page-1)*s.pageSize).Model(user).Related(&users, s.colSubscribings)
+	s.db.Limit(s.config.PageSize).Offset((page-1)*s.config.PageSize).Model(user).Related(&users, s.colSubscribings)
 	return users, count, database.DbSuccess
 }
 

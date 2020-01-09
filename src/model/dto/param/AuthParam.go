@@ -7,10 +7,10 @@ type LoginParam struct {
 }
 
 type RegisterParam struct {
-	Username string `form:"username" json:"username" binding:"required,gte=5,lte=30,name"`
-	Password string `form:"password" json:"username" binding:"required,gte=8,lte=30,pwd"`
+	Username string `form:"username" json:"username" binding:"required,min=5,max=30,name"`
+	Password string `form:"password" json:"username" binding:"required,min=8,max=30,pwd"`
 }
 
 type PassParam struct {
-	Password string `form:"password" json:"username" binding:"required,gte=8,lte=30,pwd"`
+	Password string `form:"password" json:"username" binding:"required,min=8,max=30,pwd"`
 }

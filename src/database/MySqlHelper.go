@@ -10,7 +10,7 @@ import (
 	"log"
 )
 
-func SetupDBConn(cfg *config.DatabaseConfig) *gorm.DB {
+func SetupDBConn(cfg *config.MySqlConfig) *gorm.DB {
 	dbParams := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=%s&parseTime=True&loc=Local",
 		cfg.User, cfg.Password,
 		cfg.Host, cfg.Port,

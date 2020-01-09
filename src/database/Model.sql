@@ -7,11 +7,11 @@
 
 CREATE TABLE `tbl_password`
 (
-    `uid`            int(11)   NOT NULL AUTO_INCREMENT,
-    `encrypted_pass` char(48)  NOT NULL,
-    `created_at`     timestamp NULL DEFAULT NULL,
-    `updated_at`     timestamp NULL DEFAULT NULL,
-    `deleted_at`     timestamp NULL DEFAULT NULL,
+    `uid`            int(11)      NOT NULL AUTO_INCREMENT,
+    `encrypted_pass` varchar(255) NOT NULL,
+    `created_at`     timestamp    NULL DEFAULT NULL,
+    `updated_at`     timestamp    NULL DEFAULT NULL,
+    `deleted_at`     timestamp    NULL DEFAULT '2000-01-01 00:00:00',
     PRIMARY KEY (`uid`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8;
@@ -25,15 +25,15 @@ CREATE TABLE `tbl_user`
     `sex`          enum ('unknown','male','female') DEFAULT 'unknown',
     `profile`      varchar(255)                     DEFAULT NULL,
     `avatar_url`   varchar(255)                     DEFAULT NULL,
-    `birth_time`   timestamp NULL                   DEFAULT NULL,
+    `birth_time`   datetime                         DEFAULT '2000-01-01 00:00:00',
     `authority`    enum ('admin','normal')          DEFAULT 'normal',
-    `register_ip`  varchar(255)                     DEFAULT NULL,
+    `register_ip`  varchar(15)                      DEFAULT NULL,
     `phone_number` varchar(11)                      DEFAULT NULL,
     `created_at`   timestamp NULL                   DEFAULT NULL,
     `updated_at`   timestamp NULL                   DEFAULT NULL,
-    `deleted_at`   timestamp NULL                   DEFAULT NULL,
+    `deleted_at`   timestamp NULL                   DEFAULT '2000-01-01 00:00:00',
     PRIMARY KEY (`uid`),
-    UNIQUE KEY `username` (`username`)
+    UNIQUE KEY `idx_user_username_deleted_at_unique` (`username`, `deleted_at`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8;
 
@@ -41,9 +41,9 @@ CREATE TABLE `tbl_user`
 
 CREATE TABLE `tbl_subscribe`
 (
-    `up_uid`         int(11) NOT NULL,
     `subscriber_uid` int(11) NOT NULL,
-    PRIMARY KEY (`up_uid`, `subscriber_uid`)
+    `up_uid`         int(11) NOT NULL,
+    PRIMARY KEY (`subscriber_uid`, `up_uid`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8;
 
@@ -60,8 +60,7 @@ CREATE TABLE `tbl_video`
     `author_uid`  int(11)        DEFAULT NULL,
     `created_at`  timestamp NULL DEFAULT NULL,
     `updated_at`  timestamp NULL DEFAULT NULL,
-    `deleted_at`  timestamp NULL DEFAULT NULL,
-    PRIMARY KEY (`vid`),
-    UNIQUE KEY `video_url` (`video_url`)
+    `deleted_at`  timestamp NULL DEFAULT '2000-01-01 00:00:00',
+    PRIMARY KEY (`vid`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8;

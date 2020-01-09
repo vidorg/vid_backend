@@ -177,7 +177,7 @@ def parse_main(content):
 
 def parse_demo_response(path) -> {}:
     """
-    parse demo.json model default response
+    parse Demo.json model default response
     """
     demo_json = open(path, 'r', encoding='utf-8').read()
     try:
@@ -270,7 +270,7 @@ def main():
     # Global Auth
     if 'authorization' in out_yaml['info']:
         auth_param = out_yaml['info'].pop('authorization')['param']
-        auth_error = parseArray(content, r'authorization\.error')
+        auth_error = parseArray(content, r'Authorization\.Error')
         auth_param = parseParam(auth_param, need_re=False)
         auth_error = parseErrorCode(auth_error, need_re=False)
     else:

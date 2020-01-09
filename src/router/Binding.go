@@ -34,7 +34,9 @@ func setupRegexBinding(tag string, re string) {
 
 func SetupDefinedValidation() {
 	setupRegexParamBinding("regexp")
+
 	setupRegexBinding("name", "^[^'`\"\\\\]+$")          // ' ` " \
 	setupRegexBinding("pwd", "^[a-zA-Z0-9+\\-*/.=_~]+$") // + - * / . = _ ~
-	setupRegexBinding("phone", "^(13[0-9]|15[012356789]|17[678]|18[0-9]|14[57])[0-9]{8}$")
+
+	setupRegexBinding("phone", "^(13[0-9]|15[012356789]|17[678]|18[0-9]|14[57])[0-9]{8}$") // 11
 }

@@ -14,8 +14,15 @@ type Result struct {
 
 func (Result) Ok() *Result {
 	return &Result{
-		Code:    200,
+		Code:    http.StatusOK, // 200
 		Message: "success",
+	}
+}
+
+func (Result) Created() *Result {
+	return &Result{
+		Code:    http.StatusCreated, // 201
+		Message: "created",
 	}
 }
 

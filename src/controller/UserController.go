@@ -26,9 +26,9 @@ type userController struct {
 func UserController(config *config.ServerConfig) *userController {
 	return &userController{
 		config:   config,
-		userDao:  dao.UserRepository(config.DatabaseConfig),
-		videoDao: dao.VideoRepository(config.DatabaseConfig),
-		subDao:   dao.SubRepository(config.DatabaseConfig),
+		userDao:  dao.UserRepository(config.MySqlConfig),
+		videoDao: dao.VideoRepository(config.MySqlConfig),
+		subDao:   dao.SubRepository(config.MySqlConfig),
 	}
 }
 
@@ -157,7 +157,7 @@ func (u *userController) UpdateUser(c *gin.Context) {
 
 	authUser.Username = userParam.Username
 	authUser.Sex = enum.StringToSexType(userParam.Sex)
-	authUser.Profile = userParam.Profile
+	authUser.Profile = *userParam.Profile
 	authUser.BirthTime = common.JsonDate(userParam.BirthTime)
 	authUser.PhoneNumber = userParam.PhoneNumber
 
@@ -198,6 +198,5 @@ func (u *userController) DeleteUser(c *gin.Context) {
 		common.Result{}.Error(http.StatusInternalServerError).SetMessage(exception.UserDeleteError.Error()).JSON(c)
 		return
 	}
-
 	common.Result{}.Ok().JSON(c)
 }

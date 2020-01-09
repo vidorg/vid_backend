@@ -9,8 +9,7 @@ type HTTPConfig struct {
 	Port int `yaml:"port"`
 }
 
-type DatabaseConfig struct {
-	Type     string `yaml:"type"`
+type MySqlConfig struct {
 	Host     string `yaml:"host"`
 	Port     int    `yaml:"port"`
 	Name     string `yaml:"name"`
@@ -21,18 +20,31 @@ type DatabaseConfig struct {
 	PageSize int    `yaml:"page-size"`
 }
 
+type RedisConfig struct {
+	ConnType string `yaml:"conn-type"`
+	Host     string `yaml:"host"`
+	Port     int    `yaml:"port"`
+	Db       int    `yaml:"db"`
+	Password string `yaml:"password"`
+
+	ConnectTimeout int `yaml:"connect-timeout"`
+	ReadTimeout    int `yaml:"read-timeout"`
+	WriteTimeout   int `yaml:"write-timeout"`
+}
+
 type JwtConfig struct {
-	Secret string `yaml:"secret"`
-	Expire int64  `yaml:"expire"`
-	Issuer string `yaml:"issuer"`
-	Header string `yaml:"redis-header"`
+	Secret      string `yaml:"secret"`
+	Expire      int64  `yaml:"expire"`
+	Issuer      string `yaml:"issuer"`
+	RedisHeader string `yaml:"redis-header"`
 }
 
 type ServerConfig struct {
-	RunMode        string          `yaml:"run-mode"`
-	HTTPConfig     *HTTPConfig     `yaml:"http"`
-	DatabaseConfig *DatabaseConfig `yaml:"database"`
-	JwtConfig      *JwtConfig      `yaml:"jwt"`
+	RunMode     string       `yaml:"run-mode"`
+	HTTPConfig  *HTTPConfig  `yaml:"http"`
+	MySqlConfig *MySqlConfig `yaml:"mysql"`
+	RedisConfig *RedisConfig `yaml:"redis"`
+	JwtConfig   *JwtConfig   `yaml:"jwt"`
 }
 
 func Load(configPath string) (*ServerConfig, error) {

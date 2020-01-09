@@ -8,11 +8,11 @@ import (
 )
 
 type UserDao struct {
-	config *config.DatabaseConfig
+	config *config.MySqlConfig
 	db     *gorm.DB
 }
 
-func UserRepository(config *config.DatabaseConfig) *UserDao {
+func UserRepository(config *config.MySqlConfig) *UserDao {
 	return &UserDao{
 		config: config,
 		db:     database.SetupDBConn(config),
@@ -21,13 +21,13 @@ func UserRepository(config *config.DatabaseConfig) *UserDao {
 
 func (u *UserDao) QueryAll(page int) (users []*po.User, count int) {
 	u.db.Model(&po.User{}).Count(&count)
-	u.db.Limit(u.config.PageSize).Offset((page - 1) * u.config.PageSize).Find(&users)
+	u.db.Model(&po.User{}).Limit(u.config.PageSize).Offset((page - 1) * u.config.PageSize).Find(&users)
 	return users, count
 }
 
 func (u *UserDao) QueryByUid(uid int) *po.User {
 	user := &po.User{Uid: uid}
-	rdb := u.db.Where(user).First(user)
+	rdb := u.db.Model(&po.User{}).Where(user).First(user)
 	if rdb.RecordNotFound() {
 		return nil
 	}
@@ -37,7 +37,7 @@ func (u *UserDao) QueryByUid(uid int) *po.User {
 func (u *UserDao) Exist(uid int) bool {
 	user := &po.User{Uid: uid}
 	cnt := 0
-	u.db.Where(user).Count(&cnt)
+	u.db.Model(&po.User{}).Where(user).Count(&cnt)
 	return cnt > 0
 }
 
@@ -62,5 +62,6 @@ func (u *UserDao) Delete(uid int) database.DbStatus {
 	} else if rdb.RowsAffected == 0 {
 		return database.DbNotFound
 	}
+	u.db.Delete(&po.PassRecord{Uid: uid})
 	return database.DbSuccess
 }

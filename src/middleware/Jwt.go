@@ -32,13 +32,13 @@ func JwtMiddleware(needAdmin bool, config *config.ServerConfig) gin.HandlerFunc 
 	}
 }
 
-func JwtCheck(authHeader string, config *config.ServerConfig) (*po.User, error) {
-	if authHeader == "" {
+func JwtCheck(token string, config *config.ServerConfig) (*po.User, error) {
+	if token == "" {
 		return nil, exception.AuthorizationError
 	}
 
 	// parse
-	claims, err := util.AuthUtil.ParseToken(authHeader, config.JwtConfig)
+	claims, err := util.AuthUtil.ParseToken(token, config.JwtConfig)
 	if err != nil {
 		if util.AuthUtil.IsTokenExpireError(err) {
 			// Token Expired
@@ -51,8 +51,14 @@ func JwtCheck(authHeader string, config *config.ServerConfig) (*po.User, error) 
 		}
 	}
 
+	// check redis
+	ok := dao.TokenRepository(config.RedisConfig, config.JwtConfig.RedisHeader).Query(token)
+	if !ok {
+		return nil, exception.AuthorizationError
+	}
+
 	// check dao & admin
-	user := dao.UserRepository(config.DatabaseConfig).QueryByUid(claims.UserID)
+	user := dao.UserRepository(config.MySqlConfig).QueryByUid(claims.UserID)
 	if user == nil {
 		return nil, exception.AuthorizationError
 	}
@@ -62,7 +68,7 @@ func JwtCheck(authHeader string, config *config.ServerConfig) (*po.User, error) 
 
 func GetAuthUser(c *gin.Context, config *config.ServerConfig) *po.User {
 	_user, exist := c.Get("user")
-	if !exist { // Has not Auth
+	if !exist { // not jet check auth
 		JwtMiddleware(false, config)(c)
 		_user, exist = c.Get("user")
 		if !exist { // Non-Auth
@@ -70,7 +76,7 @@ func GetAuthUser(c *gin.Context, config *config.ServerConfig) *po.User {
 		}
 	}
 	user, ok := _user.(*po.User)
-	if !ok { // Auth Failed
+	if !ok { // auth failed
 		c.JSON(http.StatusUnauthorized, common.Result{}.Error(http.StatusUnauthorized).SetMessage(exception.AuthorizationError.Error()))
 		c.Abort()
 		return nil

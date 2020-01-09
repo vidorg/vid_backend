@@ -27,7 +27,7 @@ paths:
     get:
       consumes:
       - multipart/form-data
-      description: 根据认证令牌，查看当前登录用户
+      description: 根据认证信息，查看当前登录用户
       operationId: -v1-auth-get
       parameters:
       - &id001
@@ -50,7 +50,7 @@ paths:
           description: '"authorization failed" / "token has expired"'
       security:
       - basicAuth: ''
-      summary: 查看当前登录用户
+      summary: 当前登录用户
       tags:
       - Authorization
   /v1/auth/login:
@@ -98,6 +98,28 @@ paths:
       summary: 登录
       tags:
       - Authorization
+  /v1/auth/logout:
+    post:
+      consumes:
+      - multipart/form-data
+      description: 用户注销，删除认证信息
+      operationId: -v1-auth-logout-post
+      parameters:
+      - *id001
+      produces:
+      - application/json
+      responses:
+        '200':
+          description: "```json\n{\n    \"code\": 200,\n    \"message\": \"success\"\
+            \n}\n```"
+        '401': *id002
+        '500':
+          description: '"logout failed"'
+      security:
+      - basicAuth: ''
+      summary: 注销
+      tags:
+      - Authorization
   /v1/auth/password:
     put:
       consumes:
@@ -106,14 +128,8 @@ paths:
       operationId: -v1-auth-password-put
       parameters:
       - *id001
-      - description: '用户密码
-
-          *Minimum length* : 8
-
-          *Maximum length* : 30'
+      - description: 用户密码，长度在 [8, 30] 之间
         in: formData
-        maxLength: 30
-        minLength: 8
         name: password
         required: true
         type: string
@@ -142,25 +158,13 @@ paths:
       description: 用户注册
       operationId: -v1-auth-register-post
       parameters:
-      - description: '用户名
-
-          *Minimum length* : 5
-
-          *Maximum length* : 30'
+      - description: 用户名，长度在 [5, 30] 之间
         in: formData
-        maxLength: 30
-        minLength: 5
         name: username
         required: true
         type: string
-      - description: '用户密码
-
-          *Minimum length* : 8
-
-          *Maximum length* : 30'
+      - description: 用户密码，长度在 [8, 30] 之间
         in: formData
-        maxLength: 30
-        minLength: 8
         name: password
         required: true
         type: string
@@ -234,43 +238,27 @@ paths:
       operationId: -v1-user-put
       parameters:
       - *id001
-      - description: '用户名
-
-          *Minimum length* : 8
-
-          *Maximum length* : 30'
+      - description: 用户名，长度在 [8, 30] 之间
         in: formData
-        maxLength: 30
-        minLength: 8
         name: username
         required: true
         type: string
-      - description: 用户性别
-        enum:
-        - male
-        - female
-        - unknown
+      - description: 用户性别，允许值为 {male, female, unknown}
         in: formData
         name: sex
         required: true
         type: string
-      - description: '用户简介
-
-          *Minimum length* : 0
-
-          *Maximum length* : 255'
+      - description: 用户简介，长度在 [0, 255] 之间
         in: formData
-        maxLength: 255
-        minLength: 0
         name: profile
         required: true
         type: string
-      - description: 用户生日，固定格式为2000-01-01
+      - description: 用户生日，固定格式为 2000-01-01
         in: formData
         name: birth_time
         required: true
         type: string
-      - description: 用户手机号码
+      - description: 用户手机号码，长度为 11，仅限中国大陆手机号码
         in: formData
         name: phone_number
         required: true
@@ -559,25 +547,13 @@ paths:
       operationId: -v1-video-post
       parameters:
       - *id001
-      - description: '视频标题
-
-          *Minimum length* : 5
-
-          *Maximum length* : 100'
+      - description: 视频标题，长度在 [1, 100] 之间
         in: formData
-        maxLength: 100
-        minLength: 5
         name: title
         required: true
         type: string
-      - description: '视频简介
-
-          *Minimum length* : 0
-
-          *Maximum length* : 255'
+      - description: 视频简介，长度在 [0, 1024] 之间
         in: formData
-        maxLength: 255
-        minLength: 0
         name: description
         required: true
         type: string
@@ -595,8 +571,8 @@ paths:
       - application/json
       responses:
         '200':
-          description: "```json\n{\n       \"code\": 200,\n       \"message\": \"\
-            success\",\n       \"data\": {\"vid\": 10, \"title\": \"Video Title\"\
+          description: "```json\n{\n       \"code\": 201,\n       \"message\": \"\
+            created\",\n       \"data\": {\"vid\": 10, \"title\": \"Video Title\"\
             , \"description\": \"Video Demo Description\", \"video_url\": \"\", \"\
             cover_url\": \"http://localhost:3344/raw/image/default/cover.jpg\", \"\
             upload_time\": \"2019-12-26 14:14:04\", \"update_time\": \"2019-12-30\
@@ -690,25 +666,13 @@ paths:
         name: vid
         required: true
         type: string
-      - description: '视频标题
-
-          *Minimum length* : 5
-
-          *Maximum length* : 100'
+      - description: 视频标题，长度在 [1, 100] 之间
         in: formData
-        maxLength: 100
-        minLength: 5
         name: title
         required: false
         type: string
-      - description: '视频简介
-
-          *Minimum length* : 0
-
-          *Maximum length* : 255'
+      - description: 视频简介，长度在 [0, 1024] 之间
         in: formData
-        maxLength: 255
-        minLength: 0
         name: description
         required: false
         type: string

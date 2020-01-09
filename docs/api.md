@@ -35,11 +35,11 @@ Ping
 #### GET
 ##### Summary:
 
-查看当前登录用户
+当前登录用户
 
 ##### Description:
 
-根据认证令牌，查看当前登录用户
+根据认证信息，查看当前登录用户
 
 ##### Parameters
 
@@ -89,6 +89,37 @@ Ping
 | 404 | "user not found" |
 | 500 | "login failed" |
 
+### /v1/auth/logout
+
+#### POST
+##### Summary:
+
+注销
+
+##### Description:
+
+用户注销，删除认证信息
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+| Authorization | header | 用户登录令牌 | Yes | string |
+
+##### Responses
+
+| Code | Description |
+| ---- | ----------- |
+| 200 | ```json {     "code": 200,     "message": "success" } ``` |
+| 401 | "authorization failed" / "token has expired" |
+| 500 | "logout failed" |
+
+##### Security
+
+| Security Schema | Scopes |
+| --- | --- |
+| basicAuth | |
+
 ### /v1/auth/password
 
 #### PUT
@@ -105,7 +136,7 @@ Ping
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ---- |
 | Authorization | header | 用户登录令牌 | Yes | string |
-| password | formData | 用户密码 *Minimum length* : 8 *Maximum length* : 30 | Yes | string |
+| password | formData | 用户密码，长度在 [8, 30] 之间 | Yes | string |
 
 ##### Responses
 
@@ -138,8 +169,8 @@ Ping
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ---- |
-| username | formData | 用户名 *Minimum length* : 5 *Maximum length* : 30 | Yes | string |
-| password | formData | 用户密码 *Minimum length* : 8 *Maximum length* : 30 | Yes | string |
+| username | formData | 用户名，长度在 [5, 30] 之间 | Yes | string |
+| password | formData | 用户密码，长度在 [8, 30] 之间 | Yes | string |
 
 ##### Responses
 
@@ -219,11 +250,11 @@ Ping
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ---- |
 | Authorization | header | 用户登录令牌 | Yes | string |
-| username | formData | 用户名 *Minimum length* : 8 *Maximum length* : 30 | Yes | string |
-| sex | formData | 用户性别 | Yes | string |
-| profile | formData | 用户简介 *Minimum length* : 0 *Maximum length* : 255 | Yes | string |
-| birth_time | formData | 用户生日，固定格式为2000-01-01 | Yes | string |
-| phone_number | formData | 用户手机号码 | Yes | string |
+| username | formData | 用户名，长度在 [8, 30] 之间 | Yes | string |
+| sex | formData | 用户性别，允许值为 {male, female, unknown} | Yes | string |
+| profile | formData | 用户简介，长度在 [0, 255] 之间 | Yes | string |
+| birth_time | formData | 用户生日，固定格式为 2000-01-01 | Yes | string |
+| phone_number | formData | 用户手机号码，长度为 11，仅限中国大陆手机号码 | Yes | string |
 | avatar | formData | 用户头像，默认不修改 | No | file |
 
 ##### Responses
@@ -459,8 +490,8 @@ Ping
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ---- |
 | Authorization | header | 用户登录令牌 | Yes | string |
-| title | formData | 视频标题 *Minimum length* : 5 *Maximum length* : 100 | Yes | string |
-| description | formData | 视频简介 *Minimum length* : 0 *Maximum length* : 255 | Yes | string |
+| title | formData | 视频标题，长度在 [1, 100] 之间 | Yes | string |
+| description | formData | 视频简介，长度在 [0, 1024] 之间 | Yes | string |
 | video_url | formData | 视频资源链接 | Yes | string |
 | cover | formData | 视频封面 | No | file |
 
@@ -468,7 +499,7 @@ Ping
 
 | Code | Description |
 | ---- | ----------- |
-| 200 | ```json {        "code": 200,        "message": "success",        "data": {"vid": 10, "title": "Video Title", "description": "Video Demo Description", "video_url": "", "cover_url": "http://localhost:3344/raw/image/default/cover.jpg", "upload_time": "2019-12-26 14:14:04", "update_time": "2019-12-30 21:04:51", "author": {"uid": 10, "username": "aoihosizora", "sex": "male", "profile": "Demo profile", "avatar_url": "http://localhost:3344/raw/image/default/avatar.jpg", "birth_time": "2001-02-03", "authority": "normal"}}        }        } ``` |
+| 200 | ```json {        "code": 201,        "message": "created",        "data": {"vid": 10, "title": "Video Title", "description": "Video Demo Description", "video_url": "", "cover_url": "http://localhost:3344/raw/image/default/cover.jpg", "upload_time": "2019-12-26 14:14:04", "update_time": "2019-12-30 21:04:51", "author": {"uid": 10, "username": "aoihosizora", "sex": "male", "profile": "Demo profile", "avatar_url": "http://localhost:3344/raw/image/default/avatar.jpg", "birth_time": "2001-02-03", "authority": "normal"}}        }        } ``` |
 | 400 | "request param error" / "request format error" / "request body too large" / "image type not supported" / "video resource has been used" |
 | 401 | "authorization failed" / "token has expired" |
 | 500 | "image save failed" / "video insert failed" |
@@ -551,8 +582,8 @@ Ping
 | ---- | ---------- | ----------- | -------- | ---- |
 | Authorization | header | 用户登录令牌 | Yes | string |
 | vid | path | 更新视频id | Yes | string |
-| title | formData | 视频标题 *Minimum length* : 5 *Maximum length* : 100 | No | string |
-| description | formData | 视频简介 *Minimum length* : 0 *Maximum length* : 255 | No | string |
+| title | formData | 视频标题，长度在 [1, 100] 之间 | No | string |
+| description | formData | 视频简介，长度在 [0, 1024] 之间 | No | string |
 | cover | formData | 视频封面 | No | file |
 
 ##### Responses

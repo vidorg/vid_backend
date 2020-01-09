@@ -22,8 +22,8 @@ type subController struct {
 func SubController(config *config.ServerConfig) *subController {
 	return &subController{
 		config:  config,
-		userDao: dao.UserRepository(config.DatabaseConfig),
-		subDao:  dao.SubRepository(config.DatabaseConfig),
+		userDao: dao.UserRepository(config.MySqlConfig),
+		subDao:  dao.SubRepository(config.MySqlConfig),
 	}
 }
 
