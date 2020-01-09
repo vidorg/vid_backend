@@ -37,8 +37,15 @@ func (o *OrderMap) Get(key interface{}) (value interface{}, found bool) {
 
 func (OrderMap) FromObject(object interface{}) *OrderMap {
 	data := linkedhashmap.New()
+	if object == nil {
+		return nil
+	}
 
 	elem := reflect.ValueOf(object).Elem()
+	if !elem.IsValid() {
+		return nil
+	}
+
 	relType := elem.Type()
 	for i := 0; i < relType.NumField(); i++ {
 		// !!
@@ -52,5 +59,5 @@ func (OrderMap) FromObject(object interface{}) *OrderMap {
 			data.Put(field, value)
 		}
 	}
-	return &OrderMap{data}
+	return &OrderMap{m: data}
 }

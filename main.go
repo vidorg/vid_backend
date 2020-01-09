@@ -3,9 +3,10 @@ package main
 import (
 	"flag"
 	"fmt"
+	"log"
+
 	"github.com/vidorg/vid_backend/src/config"
 	"github.com/vidorg/vid_backend/src/router"
-	"log"
 )
 
 var (
@@ -51,7 +52,7 @@ func run() {
 	server := router.InitServer(cfg)
 
 	fmt.Println()
-	log.Printf("Server init on port :%d\n", cfg.HTTPConfig.Port)
+	log.Printf("Server init on port :%d\n\n", cfg.HTTPConfig.Port)
 	if err := server.ListenAndServe(); err != nil {
 		log.Fatalln("Failed to listen and serve:", err)
 	}

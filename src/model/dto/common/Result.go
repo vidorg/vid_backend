@@ -1,8 +1,9 @@
 package common
 
 import (
-	"github.com/gin-gonic/gin"
 	"net/http"
+
+	"github.com/gin-gonic/gin"
 )
 
 type Result struct {
@@ -21,14 +22,22 @@ func (Result) Ok() *Result {
 func (Result) Error(code int) *Result {
 	var message string
 	switch code {
-	case http.StatusBadRequest:
+	case http.StatusBadRequest: // 400
 		message = "bad Request"
-	case http.StatusUnauthorized:
+	case http.StatusUnauthorized: // 401
 		message = "unauthorized"
-	case http.StatusNotFound:
+	case http.StatusForbidden: // 403
+		message = "forbidden"
+	case http.StatusNotFound: // 404
 		message = "not found"
-	case http.StatusInternalServerError:
-		message = "internal router error"
+	case http.StatusMethodNotAllowed: // 405
+		message = "method not allowed"
+	case http.StatusNotAcceptable: // 406
+		message = "not acceptable"
+	case http.StatusUnsupportedMediaType: // 415
+		message = "unsupported media type"
+	case http.StatusInternalServerError: // 500
+		message = "internal server error"
 	default:
 		message = "unknown error"
 	}
@@ -66,7 +75,7 @@ func (r *Result) SetPage(count int, page int, data interface{}) *Result {
 	if r.Data == nil {
 		r.Data = NewOrderMap()
 	}
-	r.Data.Put("count", count)
+	r.Data.Put("total", count)
 	r.Data.Put("page", page)
 	r.Data.Put("data", data)
 	return r
