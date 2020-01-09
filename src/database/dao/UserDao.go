@@ -8,35 +8,26 @@ import (
 )
 
 type UserDao struct {
-	db       *gorm.DB
-	pageSize int
+	config *config.DatabaseConfig
+	db     *gorm.DB
 }
 
 func UserRepository(config *config.DatabaseConfig) *UserDao {
 	return &UserDao{
-		db:       database.SetupDBConn(config),
-		pageSize: config.PageSize,
+		config: config,
+		db:     database.SetupDBConn(config),
 	}
 }
 
 func (u *UserDao) QueryAll(page int) (users []*po.User, count int) {
 	u.db.Model(&po.User{}).Count(&count)
-	u.db.Model(&po.User{}).Limit(u.pageSize).Offset((page - 1) * u.pageSize).Find(&users)
+	u.db.Limit(u.config.PageSize).Offset((page - 1) * u.config.PageSize).Find(&users)
 	return users, count
 }
 
 func (u *UserDao) QueryByUid(uid int) *po.User {
 	user := &po.User{Uid: uid}
-	rdb := u.db.Model(&po.User{}).Where(user).First(user)
-	if rdb.RecordNotFound() {
-		return nil
-	}
-	return user
-}
-
-func (u *UserDao) QueryByUsername(username string) *po.User {
-	user := &po.User{Username: username}
-	rdb := u.db.Model(&po.User{}).Where(user).First(user)
+	rdb := u.db.Where(user).First(user)
 	if rdb.RecordNotFound() {
 		return nil
 	}
@@ -46,8 +37,8 @@ func (u *UserDao) QueryByUsername(username string) *po.User {
 func (u *UserDao) Exist(uid int) bool {
 	user := &po.User{Uid: uid}
 	cnt := 0
-	u.db.Model(&po.User{}).Where(user).Count(&cnt)
-	return cnt != 0
+	u.db.Where(user).Count(&cnt)
+	return cnt > 0
 }
 
 func (u *UserDao) Update(user *po.User) database.DbStatus {
@@ -55,11 +46,11 @@ func (u *UserDao) Update(user *po.User) database.DbStatus {
 	if rdb.Error != nil {
 		if database.IsDuplicateError(rdb.Error) {
 			return database.DbExisted
-		} else if database.IsNotFoundError(rdb.Error) {
-			return database.DbNotFound
 		} else {
 			return database.DbFailed
 		}
+	} else if rdb.RowsAffected == 0 {
+		return database.DbNotFound
 	}
 	return database.DbSuccess
 }
@@ -67,11 +58,9 @@ func (u *UserDao) Update(user *po.User) database.DbStatus {
 func (u *UserDao) Delete(uid int) database.DbStatus {
 	rdb := u.db.Model(&po.User{}).Delete(&po.User{Uid: uid})
 	if rdb.Error != nil {
-		if database.IsNotFoundError(rdb.Error) {
-			return database.DbNotFound
-		} else {
-			return database.DbFailed
-		}
+		return database.DbFailed
+	} else if rdb.RowsAffected == 0 {
+		return database.DbNotFound
 	}
 	return database.DbSuccess
 }

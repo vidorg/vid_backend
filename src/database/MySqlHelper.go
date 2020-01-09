@@ -10,7 +10,7 @@ import (
 	"log"
 )
 
-func SetupDBConn(cfg *config.DatabaseConfig) *gorm.DB{
+func SetupDBConn(cfg *config.DatabaseConfig) *gorm.DB {
 	dbParams := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=%s&parseTime=True&loc=Local",
 		cfg.User, cfg.Password,
 		cfg.Host, cfg.Port,
@@ -27,9 +27,21 @@ func SetupDBConn(cfg *config.DatabaseConfig) *gorm.DB{
 		return "tbl_" + defaultTableName
 	}
 
-	db.AutoMigrate(&po.User{})
-	db.AutoMigrate(&po.PassRecord{})
-	db.AutoMigrate(&po.Video{})
+	authMigrate := func(value interface{}) {
+		rdb := db.AutoMigrate(value)
+		if rdb.Error != nil {
+			log.Fatalln("Failed to auto migrate model:", rdb.Error)
+		}
+	}
+	authMigrate(&po.User{})
+	authMigrate(&po.PassRecord{})
+	authMigrate(&po.Video{})
+
+	// Change default deletedAt field behavior
+	db.Callback().Query().Before("gorm:query").Register("new_deleted_at_before_query_callback", newBeforeQueryUpdateCallback)
+	db.Callback().RowQuery().Before("gorm:row_query").Register("new_deleted_at_before_row_query_callback", newBeforeQueryUpdateCallback)
+	db.Callback().Update().Before("gorm:update").Register("new_deleted_at_before_update_callback", newBeforeQueryUpdateCallback)
+	db.Callback().Delete().Replace("gorm:delete", newDeleteCallback)
 
 	return db
 }
@@ -40,8 +52,4 @@ func IsDuplicateError(err error) bool {
 	}
 	mysqlErr, ok := err.(*mysql.MySQLError)
 	return ok && mysqlErr.Number == 1062
-}
-
-func IsNotFoundError(err error) bool {
-	return err == nil && gorm.IsRecordNotFoundError(err)
 }

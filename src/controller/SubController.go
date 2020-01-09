@@ -27,16 +27,16 @@ func SubController(config *config.ServerConfig) *subController {
 	}
 }
 
-// @Router 				/v1/user/{uid}/subscriber [GET]
-// @Summary 			用户粉丝
-// @Description 		查询用户所有粉丝，返回分页数据
+// @Router				/v1/user/{uid}/subscriber [GET]
+// @Summary				用户粉丝
+// @Description			查询用户所有粉丝，返回分页数据
 // @Tag					Subscribe
-// @Param 				uid path integer true "查询的用户id"
-// @Param 				page query integer false "分页"
-// @Accept 				multipart/form-data
+// @Param				uid path integer true "查询的用户id"
+// @Param				page query integer false "分页"
+// @Accept				multipart/form-data
 // @ErrorCode			400 request param error
 // @ErrorCode			404 user not found
-/* @Success 200 		{
+/* @Success 200			{
 							"code": 200,
 							"message": "success",
 							"data": {
@@ -55,8 +55,8 @@ func (s *subController) QuerySubscriberUsers(c *gin.Context) {
 		return
 	}
 
-	users, count := s.subDao.QuerySubscriberUsers(uid, page)
-	if users == nil {
+	users, count, status := s.subDao.QuerySubscriberUsers(uid, page)
+	if status == database.DbNotFound {
 		common.Result{}.Error(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()).JSON(c)
 		return
 	}
@@ -93,8 +93,8 @@ func (s *subController) QuerySubscribingUsers(c *gin.Context) {
 		return
 	}
 
-	users, count := s.subDao.QuerySubscribingUsers(uid, page)
-	if users == nil {
+	users, count, status := s.subDao.QuerySubscribingUsers(uid, page)
+	if status == database.DbNotFound {
 		common.Result{}.Error(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()).JSON(c)
 		return
 	}
@@ -103,18 +103,18 @@ func (s *subController) QuerySubscribingUsers(c *gin.Context) {
 	common.Result{}.Ok().SetPage(count, page, dto.UserDto{}.FromPosThroughUser(users, authUser)).JSON(c)
 }
 
-// @Router 				/v1/user/subscribing [PUT] [Auth]
-// @Summary 			关注用户
-// @Description 		关注某一用户
+// @Router				/v1/user/subscribing [PUT] [Auth]
+// @Summary				关注用户
+// @Description			关注某一用户
 // @Tag					Subscribe
-// @Param 				to formData integer true "关注用户id"
-// @Accept 				multipart/form-data
-// @ErrorCode 			400 request param error
-// @ErrorCode 			400 request format error
-// @ErrorCode 			400 subscribe oneself invalid
-// @ErrorCode 			404 user not found
-// @ErrorCode 			500 subscribe failed
-/* @Success 200 		{
+// @Param				to formData integer true "关注用户id"
+// @Accept				multipart/form-data
+// @ErrorCode			400 request param error
+// @ErrorCode			400 request format error
+// @ErrorCode			400 subscribe oneself invalid
+// @ErrorCode			404 user not found
+// @ErrorCode			500 subscribe failed
+/* @Success 200			{
 							"code": 200,
 							"message": "success",
 							"data": {
@@ -147,17 +147,17 @@ func (s *subController) SubscribeUser(c *gin.Context) {
 	common.Result{}.Ok().PutData("me_uid", authUser.Uid).PutData("to_uid", subParam.Uid).PutData("action", "subscribe").JSON(c)
 }
 
-// @Router 				/v1/user/subscribing [DELETE] [Auth]
-// @Summary 			取消关注用户
-// @Description 		取消关注某一用户
+// @Router				/v1/user/subscribing [DELETE] [Auth]
+// @Summary				取消关注用户
+// @Description			取消关注某一用户
 // @Tag					Subscribe
-// @Param 				to formData integer true "取消关注用户id"
-// @Accept 				multipart/form-data
+// @Param				to formData integer true "取消关注用户id"
+// @Accept				multipart/form-data
 // @ErrorCode			400 request param error
-// @ErrorCode 			400 request format error
+// @ErrorCode			400 request format error
 // @ErrorCode			404 user not found
 // @ErrorCode			500 unsubscribe failed
-/* @Success 200 		{
+/* @Success 200			{
 							"code": 200,
 							"message": "success",
 							"data": {

@@ -3,11 +3,12 @@ package po
 import (
 	"github.com/vidorg/vid_backend/src/model/dto/common"
 	"github.com/vidorg/vid_backend/src/model/enum"
+	"time"
 )
 
 type User struct {
 	Uid         int             `gorm:"primary_key;auto_increment"`
-	Username    string          `gorm:"not_null;type:varchar(30);unique"` // 30
+	Username    string          `gorm:"not_null;type:varchar(30);unique_index:idx_user_username_deleted_at_unique"` // 30
 	Sex         enum.SexType    `gorm:"not_null;type:enum('unknown','male','female');default:'unknown'"`
 	Profile     string          `gorm:"type:varchar(255)"`          // 255
 	AvatarUrl   string          `gorm:"not_null;type:varchar(255)"` // 255
@@ -20,5 +21,6 @@ type User struct {
 	Subscribings []*User `gorm:"many2many:subscribe;jointable_foreignkey:subscriber_uid;association_jointable_foreignkey:up_uid"` // up_uid -> subscriber_uid
 	Subscribers  []*User `gorm:"many2many:subscribe;jointable_foreignkey:up_uid;association_jointable_foreignkey:subscriber_uid"` // subscriber_uid -> up_uid
 
-	GormTime `json:"-"`
+	GormTimeWithoutDeletedAt
+	DeletedAt *time.Time `gorm:"default:'2000-01-01 00:00:00';unique_index:idx_user_username_deleted_at_unique"`
 }

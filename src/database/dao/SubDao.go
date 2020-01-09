@@ -27,24 +27,25 @@ func SubRepository(config *config.DatabaseConfig) *SubDao {
 	}
 }
 
-func (s *SubDao) QuerySubscriberUsers(uid int, page int) (users []*po.User, count int) {
+func (s *SubDao) QuerySubscriberUsers(uid int, page int) (users []*po.User, count int, status database.DbStatus) {
+	// https://gorm.io/docs/many_to_many.html
 	user := &po.User{Uid: uid}
 	if !s.userDao.Exist(uid) {
-		return nil, 0
+		return nil, 0, database.DbNotFound
 	}
 	count = s.db.Model(user).Association(s.colSubscribers).Count() // 开始关联模式
 	s.db.Limit(s.pageSize).Offset((page-1)*s.pageSize).Model(user).Related(&users, s.colSubscribers)
-	return users, count
+	return users, count, database.DbSuccess
 }
 
-func (s *SubDao) QuerySubscribingUsers(uid int, page int) (users []*po.User, count int) {
+func (s *SubDao) QuerySubscribingUsers(uid int, page int) (users []*po.User, count int, status database.DbStatus) {
 	user := &po.User{Uid: uid}
 	if !s.userDao.Exist(uid) {
-		return nil, 0
+		return nil, 0, database.DbNotFound
 	}
 	count = s.db.Model(user).Association(s.colSubscribings).Count()
 	s.db.Limit(s.pageSize).Offset((page-1)*s.pageSize).Model(user).Related(&users, s.colSubscribings)
-	return users, count
+	return users, count, database.DbSuccess
 }
 
 func (s *SubDao) QuerySubCnt(uid int) (subscribingCnt int, subscriberCnt int, status database.DbStatus) {
@@ -58,33 +59,23 @@ func (s *SubDao) QuerySubCnt(uid int) (subscribingCnt int, subscriberCnt int, st
 }
 
 func (s *SubDao) SubscribeUser(meUid int, toUid int) database.DbStatus {
-	if !s.userDao.Exist(toUid) {
+	if !s.userDao.Exist(toUid) || !s.userDao.Exist(meUid) {
 		return database.DbNotFound
 	}
-
 	ass := s.db.Model(&po.User{Uid: toUid}).Association(s.colSubscribers).Append(&po.User{Uid: meUid})
 	if ass.Error != nil {
-		if database.IsNotFoundError(ass.Error) {
-			return database.DbNotFound
-		} else {
-			return database.DbFailed
-		}
+		return database.DbFailed
 	}
 	return database.DbSuccess
 }
 
 func (s *SubDao) UnSubscribeUser(meUid int, toUid int) database.DbStatus {
-	if !s.userDao.Exist(toUid) {
+	if !s.userDao.Exist(toUid) || !s.userDao.Exist(meUid) {
 		return database.DbNotFound
 	}
-
 	ass := s.db.Model(&po.User{Uid: toUid}).Association(s.colSubscribers).Delete(&po.User{Uid: meUid})
 	if ass.Error != nil {
-		if database.IsNotFoundError(ass.Error) {
-			return database.DbNotFound
-		} else {
-			return database.DbFailed
-		}
+		return database.DbFailed
 	}
 	return database.DbSuccess
 }

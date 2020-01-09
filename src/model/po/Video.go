@@ -15,5 +15,5 @@ type Video struct {
 
 	Author *User `gorm:"foreignkey:AuthorUid"`
 
-	GormTime `json:"-"`
+	GormTime
 }

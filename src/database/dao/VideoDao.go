@@ -23,35 +23,34 @@ func VideoRepository(config *config.DatabaseConfig) *VideoDao {
 
 func (v *VideoDao) QueryAll(page int) (videos []*po.Video, count int) {
 	v.db.Model(&po.Video{}).Count(&count)
-	v.db.Model(&po.Video{}).Limit(v.pageSize).Offset((page - 1) * v.pageSize).Find(&videos)
+	v.db.Limit(v.pageSize).Offset((page - 1) * v.pageSize).Find(&videos)
 	for idx := range videos {
 		author := &po.User{}
-		v.db.Model(&po.User{}).Where(&po.User{Uid: videos[idx].AuthorUid}).Find(author)
+		v.db.Where(&po.User{Uid: videos[idx].AuthorUid}).Find(author)
 		videos[idx].Author = author
 	}
 	return videos, count
 }
 
-func (v *VideoDao) QueryByUid(uid int, page int) (videos []*po.Video, count int) {
+func (v *VideoDao) QueryByUid(uid int, page int) (videos []*po.Video, count int, status database.DbStatus) {
 	author := v.userDao.QueryByUid(uid)
 	if author == nil {
-		return nil, 0
+		return nil, 0, database.DbNotFound
 	}
 	video := &po.Video{AuthorUid: uid}
-	v.db.Model(&po.Video{}).Where(video).Count(&count)
-	v.db.Model(&po.Video{}).Limit(v.pageSize).Offset((page - 1) * v.pageSize).Where(video).Find(&videos)
+	v.db.Where(video).Count(&count)
+	v.db.Limit(v.pageSize).Offset((page - 1) * v.pageSize).Where(video).Find(&videos)
 	for idx := range videos {
 		videos[idx].Author = author
 	}
-	return videos, count
+	return videos, count, database.DbSuccess
 }
 
-func (v *VideoDao) QueryCount(uid int) (int, database.DbStatus) {
+func (v *VideoDao) QueryCount(uid int) (count int, status database.DbStatus) {
 	if !v.userDao.Exist(uid) {
 		return 0, database.DbNotFound
 	}
 	video := &po.Video{AuthorUid: uid}
-	var count int
 	v.db.Model(&po.Video{}).Where(video).Count(&count)
 	return count, database.DbSuccess
 }
@@ -73,35 +72,31 @@ func (v *VideoDao) QueryByVid(vid int) *po.Video {
 
 func (v *VideoDao) Exist(vid int) bool {
 	video := &po.Video{Vid: vid}
-	rdb := v.db.Model(&po.Video{}).Where(video)
-	return !rdb.RecordNotFound()
+	cnt := 0
+	v.db.Where(video).Count(&cnt)
+	return cnt > 0
 }
 
 func (v *VideoDao) Insert(video *po.Video) database.DbStatus {
 	rdb := v.db.Model(&po.Video{}).Create(video)
+	if database.IsDuplicateError(rdb.Error) {
+		return database.DbExisted
+	} else if rdb.Error != nil || rdb.RowsAffected == 0 {
+		return database.DbFailed
+	}
+	return database.DbSuccess
+}
+
+func (v *VideoDao) Update(video *po.Video) database.DbStatus {
+	rdb := v.db.Model(&po.Video{}).Update(video)
 	if rdb.Error != nil {
 		if database.IsDuplicateError(rdb.Error) {
 			return database.DbExisted
 		} else {
 			return database.DbFailed
 		}
-	}
-	return database.DbSuccess
-}
-
-func (v *VideoDao) Update(video *po.Video, uid int) database.DbStatus {
-	if video.AuthorUid != uid {
+	} else if rdb.RowsAffected == 0 {
 		return database.DbNotFound
-	}
-	rdb := v.db.Model(&po.Video{}).Update(video)
-	if rdb.Error != nil {
-		if database.IsNotFoundError(rdb.Error) {
-			return database.DbNotFound
-		} else if database.IsDuplicateError(rdb.Error) {
-			return database.DbExisted
-		} else {
-			return database.DbFailed
-		}
 	}
 	return database.DbSuccess
 }
@@ -109,11 +104,10 @@ func (v *VideoDao) Update(video *po.Video, uid int) database.DbStatus {
 func (v *VideoDao) Delete(vid int, uid int) database.DbStatus {
 	video := &po.Video{Vid: vid, AuthorUid: uid}
 	rdb := v.db.Model(video).Delete(video)
-	if rdb != nil {
-		if database.IsNotFoundError(rdb.Error) {
-			return database.DbNotFound
-		}
+	if rdb.Error != nil {
 		return database.DbFailed
+	} else if rdb.RowsAffected == 0 {
+		return database.DbNotFound
 	}
 	return database.DbSuccess
 }

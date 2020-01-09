@@ -89,8 +89,8 @@ func (v *videoController) QueryVideosByUid(c *gin.Context) {
 		return
 	}
 
-	videos, count := v.videoDao.QueryByUid(uid, page)
-	if videos == nil {
+	videos, count, status := v.videoDao.QueryByUid(uid, page)
+	if status == database.DbNotFound {
 		common.Result{}.Error(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()).JSON(c)
 		return
 	}
