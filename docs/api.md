@@ -180,6 +180,40 @@ Ping
 | 400 | "request param error" / "request format error" |
 | 500 | "username has been used" / "register failed" |
 
+### /v1/raw/image
+
+#### POST
+##### Summary:
+
+上传图片
+
+##### Description:
+
+上传公共图片，包括用户头像和视频封面
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+| Authorization | header | 用户登录令牌 | Yes | string |
+| image | formData | 上传的图片，大小限制在2M，允许后缀名为 {.jpg, .jpeg, .png, .bmp, .gif} | Yes | file |
+
+##### Responses
+
+| Code | Description |
+| ---- | ----------- |
+| 200 | ```json {     "code": 200,     "message": "success",     "data": "http://localhost:3344/v1/raw/image/20200110130323908439.jpg" } ``` |
+| 400 | "request param error" / "image type not supported" |
+| 401 | "authorization failed" / "token has expired" |
+| 413 | "request body too large" |
+| 500 | "image save failed" |
+
+##### Security
+
+| Security Schema | Scopes |
+| --- | --- |
+| basicAuth | |
+
 ### /v1/raw/image/{filename}
 
 #### GET
@@ -255,17 +289,17 @@ Ping
 | profile | formData | 用户简介，长度在 [0, 255] 之间 | Yes | string |
 | birth_time | formData | 用户生日，固定格式为 2000-01-01 | Yes | string |
 | phone_number | formData | 用户手机号码，长度为 11，仅限中国大陆手机号码 | Yes | string |
-| avatar | formData | 用户头像，默认不修改 | No | file |
+| avatar_file | formData | 用户头像链接 | Yes | file |
 
 ##### Responses
 
 | Code | Description |
 | ---- | ----------- |
 | 200 | ```json {     "code": 200,     "message": "success",     "data": {         "uid": 10,         "username": "aoihosizora",         "sex": "male",         "profile": "Demo profile",         "avatar_url": "http://localhost:3344/raw/image/default/avatar.jpg",         "birth_time": "2001-02-03",         "authority": "normal",         "phone_number": "13512345678"     } } ``` |
-| 400 | "request param error" / "request format error" / "request body too large" / "username has been used" / "image type not supported" |
+| 400 | "request param error" / "request format error" / "username has been used" |
 | 401 | "authorization failed" / "token has expired" |
 | 404 | "user not found" |
-| 500 | "image save failed" / "user update failed" |
+| 500 | "user update failed" |
 
 ##### Security
 
@@ -451,7 +485,7 @@ Ping
 
 ##### Description:
 
-管理员查询所有用户，返回分页数据，Admin
+管理员查询所有用户，返回分页数据，管理员权限
 
 ##### Parameters
 
@@ -492,14 +526,14 @@ Ping
 | Authorization | header | 用户登录令牌 | Yes | string |
 | title | formData | 视频标题，长度在 [1, 100] 之间 | Yes | string |
 | description | formData | 视频简介，长度在 [0, 1024] 之间 | Yes | string |
+| cover_url | formData | 视频封面链接 | No | string |
 | video_url | formData | 视频资源链接 | Yes | string |
-| cover | formData | 视频封面 | No | file |
 
 ##### Responses
 
 | Code | Description |
 | ---- | ----------- |
-| 200 | ```json {        "code": 201,        "message": "created",        "data": {"vid": 10, "title": "Video Title", "description": "Video Demo Description", "video_url": "", "cover_url": "http://localhost:3344/raw/image/default/cover.jpg", "upload_time": "2019-12-26 14:14:04", "update_time": "2019-12-30 21:04:51", "author": {"uid": 10, "username": "aoihosizora", "sex": "male", "profile": "Demo profile", "avatar_url": "http://localhost:3344/raw/image/default/avatar.jpg", "birth_time": "2001-02-03", "authority": "normal"}}        }        } ``` |
+| 200 | ```json {     "code": 201,     "message": "created",     "data": {         "vid": 10,         "title": "Video Title",         "description": "Video Demo Description",         "video_url": "",         "cover_url": "http://localhost:3344/raw/image/default/cover.jpg",         "upload_time": "2019-12-26 14:14:04",         "update_time": "2019-12-30 21:04:51",         "author": {             "uid": 10,             "username": "aoihosizora",             "sex": "male",             "profile": "Demo profile",             "avatar_url": "http://localhost:3344/raw/image/default/avatar.jpg",             "birth_time": "2001-02-03",             "authority": "normal"         }     } } ``` |
 | 400 | "request param error" / "request format error" / "request body too large" / "image type not supported" / "video resource has been used" |
 | 401 | "authorization failed" / "token has expired" |
 | 500 | "image save failed" / "video insert failed" |
@@ -563,7 +597,7 @@ Ping
 
 | Code | Description |
 | ---- | ----------- |
-| 200 | ```json {        "code": 200,        "message": "success",        "data": {"vid": 10, "title": "Video Title", "description": "Video Demo Description", "video_url": "", "cover_url": "http://localhost:3344/raw/image/default/cover.jpg", "upload_time": "2019-12-26 14:14:04", "update_time": "2019-12-30 21:04:51", "author": {"uid": 10, "username": "aoihosizora", "sex": "male", "profile": "Demo profile", "avatar_url": "http://localhost:3344/raw/image/default/avatar.jpg", "birth_time": "2001-02-03", "authority": "normal"}}        }        } ``` |
+| 200 | ```json {     "code": 200,     "message": "success",     "data": {         "vid": 10,         "title": "Video Title",         "description": "Video Demo Description",         "video_url": "",         "cover_url": "http://localhost:3344/raw/image/default/cover.jpg",         "upload_time": "2019-12-26 14:14:04",         "update_time": "2019-12-30 21:04:51",         "author": {             "uid": 10,             "username": "aoihosizora",             "sex": "male",             "profile": "Demo profile",             "avatar_url": "http://localhost:3344/raw/image/default/avatar.jpg",             "birth_time": "2001-02-03",             "authority": "normal"         }     } } ``` |
 | 400 | "request param error" |
 | 404 | "video not found" |
 
@@ -582,9 +616,10 @@ Ping
 | ---- | ---------- | ----------- | -------- | ---- |
 | Authorization | header | 用户登录令牌 | Yes | string |
 | vid | path | 更新视频id | Yes | string |
-| title | formData | 视频标题，长度在 [1, 100] 之间 | No | string |
-| description | formData | 视频简介，长度在 [0, 1024] 之间 | No | string |
-| cover | formData | 视频封面 | No | file |
+| title | formData | 视频标题，长度在 [1, 100] 之间 | Yes | string |
+| description | formData | 视频简介，长度在 [0, 1024] 之间 | Yes | string |
+| cover_url | formData | 视频封面链接 | Yes | string |
+| video_url | formData | 视频资源链接 | Yes | string |
 
 ##### Responses
 

@@ -2,8 +2,10 @@ package router
 
 import (
 	"github.com/gin-gonic/gin/binding"
+	"github.com/vidorg/vid_backend/src/model/dto/common"
 	"gopkg.in/go-playground/validator.v9"
 	"regexp"
+	"time"
 )
 
 func matchString(reg string, content string) bool {
@@ -12,6 +14,28 @@ func matchString(reg string, content string) bool {
 		return true // error reg default to match success
 	}
 	return re.MatchString(content)
+}
+
+func setupDateTimeBinding() {
+	val, ok := binding.Validator.Engine().(*validator.Validate)
+	if ok {
+		_ = val.RegisterValidation("date", func(fl validator.FieldLevel) bool {
+			dateStr := fl.Field().String()
+			_, err := time.ParseInLocation(common.DateFormat, dateStr, common.CurrLocation)
+			if err != nil {
+				return false
+			}
+			return true
+		})
+		_ = val.RegisterValidation("datetime", func(fl validator.FieldLevel) bool {
+			datetimeStr := fl.Field().String()
+			_, err := time.ParseInLocation(common.DateTimeFormat, datetimeStr, common.CurrLocation)
+			if err != nil {
+				return false
+			}
+			return true
+		})
+	}
 }
 
 func setupRegexParamBinding(tag string) {
@@ -34,6 +58,7 @@ func setupRegexBinding(tag string, re string) {
 
 func SetupDefinedValidation() {
 	setupRegexParamBinding("regexp")
+	setupDateTimeBinding()
 
 	setupRegexBinding("name", "^[^'`\"\\\\]+$")          // ' ` " \
 	setupRegexBinding("pwd", "^[a-zA-Z0-9+\\-*/.=_~]+$") // + - * / . = _ ~

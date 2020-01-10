@@ -12,7 +12,6 @@ import (
 	"github.com/vidorg/vid_backend/src/model/dto/param"
 	"github.com/vidorg/vid_backend/src/model/enum"
 	"github.com/vidorg/vid_backend/src/util"
-	"log"
 	"net/http"
 )
 
@@ -119,11 +118,8 @@ func (u *userController) QueryUser(c *gin.Context) {
 // @Accept				multipart/form-data
 // @ErrorCode			400 request param error
 // @ErrorCode			400 request format error
-// @ErrorCode			400 request body too large
 // @ErrorCode			400 username has been used
-// @ErrorCode			400 image type not supported
 // @ErrorCode			404 user not found
-// @ErrorCode			500 image save failed
 // @ErrorCode			500 user update failed
 /* @Success 200			{
 							"code": 200,
@@ -134,7 +130,6 @@ func (u *userController) UpdateUser(c *gin.Context) {
 	authUser := middleware.GetAuthUser(c, u.config)
 	userParam := &param.UserParam{}
 	if err := c.ShouldBind(userParam); err != nil {
-		log.Println(err)
 		common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.WrapValidationError(err).Error()).JSON(c)
 		return
 	}
@@ -142,7 +137,7 @@ func (u *userController) UpdateUser(c *gin.Context) {
 	authUser.Username = userParam.Username
 	authUser.Sex = enum.StringToSexType(userParam.Sex)
 	authUser.Profile = *userParam.Profile
-	authUser.BirthTime = common.JsonDate(userParam.BirthTime)
+	authUser.BirthTime, _ = common.JsonDate{}.Parse(userParam.BirthTime)
 	authUser.PhoneNumber = userParam.PhoneNumber
 	url, ok := util.CommonUtil.GetFilenameFromUrl(userParam.AvatarUrl, u.config.FileConfig.ImageUrlPrefix)
 	if !ok {

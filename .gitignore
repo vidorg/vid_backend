@@ -6,7 +6,10 @@
 build/
 assets/docs/
 
-usr/image/*
+usr/image/*.*
+usr/video/*.*
 log/*
 
 !.gitkeep
+!usr/image/avatar.jpg
+!usr/image/cover.jpg

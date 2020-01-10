@@ -27,7 +27,6 @@ func RawController(config *config.ServerConfig) *rawController {
 // @Param				image formData file true "上传的图片，大小限制在2M，允许后缀名为 {.jpg, .jpeg, .png, .bmp, .gif}"
 // @Accept				multipart/form-data
 // @ErrorCode			400 request param error
-// @ErrorCode			400 request body too large
 // @ErrorCode			400 image type not supported
 // @ErrorCode			413 request body too large
 // @ErrorCode			500 image save failed
@@ -69,7 +68,7 @@ func (r *rawController) UploadImage(c *gin.Context) {
 /* @Success 200			{ "Content-Type": "image/jpeg" } */
 func (r *rawController) RawImage(c *gin.Context) {
 	filename := c.Param("filename")
-	filePath := fmt.Sprintf("./usr/image/%s", filename)
+	filePath := fmt.Sprintf("%s%s", r.config.FileConfig.ImagePath, filename)
 	if !util.CommonUtil.IsDirOrFileExist(filePath) {
 		common.Result{}.Error(http.StatusNotFound).SetMessage(exception.ImageNotFoundError.Error()).JSON(c)
 		return
