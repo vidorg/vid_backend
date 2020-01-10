@@ -14,13 +14,12 @@ func SetupUserGroup(api *gin.RouterGroup, config *config.ServerConfig) {
 
 	jwt := middleware.JwtMiddleware(false, config)
 	jwtAdmin := middleware.JwtMiddleware(true, config)
-	limit := middleware.LimitMiddleware(2 << 20)
 
 	userGroup := api.Group("/user")
 	{
 		userGroup.GET("/", jwtAdmin, userCtrl.QueryAllUsers)
 		userGroup.GET("/:uid", userCtrl.QueryUser)
-		userGroup.PUT("/", jwt, limit, userCtrl.UpdateUser) // 2M avatar
+		userGroup.PUT("/", jwt, userCtrl.UpdateUser)
 		userGroup.DELETE("/", jwt, userCtrl.DeleteUser)
 
 		userGroup.GET("/:uid/video", videoCtrl.QueryVideosByUid)

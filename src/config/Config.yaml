@@ -3,6 +3,11 @@ run-mode: debug
 http:
   port: 3344
 
+file:
+  image-path: ./usr/image/
+  image-max-size: 2 # MB
+  image-url-prefix: http://localhost:3344/v1/raw/image/
+
 mysql:
   host: 127.0.0.1
   port: 3306
@@ -19,7 +24,7 @@ redis:
   port: 6379
   db: 1
   password: 123
-  connect-timeout: 1000 # ms
+  connect-timeout: 1000 # microsecond
   read-timeout: 1000
   write-timeout: 1000
 

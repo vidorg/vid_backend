@@ -28,17 +28,15 @@ func (i *imageUtil) SaveAsJpg(imageFile multipart.File, ext string, filePath str
 	}
 
 	jpgImgFile, err := os.Create(filePath)
-	defer func() {
-		jpgImgFile.Close()
-	}()
-
 	if err != nil {
 		return err
 	}
+	defer jpgImgFile.Close()
+
 	var decodeImage image.Image
 	switch ext {
 	case "png":
-		decodeImage, err = i.DecodePng(imageFile)
+		decodeImage, err = i.decodePng(imageFile)
 		break
 	case "bmp":
 		decodeImage, err = bmp.Decode(imageFile)
@@ -54,11 +52,10 @@ func (i *imageUtil) SaveAsJpg(imageFile multipart.File, ext string, filePath str
 		return err
 	}
 
-	err = jpeg.Encode(jpgImgFile, decodeImage, &jpeg.Options{Quality: 100})
-	return err
+	return jpeg.Encode(jpgImgFile, decodeImage, &jpeg.Options{Quality: 100})
 }
 
-func (i *imageUtil) DecodePng(pngImageFile multipart.File) (image.Image, error) {
+func (i *imageUtil) decodePng(pngImageFile multipart.File) (image.Image, error) {
 	pngImage, err := png.Decode(pngImageFile)
 	if err != nil {
 		return nil, err

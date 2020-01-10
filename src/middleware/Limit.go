@@ -12,14 +12,12 @@ import (
 func LimitMiddleware(maxSize int64) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		c.Request.Body = http.MaxBytesReader(c.Writer, c.Request.Body, maxSize)
+
 		rawBuf, err := c.GetRawData()
 		if err != nil {
-			conn, bufRw, err := c.Writer.Hijack()
-			if err == nil {
-				_ = bufRw.Flush()
-				_ = conn.Close()
-			}
-			c.JSON(http.StatusRequestEntityTooLarge, common.Result{}.Error(http.StatusRequestEntityTooLarge).SetMessage(exception.RequestSizeError.Error()))
+			// https://github.com/gin-gonic/gin/issues/1136
+			// conn, bufRw, err := c.Writer.Hijack()
+			common.Result{}.Error(http.StatusRequestEntityTooLarge).SetMessage(exception.RequestSizeError.Error()).JSON(c)
 			c.Abort()
 			return
 		}

@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/vidorg/vid_backend/src/config"
 	"github.com/vidorg/vid_backend/src/controller/exception"
@@ -13,6 +12,7 @@ import (
 	"github.com/vidorg/vid_backend/src/model/dto/param"
 	"github.com/vidorg/vid_backend/src/model/enum"
 	"github.com/vidorg/vid_backend/src/util"
+	"log"
 	"net/http"
 )
 
@@ -34,7 +34,7 @@ func UserController(config *config.ServerConfig) *userController {
 
 // @Router				/v1/user?page [GET] [Auth]
 // @Summary				查询所有用户
-// @Description			管理员查询所有用户，返回分页数据，Admin
+// @Description			管理员查询所有用户，返回分页数据，管理员权限
 // @Tag					User
 // @Tag					Administration
 // @Param				page query integer false "分页"
@@ -47,9 +47,7 @@ func UserController(config *config.ServerConfig) *userController {
 							"data": {
 								"count": 1,
 								"page": 1,
-								"data": [
-									${user}
-								]
+								"data": [ ${user} ]
 							}
  						} */
 func (u *userController) QueryAllUsers(c *gin.Context) {
@@ -60,7 +58,7 @@ func (u *userController) QueryAllUsers(c *gin.Context) {
 	}
 
 	users, count := u.userDao.QueryAll(page)
-	common.Result{}.Ok().SetPage(count, page, dto.UserDto{}.FromPos(users, enum.DtoOptionAll)).JSON(c)
+	common.Result{}.Ok().SetPage(count, page, dto.UserDto{}.FromPos(users, u.config, enum.DtoOptionAll)).JSON(c)
 }
 
 // @Router				/v1/user/{uid} [GET]
@@ -105,7 +103,7 @@ func (u *userController) QueryUser(c *gin.Context) {
 
 	authUser := middleware.GetAuthUser(c, u.config)
 	// Mapping from po through the authorization and administration
-	common.Result{}.Ok().PutData("user", dto.UserDto{}.FromPoThroughAuth(user, authUser)).PutData("extra", extraInfo).JSON(c)
+	common.Result{}.Ok().PutData("user", dto.UserDto{}.FromPoThroughAuth(user, authUser, u.config)).PutData("extra", extraInfo).JSON(c)
 }
 
 // @Router				/v1/user/ [PUT] [Auth]
@@ -117,7 +115,7 @@ func (u *userController) QueryUser(c *gin.Context) {
 // @Param				profile formData string true "用户简介，长度在 [0, 255] 之间"
 // @Param				birth_time formData string true "用户生日，固定格式为 2000-01-01"
 // @Param				phone_number formData string true "用户手机号码，长度为 11，仅限中国大陆手机号码"
-// @Param				avatar formData file false "用户头像，默认不修改"
+// @Param				avatar_file formData file true "用户头像链接"
 // @Accept				multipart/form-data
 // @ErrorCode			400 request param error
 // @ErrorCode			400 request format error
@@ -136,23 +134,9 @@ func (u *userController) UpdateUser(c *gin.Context) {
 	authUser := middleware.GetAuthUser(c, u.config)
 	userParam := &param.UserParam{}
 	if err := c.ShouldBind(userParam); err != nil {
+		log.Println(err)
 		common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.WrapValidationError(err).Error()).JSON(c)
 		return
-	}
-	// TODO Separate Api
-	if avatarFile, avatarHeader, err := c.Request.FormFile("avatar"); err == nil && avatarFile != nil {
-		supported, ext := util.ImageUtil.CheckImageExt(avatarHeader.Filename)
-		if !supported {
-			common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.ImageNotSupportedError.Error()).JSON(c)
-			return
-		}
-		filename := fmt.Sprintf("avatar_%s.jpg", util.CommonUtil.CurrentTimeUuid())
-		savePath := fmt.Sprintf("./usr/image/%s", filename)
-		if err := util.ImageUtil.SaveAsJpg(avatarFile, ext, savePath); err != nil {
-			common.Result{}.Error(http.StatusInternalServerError).SetMessage(exception.ImageSaveError.Error()).JSON(c)
-			return
-		}
-		authUser.AvatarUrl = filename
 	}
 
 	authUser.Username = userParam.Username
@@ -160,6 +144,12 @@ func (u *userController) UpdateUser(c *gin.Context) {
 	authUser.Profile = *userParam.Profile
 	authUser.BirthTime = common.JsonDate(userParam.BirthTime)
 	authUser.PhoneNumber = userParam.PhoneNumber
+	url, ok := util.CommonUtil.GetFilenameFromUrl(userParam.AvatarUrl, u.config.FileConfig.ImageUrlPrefix)
+	if !ok {
+		common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.RequestParamError.Error()).JSON(c)
+		return
+	}
+	authUser.AvatarUrl = url
 
 	status := u.userDao.Update(authUser)
 	if status == database.DbNotFound {
@@ -173,7 +163,7 @@ func (u *userController) UpdateUser(c *gin.Context) {
 		return
 	}
 
-	common.Result{}.Ok().SetData(dto.UserDto{}.FromPo(authUser, enum.DtoOptionAll)).JSON(c)
+	common.Result{}.Ok().SetData(dto.UserDto{}.FromPo(authUser, u.config, enum.DtoOptionAll)).JSON(c)
 }
 
 // @Router				/v1/user/ [DELETE] [Auth]

@@ -9,6 +9,12 @@ type HTTPConfig struct {
 	Port int `yaml:"port"`
 }
 
+type FileConfig struct {
+	ImagePath      string `yaml:"image-path"`
+	ImageMaxSize   int    `yaml:"image-max-size"`
+	ImageUrlPrefix string `yaml:"image-url-prefix"`
+}
+
 type MySqlConfig struct {
 	Host     string `yaml:"host"`
 	Port     int    `yaml:"port"`
@@ -42,6 +48,7 @@ type JwtConfig struct {
 type ServerConfig struct {
 	RunMode     string       `yaml:"run-mode"`
 	HTTPConfig  *HTTPConfig  `yaml:"http"`
+	FileConfig  *FileConfig  `yaml:"file"`
 	MySqlConfig *MySqlConfig `yaml:"mysql"`
 	RedisConfig *RedisConfig `yaml:"redis"`
 	JwtConfig   *JwtConfig   `yaml:"jwt"`

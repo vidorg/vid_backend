@@ -2,6 +2,7 @@ package dto
 
 import (
 	"fmt"
+	"github.com/vidorg/vid_backend/src/config"
 	"github.com/vidorg/vid_backend/src/model/enum"
 	"github.com/vidorg/vid_backend/src/model/po"
 	"strings"
@@ -18,12 +19,12 @@ type UserDto struct {
 	PhoneNumber string `json:"phone_number,omitempty"`
 }
 
-func (UserDto) FromPo(user *po.User, option enum.DtoOption, otherOption ...interface{}) *UserDto {
+func (UserDto) FromPo(user *po.User, config *config.ServerConfig, option enum.DtoOption, otherOption ...interface{}) *UserDto {
 	if !strings.HasPrefix(user.AvatarUrl, "http") {
 		if user.AvatarUrl == "" {
-			user.AvatarUrl = "http://localhost:3344/v1/raw/image/avatar.jpg"
+			user.AvatarUrl = fmt.Sprintf("%savatar.jpg", config.FileConfig.ImageUrlPrefix)
 		} else {
-			user.AvatarUrl = fmt.Sprintf("http://localhost:3344/v1/raw/image/%s", user.AvatarUrl)
+			user.AvatarUrl = fmt.Sprintf("%s%s", config.FileConfig.ImageUrlPrefix, user.AvatarUrl)
 		}
 	}
 	dto := &UserDto{
@@ -48,10 +49,10 @@ func (UserDto) FromPo(user *po.User, option enum.DtoOption, otherOption ...inter
 	return dto
 }
 
-func (UserDto) FromPos(users []*po.User, option enum.DtoOption, otherOption ...interface{}) []*UserDto {
+func (UserDto) FromPos(users []*po.User, config *config.ServerConfig, option enum.DtoOption, otherOption ...interface{}) []*UserDto {
 	dtos := make([]*UserDto, len(users))
 	for idx, user := range users {
-		dtos[idx] = UserDto{}.FromPo(user, option, otherOption...)
+		dtos[idx] = UserDto{}.FromPo(user, config, option, otherOption...)
 	}
 	return dtos
 }
@@ -62,11 +63,11 @@ func (UserDto) FromPos(users []*po.User, option enum.DtoOption, otherOption ...i
 // 没有认证: DtoOptionNone
 // 已经认证 && (管理员 || 本人): DtoOptionAll
 // 已经认证 && 非管理员 && 非本人: DtoOptionNone
-func (UserDto) FromPoThroughAuth(retUser *po.User, authUser *po.User) *UserDto {
+func (UserDto) FromPoThroughAuth(retUser *po.User, authUser *po.User, config *config.ServerConfig) *UserDto {
 	if authUser != nil && (authUser.Authority == enum.AuthAdmin || authUser.Uid == retUser.Uid) { // IsSelfOrAdmin
-		return UserDto{}.FromPo(retUser, enum.DtoOptionAll)
+		return UserDto{}.FromPo(retUser, config, enum.DtoOptionAll)
 	} else {
-		return UserDto{}.FromPo(retUser, enum.DtoOptionNone)
+		return UserDto{}.FromPo(retUser, config, enum.DtoOptionNone)
 	}
 }
 
@@ -75,12 +76,12 @@ func (UserDto) FromPoThroughAuth(retUser *po.User, authUser *po.User) *UserDto {
 // 没有认证: DtoOptionNone
 // 已经认证 && 管理员: DtoOptionAll
 // 已经认证 && 非管理员: DtoOptionOnlySelf
-func (UserDto) FromPosThroughUser(users []*po.User, authUser *po.User) []*UserDto {
+func (UserDto) FromPosThroughUser(users []*po.User, authUser *po.User, config *config.ServerConfig) []*UserDto {
 	if authUser == nil { // None
-		return UserDto{}.FromPos(users, enum.DtoOptionNone)
+		return UserDto{}.FromPos(users, config, enum.DtoOptionNone)
 	}
 	if authUser.Authority == enum.AuthAdmin { // Admin
-		return UserDto{}.FromPos(users, enum.DtoOptionAll)
+		return UserDto{}.FromPos(users, config, enum.DtoOptionAll)
 	}
-	return UserDto{}.FromPos(users, enum.DtoOptionOnlySelf, authUser.Uid)
+	return UserDto{}.FromPos(users, config, enum.DtoOptionOnlySelf, authUser.Uid)
 }

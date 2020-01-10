@@ -42,9 +42,7 @@ func SubController(config *config.ServerConfig) *subController {
 							"data": {
 								"count": 1,
 								"page": 1,
-								"data": [
-									${user}
-								]
+								"data": [ ${user} ]
 							}
  						} */
 func (s *subController) QuerySubscriberUsers(c *gin.Context) {
@@ -62,7 +60,7 @@ func (s *subController) QuerySubscriberUsers(c *gin.Context) {
 	}
 
 	authUser := middleware.GetAuthUser(c, s.config)
-	common.Result{}.Ok().SetPage(count, page, dto.UserDto{}.FromPosThroughUser(users, authUser)).JSON(c)
+	common.Result{}.Ok().SetPage(count, page, dto.UserDto{}.FromPosThroughUser(users, authUser, s.config)).JSON(c)
 }
 
 // @Router 				/v1/user/{uid}/subscribing [GET]
@@ -80,9 +78,7 @@ func (s *subController) QuerySubscriberUsers(c *gin.Context) {
 							"data": {
 								"count": 1,
 								"page": 1,
-								"data": [
-									${user}
-								]
+								"data": [ ${user} ]
 							}
  						} */
 func (s *subController) QuerySubscribingUsers(c *gin.Context) {
@@ -100,7 +96,7 @@ func (s *subController) QuerySubscribingUsers(c *gin.Context) {
 	}
 
 	authUser := middleware.GetAuthUser(c, s.config)
-	common.Result{}.Ok().SetPage(count, page, dto.UserDto{}.FromPosThroughUser(users, authUser)).JSON(c)
+	common.Result{}.Ok().SetPage(count, page, dto.UserDto{}.FromPosThroughUser(users, authUser, s.config)).JSON(c)
 }
 
 // @Router				/v1/user/subscribing [PUT] [Auth]

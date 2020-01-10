@@ -84,7 +84,10 @@ func (a *authController) Login(c *gin.Context) {
 		return
 	}
 
-	common.Result{}.Ok().PutData("user", dto.UserDto{}.FromPo(passRecord.User, enum.DtoOptionAll)).PutData("token", token).PutData("expire", loginParam.Expire).JSON(c)
+	common.Result{}.Ok().
+		PutData("user", dto.UserDto{}.FromPo(passRecord.User, a.config, enum.DtoOptionAll)).
+		PutData("token", token).
+		PutData("expire", loginParam.Expire).JSON(c)
 }
 
 // @Router				/v1/auth/register [POST]
@@ -131,7 +134,7 @@ func (a *authController) Register(c *gin.Context) {
 		return
 	}
 
-	common.Result{}.Ok().SetData(dto.UserDto{}.FromPo(passRecord.User, enum.DtoOptionAll)).JSON(c)
+	common.Result{}.Ok().SetData(dto.UserDto{}.FromPo(passRecord.User, a.config, enum.DtoOptionAll)).JSON(c)
 }
 
 // @Router				/v1/auth/ [GET] [Auth]
@@ -146,7 +149,7 @@ func (a *authController) Register(c *gin.Context) {
  						} */
 func (a *authController) CurrentUser(c *gin.Context) {
 	authUser := middleware.GetAuthUser(c, a.config)
-	common.Result{}.Ok().SetData(dto.UserDto{}.FromPo(authUser, enum.DtoOptionAll)).JSON(c)
+	common.Result{}.Ok().SetData(dto.UserDto{}.FromPo(authUser, a.config, enum.DtoOptionAll)).JSON(c)
 }
 
 // @Router				/v1/auth/logout [POST] [Auth]

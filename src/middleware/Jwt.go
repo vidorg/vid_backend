@@ -17,12 +17,12 @@ func JwtMiddleware(needAdmin bool, config *config.ServerConfig) gin.HandlerFunc 
 		authHeader := c.Request.Header.Get("Authorization")
 		user, err := JwtCheck(authHeader, config)
 		if err != nil {
-			c.JSON(http.StatusUnauthorized, common.Result{}.Error(http.StatusUnauthorized).SetMessage(err.Error()))
+			common.Result{}.Error(http.StatusUnauthorized).SetMessage(err.Error()).JSON(c)
 			c.Abort()
 			return
 		}
 		if needAdmin && user.Authority != enum.AuthAdmin {
-			c.JSON(http.StatusUnauthorized, common.Result{}.Error(http.StatusUnauthorized).SetMessage(exception.NeedAdminError.Error()))
+			common.Result{}.Error(http.StatusUnauthorized).SetMessage(exception.NeedAdminError.Error()).JSON(c)
 			c.Abort()
 			return
 		}
@@ -77,7 +77,7 @@ func GetAuthUser(c *gin.Context, config *config.ServerConfig) *po.User {
 	}
 	user, ok := _user.(*po.User)
 	if !ok { // auth failed
-		c.JSON(http.StatusUnauthorized, common.Result{}.Error(http.StatusUnauthorized).SetMessage(exception.AuthorizationError.Error()))
+		common.Result{}.Error(http.StatusUnauthorized).SetMessage(exception.AuthorizationError.Error()).JSON(c)
 		c.Abort()
 		return nil
 	}

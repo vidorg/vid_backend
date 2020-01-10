@@ -2,6 +2,7 @@ package dto
 
 import (
 	"fmt"
+	"github.com/vidorg/vid_backend/src/config"
 	"github.com/vidorg/vid_backend/src/model/dto/common"
 	"github.com/vidorg/vid_backend/src/model/enum"
 	"github.com/vidorg/vid_backend/src/model/po"
@@ -19,12 +20,12 @@ type VideoDto struct {
 	Author      *UserDto `json:"author"`
 }
 
-func (VideoDto) FromPo(video *po.Video) *VideoDto {
+func (VideoDto) FromPo(video *po.Video, config *config.ServerConfig) *VideoDto {
 	if !strings.HasPrefix(video.CoverUrl, "http") {
 		if video.CoverUrl == "" {
-			video.CoverUrl = "http://localhost:3344/v1/raw/image/cover.jpg"
+			video.CoverUrl = fmt.Sprintf("%scover.jpg", config.FileConfig.ImageUrlPrefix)
 		} else {
-			video.CoverUrl = fmt.Sprintf("http://localhost:3344/v1/raw/image/%s", video.CoverUrl)
+			video.CoverUrl = fmt.Sprintf("%s%s", config.FileConfig.ImageUrlPrefix, video.CoverUrl)
 		}
 	}
 	return &VideoDto{
@@ -35,14 +36,14 @@ func (VideoDto) FromPo(video *po.Video) *VideoDto {
 		CoverUrl:    video.CoverUrl,
 		UploadTime:  video.UploadTime.String(),
 		UpdateTime:  common.JsonDateTime(video.UpdatedAt).String(),
-		Author:      UserDto{}.FromPo(video.Author, enum.DtoOptionNone),
+		Author:      UserDto{}.FromPo(video.Author, config, enum.DtoOptionNone),
 	}
 }
 
-func (VideoDto) FromPos(videos []*po.Video) []*VideoDto {
+func (VideoDto) FromPos(videos []*po.Video, config *config.ServerConfig) []*VideoDto {
 	dtos := make([]*VideoDto, len(videos))
 	for idx, video := range videos {
-		dtos[idx] = VideoDto{}.FromPo(video)
+		dtos[idx] = VideoDto{}.FromPo(video, config)
 	}
 	return dtos
 }

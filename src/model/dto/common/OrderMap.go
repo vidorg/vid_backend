@@ -41,19 +41,24 @@ func (OrderMap) FromObject(object interface{}) *OrderMap {
 		return nil
 	}
 
-	elem := reflect.ValueOf(object).Elem()
-	if !elem.IsValid() {
+	// check ptr and struct
+	val := reflect.ValueOf(object)
+	if val.Kind() == reflect.Ptr {
+		val = val.Elem()
+	}
+	if !val.IsValid() || val.Kind() != reflect.Struct {
 		return nil
 	}
+	relType := val.Type()
 
-	relType := elem.Type()
+	// val, retType
 	for i := 0; i < relType.NumField(); i++ {
 		// !!
 		tag := relType.Field(i).Tag.Get("json")
 		omitempty := strings.Index(tag, "omitempty") != -1
 
 		field := strings.Split(tag, ",")[0]
-		value := elem.Field(i).Interface()
+		value := val.Field(i).Interface()
 
 		if field != "-" && (!omitempty || value != nil) {
 			data.Put(field, value)
