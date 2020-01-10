@@ -9,7 +9,7 @@ import (
 )
 
 type UserDto struct {
-	Uid         int    `json:"uid"`
+	Uid         int32  `json:"uid"`
 	Username    string `json:"username"`
 	Sex         string `json:"sex"`
 	Profile     string `json:"profile"`
@@ -41,7 +41,7 @@ func (UserDto) FromPo(user *po.User, config *config.ServerConfig, option enum.Dt
 	// Self + uid: Filter Me
 	// None: No Alloc
 	if option == enum.DtoOptionAll ||
-		(option == enum.DtoOptionOnlySelf && len(otherOption) > 0 && otherOption[0].(int) == user.Uid) {
+		(option == enum.DtoOptionOnlySelf && len(otherOption) > 0 && otherOption[0].(int32) == user.Uid) {
 
 		dto.PhoneNumber = user.PhoneNumber
 	}

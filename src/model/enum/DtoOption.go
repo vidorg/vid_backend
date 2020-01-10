@@ -1,6 +1,6 @@
 package enum
 
-type DtoOption int
+type DtoOption int8
 
 const (
 	DtoOptionNone DtoOption = iota

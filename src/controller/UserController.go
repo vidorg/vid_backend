@@ -227,7 +227,7 @@ func (u *userController) UpdateUser(isExact bool) func(c *gin.Context) {
  						} */
 func (u *userController) DeleteUser(isExact bool) func(c *gin.Context) {
 	return func(c *gin.Context) {
-		var uid int
+		var uid int32
 		if !isExact {
 			uid = middleware.GetAuthUser(c, u.config).Uid
 		} else {

@@ -13,16 +13,6 @@
 
 ```bash
 sh gendoc.sh
-
-# yaml:
-# python ./api_yaml.py main.go ./docs/api.yaml
-
-# html:
-# python ./api_html.py ./docs/api.yaml ./docs/api.html
-
-# markdown
-# npm i -g swagger-markdown
-# swagger-markdown -i ./docs/api.yaml -o ./docs/api.md
 ```
 
 ### Run

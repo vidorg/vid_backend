@@ -1,7 +1,7 @@
 package dto
 
 type UserExtraInfo struct {
-	SubscribingCount int `json:"subscribing_cnt"`
-	SubscriberCount  int `json:"subscriber_cnt"`
-	VideoCount       int `json:"video_cnt"`
+	SubscribingCount int32 `json:"subscribing_cnt"`
+	SubscriberCount  int32 `json:"subscriber_cnt"`
+	VideoCount       int32 `json:"video_cnt"`
 }

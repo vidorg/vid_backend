@@ -10,7 +10,7 @@ import (
 )
 
 type VideoDto struct {
-	Vid         int      `json:"vid"`
+	Vid         int32    `json:"vid"`
 	Title       string   `json:"title"`
 	Description string   `json:"description"`
 	VideoUrl    string   `json:"video_url"`

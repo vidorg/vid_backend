@@ -25,7 +25,7 @@ func (a *authUtil) CheckPassword(password string, encrypted string) bool {
 	return bcrypt.CompareHashAndPassword([]byte(encrypted), []byte(password)) == nil
 }
 
-func (a *authUtil) GenerateToken(uid int, ex int64, config *config.JwtConfig) (string, error) {
+func (a *authUtil) GenerateToken(uid int32, ex int64, config *config.JwtConfig) (string, error) {
 	claims := &common.Claims{
 		UserID: uid,
 		StandardClaims: jwt.StandardClaims{

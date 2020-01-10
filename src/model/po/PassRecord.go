@@ -1,7 +1,7 @@
 package po
 
 type PassRecord struct {
-	Uid           int    `gorm:"primary_key"`
+	Uid           int32  `gorm:"primary_key"`
 	EncryptedPass string `gorm:"type:varchar(255);not null"`
 
 	User *User `gorm:"foreignkey:Uid"`

@@ -13,7 +13,7 @@ func SetupRedisConn(config *config.RedisConfig) redis.Conn {
 		config.ConnType,
 		fmt.Sprintf("%s:%d", config.Host, config.Port),
 		redis.DialPassword(config.Password),
-		redis.DialDatabase(config.Db),
+		redis.DialDatabase(int(config.Db)),
 		redis.DialConnectTimeout(time.Duration(config.ConnectTimeout)*time.Millisecond),
 		redis.DialReadTimeout(time.Duration(config.ReadTimeout)*time.Millisecond),
 		redis.DialWriteTimeout(time.Duration(config.WriteTimeout)*time.Millisecond),

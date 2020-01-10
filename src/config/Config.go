@@ -6,36 +6,36 @@ import (
 )
 
 type HTTPConfig struct {
-	Port int `yaml:"port"`
+	Port int32 `yaml:"port"`
 }
 
 type FileConfig struct {
 	ImagePath      string `yaml:"image-path"`
-	ImageMaxSize   int    `yaml:"image-max-size"`
+	ImageMaxSize   int32  `yaml:"image-max-size"`
 	ImageUrlPrefix string `yaml:"image-url-prefix"`
 }
 
 type MySqlConfig struct {
 	Host     string `yaml:"host"`
-	Port     int    `yaml:"port"`
+	Port     int32  `yaml:"port"`
 	Name     string `yaml:"name"`
 	Charset  string `yaml:"charset"`
 	User     string `yaml:"user"`
 	Password string `yaml:"password"`
 	IsLog    bool   `yaml:"log"`
-	PageSize int    `yaml:"page-size"`
+	PageSize int32  `yaml:"page-size"`
 }
 
 type RedisConfig struct {
 	ConnType string `yaml:"conn-type"`
 	Host     string `yaml:"host"`
-	Port     int    `yaml:"port"`
-	Db       int    `yaml:"db"`
+	Port     int32  `yaml:"port"`
+	Db       int32    `yaml:"db"`
 	Password string `yaml:"password"`
 
-	ConnectTimeout int `yaml:"connect-timeout"`
-	ReadTimeout    int `yaml:"read-timeout"`
-	WriteTimeout   int `yaml:"write-timeout"`
+	ConnectTimeout int32 `yaml:"connect-timeout"`
+	ReadTimeout    int32 `yaml:"read-timeout"`
+	WriteTimeout   int32 `yaml:"write-timeout"`
 }
 
 type JwtConfig struct {

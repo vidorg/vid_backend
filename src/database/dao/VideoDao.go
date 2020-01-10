@@ -9,7 +9,7 @@ import (
 
 type VideoDao struct {
 	db       *gorm.DB
-	pageSize int
+	pageSize int32
 	userDao  *UserDao
 }
 
@@ -21,7 +21,7 @@ func VideoRepository(config *config.MySqlConfig) *VideoDao {
 	}
 }
 
-func (v *VideoDao) QueryAll(page int) (videos []*po.Video, count int) {
+func (v *VideoDao) QueryAll(page int32) (videos []*po.Video, count int32) {
 	v.db.Model(&po.Video{}).Count(&count)
 	v.db.Model(&po.Video{}).Limit(v.pageSize).Offset((page - 1) * v.pageSize).Find(&videos)
 	for idx := range videos {
@@ -32,7 +32,7 @@ func (v *VideoDao) QueryAll(page int) (videos []*po.Video, count int) {
 	return videos, count
 }
 
-func (v *VideoDao) QueryByUid(uid int, page int) (videos []*po.Video, count int, status database.DbStatus) {
+func (v *VideoDao) QueryByUid(uid int32, page int32) (videos []*po.Video, count int32, status database.DbStatus) {
 	author := v.userDao.QueryByUid(uid)
 	if author == nil {
 		return nil, 0, database.DbNotFound
@@ -46,7 +46,7 @@ func (v *VideoDao) QueryByUid(uid int, page int) (videos []*po.Video, count int,
 	return videos, count, database.DbSuccess
 }
 
-func (v *VideoDao) QueryCount(uid int) (count int, status database.DbStatus) {
+func (v *VideoDao) QueryCount(uid int32) (count int32, status database.DbStatus) {
 	if !v.userDao.Exist(uid) {
 		return 0, database.DbNotFound
 	}
@@ -55,7 +55,7 @@ func (v *VideoDao) QueryCount(uid int) (count int, status database.DbStatus) {
 	return count, database.DbSuccess
 }
 
-func (v *VideoDao) QueryByVid(vid int) *po.Video {
+func (v *VideoDao) QueryByVid(vid int32) *po.Video {
 	video := &po.Video{Vid: vid}
 	rdb := v.db.Model(&po.Video{}).Where(video).First(video)
 	if rdb.RecordNotFound() {
@@ -71,7 +71,7 @@ func (v *VideoDao) QueryByVid(vid int) *po.Video {
 	return video
 }
 
-func (v *VideoDao) Exist(vid int) bool {
+func (v *VideoDao) Exist(vid int32) bool {
 	video := &po.Video{Vid: vid}
 	cnt := 0
 	v.db.Model(&po.Video{}).Where(video).Count(&cnt)
@@ -102,7 +102,7 @@ func (v *VideoDao) Update(video *po.Video) database.DbStatus {
 	return database.DbSuccess
 }
 
-func (v *VideoDao) Delete(vid int) database.DbStatus {
+func (v *VideoDao) Delete(vid int32) database.DbStatus {
 	video := &po.Video{Vid: vid}
 	rdb := v.db.Model(&po.Video{}).Delete(video)
 	if rdb.Error != nil {

@@ -31,7 +31,7 @@ func (t *TokenDao) Query(token string) bool {
 	return n >= 1
 }
 
-func (t *TokenDao) Insert(token string, uid int, ex int64) bool {
+func (t *TokenDao) Insert(token string, uid int32, ex int64) bool {
 	data := t.catHeader(token)
 	_, err := t.conn.Do("SET", data, uid, "EX", ex)
 	return err == nil

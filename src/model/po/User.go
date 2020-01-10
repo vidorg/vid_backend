@@ -7,7 +7,7 @@ import (
 )
 
 type User struct {
-	Uid         int             `gorm:"primary_key;auto_increment"`
+	Uid         int32           `gorm:"primary_key;auto_increment"`
 	Username    string          `gorm:"not_null;type:varchar(30);unique_index:idx_user_username_deleted_at_unique"` // 30
 	Sex         enum.SexType    `gorm:"not_null;type:enum('unknown','male','female');default:'unknown'"`
 	Profile     string          `gorm:"type:varchar(255)"`          // 255

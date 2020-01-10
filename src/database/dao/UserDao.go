@@ -19,13 +19,13 @@ func UserRepository(config *config.MySqlConfig) *UserDao {
 	}
 }
 
-func (u *UserDao) QueryAll(page int) (users []*po.User, count int) {
+func (u *UserDao) QueryAll(page int32) (users []*po.User, count int32) {
 	u.db.Model(&po.User{}).Count(&count)
 	u.db.Model(&po.User{}).Limit(u.config.PageSize).Offset((page - 1) * u.config.PageSize).Find(&users)
 	return users, count
 }
 
-func (u *UserDao) QueryByUid(uid int) *po.User {
+func (u *UserDao) QueryByUid(uid int32) *po.User {
 	user := &po.User{Uid: uid}
 	rdb := u.db.Model(&po.User{}).Where(user).First(user)
 	if rdb.RecordNotFound() {
@@ -34,7 +34,7 @@ func (u *UserDao) QueryByUid(uid int) *po.User {
 	return user
 }
 
-func (u *UserDao) Exist(uid int) bool {
+func (u *UserDao) Exist(uid int32) bool {
 	user := &po.User{Uid: uid}
 	cnt := 0
 	u.db.Model(&po.User{}).Where(user).Count(&cnt)
@@ -55,7 +55,7 @@ func (u *UserDao) Update(user *po.User) database.DbStatus {
 	return database.DbSuccess
 }
 
-func (u *UserDao) Delete(uid int) database.DbStatus {
+func (u *UserDao) Delete(uid int32) database.DbStatus {
 	rdb := u.db.Model(&po.User{}).Delete(&po.User{Uid: uid})
 	if rdb.Error != nil {
 		return database.DbFailed
