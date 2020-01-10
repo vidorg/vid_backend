@@ -96,7 +96,7 @@ func (v *videoController) QueryVideosByUid(c *gin.Context) {
 
 // @Router				/v1/video/{vid} [GET]
 // @Summary				查询视频
-// @Description			查询视频信息
+// @Description			查询视频信息，作者id为-1表示已删除的用户
 // @Tag					Video
 // @Param				vid path integer true "视频id"
 // @Accept				multipart/form-data
@@ -180,8 +180,9 @@ func (v *videoController) InsertVideo(c *gin.Context) {
 
 // @Router				/v1/video/{vid} [POST] [Auth]
 // @Summary				更新视频
-// @Description			更新用户视频信息
+// @Description			更新用户视频信息，管理员或者作者本人可以操作
 // @Tag					Video
+// @Tag					Administration
 // @Param				vid path string true "更新视频id"
 // @Param				title formData string true "视频标题，长度在 [1, 100] 之间"
 // @Param				description formData string true "视频简介，长度在 [0, 1024] 之间"
@@ -190,11 +191,8 @@ func (v *videoController) InsertVideo(c *gin.Context) {
 // @Accept				multipart/form-data
 // @ErrorCode			400 request param error
 // @ErrorCode			400 request format error
-// @ErrorCode			400 request body too large
-// @ErrorCode			400 image type not supported
 // @ErrorCode			401 need admin authority
 // @ErrorCode			404 video not found
-// @ErrorCode			500 image save failed
 // @ErrorCode			500 video update failed
 /* @Success 200 		{
 							"code": 200,
@@ -224,7 +222,7 @@ func (v *videoController) UpdateVideo(c *gin.Context) {
 		common.Result{}.Error(http.StatusUnauthorized).SetMessage(exception.NeedAdminError.Error()).JSON(c)
 		return
 	}
-
+	// Update
 	video.Title = videoParam.Title
 	video.Description = *videoParam.Description
 	video.VideoUrl = videoParam.VideoUrl // TODO
@@ -249,11 +247,13 @@ func (v *videoController) UpdateVideo(c *gin.Context) {
 
 // @Router				/v1/video/{vid} [DELETE] [Auth]
 // @Summary				删除视频
-// @Description			删除用户视频
+// @Description			删除用户视频，管理员或者作者本人可以操作
 // @Tag					Video
+// @Tag					Administration
 // @Param				vid path string true "删除视频id"
 // @Accept				multipart/form-data
 // @ErrorCode			400 request param error
+// @ErrorCode			401 need admin authority
 // @ErrorCode			404 video not found
 // @ErrorCode			500 video delete failed
 /* @Success 200			{
@@ -267,8 +267,18 @@ func (v *videoController) DeleteVideo(c *gin.Context) {
 		common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.RequestParamError.Error()).JSON(c)
 		return
 	}
-
-	status := v.videoDao.Delete(vid, authUser.Uid)
+	// Check author and authorization
+	video := v.videoDao.QueryByVid(vid)
+	if video == nil {
+		common.Result{}.Error(http.StatusNotFound).SetMessage(exception.VideoNotFoundError.Error()).JSON(c)
+		return
+	}
+	if authUser.Authority != enum.AuthAdmin && authUser.Uid != video.AuthorUid {
+		common.Result{}.Error(http.StatusUnauthorized).SetMessage(exception.NeedAdminError.Error()).JSON(c)
+		return
+	}
+	// Delete
+	status := v.videoDao.Delete(vid)
 	if status == database.DbNotFound {
 		common.Result{}.Error(http.StatusNotFound).SetMessage(exception.VideoNotFoundError.Error()).JSON(c)
 		return

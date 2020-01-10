@@ -19,8 +19,8 @@ func SetupUserGroup(api *gin.RouterGroup, config *config.ServerConfig) {
 	{
 		userGroup.GET("/", jwtAdmin, userCtrl.QueryAllUsers)
 		userGroup.GET("/:uid", userCtrl.QueryUser)
-		userGroup.PUT("/", jwt, userCtrl.UpdateUser)
-		userGroup.DELETE("/", jwt, userCtrl.DeleteUser)
+		userGroup.PUT("/", jwt, userCtrl.UpdateUser(false))
+		userGroup.DELETE("/", jwt, userCtrl.DeleteUser(false))
 
 		userGroup.GET("/:uid/video", videoCtrl.QueryVideosByUid)
 
@@ -28,5 +28,8 @@ func SetupUserGroup(api *gin.RouterGroup, config *config.ServerConfig) {
 		userGroup.GET("/:uid/subscribing", subCtrl.QuerySubscribingUsers)
 		userGroup.PUT("/subscribing", jwt, subCtrl.SubscribeUser)
 		userGroup.DELETE("/subscribing", jwt, subCtrl.UnSubscribeUser)
+
+		userGroup.PUT("/admin/:uid", jwtAdmin, userCtrl.UpdateUser(true))
+		userGroup.DELETE("/admin/:uid", jwtAdmin, userCtrl.DeleteUser(true))
 	}
 }

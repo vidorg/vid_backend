@@ -186,7 +186,7 @@ def parse_demo_response(path) -> {}:
         return None
 
 
-def parse_ctrl(content, out_yaml, auth_param, auth_error, demo_json):
+def parse_ctrl(file_content, out_yaml, auth_param, auth_error, demo_json):
     """
     parse each of the .go file, go through all functions and parse information
     :param auth_param: common auth param (header)
@@ -196,8 +196,21 @@ def parse_ctrl(content, out_yaml, auth_param, auth_error, demo_json):
     if 'paths' not in out_yaml:
         out_yaml['paths'] = {}
 
-    contents = content.split('func ')
-    for content in contents:
+    flag = '// @Router'
+    contentSp = file_content.split(flag)
+    if len(contentSp) == 1:
+        return
+    for content in contentSp:
+        en = file_content.index(content)
+        st = en - len(flag)
+        if st < 0:
+            continue
+        # print(file_content[st:en])
+        if file_content[st:en] != flag:
+            continue
+        content = '\n' + flag + content
+
+        # Start---------
         try:
             plains = parsePlain(content)
             parameters = parseParam(content)
@@ -207,13 +220,11 @@ def parse_ctrl(content, out_yaml, auth_param, auth_error, demo_json):
             desc = parseMultiLine(content, 'description')
             if desc == '' and 'description' in plains:
                 desc = plains['description']
-
             router, *route_setting = re.split(r'[ \t]', plains['router'])
             method = route_setting[0][1:-1].lower()
             is_auth = len(route_setting) >= 2 and route_setting[1].lower() == '[auth]'
             oid = router.lower().replace('/', '-') + '-' + method
             oid = oid.replace('--', '-')
-
             responses = {code['code']: {
                 'description': '```json\n%s\n```' % code['json']
             } for code in c}
@@ -223,8 +234,11 @@ def parse_ctrl(content, out_yaml, auth_param, auth_error, demo_json):
                 for p in auth_param:
                     parameters.insert(0, p)
             if is_auth and auth_error is not None:
-                responses.update(auth_error)
-
+                for ec in auth_error:
+                    if ec in responses:
+                        responses[ec]['description'] = auth_error[ec]['description'] + ' / ' + responses[ec]['description']
+                    else:
+                        responses[ec] = auth_error[ec]
             yml = {
                 'tags': tags,
                 'summary': plains['summary'],
@@ -239,7 +253,6 @@ def parse_ctrl(content, out_yaml, auth_param, auth_error, demo_json):
                 yml['security'] = [{
                     'basicAuth': ''
                 }]
-
             if router not in out_yaml['paths']:
                 out_yaml['paths'][router] = {}
             out_yaml['paths'][router][method] = yml

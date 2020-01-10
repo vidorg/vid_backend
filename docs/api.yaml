@@ -41,11 +41,11 @@ paths:
       responses:
         '200':
           description: "```json\n{\n    \"code\": 200,\n    \"message\": \"success\"\
-            ,\n    \"data\": {\n        \"uid\": 10,\n        \"username\": \"aoihosizora\"\
-            ,\n        \"sex\": \"male\",\n        \"profile\": \"Demo profile\",\n\
-            \        \"avatar_url\": \"http://localhost:3344/raw/image/default/avatar.jpg\"\
-            ,\n        \"birth_time\": \"2001-02-03\",\n        \"authority\": \"\
-            normal\",\n        \"phone_number\": \"13512345678\"\n    }\n}\n```"
+            ,\n    \"data\": {\n        \"uid\": 1,\n        \"username\": \"admin\"\
+            ,\n        \"sex\": \"male\",\n        \"profile\": \"Demo admin profile\"\
+            ,\n        \"avatar_url\": \"http://localhost:3344/v1/raw/image/avatar.jpg\"\
+            ,\n        \"birth_time\": \"2020-01-10\",\n        \"authority\": \"\
+            admin\",\n        \"phone_number\": \"13512345678\"\n    }\n}\n```"
         '401': &id002
           description: '"authorization failed" / "token has expired"'
       security:
@@ -80,13 +80,13 @@ paths:
       responses:
         '200':
           description: "```json\n{\n    \"code\": 200,\n    \"message\": \"success\"\
-            ,\n    \"data\": {\n        \"user\": {\n            \"uid\": 10,\n  \
-            \          \"username\": \"aoihosizora\",\n            \"sex\": \"male\"\
-            ,\n            \"profile\": \"Demo profile\",\n            \"avatar_url\"\
-            : \"http://localhost:3344/raw/image/default/avatar.jpg\",\n          \
-            \  \"birth_time\": \"2001-02-03\",\n            \"authority\": \"normal\"\
-            ,\n            \"phone_number\": \"13512345678\"\n        },\n       \
-            \ \"token\": \"Bearer xxx\",\n        \"expire\": 604800\n    }\n}\n```"
+            ,\n    \"data\": {\n        \"user\": {\n            \"uid\": 1,\n   \
+            \         \"username\": \"admin\",\n            \"sex\": \"male\",\n \
+            \           \"profile\": \"Demo admin profile\",\n            \"avatar_url\"\
+            : \"http://localhost:3344/v1/raw/image/avatar.jpg\",\n            \"birth_time\"\
+            : \"2020-01-10\",\n            \"authority\": \"admin\",\n           \
+            \ \"phone_number\": \"13512345678\"\n        },\n        \"token\": \"\
+            Bearer xxx\",\n        \"expire\": 604800\n    }\n}\n```"
         '400':
           description: '"request param error"'
         '401':
@@ -173,11 +173,11 @@ paths:
       responses:
         '200':
           description: "```json\n{\n    \"code\": 200,\n    \"message\": \"success\"\
-            ,\n    \"data\": {\n        \"uid\": 10,\n        \"username\": \"aoihosizora\"\
-            ,\n        \"sex\": \"male\",\n        \"profile\": \"Demo profile\",\n\
-            \        \"avatar_url\": \"http://localhost:3344/raw/image/default/avatar.jpg\"\
-            ,\n        \"birth_time\": \"2001-02-03\",\n        \"authority\": \"\
-            normal\",\n        \"phone_number\": \"13512345678\"\n    }\n}\n```"
+            ,\n    \"data\": {\n        \"uid\": 1,\n        \"username\": \"admin\"\
+            ,\n        \"sex\": \"male\",\n        \"profile\": \"Demo admin profile\"\
+            ,\n        \"avatar_url\": \"http://localhost:3344/v1/raw/image/avatar.jpg\"\
+            ,\n        \"birth_time\": \"2020-01-10\",\n        \"authority\": \"\
+            admin\",\n        \"phone_number\": \"13512345678\"\n    }\n}\n```"
         '400':
           description: '"request param error" / "request format error"'
         '500':
@@ -203,8 +203,8 @@ paths:
       responses:
         '200':
           description: "```json\n{\n    \"code\": 200,\n    \"message\": \"success\"\
-            ,\n    \"data\": \"http://localhost:3344/v1/raw/image/20200110130323908439.jpg\"\
-            \n}\n```"
+            ,\n    \"data\": {\n        \"url\": \"http://localhost:3344/v1/raw/image/20200110130323908439.jpg\"\
+            \n    }\n}\n```"
         '400':
           description: '"request param error" / "image type not supported"'
         '401': *id002
@@ -260,7 +260,7 @@ paths:
           description: '"user delete failed"'
       security:
       - basicAuth: ''
-      summary: 删除用户
+      summary: 删除登录用户
       tags:
       - User
     put:
@@ -305,11 +305,11 @@ paths:
       responses:
         '200':
           description: "```json\n{\n    \"code\": 200,\n    \"message\": \"success\"\
-            ,\n    \"data\": {\n        \"uid\": 10,\n        \"username\": \"aoihosizora\"\
-            ,\n        \"sex\": \"male\",\n        \"profile\": \"Demo profile\",\n\
-            \        \"avatar_url\": \"http://localhost:3344/raw/image/default/avatar.jpg\"\
-            ,\n        \"birth_time\": \"2001-02-03\",\n        \"authority\": \"\
-            normal\",\n        \"phone_number\": \"13512345678\"\n    }\n}\n```"
+            ,\n    \"data\": {\n        \"uid\": 1,\n        \"username\": \"admin\"\
+            ,\n        \"sex\": \"male\",\n        \"profile\": \"Demo admin profile\"\
+            ,\n        \"avatar_url\": \"http://localhost:3344/v1/raw/image/avatar.jpg\"\
+            ,\n        \"birth_time\": \"2020-01-10\",\n        \"authority\": \"\
+            admin\",\n        \"phone_number\": \"13512345678\"\n    }\n}\n```"
         '400':
           description: '"request param error" / "request format error" / "username
             has been used"'
@@ -320,7 +320,7 @@ paths:
           description: '"user update failed"'
       security:
       - basicAuth: ''
-      summary: 更新用户
+      summary: 更新登录用户
       tags:
       - User
   /v1/user/subscribing:
@@ -388,6 +388,32 @@ paths:
       tags:
       - Subscribe
   /v1/user/{uid}:
+    delete:
+      consumes:
+      - multipart/form-data
+      description: 删除用户所有信息，管理员权限
+      operationId: -v1-user-{uid}-delete
+      parameters:
+      - *id001
+      produces:
+      - application/json
+      responses:
+        '200':
+          description: "```json\n{\n    \"code\": 200,\n    \"message\": \"success\"\
+            \n}\n```"
+        '401':
+          description: '"authorization failed" / "token has expired" / "need admin
+            authority"'
+        '404':
+          description: '"user not found"'
+        '500':
+          description: '"user delete failed"'
+      security:
+      - basicAuth: ''
+      summary: 管理员删除用户
+      tags:
+      - User
+      - Administration
     get:
       consumes:
       - multipart/form-data
@@ -404,14 +430,14 @@ paths:
       responses:
         '200':
           description: "```json\n{\n    \"code\": 200,\n    \"message\": \"success\"\
-            ,\n    \"data\": {\n        \"user\": {\n            \"uid\": 10,\n  \
-            \          \"username\": \"aoihosizora\",\n            \"sex\": \"male\"\
-            ,\n            \"profile\": \"Demo profile\",\n            \"avatar_url\"\
-            : \"http://localhost:3344/raw/image/default/avatar.jpg\",\n          \
-            \  \"birth_time\": \"2001-02-03\",\n            \"authority\": \"normal\"\
-            ,\n            \"phone_number\": \"13512345678\"\n        },\n       \
-            \ \"extra\": {\n            \"subscribing_cnt\": 3,\n            \"subscriber_cnt\"\
-            : 2,\n            \"video_cnt\": 3\n        }\n    }\n}\n```"
+            ,\n    \"data\": {\n        \"user\": {\n            \"uid\": 1,\n   \
+            \         \"username\": \"admin\",\n            \"sex\": \"male\",\n \
+            \           \"profile\": \"Demo admin profile\",\n            \"avatar_url\"\
+            : \"http://localhost:3344/v1/raw/image/avatar.jpg\",\n            \"birth_time\"\
+            : \"2020-01-10\",\n            \"authority\": \"admin\",\n           \
+            \ \"phone_number\": \"13512345678\"\n        },\n        \"extra\": {\n\
+            \            \"subscribing_cnt\": 3,\n            \"subscriber_cnt\":\
+            \ 2,\n            \"video_cnt\": 3\n        }\n    }\n}\n```"
         '400':
           description: '"request param error"'
         '404':
@@ -419,6 +445,69 @@ paths:
       summary: 查询用户
       tags:
       - User
+    put:
+      consumes:
+      - multipart/form-data
+      description: 更新用户信息，管理员权限
+      operationId: -v1-user-{uid}-put
+      parameters:
+      - *id001
+      - description: 用户名，长度在 [8, 30] 之间
+        in: formData
+        name: username
+        required: true
+        type: string
+      - description: 用户性别，允许值为 {male, female, unknown}
+        in: formData
+        name: sex
+        required: true
+        type: string
+      - description: 用户简介，长度在 [0, 255] 之间
+        in: formData
+        name: profile
+        required: true
+        type: string
+      - description: 用户生日，固定格式为 2000-01-01
+        in: formData
+        name: birth_time
+        required: true
+        type: string
+      - description: 用户手机号码，长度为 11，仅限中国大陆手机号码
+        in: formData
+        name: phone_number
+        required: true
+        type: string
+      - description: 用户头像链接
+        in: formData
+        name: avatar_file
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        '200':
+          description: "```json\n{\n    \"code\": 200,\n    \"message\": \"success\"\
+            ,\n    \"data\": {\n        \"uid\": 1,\n        \"username\": \"admin\"\
+            ,\n        \"sex\": \"male\",\n        \"profile\": \"Demo admin profile\"\
+            ,\n        \"avatar_url\": \"http://localhost:3344/v1/raw/image/avatar.jpg\"\
+            ,\n        \"birth_time\": \"2020-01-10\",\n        \"authority\": \"\
+            admin\",\n        \"phone_number\": \"13512345678\"\n    }\n}\n```"
+        '400':
+          description: '"request param error" / "request format error" / "username
+            has been used"'
+        '401':
+          description: '"authorization failed" / "token has expired" / "need admin
+            authority"'
+        '404':
+          description: '"user not found"'
+        '500':
+          description: '"user update failed"'
+      security:
+      - basicAuth: ''
+      summary: 管理员更新用户
+      tags:
+      - User
+      - Administration
   /v1/user/{uid}/subscriber:
     get:
       consumes:
@@ -442,12 +531,12 @@ paths:
         '200':
           description: "```json\n{\n    \"code\": 200,\n    \"message\": \"success\"\
             ,\n    \"data\": {\n        \"count\": 1,\n        \"page\": 1,\n    \
-            \    \"data\": [\n            {\n                \"uid\": 10,\n      \
-            \          \"username\": \"aoihosizora\",\n                \"sex\": \"\
-            male\",\n                \"profile\": \"Demo profile\",\n            \
-            \    \"avatar_url\": \"http://localhost:3344/raw/image/default/avatar.jpg\"\
-            ,\n                \"birth_time\": \"2001-02-03\",\n                \"\
-            authority\": \"normal\",\n                \"phone_number\": \"13512345678\"\
+            \    \"data\": [\n            {\n                \"uid\": 1,\n       \
+            \         \"username\": \"admin\",\n                \"sex\": \"male\"\
+            ,\n                \"profile\": \"Demo admin profile\",\n            \
+            \    \"avatar_url\": \"http://localhost:3344/v1/raw/image/avatar.jpg\"\
+            ,\n                \"birth_time\": \"2020-01-10\",\n                \"\
+            authority\": \"admin\",\n                \"phone_number\": \"13512345678\"\
             \n            }\n        ]\n    }\n}\n```"
         '400':
           description: '"request param error"'
@@ -479,12 +568,12 @@ paths:
         '200':
           description: "```json\n{\n    \"code\": 200,\n    \"message\": \"success\"\
             ,\n    \"data\": {\n        \"count\": 1,\n        \"page\": 1,\n    \
-            \    \"data\": [\n            {\n                \"uid\": 10,\n      \
-            \          \"username\": \"aoihosizora\",\n                \"sex\": \"\
-            male\",\n                \"profile\": \"Demo profile\",\n            \
-            \    \"avatar_url\": \"http://localhost:3344/raw/image/default/avatar.jpg\"\
-            ,\n                \"birth_time\": \"2001-02-03\",\n                \"\
-            authority\": \"normal\",\n                \"phone_number\": \"13512345678\"\
+            \    \"data\": [\n            {\n                \"uid\": 1,\n       \
+            \         \"username\": \"admin\",\n                \"sex\": \"male\"\
+            ,\n                \"profile\": \"Demo admin profile\",\n            \
+            \    \"avatar_url\": \"http://localhost:3344/v1/raw/image/avatar.jpg\"\
+            ,\n                \"birth_time\": \"2020-01-10\",\n                \"\
+            authority\": \"admin\",\n                \"phone_number\": \"13512345678\"\
             \n            }\n        ]\n    }\n}\n```"
         '400':
           description: '"request param error"'
@@ -516,19 +605,18 @@ paths:
         '200':
           description: "```json\n{\n    \"code\": 200,\n    \"message\": \"success\"\
             ,\n    \"data\": {\n        \"count\": 1,\n        \"page\": 1,\n    \
-            \    \"data\": [\n            {\n                \"vid\": 10,\n      \
-            \          \"title\": \"Video Title\",\n                \"description\"\
-            : \"Video Demo Description\",\n                \"video_url\": \"\",\n\
-            \                \"cover_url\": \"http://localhost:3344/raw/image/default/cover.jpg\"\
-            ,\n                \"upload_time\": \"2019-12-26 14:14:04\",\n       \
-            \         \"update_time\": \"2019-12-30 21:04:51\",\n                \"\
-            author\": {\n                    \"uid\": 10,\n                    \"\
-            username\": \"aoihosizora\",\n                    \"sex\": \"male\",\n\
-            \                    \"profile\": \"Demo profile\",\n                \
-            \    \"avatar_url\": \"http://localhost:3344/raw/image/default/avatar.jpg\"\
-            ,\n                    \"birth_time\": \"2001-02-03\",\n             \
-            \       \"authority\": \"normal\"\n                }\n            }\n\
-            \        ]\n    }\n}\n```"
+            \    \"data\": [\n            {\n                \"vid\": 1,\n       \
+            \         \"title\": \"The First Video\",\n                \"description\"\
+            : \"This is the first video uploaded\",\n                \"video_url\"\
+            : \"123\",\n                \"cover_url\": \"http://localhost:3344/v1/raw/image/avatar.jpg\"\
+            ,\n                \"upload_time\": \"2020-01-10 00:55:36\",\n       \
+            \         \"update_time\": \"2020-01-10 14:31:00\",\n                \"\
+            author\": {\n                    \"uid\": 1,\n                    \"username\"\
+            : \"admin\",\n                    \"sex\": \"male\",\n               \
+            \     \"profile\": \"Demo admin profile\",\n                    \"avatar_url\"\
+            : \"http://localhost:3344/v1/raw/image/cover.jpg\",\n                \
+            \    \"birth_time\": \"2020-01-10\",\n                    \"authority\"\
+            : \"admin\"\n                }\n            }\n        ]\n    }\n}\n```"
         '400':
           description: '"request param error"'
         '404':
@@ -555,16 +643,18 @@ paths:
         '200':
           description: "```json\n{\n    \"code\": 200,\n    \"message\": \"success\"\
             ,\n    \"data\": {\n        \"count\": 1,\n        \"page\": 1,\n    \
-            \    \"data\": [\n            {\n                \"uid\": 10,\n      \
-            \          \"username\": \"aoihosizora\",\n                \"sex\": \"\
-            male\",\n                \"profile\": \"Demo profile\",\n            \
-            \    \"avatar_url\": \"http://localhost:3344/raw/image/default/avatar.jpg\"\
-            ,\n                \"birth_time\": \"2001-02-03\",\n                \"\
-            authority\": \"normal\",\n                \"phone_number\": \"13512345678\"\
+            \    \"data\": [\n            {\n                \"uid\": 1,\n       \
+            \         \"username\": \"admin\",\n                \"sex\": \"male\"\
+            ,\n                \"profile\": \"Demo admin profile\",\n            \
+            \    \"avatar_url\": \"http://localhost:3344/v1/raw/image/avatar.jpg\"\
+            ,\n                \"birth_time\": \"2020-01-10\",\n                \"\
+            authority\": \"admin\",\n                \"phone_number\": \"13512345678\"\
             \n            }\n        ]\n    }\n}\n```"
         '400':
           description: '"request param error"'
-        '401': *id002
+        '401':
+          description: '"authorization failed" / "token has expired" / "need admin
+            authority"'
       security:
       - basicAuth: ''
       summary: 查询所有用户
@@ -604,16 +694,16 @@ paths:
       responses:
         '200':
           description: "```json\n{\n    \"code\": 201,\n    \"message\": \"created\"\
-            ,\n    \"data\": {\n        \"vid\": 10,\n        \"title\": \"Video Title\"\
-            ,\n        \"description\": \"Video Demo Description\",\n        \"video_url\"\
-            : \"\",\n        \"cover_url\": \"http://localhost:3344/raw/image/default/cover.jpg\"\
-            ,\n        \"upload_time\": \"2019-12-26 14:14:04\",\n        \"update_time\"\
-            : \"2019-12-30 21:04:51\",\n        \"author\": {\n            \"uid\"\
-            : 10,\n            \"username\": \"aoihosizora\",\n            \"sex\"\
-            : \"male\",\n            \"profile\": \"Demo profile\",\n            \"\
-            avatar_url\": \"http://localhost:3344/raw/image/default/avatar.jpg\",\n\
-            \            \"birth_time\": \"2001-02-03\",\n            \"authority\"\
-            : \"normal\"\n        }\n    }\n}\n```"
+            ,\n    \"data\": {\n        \"vid\": 1,\n        \"title\": \"The First\
+            \ Video\",\n        \"description\": \"This is the first video uploaded\"\
+            ,\n        \"video_url\": \"123\",\n        \"cover_url\": \"http://localhost:3344/v1/raw/image/avatar.jpg\"\
+            ,\n        \"upload_time\": \"2020-01-10 00:55:36\",\n        \"update_time\"\
+            : \"2020-01-10 14:31:00\",\n        \"author\": {\n            \"uid\"\
+            : 1,\n            \"username\": \"admin\",\n            \"sex\": \"male\"\
+            ,\n            \"profile\": \"Demo admin profile\",\n            \"avatar_url\"\
+            : \"http://localhost:3344/v1/raw/image/cover.jpg\",\n            \"birth_time\"\
+            : \"2020-01-10\",\n            \"authority\": \"admin\"\n        }\n \
+            \   }\n}\n```"
         '400':
           description: '"request param error" / "request format error" / "request
             body too large" / "image type not supported" / "video resource has been
@@ -630,7 +720,7 @@ paths:
     delete:
       consumes:
       - multipart/form-data
-      description: 删除用户视频
+      description: 删除用户视频，管理员或者作者本人可以操作
       operationId: -v1-video-{vid}-delete
       parameters:
       - *id001
@@ -647,7 +737,9 @@ paths:
             \n}\n```"
         '400':
           description: '"request param error"'
-        '401': *id002
+        '401':
+          description: '"authorization failed" / "token has expired" / "need admin
+            authority"'
         '404':
           description: '"video not found"'
         '500':
@@ -657,10 +749,11 @@ paths:
       summary: 删除视频
       tags:
       - Video
+      - Administration
     get:
       consumes:
       - multipart/form-data
-      description: 查询视频信息
+      description: 查询视频信息，作者id为-1表示已删除的用户
       operationId: -v1-video-{vid}-get
       parameters:
       - description: 视频id
@@ -673,16 +766,16 @@ paths:
       responses:
         '200':
           description: "```json\n{\n    \"code\": 200,\n    \"message\": \"success\"\
-            ,\n    \"data\": {\n        \"vid\": 10,\n        \"title\": \"Video Title\"\
-            ,\n        \"description\": \"Video Demo Description\",\n        \"video_url\"\
-            : \"\",\n        \"cover_url\": \"http://localhost:3344/raw/image/default/cover.jpg\"\
-            ,\n        \"upload_time\": \"2019-12-26 14:14:04\",\n        \"update_time\"\
-            : \"2019-12-30 21:04:51\",\n        \"author\": {\n            \"uid\"\
-            : 10,\n            \"username\": \"aoihosizora\",\n            \"sex\"\
-            : \"male\",\n            \"profile\": \"Demo profile\",\n            \"\
-            avatar_url\": \"http://localhost:3344/raw/image/default/avatar.jpg\",\n\
-            \            \"birth_time\": \"2001-02-03\",\n            \"authority\"\
-            : \"normal\"\n        }\n    }\n}\n```"
+            ,\n    \"data\": {\n        \"vid\": 1,\n        \"title\": \"The First\
+            \ Video\",\n        \"description\": \"This is the first video uploaded\"\
+            ,\n        \"video_url\": \"123\",\n        \"cover_url\": \"http://localhost:3344/v1/raw/image/avatar.jpg\"\
+            ,\n        \"upload_time\": \"2020-01-10 00:55:36\",\n        \"update_time\"\
+            : \"2020-01-10 14:31:00\",\n        \"author\": {\n            \"uid\"\
+            : 1,\n            \"username\": \"admin\",\n            \"sex\": \"male\"\
+            ,\n            \"profile\": \"Demo admin profile\",\n            \"avatar_url\"\
+            : \"http://localhost:3344/v1/raw/image/cover.jpg\",\n            \"birth_time\"\
+            : \"2020-01-10\",\n            \"authority\": \"admin\"\n        }\n \
+            \   }\n}\n```"
         '400':
           description: '"request param error"'
         '404':
@@ -693,7 +786,7 @@ paths:
     post:
       consumes:
       - multipart/form-data
-      description: 更新用户视频信息
+      description: 更新用户视频信息，管理员或者作者本人可以操作
       operationId: -v1-video-{vid}-post
       parameters:
       - *id001
@@ -727,29 +820,31 @@ paths:
       responses:
         '200':
           description: "```json\n{\n    \"code\": 200,\n    \"message\": \"success\"\
-            ,\n    \"data\": {\n        \"vid\": 10,\n        \"title\": \"Video Title\"\
-            ,\n        \"description\": \"Video Demo Description\",\n        \"video_url\"\
-            : \"\",\n        \"cover_url\": \"http://localhost:3344/raw/image/default/cover.jpg\"\
-            ,\n        \"upload_time\": \"2019-12-26 14:14:04\",\n        \"update_time\"\
-            : \"2019-12-30 21:04:51\",\n        \"author\": {\n            \"uid\"\
-            : 10,\n            \"username\": \"aoihosizora\",\n            \"sex\"\
-            : \"male\",\n            \"profile\": \"Demo profile\",\n            \"\
-            avatar_url\": \"http://localhost:3344/raw/image/default/avatar.jpg\",\n\
-            \            \"birth_time\": \"2001-02-03\",\n            \"authority\"\
-            : \"normal\"\n        }\n    }\n}\n```"
+            ,\n    \"data\": {\n        \"vid\": 1,\n        \"title\": \"The First\
+            \ Video\",\n        \"description\": \"This is the first video uploaded\"\
+            ,\n        \"video_url\": \"123\",\n        \"cover_url\": \"http://localhost:3344/v1/raw/image/avatar.jpg\"\
+            ,\n        \"upload_time\": \"2020-01-10 00:55:36\",\n        \"update_time\"\
+            : \"2020-01-10 14:31:00\",\n        \"author\": {\n            \"uid\"\
+            : 1,\n            \"username\": \"admin\",\n            \"sex\": \"male\"\
+            ,\n            \"profile\": \"Demo admin profile\",\n            \"avatar_url\"\
+            : \"http://localhost:3344/v1/raw/image/cover.jpg\",\n            \"birth_time\"\
+            : \"2020-01-10\",\n            \"authority\": \"admin\"\n        }\n \
+            \   }\n}\n```"
         '400':
-          description: '"request param error" / "request format error" / "request
-            body too large" / "image type not supported"'
-        '401': *id002
+          description: '"request param error" / "request format error"'
+        '401':
+          description: '"authorization failed" / "token has expired" / "need admin
+            authority"'
         '404':
           description: '"video not found"'
         '500':
-          description: '"image save failed" / "video update failed"'
+          description: '"video update failed"'
       security:
       - basicAuth: ''
       summary: 更新视频
       tags:
       - Video
+      - Administration
   /v1/video?page:
     get:
       consumes:
@@ -769,22 +864,23 @@ paths:
         '200':
           description: "```json\n{\n    \"code\": 200,\n    \"message\": \"success\"\
             ,\n    \"data\": {\n        \"count\": 1,\n        \"page\": 1,\n    \
-            \    \"data\": [\n            {\n                \"vid\": 10,\n      \
-            \          \"title\": \"Video Title\",\n                \"description\"\
-            : \"Video Demo Description\",\n                \"video_url\": \"\",\n\
-            \                \"cover_url\": \"http://localhost:3344/raw/image/default/cover.jpg\"\
-            ,\n                \"upload_time\": \"2019-12-26 14:14:04\",\n       \
-            \         \"update_time\": \"2019-12-30 21:04:51\",\n                \"\
-            author\": {\n                    \"uid\": 10,\n                    \"\
-            username\": \"aoihosizora\",\n                    \"sex\": \"male\",\n\
-            \                    \"profile\": \"Demo profile\",\n                \
-            \    \"avatar_url\": \"http://localhost:3344/raw/image/default/avatar.jpg\"\
-            ,\n                    \"birth_time\": \"2001-02-03\",\n             \
-            \       \"authority\": \"normal\"\n                }\n            }\n\
-            \        ]\n    }\n}\n```"
+            \    \"data\": [\n            {\n                \"vid\": 1,\n       \
+            \         \"title\": \"The First Video\",\n                \"description\"\
+            : \"This is the first video uploaded\",\n                \"video_url\"\
+            : \"123\",\n                \"cover_url\": \"http://localhost:3344/v1/raw/image/avatar.jpg\"\
+            ,\n                \"upload_time\": \"2020-01-10 00:55:36\",\n       \
+            \         \"update_time\": \"2020-01-10 14:31:00\",\n                \"\
+            author\": {\n                    \"uid\": 1,\n                    \"username\"\
+            : \"admin\",\n                    \"sex\": \"male\",\n               \
+            \     \"profile\": \"Demo admin profile\",\n                    \"avatar_url\"\
+            : \"http://localhost:3344/v1/raw/image/cover.jpg\",\n                \
+            \    \"birth_time\": \"2020-01-10\",\n                    \"authority\"\
+            : \"admin\"\n                }\n            }\n        ]\n    }\n}\n```"
         '400':
           description: '"request param error"'
-        '401': *id002
+        '401':
+          description: '"authorization failed" / "token has expired" / "need admin
+            authority"'
       security:
       - basicAuth: ''
       summary: 查询所有视频

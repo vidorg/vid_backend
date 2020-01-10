@@ -64,7 +64,8 @@ func (v *VideoDao) QueryByVid(vid int) *po.Video {
 	user := &po.User{Uid: video.AuthorUid}
 	rdb = v.db.Model(&po.User{}).Where(user).First(user)
 	if rdb.RecordNotFound() {
-		return nil
+		// nullable
+		user = &po.User{Uid: -1}
 	}
 	video.Author = user
 	return video
@@ -101,8 +102,8 @@ func (v *VideoDao) Update(video *po.Video) database.DbStatus {
 	return database.DbSuccess
 }
 
-func (v *VideoDao) Delete(vid int, uid int) database.DbStatus {
-	video := &po.Video{Vid: vid, AuthorUid: uid}
+func (v *VideoDao) Delete(vid int) database.DbStatus {
+	video := &po.Video{Vid: vid}
 	rdb := v.db.Model(&po.Video{}).Delete(video)
 	if rdb.Error != nil {
 		return database.DbFailed

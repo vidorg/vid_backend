@@ -51,11 +51,11 @@ func initLogger() {
 	// logger := log.New(logFile, "", log.LstdFlags|log.Lshortfile)
 }
 
-// @Router 				/ping [GET]
-// @Summary 			Ping
-// @Description 		Ping
+// @Router				/ping [GET]
+// @Summary				Ping
+// @Description			Ping
 // @Tag					Ping
-/* @Success 200 		{ "ping": "pong" } */
+/* @Success 200			{ "ping": "pong" } */
 func commonRouter(router *gin.Engine) {
 	router.HandleMethodNotAllowed = true
 

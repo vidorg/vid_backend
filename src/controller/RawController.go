@@ -33,7 +33,9 @@ func RawController(config *config.ServerConfig) *rawController {
 /* @Success 200			{
 							"code": 200,
 							"message": "success",
-							"data": "http://localhost:3344/v1/raw/image/20200110130323908439.jpg"
+							"data": {
+								"url": "http://localhost:3344/v1/raw/image/20200110130323908439.jpg"
+							}
  						} */
 func (r *rawController) UploadImage(c *gin.Context) {
 	imageFile, imageHeader, err := c.Request.FormFile("image")

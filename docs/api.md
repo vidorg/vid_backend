@@ -51,7 +51,7 @@ Ping
 
 | Code | Description |
 | ---- | ----------- |
-| 200 | ```json {     "code": 200,     "message": "success",     "data": {         "uid": 10,         "username": "aoihosizora",         "sex": "male",         "profile": "Demo profile",         "avatar_url": "http://localhost:3344/raw/image/default/avatar.jpg",         "birth_time": "2001-02-03",         "authority": "normal",         "phone_number": "13512345678"     } } ``` |
+| 200 | ```json {     "code": 200,     "message": "success",     "data": {         "uid": 1,         "username": "admin",         "sex": "male",         "profile": "Demo admin profile",         "avatar_url": "http://localhost:3344/v1/raw/image/avatar.jpg",         "birth_time": "2020-01-10",         "authority": "admin",         "phone_number": "13512345678"     } } ``` |
 | 401 | "authorization failed" / "token has expired" |
 
 ##### Security
@@ -83,7 +83,7 @@ Ping
 
 | Code | Description |
 | ---- | ----------- |
-| 200 | ```json {     "code": 200,     "message": "success",     "data": {         "user": {             "uid": 10,             "username": "aoihosizora",             "sex": "male",             "profile": "Demo profile",             "avatar_url": "http://localhost:3344/raw/image/default/avatar.jpg",             "birth_time": "2001-02-03",             "authority": "normal",             "phone_number": "13512345678"         },         "token": "Bearer xxx",         "expire": 604800     } } ``` |
+| 200 | ```json {     "code": 200,     "message": "success",     "data": {         "user": {             "uid": 1,             "username": "admin",             "sex": "male",             "profile": "Demo admin profile",             "avatar_url": "http://localhost:3344/v1/raw/image/avatar.jpg",             "birth_time": "2020-01-10",             "authority": "admin",             "phone_number": "13512345678"         },         "token": "Bearer xxx",         "expire": 604800     } } ``` |
 | 400 | "request param error" |
 | 401 | "password error" |
 | 404 | "user not found" |
@@ -176,7 +176,7 @@ Ping
 
 | Code | Description |
 | ---- | ----------- |
-| 200 | ```json {     "code": 200,     "message": "success",     "data": {         "uid": 10,         "username": "aoihosizora",         "sex": "male",         "profile": "Demo profile",         "avatar_url": "http://localhost:3344/raw/image/default/avatar.jpg",         "birth_time": "2001-02-03",         "authority": "normal",         "phone_number": "13512345678"     } } ``` |
+| 200 | ```json {     "code": 200,     "message": "success",     "data": {         "uid": 1,         "username": "admin",         "sex": "male",         "profile": "Demo admin profile",         "avatar_url": "http://localhost:3344/v1/raw/image/avatar.jpg",         "birth_time": "2020-01-10",         "authority": "admin",         "phone_number": "13512345678"     } } ``` |
 | 400 | "request param error" / "request format error" |
 | 500 | "username has been used" / "register failed" |
 
@@ -202,7 +202,7 @@ Ping
 
 | Code | Description |
 | ---- | ----------- |
-| 200 | ```json {     "code": 200,     "message": "success",     "data": "http://localhost:3344/v1/raw/image/20200110130323908439.jpg" } ``` |
+| 200 | ```json {     "code": 200,     "message": "success",     "data": {         "url": "http://localhost:3344/v1/raw/image/20200110130323908439.jpg"     } } ``` |
 | 400 | "request param error" / "image type not supported" |
 | 401 | "authorization failed" / "token has expired" |
 | 413 | "request body too large" |
@@ -243,7 +243,7 @@ Ping
 #### DELETE
 ##### Summary:
 
-删除用户
+删除登录用户
 
 ##### Description:
 
@@ -273,7 +273,7 @@ Ping
 #### PUT
 ##### Summary:
 
-更新用户
+更新登录用户
 
 ##### Description:
 
@@ -295,7 +295,7 @@ Ping
 
 | Code | Description |
 | ---- | ----------- |
-| 200 | ```json {     "code": 200,     "message": "success",     "data": {         "uid": 10,         "username": "aoihosizora",         "sex": "male",         "profile": "Demo profile",         "avatar_url": "http://localhost:3344/raw/image/default/avatar.jpg",         "birth_time": "2001-02-03",         "authority": "normal",         "phone_number": "13512345678"     } } ``` |
+| 200 | ```json {     "code": 200,     "message": "success",     "data": {         "uid": 1,         "username": "admin",         "sex": "male",         "profile": "Demo admin profile",         "avatar_url": "http://localhost:3344/v1/raw/image/avatar.jpg",         "birth_time": "2020-01-10",         "authority": "admin",         "phone_number": "13512345678"     } } ``` |
 | 400 | "request param error" / "request format error" / "username has been used" |
 | 401 | "authorization failed" / "token has expired" |
 | 404 | "user not found" |
@@ -375,6 +375,36 @@ Ping
 
 ### /v1/user/{uid}
 
+#### DELETE
+##### Summary:
+
+管理员删除用户
+
+##### Description:
+
+删除用户所有信息，管理员权限
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+| Authorization | header | 用户登录令牌 | Yes | string |
+
+##### Responses
+
+| Code | Description |
+| ---- | ----------- |
+| 200 | ```json {     "code": 200,     "message": "success" } ``` |
+| 401 | "authorization failed" / "token has expired" / "need admin authority" |
+| 404 | "user not found" |
+| 500 | "user delete failed" |
+
+##### Security
+
+| Security Schema | Scopes |
+| --- | --- |
+| basicAuth | |
+
 #### GET
 ##### Summary:
 
@@ -394,9 +424,46 @@ Ping
 
 | Code | Description |
 | ---- | ----------- |
-| 200 | ```json {     "code": 200,     "message": "success",     "data": {         "user": {             "uid": 10,             "username": "aoihosizora",             "sex": "male",             "profile": "Demo profile",             "avatar_url": "http://localhost:3344/raw/image/default/avatar.jpg",             "birth_time": "2001-02-03",             "authority": "normal",             "phone_number": "13512345678"         },         "extra": {             "subscribing_cnt": 3,             "subscriber_cnt": 2,             "video_cnt": 3         }     } } ``` |
+| 200 | ```json {     "code": 200,     "message": "success",     "data": {         "user": {             "uid": 1,             "username": "admin",             "sex": "male",             "profile": "Demo admin profile",             "avatar_url": "http://localhost:3344/v1/raw/image/avatar.jpg",             "birth_time": "2020-01-10",             "authority": "admin",             "phone_number": "13512345678"         },         "extra": {             "subscribing_cnt": 3,             "subscriber_cnt": 2,             "video_cnt": 3         }     } } ``` |
 | 400 | "request param error" |
 | 404 | "user not found" |
+
+#### PUT
+##### Summary:
+
+管理员更新用户
+
+##### Description:
+
+更新用户信息，管理员权限
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+| Authorization | header | 用户登录令牌 | Yes | string |
+| username | formData | 用户名，长度在 [8, 30] 之间 | Yes | string |
+| sex | formData | 用户性别，允许值为 {male, female, unknown} | Yes | string |
+| profile | formData | 用户简介，长度在 [0, 255] 之间 | Yes | string |
+| birth_time | formData | 用户生日，固定格式为 2000-01-01 | Yes | string |
+| phone_number | formData | 用户手机号码，长度为 11，仅限中国大陆手机号码 | Yes | string |
+| avatar_file | formData | 用户头像链接 | Yes | file |
+
+##### Responses
+
+| Code | Description |
+| ---- | ----------- |
+| 200 | ```json {     "code": 200,     "message": "success",     "data": {         "uid": 1,         "username": "admin",         "sex": "male",         "profile": "Demo admin profile",         "avatar_url": "http://localhost:3344/v1/raw/image/avatar.jpg",         "birth_time": "2020-01-10",         "authority": "admin",         "phone_number": "13512345678"     } } ``` |
+| 400 | "request param error" / "request format error" / "username has been used" |
+| 401 | "authorization failed" / "token has expired" / "need admin authority" |
+| 404 | "user not found" |
+| 500 | "user update failed" |
+
+##### Security
+
+| Security Schema | Scopes |
+| --- | --- |
+| basicAuth | |
 
 ### /v1/user/{uid}/subscriber
 
@@ -420,7 +487,7 @@ Ping
 
 | Code | Description |
 | ---- | ----------- |
-| 200 | ```json {     "code": 200,     "message": "success",     "data": {         "count": 1,         "page": 1,         "data": [             {                 "uid": 10,                 "username": "aoihosizora",                 "sex": "male",                 "profile": "Demo profile",                 "avatar_url": "http://localhost:3344/raw/image/default/avatar.jpg",                 "birth_time": "2001-02-03",                 "authority": "normal",                 "phone_number": "13512345678"             }         ]     } } ``` |
+| 200 | ```json {     "code": 200,     "message": "success",     "data": {         "count": 1,         "page": 1,         "data": [             {                 "uid": 1,                 "username": "admin",                 "sex": "male",                 "profile": "Demo admin profile",                 "avatar_url": "http://localhost:3344/v1/raw/image/avatar.jpg",                 "birth_time": "2020-01-10",                 "authority": "admin",                 "phone_number": "13512345678"             }         ]     } } ``` |
 | 400 | "request param error" |
 | 404 | "user not found" |
 
@@ -446,7 +513,7 @@ Ping
 
 | Code | Description |
 | ---- | ----------- |
-| 200 | ```json {     "code": 200,     "message": "success",     "data": {         "count": 1,         "page": 1,         "data": [             {                 "uid": 10,                 "username": "aoihosizora",                 "sex": "male",                 "profile": "Demo profile",                 "avatar_url": "http://localhost:3344/raw/image/default/avatar.jpg",                 "birth_time": "2001-02-03",                 "authority": "normal",                 "phone_number": "13512345678"             }         ]     } } ``` |
+| 200 | ```json {     "code": 200,     "message": "success",     "data": {         "count": 1,         "page": 1,         "data": [             {                 "uid": 1,                 "username": "admin",                 "sex": "male",                 "profile": "Demo admin profile",                 "avatar_url": "http://localhost:3344/v1/raw/image/avatar.jpg",                 "birth_time": "2020-01-10",                 "authority": "admin",                 "phone_number": "13512345678"             }         ]     } } ``` |
 | 400 | "request param error" |
 | 404 | "user not found" |
 
@@ -472,7 +539,7 @@ Ping
 
 | Code | Description |
 | ---- | ----------- |
-| 200 | ```json {     "code": 200,     "message": "success",     "data": {         "count": 1,         "page": 1,         "data": [             {                 "vid": 10,                 "title": "Video Title",                 "description": "Video Demo Description",                 "video_url": "",                 "cover_url": "http://localhost:3344/raw/image/default/cover.jpg",                 "upload_time": "2019-12-26 14:14:04",                 "update_time": "2019-12-30 21:04:51",                 "author": {                     "uid": 10,                     "username": "aoihosizora",                     "sex": "male",                     "profile": "Demo profile",                     "avatar_url": "http://localhost:3344/raw/image/default/avatar.jpg",                     "birth_time": "2001-02-03",                     "authority": "normal"                 }             }         ]     } } ``` |
+| 200 | ```json {     "code": 200,     "message": "success",     "data": {         "count": 1,         "page": 1,         "data": [             {                 "vid": 1,                 "title": "The First Video",                 "description": "This is the first video uploaded",                 "video_url": "123",                 "cover_url": "http://localhost:3344/v1/raw/image/avatar.jpg",                 "upload_time": "2020-01-10 00:55:36",                 "update_time": "2020-01-10 14:31:00",                 "author": {                     "uid": 1,                     "username": "admin",                     "sex": "male",                     "profile": "Demo admin profile",                     "avatar_url": "http://localhost:3344/v1/raw/image/cover.jpg",                     "birth_time": "2020-01-10",                     "authority": "admin"                 }             }         ]     } } ``` |
 | 400 | "request param error" |
 | 404 | "user not found" |
 
@@ -498,9 +565,9 @@ Ping
 
 | Code | Description |
 | ---- | ----------- |
-| 200 | ```json {     "code": 200,     "message": "success",     "data": {         "count": 1,         "page": 1,         "data": [             {                 "uid": 10,                 "username": "aoihosizora",                 "sex": "male",                 "profile": "Demo profile",                 "avatar_url": "http://localhost:3344/raw/image/default/avatar.jpg",                 "birth_time": "2001-02-03",                 "authority": "normal",                 "phone_number": "13512345678"             }         ]     } } ``` |
+| 200 | ```json {     "code": 200,     "message": "success",     "data": {         "count": 1,         "page": 1,         "data": [             {                 "uid": 1,                 "username": "admin",                 "sex": "male",                 "profile": "Demo admin profile",                 "avatar_url": "http://localhost:3344/v1/raw/image/avatar.jpg",                 "birth_time": "2020-01-10",                 "authority": "admin",                 "phone_number": "13512345678"             }         ]     } } ``` |
 | 400 | "request param error" |
-| 401 | "authorization failed" / "token has expired" |
+| 401 | "authorization failed" / "token has expired" / "need admin authority" |
 
 ##### Security
 
@@ -533,7 +600,7 @@ Ping
 
 | Code | Description |
 | ---- | ----------- |
-| 200 | ```json {     "code": 201,     "message": "created",     "data": {         "vid": 10,         "title": "Video Title",         "description": "Video Demo Description",         "video_url": "",         "cover_url": "http://localhost:3344/raw/image/default/cover.jpg",         "upload_time": "2019-12-26 14:14:04",         "update_time": "2019-12-30 21:04:51",         "author": {             "uid": 10,             "username": "aoihosizora",             "sex": "male",             "profile": "Demo profile",             "avatar_url": "http://localhost:3344/raw/image/default/avatar.jpg",             "birth_time": "2001-02-03",             "authority": "normal"         }     } } ``` |
+| 200 | ```json {     "code": 201,     "message": "created",     "data": {         "vid": 1,         "title": "The First Video",         "description": "This is the first video uploaded",         "video_url": "123",         "cover_url": "http://localhost:3344/v1/raw/image/avatar.jpg",         "upload_time": "2020-01-10 00:55:36",         "update_time": "2020-01-10 14:31:00",         "author": {             "uid": 1,             "username": "admin",             "sex": "male",             "profile": "Demo admin profile",             "avatar_url": "http://localhost:3344/v1/raw/image/cover.jpg",             "birth_time": "2020-01-10",             "authority": "admin"         }     } } ``` |
 | 400 | "request param error" / "request format error" / "request body too large" / "image type not supported" / "video resource has been used" |
 | 401 | "authorization failed" / "token has expired" |
 | 500 | "image save failed" / "video insert failed" |
@@ -553,7 +620,7 @@ Ping
 
 ##### Description:
 
-删除用户视频
+删除用户视频，管理员或者作者本人可以操作
 
 ##### Parameters
 
@@ -568,7 +635,7 @@ Ping
 | ---- | ----------- |
 | 200 | ```json {     "code": 200,     "message": "success" } ``` |
 | 400 | "request param error" |
-| 401 | "authorization failed" / "token has expired" |
+| 401 | "authorization failed" / "token has expired" / "need admin authority" |
 | 404 | "video not found" |
 | 500 | "video delete failed" |
 
@@ -585,7 +652,7 @@ Ping
 
 ##### Description:
 
-查询视频信息
+查询视频信息，作者id为-1表示已删除的用户
 
 ##### Parameters
 
@@ -597,7 +664,7 @@ Ping
 
 | Code | Description |
 | ---- | ----------- |
-| 200 | ```json {     "code": 200,     "message": "success",     "data": {         "vid": 10,         "title": "Video Title",         "description": "Video Demo Description",         "video_url": "",         "cover_url": "http://localhost:3344/raw/image/default/cover.jpg",         "upload_time": "2019-12-26 14:14:04",         "update_time": "2019-12-30 21:04:51",         "author": {             "uid": 10,             "username": "aoihosizora",             "sex": "male",             "profile": "Demo profile",             "avatar_url": "http://localhost:3344/raw/image/default/avatar.jpg",             "birth_time": "2001-02-03",             "authority": "normal"         }     } } ``` |
+| 200 | ```json {     "code": 200,     "message": "success",     "data": {         "vid": 1,         "title": "The First Video",         "description": "This is the first video uploaded",         "video_url": "123",         "cover_url": "http://localhost:3344/v1/raw/image/avatar.jpg",         "upload_time": "2020-01-10 00:55:36",         "update_time": "2020-01-10 14:31:00",         "author": {             "uid": 1,             "username": "admin",             "sex": "male",             "profile": "Demo admin profile",             "avatar_url": "http://localhost:3344/v1/raw/image/cover.jpg",             "birth_time": "2020-01-10",             "authority": "admin"         }     } } ``` |
 | 400 | "request param error" |
 | 404 | "video not found" |
 
@@ -608,7 +675,7 @@ Ping
 
 ##### Description:
 
-更新用户视频信息
+更新用户视频信息，管理员或者作者本人可以操作
 
 ##### Parameters
 
@@ -625,11 +692,11 @@ Ping
 
 | Code | Description |
 | ---- | ----------- |
-| 200 | ```json {     "code": 200,     "message": "success",     "data": {         "vid": 10,         "title": "Video Title",         "description": "Video Demo Description",         "video_url": "",         "cover_url": "http://localhost:3344/raw/image/default/cover.jpg",         "upload_time": "2019-12-26 14:14:04",         "update_time": "2019-12-30 21:04:51",         "author": {             "uid": 10,             "username": "aoihosizora",             "sex": "male",             "profile": "Demo profile",             "avatar_url": "http://localhost:3344/raw/image/default/avatar.jpg",             "birth_time": "2001-02-03",             "authority": "normal"         }     } } ``` |
-| 400 | "request param error" / "request format error" / "request body too large" / "image type not supported" |
-| 401 | "authorization failed" / "token has expired" |
+| 200 | ```json {     "code": 200,     "message": "success",     "data": {         "vid": 1,         "title": "The First Video",         "description": "This is the first video uploaded",         "video_url": "123",         "cover_url": "http://localhost:3344/v1/raw/image/avatar.jpg",         "upload_time": "2020-01-10 00:55:36",         "update_time": "2020-01-10 14:31:00",         "author": {             "uid": 1,             "username": "admin",             "sex": "male",             "profile": "Demo admin profile",             "avatar_url": "http://localhost:3344/v1/raw/image/cover.jpg",             "birth_time": "2020-01-10",             "authority": "admin"         }     } } ``` |
+| 400 | "request param error" / "request format error" |
+| 401 | "authorization failed" / "token has expired" / "need admin authority" |
 | 404 | "video not found" |
-| 500 | "image save failed" / "video update failed" |
+| 500 | "video update failed" |
 
 ##### Security
 
@@ -659,9 +726,9 @@ Ping
 
 | Code | Description |
 | ---- | ----------- |
-| 200 | ```json {     "code": 200,     "message": "success",     "data": {         "count": 1,         "page": 1,         "data": [             {                 "vid": 10,                 "title": "Video Title",                 "description": "Video Demo Description",                 "video_url": "",                 "cover_url": "http://localhost:3344/raw/image/default/cover.jpg",                 "upload_time": "2019-12-26 14:14:04",                 "update_time": "2019-12-30 21:04:51",                 "author": {                     "uid": 10,                     "username": "aoihosizora",                     "sex": "male",                     "profile": "Demo profile",                     "avatar_url": "http://localhost:3344/raw/image/default/avatar.jpg",                     "birth_time": "2001-02-03",                     "authority": "normal"                 }             }         ]     } } ``` |
+| 200 | ```json {     "code": 200,     "message": "success",     "data": {         "count": 1,         "page": 1,         "data": [             {                 "vid": 1,                 "title": "The First Video",                 "description": "This is the first video uploaded",                 "video_url": "123",                 "cover_url": "http://localhost:3344/v1/raw/image/avatar.jpg",                 "upload_time": "2020-01-10 00:55:36",                 "update_time": "2020-01-10 14:31:00",                 "author": {                     "uid": 1,                     "username": "admin",                     "sex": "male",                     "profile": "Demo admin profile",                     "avatar_url": "http://localhost:3344/v1/raw/image/cover.jpg",                     "birth_time": "2020-01-10",                     "authority": "admin"                 }             }         ]     } } ``` |
 | 400 | "request param error" |
-| 401 | "authorization failed" / "token has expired" |
+| 401 | "authorization failed" / "token has expired" / "need admin authority" |
 
 ##### Security
 
