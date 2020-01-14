@@ -1,14 +1,15 @@
 package v1
 
 import (
+	"github.com/Aoi-hosizora/ahlib/xmapper"
 	"github.com/gin-gonic/gin"
 	"github.com/vidorg/vid_backend/src/config"
 	"github.com/vidorg/vid_backend/src/controller"
 	"github.com/vidorg/vid_backend/src/middleware"
 )
 
-func SetupAuthGroup(api *gin.RouterGroup, config *config.ServerConfig) {
-	authCtrl := controller.AuthController(config)
+func SetupAuthGroup(api *gin.RouterGroup, config *config.ServerConfig, mapper *xmapper.EntitiesMapper) {
+	authCtrl := controller.AuthController(config, mapper)
 
 	jwt := middleware.JwtMiddleware(false, config)
 

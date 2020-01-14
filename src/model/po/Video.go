@@ -1,7 +1,7 @@
 package po
 
 import (
-	"github.com/vidorg/vid_backend/src/model/dto/common"
+	"github.com/vidorg/vid_backend/src/model/common"
 )
 
 type Video struct {

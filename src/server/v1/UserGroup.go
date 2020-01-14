@@ -1,16 +1,17 @@
 package v1
 
 import (
+	"github.com/Aoi-hosizora/ahlib/xmapper"
 	"github.com/gin-gonic/gin"
 	"github.com/vidorg/vid_backend/src/config"
 	"github.com/vidorg/vid_backend/src/controller"
 	"github.com/vidorg/vid_backend/src/middleware"
 )
 
-func SetupUserGroup(api *gin.RouterGroup, config *config.ServerConfig) {
-	userCtrl := controller.UserController(config)
-	videoCtrl := controller.VideoController(config)
-	subCtrl := controller.SubController(config)
+func SetupUserGroup(api *gin.RouterGroup, config *config.ServerConfig, mapper *xmapper.EntitiesMapper) {
+	userCtrl := controller.UserController(config, mapper)
+	videoCtrl := controller.VideoController(config, mapper)
+	subCtrl := controller.SubController(config, mapper)
 
 	jwt := middleware.JwtMiddleware(false, config)
 	jwtAdmin := middleware.JwtMiddleware(true, config)

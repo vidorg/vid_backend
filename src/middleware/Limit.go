@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"github.com/gin-gonic/gin"
 	"github.com/vidorg/vid_backend/src/controller/exception"
-	"github.com/vidorg/vid_backend/src/model/dto/common"
+	"github.com/vidorg/vid_backend/src/model/common"
 	"io/ioutil"
 	"net/http"
 )

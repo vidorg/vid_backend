@@ -1,4 +1,4 @@
-package router
+package server
 
 import (
 	"fmt"
@@ -8,8 +8,9 @@ import (
 	"github.com/swaggo/gin-swagger/swaggerFiles"
 	_ "github.com/vidorg/vid_backend/docs"
 	"github.com/vidorg/vid_backend/src/config"
-	"github.com/vidorg/vid_backend/src/model/dto/common"
-	"github.com/vidorg/vid_backend/src/router/v1"
+	"github.com/vidorg/vid_backend/src/model/common"
+	"github.com/vidorg/vid_backend/src/model/common/profile"
+	"github.com/vidorg/vid_backend/src/server/v1"
 	"github.com/vidorg/vid_backend/src/util"
 	"io"
 	"log"
@@ -20,18 +21,23 @@ import (
 func InitServer(config *config.ServerConfig) *http.Server {
 	gin.SetMode(config.RunMode)
 
-	// Setup
+	// Log
 	initLogger()
+
+	// Gin Server
 	engine := gin.Default()
 	commonRouter(engine)
 
 	if config.RunMode == "debug" {
 		ginpprof.Wrap(engine)
 	}
+
+	// Binding & Mapper
 	SetupDefinedValidation()
+	mapper := profile.CreateMapperProfile(config)
 
 	// Route
-	v1.SetupRouters(engine, config)
+	v1.SetupRouters(engine, config, mapper)
 	engine.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	// Server

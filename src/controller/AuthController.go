@@ -1,16 +1,17 @@
 package controller
 
 import (
+	"github.com/Aoi-hosizora/ahlib/xcondition"
+	"github.com/Aoi-hosizora/ahlib/xmapper"
 	"github.com/gin-gonic/gin"
 	"github.com/vidorg/vid_backend/src/config"
 	"github.com/vidorg/vid_backend/src/controller/exception"
 	"github.com/vidorg/vid_backend/src/database"
 	"github.com/vidorg/vid_backend/src/database/dao"
 	"github.com/vidorg/vid_backend/src/middleware"
+	"github.com/vidorg/vid_backend/src/model/common"
 	"github.com/vidorg/vid_backend/src/model/dto"
-	"github.com/vidorg/vid_backend/src/model/dto/common"
 	"github.com/vidorg/vid_backend/src/model/dto/param"
-	"github.com/vidorg/vid_backend/src/model/enum"
 	"github.com/vidorg/vid_backend/src/model/po"
 	"github.com/vidorg/vid_backend/src/util"
 	"net/http"
@@ -20,13 +21,15 @@ type authController struct {
 	config   *config.ServerConfig
 	passDao  *dao.PassDao
 	tokenDao *dao.TokenDao
+	mapper   *xmapper.EntitiesMapper
 }
 
-func AuthController(config *config.ServerConfig) *authController {
+func AuthController(config *config.ServerConfig, mapper *xmapper.EntitiesMapper) *authController {
 	return &authController{
 		config:   config,
 		passDao:  dao.PassRepository(config.MySqlConfig),
 		tokenDao: dao.TokenRepository(config.RedisConfig, config.JwtConfig.RedisHeader),
+		mapper:   mapper,
 	}
 }
 
@@ -84,8 +87,9 @@ func (a *authController) Login(c *gin.Context) {
 		return
 	}
 
+	retDto := xcondition.First(a.mapper.Map(&dto.UserDto{}, passRecord.User)).(*dto.UserDto)
 	common.Result{}.Ok().
-		PutData("user", dto.UserDto{}.FromPo(passRecord.User, a.config, enum.DtoOptionAll)).
+		PutData("user", retDto).
 		PutData("token", token).
 		PutData("expire", loginParam.Expire).JSON(c)
 }
@@ -134,7 +138,8 @@ func (a *authController) Register(c *gin.Context) {
 		return
 	}
 
-	common.Result{}.Ok().SetData(dto.UserDto{}.FromPo(passRecord.User, a.config, enum.DtoOptionAll)).JSON(c)
+	retDto := xcondition.First(a.mapper.Map(&dto.UserDto{}, passRecord.User)).(*dto.UserDto)
+	common.Result{}.Ok().SetData(retDto).JSON(c)
 }
 
 // @Router				/v1/auth/ [GET] [Auth]
@@ -149,7 +154,8 @@ func (a *authController) Register(c *gin.Context) {
  						} */
 func (a *authController) CurrentUser(c *gin.Context) {
 	authUser := middleware.GetAuthUser(c, a.config)
-	common.Result{}.Ok().SetData(dto.UserDto{}.FromPo(authUser, a.config, enum.DtoOptionAll)).JSON(c)
+	retDto := xcondition.First(a.mapper.Map(&dto.UserDto{}, authUser)).(*dto.UserDto)
+	common.Result{}.Ok().SetData(retDto).JSON(c)
 }
 
 // @Router				/v1/auth/logout [POST] [Auth]

@@ -1,9 +1,9 @@
 module github.com/vidorg/vid_backend
 
 require (
+	github.com/Aoi-hosizora/ahlib v0.0.0-20200114173444-a9fbdc616de5
 	github.com/DeanThompson/ginpprof v0.0.0-20190408063150-3be636683586
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
-	github.com/emirpasic/gods v1.12.0
 	github.com/gin-contrib/cors v1.3.0
 	github.com/gin-gonic/gin v1.5.0
 	github.com/go-openapi/jsonreference v0.19.3 // indirect
@@ -13,7 +13,6 @@ require (
 	github.com/jinzhu/gorm v1.9.10
 	github.com/mailru/easyjson v0.7.0 // indirect
 	github.com/mattn/go-isatty v0.0.10 // indirect
-	github.com/shomali11/util v0.0.0-20190608141102-c39c2521a2ab
 	github.com/swaggo/gin-swagger v1.2.0
 	github.com/swaggo/swag v1.6.3
 	golang.org/x/crypto v0.0.0-20191011191535-87dc89f01550

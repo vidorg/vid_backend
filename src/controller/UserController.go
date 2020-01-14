@@ -1,16 +1,18 @@
 package controller
 
 import (
+	"github.com/Aoi-hosizora/ahlib/xcondition"
+	"github.com/Aoi-hosizora/ahlib/xmapper"
 	"github.com/gin-gonic/gin"
 	"github.com/vidorg/vid_backend/src/config"
 	"github.com/vidorg/vid_backend/src/controller/exception"
 	"github.com/vidorg/vid_backend/src/database"
 	"github.com/vidorg/vid_backend/src/database/dao"
 	"github.com/vidorg/vid_backend/src/middleware"
+	"github.com/vidorg/vid_backend/src/model/common"
+	"github.com/vidorg/vid_backend/src/model/common/enum"
 	"github.com/vidorg/vid_backend/src/model/dto"
-	"github.com/vidorg/vid_backend/src/model/dto/common"
 	"github.com/vidorg/vid_backend/src/model/dto/param"
-	"github.com/vidorg/vid_backend/src/model/enum"
 	"github.com/vidorg/vid_backend/src/model/po"
 	"github.com/vidorg/vid_backend/src/util"
 	"net/http"
@@ -21,20 +23,22 @@ type userController struct {
 	userDao  *dao.UserDao
 	videoDao *dao.VideoDao
 	subDao   *dao.SubDao
+	mapper   *xmapper.EntitiesMapper
 }
 
-func UserController(config *config.ServerConfig) *userController {
+func UserController(config *config.ServerConfig, mapper *xmapper.EntitiesMapper) *userController {
 	return &userController{
 		config:   config,
 		userDao:  dao.UserRepository(config.MySqlConfig),
 		videoDao: dao.VideoRepository(config.MySqlConfig),
 		subDao:   dao.SubRepository(config.MySqlConfig),
+		mapper:   mapper,
 	}
 }
 
 // @Router				/v1/user?page [GET] [Auth]
 // @Summary				查询所有用户
-// @Description			管理员查询所有用户，返回分页数据，管理员权限
+// @Description			管理员查询所有用户，返回分页数据，管理员权限，此处可见用户手机号码
 // @Tag					User
 // @Tag					Administration
 // @Param				page query integer false "分页"
@@ -58,12 +62,16 @@ func (u *userController) QueryAllUsers(c *gin.Context) {
 	}
 
 	users, count := u.userDao.QueryAll(page)
-	common.Result{}.Ok().SetPage(count, page, dto.UserDto{}.FromPos(users, u.config, enum.DtoOptionAll)).JSON(c)
+
+	// show all user's info
+	mapper := dto.UserDtoAdminMapper(u.mapper)
+	retDto := xcondition.First(mapper.Map([]*dto.UserDto{}, users)).([]*dto.UserDto)
+	common.Result{}.Ok().SetPage(count, page, retDto).JSON(c)
 }
 
 // @Router				/v1/user/{uid} [GET]
 // @Summary				查询用户
-// @Description			查询用户信息
+// @Description			查询用户信息，此处可见用户手机号码
 // @Tag					User
 // @Param				uid path integer true "用户id"
 // @Accept				multipart/form-data
@@ -101,9 +109,11 @@ func (u *userController) QueryUser(c *gin.Context) {
 		VideoCount:       videoCnt,
 	}
 
+	// need to squeeze out whether you can see the admin info
 	authUser := middleware.GetAuthUser(c, u.config)
-	// Mapping from po through the authorization and administration
-	common.Result{}.Ok().PutData("user", dto.UserDto{}.FromPoThroughAuth(user, authUser, u.config)).PutData("extra", extraInfo).JSON(c)
+	mapper := dto.UserDtoExtraMapper(u.mapper, authUser)
+	retDto := xcondition.First(mapper.Map(&dto.UserDto{}, user)).(*dto.UserDto)
+	common.Result{}.Ok().PutData("user", retDto).PutData("extra", extraInfo).JSON(c)
 }
 
 // @Router				/v1/user/ [PUT] [Auth]
@@ -197,7 +207,8 @@ func (u *userController) UpdateUser(isExact bool) func(c *gin.Context) {
 			return
 		}
 
-		common.Result{}.Ok().SetData(dto.UserDto{}.FromPo(user, u.config, enum.DtoOptionAll)).JSON(c)
+		retDto := xcondition.First(u.mapper.Map(&dto.UserDto{}, user)).(*dto.UserDto)
+		common.Result{}.Ok().SetData(retDto).JSON(c)
 	}
 }
 

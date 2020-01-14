@@ -1,10 +1,10 @@
 package util
 
 import (
+	"github.com/Aoi-hosizora/ahlib/xcondition"
 	"github.com/dgrijalva/jwt-go"
-	"github.com/shomali11/util/xconditions"
 	"github.com/vidorg/vid_backend/src/config"
-	"github.com/vidorg/vid_backend/src/model/dto/common"
+	"github.com/vidorg/vid_backend/src/model/common"
 	"golang.org/x/crypto/bcrypt"
 	"time"
 )
@@ -43,7 +43,7 @@ func (a *authUtil) ParseToken(signedToken string, config *config.JwtConfig) (*co
 	}
 	token, err := jwt.ParseWithClaims(signedToken, &common.Claims{}, keyFunc)
 	if err != nil || !token.Valid {
-		err = xconditions.IfThenElse(err == nil, jwt.ValidationError{}, err).(error)
+		err = xcondition.IfThenElse(err == nil, jwt.ValidationError{}, err).(error)
 		return nil, err
 	}
 

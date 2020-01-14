@@ -2,21 +2,24 @@ package controller
 
 import (
 	"fmt"
+	"github.com/Aoi-hosizora/ahlib/xmapper"
 	"github.com/gin-gonic/gin"
 	"github.com/vidorg/vid_backend/src/config"
 	"github.com/vidorg/vid_backend/src/controller/exception"
-	"github.com/vidorg/vid_backend/src/model/dto/common"
+	"github.com/vidorg/vid_backend/src/model/common"
 	"github.com/vidorg/vid_backend/src/util"
 	"net/http"
 )
 
 type rawController struct {
 	config *config.ServerConfig
+	mapper *xmapper.EntitiesMapper
 }
 
-func RawController(config *config.ServerConfig) *rawController {
+func RawController(config *config.ServerConfig, mapper *xmapper.EntitiesMapper) *rawController {
 	return &rawController{
 		config: config,
+		mapper: mapper,
 	}
 }
 

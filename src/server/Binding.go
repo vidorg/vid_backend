@@ -1,8 +1,8 @@
-package router
+package server
 
 import (
 	"github.com/gin-gonic/gin/binding"
-	"github.com/vidorg/vid_backend/src/model/dto/common"
+	"github.com/vidorg/vid_backend/src/model/common"
 	"gopkg.in/go-playground/validator.v9"
 	"regexp"
 	"time"

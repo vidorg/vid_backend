@@ -3,13 +3,14 @@ package common
 import (
 	"net/http"
 
+	"github.com/Aoi-hosizora/ahlib/xhashmap"
 	"github.com/gin-gonic/gin"
 )
 
 type Result struct {
-	Code    int       `json:"code"`
-	Message string    `json:"message"`
-	Data    *OrderMap `json:"data,omitempty"` // map[string]interface{}
+	Code    int                     `json:"code"`
+	Message string                  `json:"message"`
+	Data    *xhashmap.LinkedHashMap `json:"data,omitempty"`
 }
 
 func (Result) Ok() *Result {
@@ -66,25 +67,25 @@ func (r *Result) SetMessage(message string) *Result {
 }
 
 func (r *Result) SetData(data interface{}) *Result {
-	r.Data = OrderMap{}.FromObject(data)
+	r.Data = xhashmap.ObjectToLinkedHashMap(data)
 	return r
 }
 
 func (r *Result) PutData(field string, data interface{}) *Result {
 	if r.Data == nil {
-		r.Data = NewOrderMap()
+		r.Data = new(xhashmap.LinkedHashMap)
 	}
-	r.Data.Put(field, data)
+	r.Data.Set(field, data)
 	return r
 }
 
 func (r *Result) SetPage(count int32, page int32, data interface{}) *Result {
 	if r.Data == nil {
-		r.Data = NewOrderMap()
+		r.Data = new(xhashmap.LinkedHashMap)
 	}
-	r.Data.Put("total", count)
-	r.Data.Put("page", page)
-	r.Data.Put("data", data)
+	r.Data.Set("total", count)
+	r.Data.Set("page", page)
+	r.Data.Set("data", data)
 	return r
 }
 

@@ -1,8 +1,8 @@
 package po
 
 import (
-	"github.com/vidorg/vid_backend/src/model/dto/common"
-	"github.com/vidorg/vid_backend/src/model/enum"
+	"github.com/vidorg/vid_backend/src/model/common"
+	"github.com/vidorg/vid_backend/src/model/common/enum"
 	"time"
 )
 

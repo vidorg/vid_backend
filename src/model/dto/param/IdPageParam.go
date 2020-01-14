@@ -1,8 +1,8 @@
 package param
 
 import (
+	"github.com/Aoi-hosizora/ahlib/xcondition"
 	"github.com/gin-gonic/gin"
-	"github.com/shomali11/util/xconditions"
 	"strconv"
 )
 
@@ -25,5 +25,5 @@ func BindQueryPage(c *gin.Context) (int32, bool) {
 	if err != nil {
 		return 0, false
 	}
-	return xconditions.IfThenElse(page <= 0, 1, int32(page)).(int32), true // <<<
+	return xcondition.IfThenElse(page <= 0, 1, int32(page)).(int32), true // <<<
 }

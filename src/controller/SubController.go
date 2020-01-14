@@ -1,14 +1,16 @@
 package controller
 
 import (
+	"github.com/Aoi-hosizora/ahlib/xcondition"
+	"github.com/Aoi-hosizora/ahlib/xmapper"
 	"github.com/gin-gonic/gin"
 	"github.com/vidorg/vid_backend/src/config"
 	"github.com/vidorg/vid_backend/src/controller/exception"
 	"github.com/vidorg/vid_backend/src/database"
 	"github.com/vidorg/vid_backend/src/database/dao"
 	"github.com/vidorg/vid_backend/src/middleware"
+	"github.com/vidorg/vid_backend/src/model/common"
 	"github.com/vidorg/vid_backend/src/model/dto"
-	"github.com/vidorg/vid_backend/src/model/dto/common"
 	"github.com/vidorg/vid_backend/src/model/dto/param"
 	"net/http"
 )
@@ -17,13 +19,15 @@ type subController struct {
 	config  *config.ServerConfig
 	userDao *dao.UserDao
 	subDao  *dao.SubDao
+	mapper  *xmapper.EntitiesMapper
 }
 
-func SubController(config *config.ServerConfig) *subController {
+func SubController(config *config.ServerConfig, mapper *xmapper.EntitiesMapper) *subController {
 	return &subController{
 		config:  config,
 		userDao: dao.UserRepository(config.MySqlConfig),
 		subDao:  dao.SubRepository(config.MySqlConfig),
+		mapper:  mapper,
 	}
 }
 
@@ -59,8 +63,8 @@ func (s *subController) QuerySubscriberUsers(c *gin.Context) {
 		return
 	}
 
-	authUser := middleware.GetAuthUser(c, s.config)
-	common.Result{}.Ok().SetPage(count, page, dto.UserDto{}.FromPosThroughUser(users, authUser, s.config)).JSON(c)
+	retDto := xcondition.First(s.mapper.Map([]*dto.UserDto{}, users)).([]*dto.UserDto)
+	common.Result{}.Ok().SetPage(count, page, retDto).JSON(c)
 }
 
 // @Router 				/v1/user/{uid}/subscribing [GET]
@@ -95,8 +99,8 @@ func (s *subController) QuerySubscribingUsers(c *gin.Context) {
 		return
 	}
 
-	authUser := middleware.GetAuthUser(c, s.config)
-	common.Result{}.Ok().SetPage(count, page, dto.UserDto{}.FromPosThroughUser(users, authUser, s.config)).JSON(c)
+	retDto := xcondition.First(s.mapper.Map([]*dto.UserDto{}, users)).([]*dto.UserDto)
+	common.Result{}.Ok().SetPage(count, page, retDto).JSON(c)
 }
 
 // @Router				/v1/user/subscribing [PUT] [Auth]

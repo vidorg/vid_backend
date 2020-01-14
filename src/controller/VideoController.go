@@ -1,16 +1,18 @@
 package controller
 
 import (
+	"github.com/Aoi-hosizora/ahlib/xcondition"
+	"github.com/Aoi-hosizora/ahlib/xmapper"
 	"github.com/gin-gonic/gin"
 	"github.com/vidorg/vid_backend/src/config"
 	"github.com/vidorg/vid_backend/src/controller/exception"
 	"github.com/vidorg/vid_backend/src/database"
 	"github.com/vidorg/vid_backend/src/database/dao"
 	"github.com/vidorg/vid_backend/src/middleware"
+	"github.com/vidorg/vid_backend/src/model/common"
+	"github.com/vidorg/vid_backend/src/model/common/enum"
 	"github.com/vidorg/vid_backend/src/model/dto"
-	"github.com/vidorg/vid_backend/src/model/dto/common"
 	"github.com/vidorg/vid_backend/src/model/dto/param"
-	"github.com/vidorg/vid_backend/src/model/enum"
 	"github.com/vidorg/vid_backend/src/model/po"
 	"github.com/vidorg/vid_backend/src/util"
 	"log"
@@ -21,12 +23,14 @@ import (
 type videoController struct {
 	config   *config.ServerConfig
 	videoDao *dao.VideoDao
+	mapper   *xmapper.EntitiesMapper
 }
 
-func VideoController(config *config.ServerConfig) *videoController {
+func VideoController(config *config.ServerConfig, mapper *xmapper.EntitiesMapper) *videoController {
 	return &videoController{
 		config:   config,
 		videoDao: dao.VideoRepository(config.MySqlConfig),
+		mapper:   mapper,
 	}
 }
 
@@ -56,7 +60,9 @@ func (v *videoController) QueryAllVideos(c *gin.Context) {
 	}
 
 	videos, count := v.videoDao.QueryAll(page)
-	common.Result{}.Ok().SetPage(count, page, dto.VideoDto{}.FromPos(videos, v.config)).JSON(c)
+
+	retDto := xcondition.First(v.mapper.Map([]*dto.VideoDto{}, videos)).([]*dto.VideoDto)
+	common.Result{}.Ok().SetPage(count, page, retDto).JSON(c)
 }
 
 // @Router				/v1/user/{uid}/video?page [GET]
@@ -91,7 +97,8 @@ func (v *videoController) QueryVideosByUid(c *gin.Context) {
 		return
 	}
 
-	common.Result{}.Ok().SetPage(count, page, dto.VideoDto{}.FromPos(videos, v.config)).JSON(c)
+	retDto := xcondition.First(v.mapper.Map([]*dto.VideoDto{}, videos)).([]*dto.VideoDto)
+	common.Result{}.Ok().SetPage(count, page, retDto).JSON(c)
 }
 
 // @Router				/v1/video/{vid} [GET]
@@ -120,7 +127,8 @@ func (v *videoController) QueryVideoByVid(c *gin.Context) {
 		return
 	}
 
-	common.Result{}.Ok().SetData(dto.VideoDto{}.FromPo(video, v.config)).JSON(c)
+	retDto := xcondition.First(v.mapper.Map(&dto.VideoDto{}, video)).(*dto.VideoDto)
+	common.Result{}.Ok().SetData(retDto).JSON(c)
 }
 
 // @Router				/v1/video/ [POST] [Auth]
@@ -175,7 +183,8 @@ func (v *videoController) InsertVideo(c *gin.Context) {
 		return
 	}
 
-	common.Result{}.Created().SetData(dto.VideoDto{}.FromPo(video, v.config)).JSON(c)
+	retDto := xcondition.First(v.mapper.Map(&dto.VideoDto{}, video)).(*dto.VideoDto)
+	common.Result{}.Ok().SetData(retDto).JSON(c)
 }
 
 // @Router				/v1/video/{vid} [POST] [Auth]
@@ -242,7 +251,8 @@ func (v *videoController) UpdateVideo(c *gin.Context) {
 		return
 	}
 
-	common.Result{}.Ok().SetData(dto.VideoDto{}.FromPo(video, v.config)).JSON(c)
+	retDto := xcondition.First(v.mapper.Map(&dto.VideoDto{}, video)).(*dto.VideoDto)
+	common.Result{}.Ok().SetData(retDto).JSON(c)
 }
 
 // @Router				/v1/video/{vid} [DELETE] [Auth]
