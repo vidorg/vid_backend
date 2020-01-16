@@ -11,8 +11,8 @@ import (
 	"strings"
 )
 
-func CreateMapperProfile(config *config.ServerConfig) *xmapper.EntitiesMapper {
-	mapper := xmapper.NewEntitiesMapper()
+func CreateMapperProfile(config *config.ServerConfig) *xmapper.EntityMapper {
+	mapper := xmapper.NewEntityMapper()
 
 	mapper = mapper.
 		CreateMapper(&po.User{}, &dto.UserDto{}).

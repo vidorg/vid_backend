@@ -19,7 +19,7 @@ type UserDto struct {
 
 // show all info
 // Only used in QueryAllUsers()
-func UserDtoAdminMapper(mapper *xmapper.EntitiesMapper) *xmapper.EntitiesMapper {
+func UserDtoAdminMapper(mapper *xmapper.EntityMapper) *xmapper.EntityMapper {
 	return mapper.CreateMapper(&po.User{}, &UserDto{}).ForExtra(func(i interface{}, j interface{}) interface{} {
 		user := i.(po.User)
 		userDto := j.(UserDto)
@@ -30,7 +30,7 @@ func UserDtoAdminMapper(mapper *xmapper.EntitiesMapper) *xmapper.EntitiesMapper 
 
 // show info dependent on authUser
 // Only used in QueryUser()
-func UserDtoExtraMapper(mapper *xmapper.EntitiesMapper, authUser *po.User) *xmapper.EntitiesMapper {
+func UserDtoExtraMapper(mapper *xmapper.EntityMapper, authUser *po.User) *xmapper.EntityMapper {
 	extra := func(i interface{}, j interface{}) interface{} {
 		if authUser == nil { // not login, nothing (default)
 			return j

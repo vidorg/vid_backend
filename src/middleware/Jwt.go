@@ -2,21 +2,21 @@ package middleware
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/vidorg/vid_backend/src/config"
 	"github.com/vidorg/vid_backend/src/controller/exception"
-	"github.com/vidorg/vid_backend/src/database/dao"
 	"github.com/vidorg/vid_backend/src/model/common"
 	"github.com/vidorg/vid_backend/src/model/common/enum"
 	"github.com/vidorg/vid_backend/src/model/po"
+	"github.com/vidorg/vid_backend/src/server/inject"
 	"github.com/vidorg/vid_backend/src/util"
 	"net/http"
 )
 
-func JwtMiddleware(needAdmin bool, config *config.ServerConfig) gin.HandlerFunc {
+func JwtMiddleware(needAdmin bool, inject *inject.Option) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		authHeader := c.Request.Header.Get("Authorization")
-		user, err := JwtCheck(authHeader, config)
+		user, err := JwtCheck(authHeader, inject)
 		if err != nil {
+			// AuthorizationError / TokenExpiredError
 			common.Result{}.Error(http.StatusUnauthorized).SetMessage(err.Error()).JSON(c)
 			c.Abort()
 			return
@@ -32,13 +32,13 @@ func JwtMiddleware(needAdmin bool, config *config.ServerConfig) gin.HandlerFunc 
 	}
 }
 
-func JwtCheck(token string, config *config.ServerConfig) (*po.User, error) {
+func JwtCheck(token string, inject *inject.Option) (*po.User, error) {
 	if token == "" {
 		return nil, exception.AuthorizationError
 	}
 
 	// parse
-	claims, err := util.AuthUtil.ParseToken(token, config.JwtConfig)
+	claims, err := util.AuthUtil.ParseToken(token, inject.ServerConfig.JwtConfig)
 	if err != nil {
 		if util.AuthUtil.IsTokenExpireError(err) {
 			// Token Expired
@@ -52,13 +52,13 @@ func JwtCheck(token string, config *config.ServerConfig) (*po.User, error) {
 	}
 
 	// check redis
-	ok := dao.TokenRepository(config.RedisConfig, config.JwtConfig.RedisHeader).Query(token)
+	ok := inject.TokenDao.Query(token)
 	if !ok {
 		return nil, exception.AuthorizationError
 	}
 
 	// check dao & admin
-	user := dao.UserRepository(config.MySqlConfig).QueryByUid(claims.UserID)
+	user := inject.UserDao.QueryByUid(claims.UserID)
 	if user == nil {
 		return nil, exception.AuthorizationError
 	}
@@ -66,10 +66,10 @@ func JwtCheck(token string, config *config.ServerConfig) (*po.User, error) {
 	return user, nil
 }
 
-func GetAuthUser(c *gin.Context, config *config.ServerConfig) *po.User {
+func GetAuthUser(c *gin.Context, inject *inject.Option) *po.User {
 	_user, exist := c.Get("user")
 	if !exist { // not jet check auth
-		JwtMiddleware(false, config)(c)
+		JwtMiddleware(false, inject)(c)
 		_user, exist = c.Get("user")
 		if !exist { // Non-Auth
 			return nil

@@ -12,22 +12,27 @@ import (
 	"github.com/vidorg/vid_backend/src/model/common"
 	"github.com/vidorg/vid_backend/src/model/dto"
 	"github.com/vidorg/vid_backend/src/model/dto/param"
+	"github.com/vidorg/vid_backend/src/server/inject"
 	"net/http"
 )
 
 type subController struct {
+	inject *inject.Option
+
 	config  *config.ServerConfig
 	userDao *dao.UserDao
 	subDao  *dao.SubDao
-	mapper  *xmapper.EntitiesMapper
+	mapper  *xmapper.EntityMapper
 }
 
-func SubController(config *config.ServerConfig, mapper *xmapper.EntitiesMapper) *subController {
+func SubController(inject *inject.Option) *subController {
 	return &subController{
-		config:  config,
-		userDao: dao.UserRepository(config.MySqlConfig),
-		subDao:  dao.SubRepository(config.MySqlConfig),
-		mapper:  mapper,
+		inject: inject,
+
+		config:  inject.ServerConfig,
+		userDao: inject.UserDao,
+		subDao:  inject.SubDao,
+		mapper:  inject.EntityMapper,
 	}
 }
 
@@ -124,7 +129,7 @@ func (s *subController) QuerySubscribingUsers(c *gin.Context) {
 							}
  						} */
 func (s *subController) SubscribeUser(c *gin.Context) {
-	authUser := middleware.GetAuthUser(c, s.config)
+	authUser := middleware.GetAuthUser(c, s.inject)
 	subParam := &param.SubParam{}
 	if err := c.ShouldBind(subParam); err != nil {
 		common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.WrapValidationError(err).Error()).JSON(c)
@@ -167,7 +172,7 @@ func (s *subController) SubscribeUser(c *gin.Context) {
 							}
  						} */
 func (s *subController) UnSubscribeUser(c *gin.Context) {
-	authUser := middleware.GetAuthUser(c, s.config)
+	authUser := middleware.GetAuthUser(c, s.inject)
 	subParam := &param.SubParam{}
 	if err := c.ShouldBind(subParam); err != nil {
 		common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.WrapValidationError(err).Error()).JSON(c)

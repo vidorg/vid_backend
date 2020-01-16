@@ -13,23 +13,28 @@ import (
 	"github.com/vidorg/vid_backend/src/model/dto"
 	"github.com/vidorg/vid_backend/src/model/dto/param"
 	"github.com/vidorg/vid_backend/src/model/po"
+	"github.com/vidorg/vid_backend/src/server/inject"
 	"github.com/vidorg/vid_backend/src/util"
 	"net/http"
 )
 
 type authController struct {
+	inject *inject.Option
+
 	config   *config.ServerConfig
 	passDao  *dao.PassDao
 	tokenDao *dao.TokenDao
-	mapper   *xmapper.EntitiesMapper
+	mapper   *xmapper.EntityMapper
 }
 
-func AuthController(config *config.ServerConfig, mapper *xmapper.EntitiesMapper) *authController {
+func AuthController(inject *inject.Option) *authController {
 	return &authController{
-		config:   config,
-		passDao:  dao.PassRepository(config.MySqlConfig),
-		tokenDao: dao.TokenRepository(config.RedisConfig, config.JwtConfig.RedisHeader),
-		mapper:   mapper,
+		inject: inject,
+
+		config:   inject.ServerConfig,
+		passDao:  inject.PassDao,
+		tokenDao: inject.TokenDao,
+		mapper:   inject.EntityMapper,
 	}
 }
 
@@ -153,7 +158,7 @@ func (a *authController) Register(c *gin.Context) {
 							"data": ${user}
  						} */
 func (a *authController) CurrentUser(c *gin.Context) {
-	authUser := middleware.GetAuthUser(c, a.config)
+	authUser := middleware.GetAuthUser(c, a.inject)
 	retDto := xcondition.First(a.mapper.Map(&dto.UserDto{}, authUser)).(*dto.UserDto)
 	common.Result{}.Ok().SetData(retDto).JSON(c)
 }
@@ -195,7 +200,7 @@ func (a *authController) Logout(c *gin.Context) {
 							"message": "success"
  						} */
 func (a *authController) UpdatePassword(c *gin.Context) {
-	authUser := middleware.GetAuthUser(c, a.config)
+	authUser := middleware.GetAuthUser(c, a.inject)
 	authHeader := c.GetHeader("Authorization")
 	passParam := &param.PassParam{}
 	if err := c.ShouldBind(passParam); err != nil {

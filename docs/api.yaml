@@ -323,6 +323,96 @@ paths:
       summary: 更新登录用户
       tags:
       - User
+  /v1/user/admin/{uid}:
+    delete:
+      consumes:
+      - multipart/form-data
+      description: 删除用户所有信息，管理员权限
+      operationId: -v1-user-admin-{uid}-delete
+      parameters:
+      - *id001
+      produces:
+      - application/json
+      responses:
+        '200':
+          description: "```json\n{\n    \"code\": 200,\n    \"message\": \"success\"\
+            \n}\n```"
+        '401':
+          description: '"authorization failed" / "token has expired" / "need admin
+            authority"'
+        '404':
+          description: '"user not found"'
+        '500':
+          description: '"user delete failed"'
+      security:
+      - basicAuth: ''
+      summary: 管理员删除用户
+      tags:
+      - User
+      - Administration
+    put:
+      consumes:
+      - multipart/form-data
+      description: 更新用户信息，管理员权限
+      operationId: -v1-user-admin-{uid}-put
+      parameters:
+      - *id001
+      - description: 用户名，长度在 [8, 30] 之间
+        in: formData
+        name: username
+        required: true
+        type: string
+      - description: 用户性别，允许值为 {male, female, unknown}
+        in: formData
+        name: sex
+        required: true
+        type: string
+      - description: 用户简介，长度在 [0, 255] 之间
+        in: formData
+        name: profile
+        required: true
+        type: string
+      - description: 用户生日，固定格式为 2000-01-01
+        in: formData
+        name: birth_time
+        required: true
+        type: string
+      - description: 用户手机号码，长度为 11，仅限中国大陆手机号码
+        in: formData
+        name: phone_number
+        required: true
+        type: string
+      - description: 用户头像链接
+        in: formData
+        name: avatar_file
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        '200':
+          description: "```json\n{\n    \"code\": 200,\n    \"message\": \"success\"\
+            ,\n    \"data\": {\n        \"uid\": 1,\n        \"username\": \"admin\"\
+            ,\n        \"sex\": \"male\",\n        \"profile\": \"Demo admin profile\"\
+            ,\n        \"avatar_url\": \"http://localhost:3344/v1/raw/image/avatar.jpg\"\
+            ,\n        \"birth_time\": \"2020-01-10\",\n        \"authority\": \"\
+            admin\",\n        \"phone_number\": \"13512345678\"\n    }\n}\n```"
+        '400':
+          description: '"request param error" / "request format error" / "username
+            has been used"'
+        '401':
+          description: '"authorization failed" / "token has expired" / "need admin
+            authority"'
+        '404':
+          description: '"user not found"'
+        '500':
+          description: '"user update failed"'
+      security:
+      - basicAuth: ''
+      summary: 管理员更新用户
+      tags:
+      - User
+      - Administration
   /v1/user/subscribing:
     delete:
       consumes:
@@ -388,36 +478,10 @@ paths:
       tags:
       - Subscribe
   /v1/user/{uid}:
-    delete:
-      consumes:
-      - multipart/form-data
-      description: 删除用户所有信息，管理员权限
-      operationId: -v1-user-{uid}-delete
-      parameters:
-      - *id001
-      produces:
-      - application/json
-      responses:
-        '200':
-          description: "```json\n{\n    \"code\": 200,\n    \"message\": \"success\"\
-            \n}\n```"
-        '401':
-          description: '"authorization failed" / "token has expired" / "need admin
-            authority"'
-        '404':
-          description: '"user not found"'
-        '500':
-          description: '"user delete failed"'
-      security:
-      - basicAuth: ''
-      summary: 管理员删除用户
-      tags:
-      - User
-      - Administration
     get:
       consumes:
       - multipart/form-data
-      description: 查询用户信息
+      description: 查询用户信息，此处可见用户手机号码
       operationId: -v1-user-{uid}-get
       parameters:
       - description: 用户id
@@ -445,69 +509,6 @@ paths:
       summary: 查询用户
       tags:
       - User
-    put:
-      consumes:
-      - multipart/form-data
-      description: 更新用户信息，管理员权限
-      operationId: -v1-user-{uid}-put
-      parameters:
-      - *id001
-      - description: 用户名，长度在 [8, 30] 之间
-        in: formData
-        name: username
-        required: true
-        type: string
-      - description: 用户性别，允许值为 {male, female, unknown}
-        in: formData
-        name: sex
-        required: true
-        type: string
-      - description: 用户简介，长度在 [0, 255] 之间
-        in: formData
-        name: profile
-        required: true
-        type: string
-      - description: 用户生日，固定格式为 2000-01-01
-        in: formData
-        name: birth_time
-        required: true
-        type: string
-      - description: 用户手机号码，长度为 11，仅限中国大陆手机号码
-        in: formData
-        name: phone_number
-        required: true
-        type: string
-      - description: 用户头像链接
-        in: formData
-        name: avatar_file
-        required: true
-        type: file
-      produces:
-      - application/json
-      responses:
-        '200':
-          description: "```json\n{\n    \"code\": 200,\n    \"message\": \"success\"\
-            ,\n    \"data\": {\n        \"uid\": 1,\n        \"username\": \"admin\"\
-            ,\n        \"sex\": \"male\",\n        \"profile\": \"Demo admin profile\"\
-            ,\n        \"avatar_url\": \"http://localhost:3344/v1/raw/image/avatar.jpg\"\
-            ,\n        \"birth_time\": \"2020-01-10\",\n        \"authority\": \"\
-            admin\",\n        \"phone_number\": \"13512345678\"\n    }\n}\n```"
-        '400':
-          description: '"request param error" / "request format error" / "username
-            has been used"'
-        '401':
-          description: '"authorization failed" / "token has expired" / "need admin
-            authority"'
-        '404':
-          description: '"user not found"'
-        '500':
-          description: '"user update failed"'
-      security:
-      - basicAuth: ''
-      summary: 管理员更新用户
-      tags:
-      - User
-      - Administration
   /v1/user/{uid}/subscriber:
     get:
       consumes:
@@ -628,7 +629,7 @@ paths:
     get:
       consumes:
       - multipart/form-data
-      description: 管理员查询所有用户，返回分页数据，管理员权限
+      description: 管理员查询所有用户，返回分页数据，管理员权限，此处可见用户手机号码
       operationId: -v1-user?page-get
       parameters:
       - *id001

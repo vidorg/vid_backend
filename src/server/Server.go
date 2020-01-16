@@ -4,13 +4,11 @@ import (
 	"fmt"
 	"github.com/DeanThompson/ginpprof"
 	"github.com/gin-gonic/gin"
-	"github.com/swaggo/gin-swagger"
+	ginSwagger "github.com/swaggo/gin-swagger"
 	"github.com/swaggo/gin-swagger/swaggerFiles"
 	_ "github.com/vidorg/vid_backend/docs"
 	"github.com/vidorg/vid_backend/src/config"
-	"github.com/vidorg/vid_backend/src/model/common"
-	"github.com/vidorg/vid_backend/src/model/common/profile"
-	"github.com/vidorg/vid_backend/src/server/v1"
+	"github.com/vidorg/vid_backend/src/server/router"
 	"github.com/vidorg/vid_backend/src/util"
 	"io"
 	"log"
@@ -19,26 +17,23 @@ import (
 )
 
 func InitServer(config *config.ServerConfig) *http.Server {
-	gin.SetMode(config.RunMode)
-
-	// Log
-	initLogger()
-
 	// Gin Server
 	engine := gin.Default()
-	commonRouter(engine)
+	initLogger()
 
+	gin.SetMode(config.RunMode)
 	if config.RunMode == "debug" {
 		ginpprof.Wrap(engine)
 	}
 
-	// Binding & Mapper
+	// Binding & Inject
 	SetupDefinedValidation()
-	mapper := profile.CreateMapperProfile(config)
+	inject := Inject(config)
 
 	// Route
-	v1.SetupRouters(engine, config, mapper)
+	router.SetupCommonRouter(engine)
 	engine.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	router.SetupV1Router(engine, inject)
 
 	// Server
 	return &http.Server{
@@ -54,25 +49,4 @@ func initLogger() {
 	}
 
 	gin.DefaultWriter = io.MultiWriter(logFile, os.Stdout)
-	// logger := log.New(logFile, "", log.LstdFlags|log.Lshortfile)
-}
-
-// @Router				/ping [GET]
-// @Summary				Ping
-// @Description			Ping
-// @Tag					Ping
-/* @Success 200			{ "ping": "pong" } */
-func commonRouter(router *gin.Engine) {
-	router.HandleMethodNotAllowed = true
-
-	router.GET("/ping", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{"ping": "pong"})
-	})
-
-	router.NoMethod(func(c *gin.Context) {
-		common.Result{}.Error(http.StatusMethodNotAllowed).SetMessage("method not allowed").JSON(c)
-	})
-	router.NoRoute(func(c *gin.Context) {
-		common.Result{}.Error(http.StatusNotFound).SetMessage(fmt.Sprintf("route %s is not found", c.Request.URL.Path)).JSON(c)
-	})
 }

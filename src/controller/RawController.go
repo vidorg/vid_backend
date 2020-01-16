@@ -7,19 +7,24 @@ import (
 	"github.com/vidorg/vid_backend/src/config"
 	"github.com/vidorg/vid_backend/src/controller/exception"
 	"github.com/vidorg/vid_backend/src/model/common"
+	"github.com/vidorg/vid_backend/src/server/inject"
 	"github.com/vidorg/vid_backend/src/util"
 	"net/http"
 )
 
 type rawController struct {
+	inject *inject.Option
+
 	config *config.ServerConfig
-	mapper *xmapper.EntitiesMapper
+	mapper *xmapper.EntityMapper
 }
 
-func RawController(config *config.ServerConfig, mapper *xmapper.EntitiesMapper) *rawController {
+func RawController(inject *inject.Option) *rawController {
 	return &rawController{
-		config: config,
-		mapper: mapper,
+		inject: inject,
+
+		config: inject.ServerConfig,
+		mapper: inject.EntityMapper,
 	}
 }
 

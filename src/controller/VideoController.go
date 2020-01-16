@@ -14,6 +14,7 @@ import (
 	"github.com/vidorg/vid_backend/src/model/dto"
 	"github.com/vidorg/vid_backend/src/model/dto/param"
 	"github.com/vidorg/vid_backend/src/model/po"
+	"github.com/vidorg/vid_backend/src/server/inject"
 	"github.com/vidorg/vid_backend/src/util"
 	"log"
 	"net/http"
@@ -21,16 +22,20 @@ import (
 )
 
 type videoController struct {
+	inject *inject.Option
+
 	config   *config.ServerConfig
 	videoDao *dao.VideoDao
-	mapper   *xmapper.EntitiesMapper
+	mapper   *xmapper.EntityMapper
 }
 
-func VideoController(config *config.ServerConfig, mapper *xmapper.EntitiesMapper) *videoController {
+func VideoController(inject *inject.Option) *videoController {
 	return &videoController{
-		config:   config,
-		videoDao: dao.VideoRepository(config.MySqlConfig),
-		mapper:   mapper,
+		inject: inject,
+
+		config:   inject.ServerConfig,
+		videoDao: inject.VideoDao,
+		mapper:   inject.EntityMapper,
 	}
 }
 
@@ -153,7 +158,7 @@ func (v *videoController) QueryVideoByVid(c *gin.Context) {
 							"data": ${video}
  						} */
 func (v *videoController) InsertVideo(c *gin.Context) {
-	authUser := middleware.GetAuthUser(c, v.config)
+	authUser := middleware.GetAuthUser(c, v.inject)
 	videoParam := &param.VideoParam{}
 	if err := c.ShouldBind(videoParam); err != nil {
 		common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.WrapValidationError(err).Error()).JSON(c)
@@ -209,7 +214,7 @@ func (v *videoController) InsertVideo(c *gin.Context) {
 							"data": ${video}
  						} */
 func (v *videoController) UpdateVideo(c *gin.Context) {
-	authUser := middleware.GetAuthUser(c, v.config)
+	authUser := middleware.GetAuthUser(c, v.inject)
 	vid, ok := param.BindRouteId(c, "vid")
 	if !ok {
 		common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.RequestParamError.Error()).JSON(c)
@@ -271,7 +276,7 @@ func (v *videoController) UpdateVideo(c *gin.Context) {
 							"message": "success"
  						} */
 func (v *videoController) DeleteVideo(c *gin.Context) {
-	authUser := middleware.GetAuthUser(c, v.config)
+	authUser := middleware.GetAuthUser(c, v.inject)
 	vid, ok := param.BindRouteId(c, "vid")
 	if !ok {
 		common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.RequestParamError.Error()).JSON(c)

@@ -307,6 +307,75 @@ Ping
 | --- | --- |
 | basicAuth | |
 
+### /v1/user/admin/{uid}
+
+#### DELETE
+##### Summary:
+
+管理员删除用户
+
+##### Description:
+
+删除用户所有信息，管理员权限
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+| Authorization | header | 用户登录令牌 | Yes | string |
+
+##### Responses
+
+| Code | Description |
+| ---- | ----------- |
+| 200 | ```json {     "code": 200,     "message": "success" } ``` |
+| 401 | "authorization failed" / "token has expired" / "need admin authority" |
+| 404 | "user not found" |
+| 500 | "user delete failed" |
+
+##### Security
+
+| Security Schema | Scopes |
+| --- | --- |
+| basicAuth | |
+
+#### PUT
+##### Summary:
+
+管理员更新用户
+
+##### Description:
+
+更新用户信息，管理员权限
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+| Authorization | header | 用户登录令牌 | Yes | string |
+| username | formData | 用户名，长度在 [8, 30] 之间 | Yes | string |
+| sex | formData | 用户性别，允许值为 {male, female, unknown} | Yes | string |
+| profile | formData | 用户简介，长度在 [0, 255] 之间 | Yes | string |
+| birth_time | formData | 用户生日，固定格式为 2000-01-01 | Yes | string |
+| phone_number | formData | 用户手机号码，长度为 11，仅限中国大陆手机号码 | Yes | string |
+| avatar_file | formData | 用户头像链接 | Yes | file |
+
+##### Responses
+
+| Code | Description |
+| ---- | ----------- |
+| 200 | ```json {     "code": 200,     "message": "success",     "data": {         "uid": 1,         "username": "admin",         "sex": "male",         "profile": "Demo admin profile",         "avatar_url": "http://localhost:3344/v1/raw/image/avatar.jpg",         "birth_time": "2020-01-10",         "authority": "admin",         "phone_number": "13512345678"     } } ``` |
+| 400 | "request param error" / "request format error" / "username has been used" |
+| 401 | "authorization failed" / "token has expired" / "need admin authority" |
+| 404 | "user not found" |
+| 500 | "user update failed" |
+
+##### Security
+
+| Security Schema | Scopes |
+| --- | --- |
+| basicAuth | |
+
 ### /v1/user/subscribing
 
 #### DELETE
@@ -375,36 +444,6 @@ Ping
 
 ### /v1/user/{uid}
 
-#### DELETE
-##### Summary:
-
-管理员删除用户
-
-##### Description:
-
-删除用户所有信息，管理员权限
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
-| Authorization | header | 用户登录令牌 | Yes | string |
-
-##### Responses
-
-| Code | Description |
-| ---- | ----------- |
-| 200 | ```json {     "code": 200,     "message": "success" } ``` |
-| 401 | "authorization failed" / "token has expired" / "need admin authority" |
-| 404 | "user not found" |
-| 500 | "user delete failed" |
-
-##### Security
-
-| Security Schema | Scopes |
-| --- | --- |
-| basicAuth | |
-
 #### GET
 ##### Summary:
 
@@ -412,7 +451,7 @@ Ping
 
 ##### Description:
 
-查询用户信息
+查询用户信息，此处可见用户手机号码
 
 ##### Parameters
 
@@ -427,43 +466,6 @@ Ping
 | 200 | ```json {     "code": 200,     "message": "success",     "data": {         "user": {             "uid": 1,             "username": "admin",             "sex": "male",             "profile": "Demo admin profile",             "avatar_url": "http://localhost:3344/v1/raw/image/avatar.jpg",             "birth_time": "2020-01-10",             "authority": "admin",             "phone_number": "13512345678"         },         "extra": {             "subscribing_cnt": 3,             "subscriber_cnt": 2,             "video_cnt": 3         }     } } ``` |
 | 400 | "request param error" |
 | 404 | "user not found" |
-
-#### PUT
-##### Summary:
-
-管理员更新用户
-
-##### Description:
-
-更新用户信息，管理员权限
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
-| Authorization | header | 用户登录令牌 | Yes | string |
-| username | formData | 用户名，长度在 [8, 30] 之间 | Yes | string |
-| sex | formData | 用户性别，允许值为 {male, female, unknown} | Yes | string |
-| profile | formData | 用户简介，长度在 [0, 255] 之间 | Yes | string |
-| birth_time | formData | 用户生日，固定格式为 2000-01-01 | Yes | string |
-| phone_number | formData | 用户手机号码，长度为 11，仅限中国大陆手机号码 | Yes | string |
-| avatar_file | formData | 用户头像链接 | Yes | file |
-
-##### Responses
-
-| Code | Description |
-| ---- | ----------- |
-| 200 | ```json {     "code": 200,     "message": "success",     "data": {         "uid": 1,         "username": "admin",         "sex": "male",         "profile": "Demo admin profile",         "avatar_url": "http://localhost:3344/v1/raw/image/avatar.jpg",         "birth_time": "2020-01-10",         "authority": "admin",         "phone_number": "13512345678"     } } ``` |
-| 400 | "request param error" / "request format error" / "username has been used" |
-| 401 | "authorization failed" / "token has expired" / "need admin authority" |
-| 404 | "user not found" |
-| 500 | "user update failed" |
-
-##### Security
-
-| Security Schema | Scopes |
-| --- | --- |
-| basicAuth | |
 
 ### /v1/user/{uid}/subscriber
 
@@ -552,7 +554,7 @@ Ping
 
 ##### Description:
 
-管理员查询所有用户，返回分页数据，管理员权限
+管理员查询所有用户，返回分页数据，管理员权限，此处可见用户手机号码
 
 ##### Parameters
 
