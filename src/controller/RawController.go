@@ -2,30 +2,31 @@ package controller
 
 import (
 	"fmt"
+	"github.com/Aoi-hosizora/ahlib/xdi"
 	"github.com/Aoi-hosizora/ahlib/xmapper"
 	"github.com/gin-gonic/gin"
 	"github.com/vidorg/vid_backend/src/config"
 	"github.com/vidorg/vid_backend/src/controller/exception"
 	"github.com/vidorg/vid_backend/src/model/common"
-	"github.com/vidorg/vid_backend/src/server/inject"
 	"github.com/vidorg/vid_backend/src/util"
 	"net/http"
 )
 
-type rawController struct {
-	inject *inject.Option
+type RawController struct {
+	Config *config.ServerConfig  `di:"~"`
+	Mapper *xmapper.EntityMapper `di:"~"`
 
-	config *config.ServerConfig
-	mapper *xmapper.EntityMapper
+	dic xdi.DiContainer `di:"-"`
 }
 
-func RawController(inject *inject.Option) *rawController {
-	return &rawController{
-		inject: inject,
-
-		config: inject.ServerConfig,
-		mapper: inject.EntityMapper,
+func NewRawController(dic xdi.DiContainer) *RawController {
+	ctrl := &RawController{dic: dic}
+	dic.Inject(ctrl)
+	if xdi.HasNilDi(ctrl) {
+		panic("Has nil di field")
 	}
+
+	return ctrl
 }
 
 // @Router				/v1/raw/image [POST] [Auth]
@@ -45,7 +46,7 @@ func RawController(inject *inject.Option) *rawController {
 								"url": "http://localhost:3344/v1/raw/image/20200110130323908439.jpg"
 							}
  						} */
-func (r *rawController) UploadImage(c *gin.Context) {
+func (r *RawController) UploadImage(c *gin.Context) {
 	imageFile, imageHeader, err := c.Request.FormFile("image")
 	if err != nil || imageFile == nil {
 		common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.RequestParamError.Error()).JSON(c)
@@ -58,13 +59,13 @@ func (r *rawController) UploadImage(c *gin.Context) {
 	}
 
 	filename := fmt.Sprintf("%s.jpg", util.CommonUtil.CurrentTimeUuid())
-	savePath := fmt.Sprintf("%s%s", r.config.FileConfig.ImagePath, filename)
+	savePath := fmt.Sprintf("%s%s", r.Config.FileConfig.ImagePath, filename)
 	if err := util.ImageUtil.SaveAsJpg(imageFile, ext, savePath); err != nil {
 		common.Result{}.Error(http.StatusInternalServerError).SetMessage(exception.ImageSaveError.Error()).JSON(c)
 		return
 	}
 
-	url := fmt.Sprintf("%s%s", r.config.FileConfig.ImageUrlPrefix, filename)
+	url := fmt.Sprintf("%s%s", r.Config.FileConfig.ImageUrlPrefix, filename)
 	common.Result{}.Ok().PutData("url", url).JSON(c)
 }
 
@@ -76,9 +77,9 @@ func (r *rawController) UploadImage(c *gin.Context) {
 // @Accept				multipart/form-data
 // @ErrorCode			404 image not found
 /* @Success 200			{ "Content-Type": "image/jpeg" } */
-func (r *rawController) RawImage(c *gin.Context) {
+func (r *RawController) RawImage(c *gin.Context) {
 	filename := c.Param("filename")
-	filePath := fmt.Sprintf("%s%s", r.config.FileConfig.ImagePath, filename)
+	filePath := fmt.Sprintf("%s%s", r.Config.FileConfig.ImagePath, filename)
 	if !util.CommonUtil.IsDirOrFileExist(filePath) {
 		common.Result{}.Error(http.StatusNotFound).SetMessage(exception.ImageNotFoundError.Error()).JSON(c)
 		return

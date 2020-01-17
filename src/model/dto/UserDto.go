@@ -2,6 +2,7 @@ package dto
 
 import (
 	"github.com/Aoi-hosizora/ahlib/xmapper"
+	"github.com/getlantern/deepcopy"
 	"github.com/vidorg/vid_backend/src/model/common/enum"
 	"github.com/vidorg/vid_backend/src/model/po"
 )
@@ -20,7 +21,12 @@ type UserDto struct {
 // show all info
 // Only used in QueryAllUsers()
 func UserDtoAdminMapper(mapper *xmapper.EntityMapper) *xmapper.EntityMapper {
-	return mapper.CreateMapper(&po.User{}, &UserDto{}).ForExtra(func(i interface{}, j interface{}) interface{} {
+	var newMapper xmapper.EntityMapper
+	err := deepcopy.Copy(&newMapper, mapper)
+	if err != nil {
+		return mapper
+	}
+	return newMapper.CreateMapper(&po.User{}, &UserDto{}).ForExtra(func(i interface{}, j interface{}) interface{} {
 		user := i.(po.User)
 		userDto := j.(UserDto)
 		userDto.PhoneNumber = user.PhoneNumber
@@ -47,5 +53,11 @@ func UserDtoExtraMapper(mapper *xmapper.EntityMapper, authUser *po.User) *xmappe
 			return userDto
 		}
 	}
-	return mapper.CreateMapper(&po.User{}, &UserDto{}).ForExtra(extra).Build()
+
+	var newMapper xmapper.EntityMapper
+	err := deepcopy.Copy(&newMapper, mapper)
+	if err != nil {
+		return mapper
+	}
+	return newMapper.CreateMapper(&po.User{}, &UserDto{}).ForExtra(extra).Build()
 }

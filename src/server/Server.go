@@ -26,14 +26,14 @@ func InitServer(config *config.ServerConfig) *http.Server {
 		ginpprof.Wrap(engine)
 	}
 
-	// Binding & Inject
+	// Binding & DI
 	SetupDefinedValidation()
-	inject := Inject(config)
+	dic := ProvideService(config)
 
 	// Route
 	router.SetupCommonRouter(engine)
 	engine.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
-	router.SetupV1Router(engine, inject)
+	router.SetupV1Router(engine, config, dic)
 
 	// Server
 	return &http.Server{

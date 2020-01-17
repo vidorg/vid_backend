@@ -2,6 +2,7 @@ package controller
 
 import (
 	"github.com/Aoi-hosizora/ahlib/xcondition"
+	"github.com/Aoi-hosizora/ahlib/xdi"
 	"github.com/Aoi-hosizora/ahlib/xmapper"
 	"github.com/gin-gonic/gin"
 	"github.com/vidorg/vid_backend/src/config"
@@ -14,29 +15,27 @@ import (
 	"github.com/vidorg/vid_backend/src/model/dto"
 	"github.com/vidorg/vid_backend/src/model/dto/param"
 	"github.com/vidorg/vid_backend/src/model/po"
-	"github.com/vidorg/vid_backend/src/server/inject"
 	"github.com/vidorg/vid_backend/src/util"
-	"log"
 	"net/http"
 	"time"
 )
 
-type videoController struct {
-	inject *inject.Option
+type VideoController struct {
+	Config   *config.ServerConfig  `di:"~"`
+	VideoDao *dao.VideoDao         `di:"~"`
+	Mapper   *xmapper.EntityMapper `di:"~"`
 
-	config   *config.ServerConfig
-	videoDao *dao.VideoDao
-	mapper   *xmapper.EntityMapper
+	dic xdi.DiContainer `di:"-"`
 }
 
-func VideoController(inject *inject.Option) *videoController {
-	return &videoController{
-		inject: inject,
-
-		config:   inject.ServerConfig,
-		videoDao: inject.VideoDao,
-		mapper:   inject.EntityMapper,
+func NewVideoController(dic xdi.DiContainer) *VideoController {
+	ctrl := &VideoController{dic: dic}
+	dic.Inject(ctrl)
+	if xdi.HasNilDi(ctrl) {
+		panic("Has nil di field")
 	}
+
+	return ctrl
 }
 
 // @Router				/v1/video?page [GET] [Auth]
@@ -57,16 +56,16 @@ func VideoController(inject *inject.Option) *videoController {
 								"data": [ ${video} ]
 							}
  						} */
-func (v *videoController) QueryAllVideos(c *gin.Context) {
+func (v *VideoController) QueryAllVideos(c *gin.Context) {
 	page, ok := param.BindQueryPage(c)
 	if !ok {
 		common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.RequestParamError.Error()).JSON(c)
 		return
 	}
 
-	videos, count := v.videoDao.QueryAll(page)
+	videos, count := v.VideoDao.QueryAll(page)
 
-	retDto := xcondition.First(v.mapper.Map([]*dto.VideoDto{}, videos)).([]*dto.VideoDto)
+	retDto := xcondition.First(v.Mapper.Map([]*dto.VideoDto{}, videos)).([]*dto.VideoDto)
 	common.Result{}.Ok().SetPage(count, page, retDto).JSON(c)
 }
 
@@ -88,7 +87,7 @@ func (v *videoController) QueryAllVideos(c *gin.Context) {
 								"data": [ ${video} ]
 							}
  						} */
-func (v *videoController) QueryVideosByUid(c *gin.Context) {
+func (v *VideoController) QueryVideosByUid(c *gin.Context) {
 	uid, ok1 := param.BindRouteId(c, "uid")
 	page, ok2 := param.BindQueryPage(c)
 	if !ok1 || !ok2 {
@@ -96,13 +95,13 @@ func (v *videoController) QueryVideosByUid(c *gin.Context) {
 		return
 	}
 
-	videos, count, status := v.videoDao.QueryByUid(uid, page)
+	videos, count, status := v.VideoDao.QueryByUid(uid, page)
 	if status == database.DbNotFound {
 		common.Result{}.Error(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()).JSON(c)
 		return
 	}
 
-	retDto := xcondition.First(v.mapper.Map([]*dto.VideoDto{}, videos)).([]*dto.VideoDto)
+	retDto := xcondition.First(v.Mapper.Map([]*dto.VideoDto{}, videos)).([]*dto.VideoDto)
 	common.Result{}.Ok().SetPage(count, page, retDto).JSON(c)
 }
 
@@ -119,20 +118,20 @@ func (v *videoController) QueryVideosByUid(c *gin.Context) {
 							"message": "success",
 							"data": ${video}
  						} */
-func (v *videoController) QueryVideoByVid(c *gin.Context) {
+func (v *VideoController) QueryVideoByVid(c *gin.Context) {
 	vid, ok := param.BindRouteId(c, "vid")
 	if !ok {
 		common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.RequestParamError.Error()).JSON(c)
 		return
 	}
 
-	video := v.videoDao.QueryByVid(vid)
+	video := v.VideoDao.QueryByVid(vid)
 	if video == nil {
 		common.Result{}.Error(http.StatusNotFound).SetMessage(exception.VideoNotFoundError.Error()).JSON(c)
 		return
 	}
 
-	retDto := xcondition.First(v.mapper.Map(&dto.VideoDto{}, video)).(*dto.VideoDto)
+	retDto := xcondition.First(v.Mapper.Map(&dto.VideoDto{}, video)).(*dto.VideoDto)
 	common.Result{}.Ok().SetData(retDto).JSON(c)
 }
 
@@ -157,14 +156,14 @@ func (v *videoController) QueryVideoByVid(c *gin.Context) {
 							"message": "created",
 							"data": ${video}
  						} */
-func (v *videoController) InsertVideo(c *gin.Context) {
-	authUser := middleware.GetAuthUser(c, v.inject)
+func (v *VideoController) InsertVideo(c *gin.Context) {
+	authUser := middleware.GetAuthUser(c, v.dic)
 	videoParam := &param.VideoParam{}
 	if err := c.ShouldBind(videoParam); err != nil {
 		common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.WrapValidationError(err).Error()).JSON(c)
 		return
 	}
-	coverUrl, ok := util.CommonUtil.GetFilenameFromUrl(videoParam.CoverUrl, v.config.FileConfig.ImageUrlPrefix)
+	coverUrl, ok := util.CommonUtil.GetFilenameFromUrl(videoParam.CoverUrl, v.Config.FileConfig.ImageUrlPrefix)
 	if !ok {
 		common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.RequestParamError.Error()).JSON(c)
 		return
@@ -179,7 +178,7 @@ func (v *videoController) InsertVideo(c *gin.Context) {
 		AuthorUid:   authUser.Uid,
 		Author:      authUser,
 	}
-	status := v.videoDao.Insert(video)
+	status := v.VideoDao.Insert(video)
 	if status == database.DbExisted {
 		common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.VideoExistError.Error()).JSON(c)
 		return
@@ -188,7 +187,7 @@ func (v *videoController) InsertVideo(c *gin.Context) {
 		return
 	}
 
-	retDto := xcondition.First(v.mapper.Map(&dto.VideoDto{}, video)).(*dto.VideoDto)
+	retDto := xcondition.First(v.Mapper.Map(&dto.VideoDto{}, video)).(*dto.VideoDto)
 	common.Result{}.Ok().SetData(retDto).JSON(c)
 }
 
@@ -213,8 +212,8 @@ func (v *videoController) InsertVideo(c *gin.Context) {
 							"message": "success",
 							"data": ${video}
  						} */
-func (v *videoController) UpdateVideo(c *gin.Context) {
-	authUser := middleware.GetAuthUser(c, v.inject)
+func (v *VideoController) UpdateVideo(c *gin.Context) {
+	authUser := middleware.GetAuthUser(c, v.dic)
 	vid, ok := param.BindRouteId(c, "vid")
 	if !ok {
 		common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.RequestParamError.Error()).JSON(c)
@@ -222,12 +221,11 @@ func (v *videoController) UpdateVideo(c *gin.Context) {
 	}
 	videoParam := &param.VideoParam{}
 	if err := c.ShouldBind(videoParam); err != nil {
-		log.Println(err)
 		common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.WrapValidationError(err).Error()).JSON(c)
 		return
 	}
 
-	video := v.videoDao.QueryByVid(vid)
+	video := v.VideoDao.QueryByVid(vid)
 	if video == nil {
 		common.Result{}.Error(http.StatusNotFound).SetMessage(exception.VideoNotFoundError.Error()).JSON(c)
 		return
@@ -240,14 +238,14 @@ func (v *videoController) UpdateVideo(c *gin.Context) {
 	video.Title = videoParam.Title
 	video.Description = *videoParam.Description
 	video.VideoUrl = videoParam.VideoUrl // TODO
-	coverUrl, ok := util.CommonUtil.GetFilenameFromUrl(videoParam.CoverUrl, v.config.FileConfig.ImageUrlPrefix)
+	coverUrl, ok := util.CommonUtil.GetFilenameFromUrl(videoParam.CoverUrl, v.Config.FileConfig.ImageUrlPrefix)
 	if !ok {
 		common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.RequestParamError.Error()).JSON(c)
 		return
 	}
 	video.CoverUrl = coverUrl
 
-	status := v.videoDao.Update(video)
+	status := v.VideoDao.Update(video)
 	if status == database.DbNotFound {
 		common.Result{}.Error(http.StatusNotFound).SetMessage(exception.VideoNotFoundError.Error()).JSON(c)
 		return
@@ -256,7 +254,7 @@ func (v *videoController) UpdateVideo(c *gin.Context) {
 		return
 	}
 
-	retDto := xcondition.First(v.mapper.Map(&dto.VideoDto{}, video)).(*dto.VideoDto)
+	retDto := xcondition.First(v.Mapper.Map(&dto.VideoDto{}, video)).(*dto.VideoDto)
 	common.Result{}.Ok().SetData(retDto).JSON(c)
 }
 
@@ -275,15 +273,15 @@ func (v *videoController) UpdateVideo(c *gin.Context) {
 							"code": 200,
 							"message": "success"
  						} */
-func (v *videoController) DeleteVideo(c *gin.Context) {
-	authUser := middleware.GetAuthUser(c, v.inject)
+func (v *VideoController) DeleteVideo(c *gin.Context) {
+	authUser := middleware.GetAuthUser(c, v.dic)
 	vid, ok := param.BindRouteId(c, "vid")
 	if !ok {
 		common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.RequestParamError.Error()).JSON(c)
 		return
 	}
 	// Check author and authorization
-	video := v.videoDao.QueryByVid(vid)
+	video := v.VideoDao.QueryByVid(vid)
 	if video == nil {
 		common.Result{}.Error(http.StatusNotFound).SetMessage(exception.VideoNotFoundError.Error()).JSON(c)
 		return
@@ -293,7 +291,7 @@ func (v *videoController) DeleteVideo(c *gin.Context) {
 		return
 	}
 	// Delete
-	status := v.videoDao.Delete(vid)
+	status := v.VideoDao.Delete(vid)
 	if status == database.DbNotFound {
 		common.Result{}.Error(http.StatusNotFound).SetMessage(exception.VideoNotFoundError.Error()).JSON(c)
 		return

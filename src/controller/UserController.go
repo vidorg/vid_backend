@@ -2,6 +2,7 @@ package controller
 
 import (
 	"github.com/Aoi-hosizora/ahlib/xcondition"
+	"github.com/Aoi-hosizora/ahlib/xdi"
 	"github.com/Aoi-hosizora/ahlib/xmapper"
 	"github.com/gin-gonic/gin"
 	"github.com/vidorg/vid_backend/src/config"
@@ -14,31 +15,28 @@ import (
 	"github.com/vidorg/vid_backend/src/model/dto"
 	"github.com/vidorg/vid_backend/src/model/dto/param"
 	"github.com/vidorg/vid_backend/src/model/po"
-	"github.com/vidorg/vid_backend/src/server/inject"
 	"github.com/vidorg/vid_backend/src/util"
 	"net/http"
 )
 
-type userController struct {
-	inject *inject.Option
+type UserController struct {
+	Config   *config.ServerConfig  `di:"~"`
+	UserDao  *dao.UserDao          `di:"~"`
+	VideoDao *dao.VideoDao         `di:"~"`
+	SubDao   *dao.SubDao           `di:"~"`
+	Mapper   *xmapper.EntityMapper `di:"~"`
 
-	config   *config.ServerConfig
-	userDao  *dao.UserDao
-	videoDao *dao.VideoDao
-	subDao   *dao.SubDao
-	mapper   *xmapper.EntityMapper
+	dic xdi.DiContainer `di:"-"`
 }
 
-func UserController(inject *inject.Option) *userController {
-	return &userController{
-		inject: inject,
-
-		config:   inject.ServerConfig,
-		userDao:  inject.UserDao,
-		videoDao: inject.VideoDao,
-		subDao:   inject.SubDao,
-		mapper:   inject.EntityMapper,
+func NewUserController(dic xdi.DiContainer) *UserController {
+	ctrl := &UserController{dic: dic}
+	dic.Inject(ctrl)
+	if xdi.HasNilDi(ctrl) {
+		panic("Has nil di field")
 	}
+
+	return ctrl
 }
 
 // @Router				/v1/user?page [GET] [Auth]
@@ -59,17 +57,17 @@ func UserController(inject *inject.Option) *userController {
 								"data": [ ${user} ]
 							}
  						} */
-func (u *userController) QueryAllUsers(c *gin.Context) {
+func (u *UserController) QueryAllUsers(c *gin.Context) {
 	page, ok := param.BindQueryPage(c)
 	if !ok {
 		common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.RequestParamError.Error()).JSON(c)
 		return
 	}
 
-	users, count := u.userDao.QueryAll(page)
+	users, count := u.UserDao.QueryAll(page)
 
 	// show all user's info
-	mapper := dto.UserDtoAdminMapper(u.mapper)
+	mapper := dto.UserDtoAdminMapper(u.Mapper)
 	retDto := xcondition.First(mapper.Map([]*dto.UserDto{}, users)).([]*dto.UserDto)
 	common.Result{}.Ok().SetPage(count, page, retDto).JSON(c)
 }
@@ -94,20 +92,20 @@ func (u *userController) QueryAllUsers(c *gin.Context) {
 								}
 							}
  						} */
-func (u *userController) QueryUser(c *gin.Context) {
+func (u *UserController) QueryUser(c *gin.Context) {
 	uid, ok := param.BindRouteId(c, "uid")
 	if !ok {
 		common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.RequestParamError.Error()).JSON(c)
 		return
 	}
 
-	user := u.userDao.QueryByUid(uid)
+	user := u.UserDao.QueryByUid(uid)
 	if user == nil {
 		common.Result{}.Error(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()).JSON(c)
 		return
 	}
-	subscribingCnt, subscriberCnt, _ := u.subDao.QuerySubCnt(user.Uid)
-	videoCnt, _ := u.videoDao.QueryCount(user.Uid)
+	subscribingCnt, subscriberCnt, _ := u.SubDao.QuerySubCnt(user.Uid)
+	videoCnt, _ := u.VideoDao.QueryCount(user.Uid)
 	extraInfo := &dto.UserExtraInfo{
 		SubscribingCount: subscribingCnt,
 		SubscriberCount:  subscriberCnt,
@@ -115,8 +113,8 @@ func (u *userController) QueryUser(c *gin.Context) {
 	}
 
 	// need to squeeze out whether you can see the admin info
-	authUser := middleware.GetAuthUser(c, u.inject)
-	mapper := dto.UserDtoExtraMapper(u.mapper, authUser)
+	authUser := middleware.GetAuthUser(c, u.dic)
+	mapper := dto.UserDtoExtraMapper(u.Mapper, authUser)
 	retDto := xcondition.First(mapper.Map(&dto.UserDto{}, user)).(*dto.UserDto)
 	common.Result{}.Ok().PutData("user", retDto).PutData("extra", extraInfo).JSON(c)
 }
@@ -165,18 +163,18 @@ func (u *userController) QueryUser(c *gin.Context) {
 							"message": "success",
 							"data": ${user}
  						} */
-func (u *userController) UpdateUser(isExact bool) func(c *gin.Context) {
+func (u *UserController) UpdateUser(isExact bool) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		user := &po.User{}
 		if !isExact {
-			user = middleware.GetAuthUser(c, u.inject)
+			user = middleware.GetAuthUser(c, u.dic)
 		} else {
 			uid, ok := param.BindRouteId(c, "uid")
 			if !ok {
 				common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.RequestParamError.Error()).JSON(c)
 				return
 			}
-			user = u.userDao.QueryByUid(uid)
+			user = u.UserDao.QueryByUid(uid)
 			if user == nil {
 				common.Result{}.Error(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()).JSON(c)
 				return
@@ -193,14 +191,14 @@ func (u *userController) UpdateUser(isExact bool) func(c *gin.Context) {
 		user.Profile = *userParam.Profile
 		user.BirthTime, _ = common.JsonDate{}.Parse(userParam.BirthTime)
 		user.PhoneNumber = userParam.PhoneNumber
-		url, ok := util.CommonUtil.GetFilenameFromUrl(userParam.AvatarUrl, u.config.FileConfig.ImageUrlPrefix)
+		url, ok := util.CommonUtil.GetFilenameFromUrl(userParam.AvatarUrl, u.Config.FileConfig.ImageUrlPrefix)
 		if !ok {
 			common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.RequestParamError.Error()).JSON(c)
 			return
 		}
 		user.AvatarUrl = url
 
-		status := u.userDao.Update(user)
+		status := u.UserDao.Update(user)
 		if status == database.DbNotFound {
 			common.Result{}.Error(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()).JSON(c)
 			return
@@ -212,7 +210,7 @@ func (u *userController) UpdateUser(isExact bool) func(c *gin.Context) {
 			return
 		}
 
-		retDto := xcondition.First(u.mapper.Map(&dto.UserDto{}, user)).(*dto.UserDto)
+		retDto := xcondition.First(u.Mapper.Map(&dto.UserDto{}, user)).(*dto.UserDto)
 		common.Result{}.Ok().SetData(retDto).JSON(c)
 	}
 }
@@ -241,11 +239,11 @@ func (u *userController) UpdateUser(isExact bool) func(c *gin.Context) {
 							"code": 200,
 							"message": "success"
  						} */
-func (u *userController) DeleteUser(isExact bool) func(c *gin.Context) {
+func (u *UserController) DeleteUser(isExact bool) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		var uid int32
 		if !isExact {
-			uid = middleware.GetAuthUser(c, u.inject).Uid
+			uid = middleware.GetAuthUser(c, u.dic).Uid
 		} else {
 			_uid, ok := param.BindRouteId(c, "uid")
 			if !ok {
@@ -255,7 +253,7 @@ func (u *userController) DeleteUser(isExact bool) func(c *gin.Context) {
 			uid = _uid
 		}
 		// Delete
-		status := u.userDao.Delete(uid)
+		status := u.UserDao.Delete(uid)
 		if status == database.DbNotFound {
 			common.Result{}.Error(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()).JSON(c)
 			return

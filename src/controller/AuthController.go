@@ -2,6 +2,7 @@ package controller
 
 import (
 	"github.com/Aoi-hosizora/ahlib/xcondition"
+	"github.com/Aoi-hosizora/ahlib/xdi"
 	"github.com/Aoi-hosizora/ahlib/xmapper"
 	"github.com/gin-gonic/gin"
 	"github.com/vidorg/vid_backend/src/config"
@@ -13,29 +14,27 @@ import (
 	"github.com/vidorg/vid_backend/src/model/dto"
 	"github.com/vidorg/vid_backend/src/model/dto/param"
 	"github.com/vidorg/vid_backend/src/model/po"
-	"github.com/vidorg/vid_backend/src/server/inject"
 	"github.com/vidorg/vid_backend/src/util"
 	"net/http"
 )
 
-type authController struct {
-	inject *inject.Option
+type AuthController struct {
+	Config   *config.ServerConfig  `di:"~"`
+	PassDao  *dao.PassDao          `di:"~"`
+	TokenDao *dao.TokenDao         `di:"~"`
+	Mapper   *xmapper.EntityMapper `di:"~"`
 
-	config   *config.ServerConfig
-	passDao  *dao.PassDao
-	tokenDao *dao.TokenDao
-	mapper   *xmapper.EntityMapper
+	dic xdi.DiContainer `di:"-"`
 }
 
-func AuthController(inject *inject.Option) *authController {
-	return &authController{
-		inject: inject,
-
-		config:   inject.ServerConfig,
-		passDao:  inject.PassDao,
-		tokenDao: inject.TokenDao,
-		mapper:   inject.EntityMapper,
+func NewAuthController(dic xdi.DiContainer) *AuthController {
+	ctrl := &AuthController{dic: dic}
+	dic.Inject(ctrl)
+	if xdi.HasNilDi(ctrl) {
+		panic("Has nil di field")
 	}
+
+	return ctrl
 }
 
 // @Router				/v1/auth/login [POST]
@@ -59,17 +58,17 @@ func AuthController(inject *inject.Option) *authController {
 								"expire": 604800
 							}
  						} */
-func (a *authController) Login(c *gin.Context) {
+func (a *AuthController) Login(c *gin.Context) {
 	loginParam := &param.LoginParam{}
 	if err := c.ShouldBind(loginParam); err != nil {
 		common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.RequestParamError.Error()).JSON(c) // Login only use param error
 		return
 	}
 	if loginParam.Expire <= 0 {
-		loginParam.Expire = a.config.JwtConfig.Expire
+		loginParam.Expire = a.Config.JwtConfig.Expire
 	}
 
-	passRecord := a.passDao.QueryByUsername(loginParam.Username)
+	passRecord := a.PassDao.QueryByUsername(loginParam.Username)
 	if passRecord == nil {
 		common.Result{}.Error(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()).JSON(c)
 		return
@@ -80,19 +79,19 @@ func (a *authController) Login(c *gin.Context) {
 		return
 	}
 
-	token, err := util.AuthUtil.GenerateToken(passRecord.User.Uid, loginParam.Expire, a.config.JwtConfig)
+	token, err := util.AuthUtil.GenerateToken(passRecord.User.Uid, loginParam.Expire, a.Config.JwtConfig)
 	if err != nil {
 		common.Result{}.Error(http.StatusInternalServerError).SetMessage(exception.LoginError.Error()).JSON(c)
 		return
 	}
 
-	ok := a.tokenDao.Insert(token, passRecord.Uid, loginParam.Expire)
+	ok := a.TokenDao.Insert(token, passRecord.Uid, loginParam.Expire)
 	if !ok {
 		common.Result{}.Error(http.StatusInternalServerError).SetMessage(exception.LoginError.Error()).JSON(c)
 		return
 	}
 
-	retDto := xcondition.First(a.mapper.Map(&dto.UserDto{}, passRecord.User)).(*dto.UserDto)
+	retDto := xcondition.First(a.Mapper.Map(&dto.UserDto{}, passRecord.User)).(*dto.UserDto)
 	common.Result{}.Ok().
 		PutData("user", retDto).
 		PutData("token", token).
@@ -115,7 +114,7 @@ func (a *authController) Login(c *gin.Context) {
 							"message": "success",
 							"data": ${user}
  						} */
-func (a *authController) Register(c *gin.Context) {
+func (a *AuthController) Register(c *gin.Context) {
 	registerParam := &param.RegisterParam{}
 	if err := c.ShouldBind(registerParam); err != nil {
 		common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.WrapValidationError(err).Error()).JSON(c) // Register use wrap error
@@ -134,7 +133,7 @@ func (a *authController) Register(c *gin.Context) {
 			RegisterIP: c.ClientIP(),
 		},
 	}
-	status := a.passDao.Insert(passRecord)
+	status := a.PassDao.Insert(passRecord)
 	if status == database.DbExisted {
 		common.Result{}.Error(http.StatusInternalServerError).SetMessage(exception.UsernameUsedError.Error()).JSON(c)
 		return
@@ -143,7 +142,7 @@ func (a *authController) Register(c *gin.Context) {
 		return
 	}
 
-	retDto := xcondition.First(a.mapper.Map(&dto.UserDto{}, passRecord.User)).(*dto.UserDto)
+	retDto := xcondition.First(a.Mapper.Map(&dto.UserDto{}, passRecord.User)).(*dto.UserDto)
 	common.Result{}.Ok().SetData(retDto).JSON(c)
 }
 
@@ -157,9 +156,9 @@ func (a *authController) Register(c *gin.Context) {
 							"message": "success",
 							"data": ${user}
  						} */
-func (a *authController) CurrentUser(c *gin.Context) {
-	authUser := middleware.GetAuthUser(c, a.inject)
-	retDto := xcondition.First(a.mapper.Map(&dto.UserDto{}, authUser)).(*dto.UserDto)
+func (a *AuthController) CurrentUser(c *gin.Context) {
+	authUser := middleware.GetAuthUser(c, a.dic)
+	retDto := xcondition.First(a.Mapper.Map(&dto.UserDto{}, authUser)).(*dto.UserDto)
 	common.Result{}.Ok().SetData(retDto).JSON(c)
 }
 
@@ -173,10 +172,10 @@ func (a *authController) CurrentUser(c *gin.Context) {
 							"code": 200,
 							"message": "success"
  						} */
-func (a *authController) Logout(c *gin.Context) {
+func (a *AuthController) Logout(c *gin.Context) {
 	authHeader := c.GetHeader("Authorization")
 
-	ok := a.tokenDao.Delete(authHeader)
+	ok := a.TokenDao.Delete(authHeader)
 	if !ok {
 		common.Result{}.Error(http.StatusInternalServerError).SetMessage(exception.LogoutError.Error()).JSON(c)
 		return
@@ -199,8 +198,8 @@ func (a *authController) Logout(c *gin.Context) {
 							"code": 200,
 							"message": "success"
  						} */
-func (a *authController) UpdatePassword(c *gin.Context) {
-	authUser := middleware.GetAuthUser(c, a.inject)
+func (a *AuthController) UpdatePassword(c *gin.Context) {
+	authUser := middleware.GetAuthUser(c, a.dic)
 	authHeader := c.GetHeader("Authorization")
 	passParam := &param.PassParam{}
 	if err := c.ShouldBind(passParam); err != nil {
@@ -217,7 +216,7 @@ func (a *authController) UpdatePassword(c *gin.Context) {
 		EncryptedPass: encrypted,
 		Uid:           authUser.Uid,
 	}
-	status := a.passDao.Update(passRecord)
+	status := a.PassDao.Update(passRecord)
 	if status == database.DbNotFound {
 		common.Result{}.Error(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()).JSON(c)
 		return
@@ -226,7 +225,7 @@ func (a *authController) UpdatePassword(c *gin.Context) {
 		return
 	}
 	// Delete token but ignore result
-	_ = a.tokenDao.Delete(authHeader)
+	_ = a.TokenDao.Delete(authHeader)
 
 	common.Result{}.Ok().JSON(c)
 }

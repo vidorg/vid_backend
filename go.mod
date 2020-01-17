@@ -1,9 +1,10 @@
 module github.com/vidorg/vid_backend
 
 require (
-	github.com/Aoi-hosizora/ahlib v0.0.0-20200115042704-4733b5a7b544
+	github.com/Aoi-hosizora/ahlib v0.0.0-20200117141519-e2c13dbee158
 	github.com/DeanThompson/ginpprof v0.0.0-20190408063150-3be636683586
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
+	github.com/getlantern/deepcopy v0.0.0-20160317154340-7f45deb8130a
 	github.com/gin-contrib/cors v1.3.0
 	github.com/gin-gonic/gin v1.5.0
 	github.com/go-openapi/jsonreference v0.19.3 // indirect

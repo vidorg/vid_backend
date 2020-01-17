@@ -1,29 +1,35 @@
 package server
 
 import (
+	"github.com/Aoi-hosizora/ahlib/xdi"
+	"github.com/gomodule/redigo/redis"
 	"github.com/vidorg/vid_backend/src/config"
+	"github.com/vidorg/vid_backend/src/database"
 	"github.com/vidorg/vid_backend/src/database/dao"
 	"github.com/vidorg/vid_backend/src/model/common/profile"
-	"github.com/vidorg/vid_backend/src/server/inject"
 )
 
-func Inject(config *config.ServerConfig) *inject.Option {
+func ProvideService(config *config.ServerConfig) xdi.DiContainer {
+	dic := xdi.NewDiContainer()
+
+	dic.Provide(config)
 	mapper := profile.CreateMapperProfile(config)
+	dic.Provide(mapper)
+	mysqlConn := database.SetupDBConn(config.MySqlConfig)
+	dic.Provide(mysqlConn)
+	redisConn := database.SetupRedisConn(config.RedisConfig)
+	dic.ProvideImpl((*redis.Conn)(nil), redisConn)
 
-	passDao := dao.PassRepository(config.MySqlConfig)
-	tokenDao := dao.TokenRepository(config.RedisConfig, config.JwtConfig.RedisHeader)
-	userDao := dao.UserRepository(config.MySqlConfig)
-	subDao := dao.SubRepository(config.MySqlConfig)
-	videoDao := dao.VideoRepository(config.MySqlConfig)
+	passDao := dao.NewPassDao(dic)
+	dic.Provide(passDao)
+	tokenDao := dao.NewTokenDao(dic)
+	dic.Provide(tokenDao)
+	userDao := dao.NewUserDao(dic)
+	dic.Provide(userDao)
+	subDao := dao.NewSubDao(dic)
+	dic.Provide(subDao)
+	videoDao := dao.NewVideoDao(dic)
+	dic.Provide(videoDao)
 
-	return &inject.Option{
-		ServerConfig:   config,
-		EntityMapper: mapper,
-
-		PassDao:  passDao,
-		TokenDao: tokenDao,
-		UserDao:  userDao,
-		SubDao:   subDao,
-		VideoDao: videoDao,
-	}
+	return dic
 }
