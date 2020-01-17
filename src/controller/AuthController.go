@@ -19,16 +19,15 @@ import (
 )
 
 type AuthController struct {
-	Config   *config.ServerConfig  `di:"~"`
-	PassDao  *dao.PassDao          `di:"~"`
-	TokenDao *dao.TokenDao         `di:"~"`
-	Mapper   *xmapper.EntityMapper `di:"~"`
-
-	dic xdi.DiContainer `di:"-"`
+	Config     *config.ServerConfig   `di:"~"`
+	JwtService *middleware.JwtService `di:"~"`
+	PassDao    *dao.PassDao           `di:"~"`
+	TokenDao   *dao.TokenDao          `di:"~"`
+	Mapper     *xmapper.EntityMapper  `di:"~"`
 }
 
-func NewAuthController(dic xdi.DiContainer) *AuthController {
-	ctrl := &AuthController{dic: dic}
+func NewAuthController(dic *xdi.DiContainer) *AuthController {
+	ctrl := &AuthController{}
 	dic.Inject(ctrl)
 	if xdi.HasNilDi(ctrl) {
 		panic("Has nil di field")
@@ -157,7 +156,7 @@ func (a *AuthController) Register(c *gin.Context) {
 							"data": ${user}
  						} */
 func (a *AuthController) CurrentUser(c *gin.Context) {
-	authUser := middleware.GetAuthUser(c, a.dic)
+	authUser := a.JwtService.GetAuthUser(c)
 	retDto := xcondition.First(a.Mapper.Map(&dto.UserDto{}, authUser)).(*dto.UserDto)
 	common.Result{}.Ok().SetData(retDto).JSON(c)
 }
@@ -199,7 +198,7 @@ func (a *AuthController) Logout(c *gin.Context) {
 							"message": "success"
  						} */
 func (a *AuthController) UpdatePassword(c *gin.Context) {
-	authUser := middleware.GetAuthUser(c, a.dic)
+	authUser := a.JwtService.GetAuthUser(c)
 	authHeader := c.GetHeader("Authorization")
 	passParam := &param.PassParam{}
 	if err := c.ShouldBind(passParam); err != nil {

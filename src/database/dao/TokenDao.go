@@ -14,7 +14,7 @@ type TokenDao struct {
 	Header string `di:"-"`
 }
 
-func NewTokenDao(dic xdi.DiContainer) *TokenDao {
+func NewTokenDao(dic *xdi.DiContainer) *TokenDao {
 	repo := &TokenDao{}
 	dic.Inject(repo)
 	if xdi.HasNilDi(repo) {

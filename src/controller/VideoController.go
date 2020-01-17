@@ -21,15 +21,14 @@ import (
 )
 
 type VideoController struct {
-	Config   *config.ServerConfig  `di:"~"`
-	VideoDao *dao.VideoDao         `di:"~"`
-	Mapper   *xmapper.EntityMapper `di:"~"`
-
-	dic xdi.DiContainer `di:"-"`
+	Config     *config.ServerConfig   `di:"~"`
+	JwtService *middleware.JwtService `di:"~"`
+	VideoDao   *dao.VideoDao          `di:"~"`
+	Mapper     *xmapper.EntityMapper  `di:"~"`
 }
 
-func NewVideoController(dic xdi.DiContainer) *VideoController {
-	ctrl := &VideoController{dic: dic}
+func NewVideoController(dic *xdi.DiContainer) *VideoController {
+	ctrl := &VideoController{}
 	dic.Inject(ctrl)
 	if xdi.HasNilDi(ctrl) {
 		panic("Has nil di field")
@@ -157,7 +156,7 @@ func (v *VideoController) QueryVideoByVid(c *gin.Context) {
 							"data": ${video}
  						} */
 func (v *VideoController) InsertVideo(c *gin.Context) {
-	authUser := middleware.GetAuthUser(c, v.dic)
+	authUser := v.JwtService.GetAuthUser(c)
 	videoParam := &param.VideoParam{}
 	if err := c.ShouldBind(videoParam); err != nil {
 		common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.WrapValidationError(err).Error()).JSON(c)
@@ -213,7 +212,7 @@ func (v *VideoController) InsertVideo(c *gin.Context) {
 							"data": ${video}
  						} */
 func (v *VideoController) UpdateVideo(c *gin.Context) {
-	authUser := middleware.GetAuthUser(c, v.dic)
+	authUser := v.JwtService.GetAuthUser(c)
 	vid, ok := param.BindRouteId(c, "vid")
 	if !ok {
 		common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.RequestParamError.Error()).JSON(c)
@@ -274,7 +273,7 @@ func (v *VideoController) UpdateVideo(c *gin.Context) {
 							"message": "success"
  						} */
 func (v *VideoController) DeleteVideo(c *gin.Context) {
-	authUser := middleware.GetAuthUser(c, v.dic)
+	authUser := v.JwtService.GetAuthUser(c)
 	vid, ok := param.BindRouteId(c, "vid")
 	if !ok {
 		common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.RequestParamError.Error()).JSON(c)

@@ -15,7 +15,7 @@ type UserDao struct {
 	PageSize int32 `di:"-"`
 }
 
-func NewUserDao(dic xdi.DiContainer) *UserDao {
+func NewUserDao(dic *xdi.DiContainer) *UserDao {
 	repo := &UserDao{}
 	dic.Inject(repo)
 	if xdi.HasNilDi(repo) {

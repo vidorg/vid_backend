@@ -2,7 +2,6 @@ package dto
 
 import (
 	"github.com/Aoi-hosizora/ahlib/xmapper"
-	"github.com/getlantern/deepcopy"
 	"github.com/vidorg/vid_backend/src/model/common/enum"
 	"github.com/vidorg/vid_backend/src/model/po"
 )
@@ -20,24 +19,19 @@ type UserDto struct {
 
 // show all info
 // Only used in QueryAllUsers()
-func UserDtoAdminMapper(mapper *xmapper.EntityMapper) *xmapper.EntityMapper {
-	var newMapper xmapper.EntityMapper
-	err := deepcopy.Copy(&newMapper, mapper)
-	if err != nil {
-		return mapper
-	}
-	return newMapper.CreateMapper(&po.User{}, &UserDto{}).ForExtra(func(i interface{}, j interface{}) interface{} {
+func UserDtoAdminMapOption() *xmapper.DisposableMapOption {
+	return xmapper.NewMapOption(&po.User{}, &UserDto{}, func(i interface{}, j interface{}) interface{} {
 		user := i.(po.User)
 		userDto := j.(UserDto)
 		userDto.PhoneNumber = user.PhoneNumber
 		return userDto
-	}).Build()
+	})
 }
 
 // show info dependent on authUser
 // Only used in QueryUser()
-func UserDtoExtraMapper(mapper *xmapper.EntityMapper, authUser *po.User) *xmapper.EntityMapper {
-	extra := func(i interface{}, j interface{}) interface{} {
+func UserDtoExtraMapOption(authUser *po.User) *xmapper.DisposableMapOption {
+	return xmapper.NewMapOption(&po.User{}, &UserDto{}, func(i interface{}, j interface{}) interface{} {
 		if authUser == nil { // not login, nothing (default)
 			return j
 		}
@@ -52,12 +46,5 @@ func UserDtoExtraMapper(mapper *xmapper.EntityMapper, authUser *po.User) *xmappe
 			}
 			return userDto
 		}
-	}
-
-	var newMapper xmapper.EntityMapper
-	err := deepcopy.Copy(&newMapper, mapper)
-	if err != nil {
-		return mapper
-	}
-	return newMapper.CreateMapper(&po.User{}, &UserDto{}).ForExtra(extra).Build()
+	})
 }

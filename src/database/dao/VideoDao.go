@@ -16,7 +16,7 @@ type VideoDao struct {
 	PageSize int32 `di:"-"`
 }
 
-func NewVideoDao(dic xdi.DiContainer) *VideoDao {
+func NewVideoDao(dic *xdi.DiContainer) *VideoDao {
 	repo := &VideoDao{}
 	dic.Inject(repo)
 	if xdi.HasNilDi(repo) {

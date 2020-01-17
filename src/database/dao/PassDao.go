@@ -11,7 +11,7 @@ type PassDao struct {
 	Db *gorm.DB `di:"~"`
 }
 
-func NewPassDao(dic xdi.DiContainer) *PassDao {
+func NewPassDao(dic *xdi.DiContainer) *PassDao {
 	repo := &PassDao{}
 	dic.Inject(repo)
 	if xdi.HasNilDi(repo) {

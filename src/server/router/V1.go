@@ -1,6 +1,7 @@
 package router
 
 import (
+	"github.com/Aoi-hosizora/ahlib/xcondition"
 	"github.com/Aoi-hosizora/ahlib/xdi"
 	"github.com/gin-gonic/gin"
 	"github.com/vidorg/vid_backend/src/config"
@@ -8,22 +9,23 @@ import (
 	"github.com/vidorg/vid_backend/src/middleware"
 )
 
-func SetupV1Router(router *gin.Engine, config *config.ServerConfig, dic xdi.DiContainer) {
-
+func SetupV1Router(router *gin.Engine, config *config.ServerConfig, dic *xdi.DiContainer) {
 	authCtrl := controller.NewAuthController(dic)
 	userCtrl := controller.NewUserController(dic)
 	subCtrl := controller.NewSubController(dic)
 	videoCtrl := controller.NewVideoController(dic)
 	rawCtrl := controller.NewRawController(dic)
 
-	jwt := middleware.JwtMiddleware(false, dic)
-	jwtAdmin := middleware.JwtMiddleware(true, dic)
+	cors := middleware.CorsMiddleware()
+	jwtSrv := xcondition.First(dic.GetProvide(&middleware.JwtService{})).(*middleware.JwtService)
+	jwt := jwtSrv.JwtMiddleware(false)
+	jwtAdmin := jwtSrv.JwtMiddleware(true)
 	limit2M := middleware.LimitMiddleware(int64(config.FileConfig.ImageMaxSize << 20)) // MB
 
 	v1 := router.Group("/v1")
 	{
 		v1.Use(gin.Recovery())
-		v1.Use(middleware.CorsMiddleware())
+		v1.Use(cors)
 
 		authGroup := v1.Group("/auth")
 		{

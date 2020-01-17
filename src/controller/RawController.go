@@ -15,12 +15,10 @@ import (
 type RawController struct {
 	Config *config.ServerConfig  `di:"~"`
 	Mapper *xmapper.EntityMapper `di:"~"`
-
-	dic xdi.DiContainer `di:"-"`
 }
 
-func NewRawController(dic xdi.DiContainer) *RawController {
-	ctrl := &RawController{dic: dic}
+func NewRawController(dic *xdi.DiContainer) *RawController {
+	ctrl := &RawController{}
 	dic.Inject(ctrl)
 	if xdi.HasNilDi(ctrl) {
 		panic("Has nil di field")

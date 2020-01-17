@@ -6,30 +6,35 @@ import (
 	"github.com/vidorg/vid_backend/src/config"
 	"github.com/vidorg/vid_backend/src/database"
 	"github.com/vidorg/vid_backend/src/database/dao"
+	"github.com/vidorg/vid_backend/src/middleware"
 	"github.com/vidorg/vid_backend/src/model/common/profile"
 )
 
-func ProvideService(config *config.ServerConfig) xdi.DiContainer {
+func ProvideService(config *config.ServerConfig) *xdi.DiContainer {
 	dic := xdi.NewDiContainer()
-
 	dic.Provide(config)
+
 	mapper := profile.CreateMapperProfile(config)
 	dic.Provide(mapper)
-	mysqlConn := database.SetupDBConn(config.MySqlConfig)
-	dic.Provide(mysqlConn)
+
+	gormConn := database.SetupDBConn(config.MySqlConfig)
+	dic.Provide(gormConn) // after config
 	redisConn := database.SetupRedisConn(config.RedisConfig)
-	dic.ProvideImpl((*redis.Conn)(nil), redisConn)
+	dic.ProvideImpl((*redis.Conn)(nil), redisConn) // interface
 
 	passDao := dao.NewPassDao(dic)
-	dic.Provide(passDao)
+	dic.Provide(passDao) // after gorm
 	tokenDao := dao.NewTokenDao(dic)
-	dic.Provide(tokenDao)
+	dic.Provide(tokenDao) // after redis
 	userDao := dao.NewUserDao(dic)
 	dic.Provide(userDao)
 	subDao := dao.NewSubDao(dic)
 	dic.Provide(subDao)
 	videoDao := dao.NewVideoDao(dic)
 	dic.Provide(videoDao)
+
+	jwtSrv := middleware.NewJwtService(dic)
+	dic.Provide(jwtSrv) // after dao
 
 	return dic
 }

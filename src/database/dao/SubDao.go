@@ -18,7 +18,7 @@ type SubDao struct {
 	ColSubscribings string `di:"-"`
 }
 
-func NewSubDao(dic xdi.DiContainer) *SubDao {
+func NewSubDao(dic *xdi.DiContainer) *SubDao {
 	repo := &SubDao{
 		ColSubscribers:  "Subscribers",
 		ColSubscribings: "Subscribings",

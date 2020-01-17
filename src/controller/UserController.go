@@ -20,17 +20,16 @@ import (
 )
 
 type UserController struct {
-	Config   *config.ServerConfig  `di:"~"`
-	UserDao  *dao.UserDao          `di:"~"`
-	VideoDao *dao.VideoDao         `di:"~"`
-	SubDao   *dao.SubDao           `di:"~"`
-	Mapper   *xmapper.EntityMapper `di:"~"`
-
-	dic xdi.DiContainer `di:"-"`
+	Config     *config.ServerConfig   `di:"~"`
+	JwtService *middleware.JwtService `di:"~"`
+	UserDao    *dao.UserDao           `di:"~"`
+	VideoDao   *dao.VideoDao          `di:"~"`
+	SubDao     *dao.SubDao            `di:"~"`
+	Mapper     *xmapper.EntityMapper  `di:"~"`
 }
 
-func NewUserController(dic xdi.DiContainer) *UserController {
-	ctrl := &UserController{dic: dic}
+func NewUserController(dic *xdi.DiContainer) *UserController {
+	ctrl := &UserController{}
 	dic.Inject(ctrl)
 	if xdi.HasNilDi(ctrl) {
 		panic("Has nil di field")
@@ -67,8 +66,7 @@ func (u *UserController) QueryAllUsers(c *gin.Context) {
 	users, count := u.UserDao.QueryAll(page)
 
 	// show all user's info
-	mapper := dto.UserDtoAdminMapper(u.Mapper)
-	retDto := xcondition.First(mapper.Map([]*dto.UserDto{}, users)).([]*dto.UserDto)
+	retDto := xcondition.First(u.Mapper.Map([]*dto.UserDto{}, users, dto.UserDtoAdminMapOption())).([]*dto.UserDto)
 	common.Result{}.Ok().SetPage(count, page, retDto).JSON(c)
 }
 
@@ -113,9 +111,8 @@ func (u *UserController) QueryUser(c *gin.Context) {
 	}
 
 	// need to squeeze out whether you can see the admin info
-	authUser := middleware.GetAuthUser(c, u.dic)
-	mapper := dto.UserDtoExtraMapper(u.Mapper, authUser)
-	retDto := xcondition.First(mapper.Map(&dto.UserDto{}, user)).(*dto.UserDto)
+	authUser := u.JwtService.GetAuthUser(c)
+	retDto := xcondition.First(u.Mapper.Map(&dto.UserDto{}, user, dto.UserDtoExtraMapOption(authUser))).(*dto.UserDto)
 	common.Result{}.Ok().PutData("user", retDto).PutData("extra", extraInfo).JSON(c)
 }
 
@@ -167,7 +164,7 @@ func (u *UserController) UpdateUser(isExact bool) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		user := &po.User{}
 		if !isExact {
-			user = middleware.GetAuthUser(c, u.dic)
+			user = u.JwtService.GetAuthUser(c)
 		} else {
 			uid, ok := param.BindRouteId(c, "uid")
 			if !ok {
@@ -243,7 +240,7 @@ func (u *UserController) DeleteUser(isExact bool) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		var uid int32
 		if !isExact {
-			uid = middleware.GetAuthUser(c, u.dic).Uid
+			uid = u.JwtService.GetAuthUser(c).Uid
 		} else {
 			_uid, ok := param.BindRouteId(c, "uid")
 			if !ok {

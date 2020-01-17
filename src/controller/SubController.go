@@ -17,16 +17,15 @@ import (
 )
 
 type SubController struct {
-	Config  *config.ServerConfig  `di:"~"`
-	UserDao *dao.UserDao          `di:"~"`
-	SubDao  *dao.SubDao           `di:"~"`
-	Mapper  *xmapper.EntityMapper `di:"~"`
-
-	dic xdi.DiContainer `di:"-"`
+	Config     *config.ServerConfig   `di:"~"`
+	JwtService *middleware.JwtService `di:"~"`
+	UserDao    *dao.UserDao           `di:"~"`
+	SubDao     *dao.SubDao            `di:"~"`
+	Mapper     *xmapper.EntityMapper  `di:"~"`
 }
 
-func NewSubController(dic xdi.DiContainer) *SubController {
-	ctrl := &SubController{dic: dic}
+func NewSubController(dic *xdi.DiContainer) *SubController {
+	ctrl := &SubController{}
 	dic.Inject(ctrl)
 	if xdi.HasNilDi(ctrl) {
 		panic("Has nil di field")
@@ -128,7 +127,7 @@ func (s *SubController) QuerySubscribingUsers(c *gin.Context) {
 							}
  						} */
 func (s *SubController) SubscribeUser(c *gin.Context) {
-	authUser := middleware.GetAuthUser(c, s.dic)
+	authUser := s.JwtService.GetAuthUser(c)
 	subParam := &param.SubParam{}
 	if err := c.ShouldBind(subParam); err != nil {
 		common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.WrapValidationError(err).Error()).JSON(c)
@@ -171,7 +170,7 @@ func (s *SubController) SubscribeUser(c *gin.Context) {
 							}
  						} */
 func (s *SubController) UnSubscribeUser(c *gin.Context) {
-	authUser := middleware.GetAuthUser(c, s.dic)
+	authUser := s.JwtService.GetAuthUser(c)
 	subParam := &param.SubParam{}
 	if err := c.ShouldBind(subParam); err != nil {
 		common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.WrapValidationError(err).Error()).JSON(c)

@@ -17,12 +17,26 @@ type JwtService struct {
 	Config   *config.ServerConfig `di:"~"`
 	TokenDao *dao.TokenDao        `di:"~"`
 	UserDao  *dao.UserDao         `di:"~"`
+
+	userKey string `di:"-"`
 }
 
-func JwtMiddleware(needAdmin bool, dic xdi.DiContainer) gin.HandlerFunc {
+func NewJwtService(dic *xdi.DiContainer) *JwtService {
+	srv := &JwtService{
+		userKey: "user",
+	}
+	dic.Inject(srv)
+	if xdi.HasNilDi(srv) {
+		panic("Has nil di field")
+	}
+
+	return srv
+}
+
+func (j *JwtService) JwtMiddleware(needAdmin bool) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		authHeader := c.Request.Header.Get("Authorization")
-		user, err := JwtCheck(authHeader, dic)
+		user, err := j.JwtCheck(authHeader)
 		if err != nil {
 			// AuthorizationError / TokenExpiredError
 			common.Result{}.Error(http.StatusUnauthorized).SetMessage(err.Error()).JSON(c)
@@ -35,25 +49,18 @@ func JwtMiddleware(needAdmin bool, dic xdi.DiContainer) gin.HandlerFunc {
 			return
 		}
 
-		c.Set("user", user)
+		c.Set(j.userKey, user)
 		c.Next()
 	}
 }
 
-func JwtCheck(token string, dic xdi.DiContainer) (*po.User, error) {
+func (j *JwtService) JwtCheck(token string) (*po.User, error) {
 	if token == "" {
 		return nil, exception.AuthorizationError
 	}
 
-	jwtCtrl := &struct {
-		Config   *config.ServerConfig `di:"~"`
-		TokenDao *dao.TokenDao        `di:"~"`
-		UserDao  *dao.UserDao         `di:"~"`
-	}{}
-	dic.Inject(jwtCtrl)
-
 	// parse
-	claims, err := util.AuthUtil.ParseToken(token, jwtCtrl.Config.JwtConfig)
+	claims, err := util.AuthUtil.ParseToken(token, j.Config.JwtConfig)
 	if err != nil {
 		if util.AuthUtil.IsTokenExpireError(err) {
 			// Token Expired
@@ -67,13 +74,13 @@ func JwtCheck(token string, dic xdi.DiContainer) (*po.User, error) {
 	}
 
 	// check redis
-	ok := jwtCtrl.TokenDao.Query(token)
+	ok := j.TokenDao.Query(token)
 	if !ok {
 		return nil, exception.AuthorizationError
 	}
 
 	// check dao & admin
-	user := jwtCtrl.UserDao.QueryByUid(claims.UserID)
+	user := j.UserDao.QueryByUid(claims.UserID)
 	if user == nil {
 		return nil, exception.AuthorizationError
 	}
@@ -81,11 +88,11 @@ func JwtCheck(token string, dic xdi.DiContainer) (*po.User, error) {
 	return user, nil
 }
 
-func GetAuthUser(c *gin.Context, dic xdi.DiContainer) *po.User {
-	_user, exist := c.Get("user")
+func (j *JwtService) GetAuthUser(c *gin.Context) *po.User {
+	_user, exist := c.Get(j.userKey)
 	if !exist { // not jet check auth
-		JwtMiddleware(false, dic)(c)
-		_user, exist = c.Get("user")
+		j.JwtMiddleware(false)(c)
+		_user, exist = c.Get(j.userKey)
 		if !exist { // Non-Auth
 			return nil
 		}
