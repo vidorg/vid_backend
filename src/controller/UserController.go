@@ -47,7 +47,7 @@ func NewUserController(dic *xdi.DiContainer) *UserController {
 // @Accept				multipart/form-data
 // @ErrorCode			400 request param error
 // @ErrorCode			401 need admin authority
-/* @Success 200			{
+/* @Response 200		{
 							"code": 200,
 							"message": "success",
 							"data": {
@@ -78,7 +78,7 @@ func (u *UserController) QueryAllUsers(c *gin.Context) {
 // @Accept				multipart/form-data
 // @ErrorCode			400 request param error
 // @ErrorCode			404 user not found
-/* @Success 200			{
+/* @Response 200		{
 							"code": 200,
 							"message": "success",
 							"data": {
@@ -132,7 +132,7 @@ func (u *UserController) QueryUser(c *gin.Context) {
 // @ErrorCode			400 username has been used
 // @ErrorCode			404 user not found
 // @ErrorCode			500 user update failed
-/* @Success 200			{
+/* @Response 200		{
 							"code": 200,
 							"message": "success",
 							"data": ${user}
@@ -155,7 +155,7 @@ func (u *UserController) QueryUser(c *gin.Context) {
 // @ErrorCode			401 need admin authority
 // @ErrorCode			404 user not found
 // @ErrorCode			500 user update failed
-/* @Success 200			{
+/* @Response 200		{
 							"code": 200,
 							"message": "success",
 							"data": ${user}
@@ -219,7 +219,7 @@ func (u *UserController) UpdateUser(isExact bool) func(c *gin.Context) {
 // @Accept				multipart/form-data
 // @ErrorCode			404 user not found
 // @ErrorCode			500 user delete failed
-/* @Success 200			{
+/* @Response 200		{
 							"code": 200,
 							"message": "success"
  						} */
@@ -232,7 +232,7 @@ func (u *UserController) UpdateUser(isExact bool) func(c *gin.Context) {
 // @ErrorCode			401 need admin authority
 // @ErrorCode			404 user not found
 // @ErrorCode			500 user delete failed
-/* @Success 200			{
+/* @Response 200		{
 							"code": 200,
 							"message": "success"
  						} */

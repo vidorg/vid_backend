@@ -1,6 +1,5 @@
+import argparse
 import json
-import sys
-
 import yaml
 
 TEMPLATE = """
@@ -58,15 +57,36 @@ TEMPLATE = """
 """
 
 
+def parse():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-i', '--input', type=str,
+                        required=True, help='path of input yaml file')
+    parser.add_argument('-o', '--output', type=str,
+                        required=True, help='path of output html file')
+    args = parser.parse_args()
+    return args
+
+
 def main():
-    content = open(sys.argv[1], 'r', encoding='utf-8').read()
+    args = parse()
+    try:
+        content = open(args.input, 'r', encoding='utf-8').read()
+    except:
+        print(f'Error: failed to open file {args.input}.')
+        exit(1)
+
     spec = yaml.load(content, Loader=yaml.FullLoader)
     html = TEMPLATE % json.dumps(spec)
-    with open(sys.argv[2], 'w') as f:
-        f.write(html)
+
+    try:
+        with open(args.output, 'w') as f:
+            f.write(html)
+    except:
+        print(f'Error: failed to save file {args.output}.')
+        exit(1)
 
 
 if __name__ == "__main__":
     main()
 
-# python api_html.py main.go ./docs/api.yaml
+# python gen_swagger_html.py main.go ./docs/api.yaml

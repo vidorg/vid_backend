@@ -36,9 +36,8 @@ func main() {
 // @BasePath 				/
 // @License.Name 			MIT
 // @License.Url 			https://github.com/vidorg/vid_backend/blob/master/LICENSE
-// @Swagger 				2.0
 
-// @Response.DemoPath		./src/model/dto/Demo.json
+// @DemoResponse			./docs/demo.json
 // @Authorization.Param 	Authorization header string true "用户登录令牌"
 // @Authorization.Error		401 authorization failed
 // @Authorization.Error		401 token has expired

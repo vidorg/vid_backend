@@ -11,7 +11,7 @@ import (
 // @Summary				Ping
 // @Description			Ping
 // @Tag					Ping
-/* @Success 200			{ "ping": "pong" } */
+/* @Response 200		{ "ping": "pong" } */
 func SetupCommonRouter(router *gin.Engine) {
 	router.HandleMethodNotAllowed = true
 

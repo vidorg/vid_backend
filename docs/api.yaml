@@ -11,15 +11,20 @@ info:
 paths:
   /ping:
     get:
-      consumes: []
+      consumes:
+      - application/json
       description: Ping
-      operationId: -ping-get
-      parameters: []
+      operationId: ping-get
       produces:
       - application/json
       responses:
         '200':
-          description: "```json\n{\n    \"ping\": \"pong\"\n}\n```"
+          description: |-
+            ```json
+            {
+                "ping": "pong"
+            }
+            ```
       summary: Ping
       tags:
       - Ping
@@ -28,10 +33,9 @@ paths:
       consumes:
       - multipart/form-data
       description: 根据认证信息，查看当前登录用户
-      operationId: -v1-auth-get
+      operationId: v1-auth-get
       parameters:
-      - &id001
-        description: 用户登录令牌
+      - description: 用户登录令牌
         in: header
         name: Authorization
         required: true
@@ -40,14 +44,26 @@ paths:
       - application/json
       responses:
         '200':
-          description: "```json\n{\n    \"code\": 200,\n    \"message\": \"success\"\
-            ,\n    \"data\": {\n        \"uid\": 1,\n        \"username\": \"admin\"\
-            ,\n        \"sex\": \"male\",\n        \"profile\": \"Demo admin profile\"\
-            ,\n        \"avatar_url\": \"http://localhost:3344/v1/raw/image/avatar.jpg\"\
-            ,\n        \"birth_time\": \"2020-01-10\",\n        \"authority\": \"\
-            admin\",\n        \"phone_number\": \"13512345678\"\n    }\n}\n```"
-        '401': &id002
-          description: '"authorization failed" / "token has expired"'
+          description: |-
+            ```json
+            {
+                "code": 200,
+                "message": "success",
+                "data": {
+                    "uid": 1,
+                    "username": "admin",
+                    "sex": "male",
+                    "profile": "Demo admin profile",
+                    "avatar_url": "http://localhost:3344/v1/raw/image/avatar.jpg",
+                    "birth_time": "2020-01-10",
+                    "authority": "admin",
+                    "phone_number": "13512345678"
+                }
+            }
+            ```
+        '401':
+          description: |-
+            "authorization failed", "token has expired"
       security:
       - basicAuth: ''
       summary: 当前登录用户
@@ -58,7 +74,7 @@ paths:
       consumes:
       - multipart/form-data
       description: 用户登录
-      operationId: -v1-auth-login-post
+      operationId: v1-auth-login-post
       parameters:
       - description: 用户名
         in: formData
@@ -79,22 +95,39 @@ paths:
       - application/json
       responses:
         '200':
-          description: "```json\n{\n    \"code\": 200,\n    \"message\": \"success\"\
-            ,\n    \"data\": {\n        \"user\": {\n            \"uid\": 1,\n   \
-            \         \"username\": \"admin\",\n            \"sex\": \"male\",\n \
-            \           \"profile\": \"Demo admin profile\",\n            \"avatar_url\"\
-            : \"http://localhost:3344/v1/raw/image/avatar.jpg\",\n            \"birth_time\"\
-            : \"2020-01-10\",\n            \"authority\": \"admin\",\n           \
-            \ \"phone_number\": \"13512345678\"\n        },\n        \"token\": \"\
-            Bearer xxx\",\n        \"expire\": 604800\n    }\n}\n```"
+          description: |-
+            ```json
+            {
+                "code": 200,
+                "message": "success",
+                "data": {
+                    "user": {
+                        "uid": 1,
+                        "username": "admin",
+                        "sex": "male",
+                        "profile": "Demo admin profile",
+                        "avatar_url": "http://localhost:3344/v1/raw/image/avatar.jpg",
+                        "birth_time": "2020-01-10",
+                        "authority": "admin",
+                        "phone_number": "13512345678"
+                    },
+                    "token": "Bearer xxx",
+                    "expire": 604800
+                }
+            }
+            ```
         '400':
-          description: '"request param error"'
+          description: |-
+            "request param error"
         '401':
-          description: '"password error"'
+          description: |-
+            "password error"
         '404':
-          description: '"user not found"'
+          description: |-
+            "user not found"
         '500':
-          description: '"login failed"'
+          description: |-
+            "login failed"
       summary: 登录
       tags:
       - Authorization
@@ -103,18 +136,30 @@ paths:
       consumes:
       - multipart/form-data
       description: 用户注销，删除认证信息
-      operationId: -v1-auth-logout-post
+      operationId: v1-auth-logout-post
       parameters:
-      - *id001
+      - description: 用户登录令牌
+        in: header
+        name: Authorization
+        required: true
+        type: string
       produces:
       - application/json
       responses:
         '200':
-          description: "```json\n{\n    \"code\": 200,\n    \"message\": \"success\"\
-            \n}\n```"
-        '401': *id002
+          description: |-
+            ```json
+            {
+                "code": 200,
+                "message": "success"
+            }
+            ```
+        '401':
+          description: |-
+            "authorization failed", "token has expired"
         '500':
-          description: '"logout failed"'
+          description: |-
+            "logout failed"
       security:
       - basicAuth: ''
       summary: 注销
@@ -125,27 +170,41 @@ paths:
       consumes:
       - multipart/form-data
       description: 用户修改密码
-      operationId: -v1-auth-password-put
+      operationId: v1-auth-password-put
       parameters:
-      - *id001
       - description: 用户密码，长度在 [8, 30] 之间
         in: formData
         name: password
+        required: true
+        type: string
+      - description: 用户登录令牌
+        in: header
+        name: Authorization
         required: true
         type: string
       produces:
       - application/json
       responses:
         '200':
-          description: "```json\n{\n    \"code\": 200,\n    \"message\": \"success\"\
-            \n}\n```"
+          description: |-
+            ```json
+            {
+                "code": 200,
+                "message": "success"
+            }
+            ```
         '400':
-          description: '"request param error" / "request format error"'
-        '401': *id002
+          description: |-
+            "request param error", "request format error"
+        '401':
+          description: |-
+            "authorization failed", "token has expired"
         '404':
-          description: '"user not found"'
+          description: |-
+            "user not found"
         '500':
-          description: '"update password failed"'
+          description: |-
+            "update password failed"
       security:
       - basicAuth: ''
       summary: 修改密码
@@ -156,7 +215,7 @@ paths:
       consumes:
       - multipart/form-data
       description: 用户注册
-      operationId: -v1-auth-register-post
+      operationId: v1-auth-register-post
       parameters:
       - description: 用户名，长度在 [5, 30] 之间
         in: formData
@@ -172,16 +231,29 @@ paths:
       - application/json
       responses:
         '200':
-          description: "```json\n{\n    \"code\": 200,\n    \"message\": \"success\"\
-            ,\n    \"data\": {\n        \"uid\": 1,\n        \"username\": \"admin\"\
-            ,\n        \"sex\": \"male\",\n        \"profile\": \"Demo admin profile\"\
-            ,\n        \"avatar_url\": \"http://localhost:3344/v1/raw/image/avatar.jpg\"\
-            ,\n        \"birth_time\": \"2020-01-10\",\n        \"authority\": \"\
-            admin\",\n        \"phone_number\": \"13512345678\"\n    }\n}\n```"
+          description: |-
+            ```json
+            {
+                "code": 200,
+                "message": "success",
+                "data": {
+                    "uid": 1,
+                    "username": "admin",
+                    "sex": "male",
+                    "profile": "Demo admin profile",
+                    "avatar_url": "http://localhost:3344/v1/raw/image/avatar.jpg",
+                    "birth_time": "2020-01-10",
+                    "authority": "admin",
+                    "phone_number": "13512345678"
+                }
+            }
+            ```
         '400':
-          description: '"request param error" / "request format error"'
+          description: |-
+            "request param error", "request format error"
         '500':
-          description: '"username has been used" / "register failed"'
+          description: |-
+            "username has been used", "register failed"
       summary: 注册
       tags:
       - Authorization
@@ -190,28 +262,44 @@ paths:
       consumes:
       - multipart/form-data
       description: 上传公共图片，包括用户头像和视频封面
-      operationId: -v1-raw-image-post
+      operationId: v1-raw-image-post
       parameters:
-      - *id001
       - description: 上传的图片，大小限制在2M，允许后缀名为 {.jpg, .jpeg, .png, .bmp, .gif}
         in: formData
         name: image
         required: true
         type: file
+      - description: 用户登录令牌
+        in: header
+        name: Authorization
+        required: true
+        type: string
       produces:
       - application/json
       responses:
         '200':
-          description: "```json\n{\n    \"code\": 200,\n    \"message\": \"success\"\
-            ,\n    \"data\": {\n        \"url\": \"http://localhost:3344/v1/raw/image/20200110130323908439.jpg\"\
-            \n    }\n}\n```"
+          description: |-
+            ```json
+            {
+                "code": 200,
+                "message": "success",
+                "data": {
+                    "url": "http://localhost:3344/v1/raw/image/20200110130323908439.jpg"
+                }
+            }
+            ```
         '400':
-          description: '"request param error" / "image type not supported"'
-        '401': *id002
+          description: |-
+            "request param error", "image type not supported"
+        '401':
+          description: |-
+            "authorization failed", "token has expired"
         '413':
-          description: '"request body too large"'
+          description: |-
+            "request body too large"
         '500':
-          description: '"image save failed"'
+          description: |-
+            "image save failed"
       security:
       - basicAuth: ''
       summary: 上传图片
@@ -222,7 +310,7 @@ paths:
       consumes:
       - multipart/form-data
       description: 获取用户头像图片以及视频封面
-      operationId: -v1-raw-image-{filename}-get
+      operationId: v1-raw-image-filename-get
       parameters:
       - description: 图片文件名，jpg后缀名
         in: path
@@ -233,9 +321,15 @@ paths:
       - application/json
       responses:
         '200':
-          description: "```json\n{\n    \"Content-Type\": \"image/jpeg\"\n}\n```"
+          description: |-
+            ```json
+            {
+                "Content-Type": "image/jpeg"
+            }
+            ```
         '404':
-          description: '"image not found"'
+          description: |-
+            "image not found"
       summary: 获取图片
       tags:
       - Raw
@@ -244,20 +338,33 @@ paths:
       consumes:
       - multipart/form-data
       description: 删除用户所有信息
-      operationId: -v1-user-delete
+      operationId: v1-user-delete
       parameters:
-      - *id001
+      - description: 用户登录令牌
+        in: header
+        name: Authorization
+        required: true
+        type: string
       produces:
       - application/json
       responses:
         '200':
-          description: "```json\n{\n    \"code\": 200,\n    \"message\": \"success\"\
-            \n}\n```"
-        '401': *id002
+          description: |-
+            ```json
+            {
+                "code": 200,
+                "message": "success"
+            }
+            ```
+        '401':
+          description: |-
+            "authorization failed", "token has expired"
         '404':
-          description: '"user not found"'
+          description: |-
+            "user not found"
         '500':
-          description: '"user delete failed"'
+          description: |-
+            "user delete failed"
       security:
       - basicAuth: ''
       summary: 删除登录用户
@@ -267,9 +374,8 @@ paths:
       consumes:
       - multipart/form-data
       description: 更新用户信息
-      operationId: -v1-user-put
+      operationId: v1-user-put
       parameters:
-      - *id001
       - description: 用户名，长度在 [8, 30] 之间
         in: formData
         name: username
@@ -300,24 +406,44 @@ paths:
         name: avatar_file
         required: true
         type: file
+      - description: 用户登录令牌
+        in: header
+        name: Authorization
+        required: true
+        type: string
       produces:
       - application/json
       responses:
         '200':
-          description: "```json\n{\n    \"code\": 200,\n    \"message\": \"success\"\
-            ,\n    \"data\": {\n        \"uid\": 1,\n        \"username\": \"admin\"\
-            ,\n        \"sex\": \"male\",\n        \"profile\": \"Demo admin profile\"\
-            ,\n        \"avatar_url\": \"http://localhost:3344/v1/raw/image/avatar.jpg\"\
-            ,\n        \"birth_time\": \"2020-01-10\",\n        \"authority\": \"\
-            admin\",\n        \"phone_number\": \"13512345678\"\n    }\n}\n```"
+          description: |-
+            ```json
+            {
+                "code": 200,
+                "message": "success",
+                "data": {
+                    "uid": 1,
+                    "username": "admin",
+                    "sex": "male",
+                    "profile": "Demo admin profile",
+                    "avatar_url": "http://localhost:3344/v1/raw/image/avatar.jpg",
+                    "birth_time": "2020-01-10",
+                    "authority": "admin",
+                    "phone_number": "13512345678"
+                }
+            }
+            ```
         '400':
-          description: '"request param error" / "request format error" / "username
-            has been used"'
-        '401': *id002
+          description: |-
+            "request param error", "request format error", "username has been used"
+        '401':
+          description: |-
+            "authorization failed", "token has expired"
         '404':
-          description: '"user not found"'
+          description: |-
+            "user not found"
         '500':
-          description: '"user update failed"'
+          description: |-
+            "user update failed"
       security:
       - basicAuth: ''
       summary: 更新登录用户
@@ -328,22 +454,33 @@ paths:
       consumes:
       - multipart/form-data
       description: 删除用户所有信息，管理员权限
-      operationId: -v1-user-admin-{uid}-delete
+      operationId: v1-user-admin-uid-delete
       parameters:
-      - *id001
+      - description: 用户登录令牌
+        in: header
+        name: Authorization
+        required: true
+        type: string
       produces:
       - application/json
       responses:
         '200':
-          description: "```json\n{\n    \"code\": 200,\n    \"message\": \"success\"\
-            \n}\n```"
+          description: |-
+            ```json
+            {
+                "code": 200,
+                "message": "success"
+            }
+            ```
         '401':
-          description: '"authorization failed" / "token has expired" / "need admin
-            authority"'
+          description: |-
+            "need admin authority", "authorization failed", "token has expired"
         '404':
-          description: '"user not found"'
+          description: |-
+            "user not found"
         '500':
-          description: '"user delete failed"'
+          description: |-
+            "user delete failed"
       security:
       - basicAuth: ''
       summary: 管理员删除用户
@@ -354,9 +491,8 @@ paths:
       consumes:
       - multipart/form-data
       description: 更新用户信息，管理员权限
-      operationId: -v1-user-admin-{uid}-put
+      operationId: v1-user-admin-uid-put
       parameters:
-      - *id001
       - description: 用户名，长度在 [8, 30] 之间
         in: formData
         name: username
@@ -387,26 +523,44 @@ paths:
         name: avatar_file
         required: true
         type: file
+      - description: 用户登录令牌
+        in: header
+        name: Authorization
+        required: true
+        type: string
       produces:
       - application/json
       responses:
         '200':
-          description: "```json\n{\n    \"code\": 200,\n    \"message\": \"success\"\
-            ,\n    \"data\": {\n        \"uid\": 1,\n        \"username\": \"admin\"\
-            ,\n        \"sex\": \"male\",\n        \"profile\": \"Demo admin profile\"\
-            ,\n        \"avatar_url\": \"http://localhost:3344/v1/raw/image/avatar.jpg\"\
-            ,\n        \"birth_time\": \"2020-01-10\",\n        \"authority\": \"\
-            admin\",\n        \"phone_number\": \"13512345678\"\n    }\n}\n```"
+          description: |-
+            ```json
+            {
+                "code": 200,
+                "message": "success",
+                "data": {
+                    "uid": 1,
+                    "username": "admin",
+                    "sex": "male",
+                    "profile": "Demo admin profile",
+                    "avatar_url": "http://localhost:3344/v1/raw/image/avatar.jpg",
+                    "birth_time": "2020-01-10",
+                    "authority": "admin",
+                    "phone_number": "13512345678"
+                }
+            }
+            ```
         '400':
-          description: '"request param error" / "request format error" / "username
-            has been used"'
+          description: |-
+            "request param error", "request format error", "username has been used"
         '401':
-          description: '"authorization failed" / "token has expired" / "need admin
-            authority"'
+          description: |-
+            "need admin authority", "authorization failed", "token has expired"
         '404':
-          description: '"user not found"'
+          description: |-
+            "user not found"
         '500':
-          description: '"user update failed"'
+          description: |-
+            "user update failed"
       security:
       - basicAuth: ''
       summary: 管理员更新用户
@@ -418,28 +572,46 @@ paths:
       consumes:
       - multipart/form-data
       description: 取消关注某一用户
-      operationId: -v1-user-subscribing-delete
+      operationId: v1-user-subscribing-delete
       parameters:
-      - *id001
       - description: 取消关注用户id
         in: formData
         name: to
         required: true
         type: integer
+      - description: 用户登录令牌
+        in: header
+        name: Authorization
+        required: true
+        type: string
       produces:
       - application/json
       responses:
         '200':
-          description: "```json\n{\n    \"code\": 200,\n    \"message\": \"success\"\
-            ,\n    \"data\": {\n        \"me_uid\": 10,\n        \"to_uid\": 3,\n\
-            \        \"action\": \"unsubscribe\"\n    }\n}\n```"
+          description: |-
+            ```json
+            {
+                "code": 200,
+                "message": "success",
+                "data": {
+                    "me_uid": 10,
+                    "to_uid": 3,
+                    "action": "unsubscribe"
+                }
+            }
+            ```
         '400':
-          description: '"request param error" / "request format error"'
-        '401': *id002
+          description: |-
+            "request param error", "request format error"
+        '401':
+          description: |-
+            "authorization failed", "token has expired"
         '404':
-          description: '"user not found"'
+          description: |-
+            "user not found"
         '500':
-          description: '"unsubscribe failed"'
+          description: |-
+            "unsubscribe failed"
       security:
       - basicAuth: ''
       summary: 取消关注用户
@@ -449,29 +621,46 @@ paths:
       consumes:
       - multipart/form-data
       description: 关注某一用户
-      operationId: -v1-user-subscribing-put
+      operationId: v1-user-subscribing-put
       parameters:
-      - *id001
       - description: 关注用户id
         in: formData
         name: to
         required: true
         type: integer
+      - description: 用户登录令牌
+        in: header
+        name: Authorization
+        required: true
+        type: string
       produces:
       - application/json
       responses:
         '200':
-          description: "```json\n{\n    \"code\": 200,\n    \"message\": \"success\"\
-            ,\n    \"data\": {\n        \"me_uid\": 10,\n        \"to_uid\": 3,\n\
-            \        \"action\": \"subscribe\"\n    }\n}\n```"
+          description: |-
+            ```json
+            {
+                "code": 200,
+                "message": "success",
+                "data": {
+                    "me_uid": 10,
+                    "to_uid": 3,
+                    "action": "subscribe"
+                }
+            }
+            ```
         '400':
-          description: '"request param error" / "request format error" / "subscribe
-            oneself invalid"'
-        '401': *id002
+          description: |-
+            "request param error", "request format error", "subscribe oneself invalid"
+        '401':
+          description: |-
+            "authorization failed", "token has expired"
         '404':
-          description: '"user not found"'
+          description: |-
+            "user not found"
         '500':
-          description: '"subscribe failed"'
+          description: |-
+            "subscribe failed"
       security:
       - basicAuth: ''
       summary: 关注用户
@@ -482,7 +671,7 @@ paths:
       consumes:
       - multipart/form-data
       description: 查询用户信息，此处可见用户手机号码
-      operationId: -v1-user-{uid}-get
+      operationId: v1-user-uid-get
       parameters:
       - description: 用户id
         in: path
@@ -493,19 +682,36 @@ paths:
       - application/json
       responses:
         '200':
-          description: "```json\n{\n    \"code\": 200,\n    \"message\": \"success\"\
-            ,\n    \"data\": {\n        \"user\": {\n            \"uid\": 1,\n   \
-            \         \"username\": \"admin\",\n            \"sex\": \"male\",\n \
-            \           \"profile\": \"Demo admin profile\",\n            \"avatar_url\"\
-            : \"http://localhost:3344/v1/raw/image/avatar.jpg\",\n            \"birth_time\"\
-            : \"2020-01-10\",\n            \"authority\": \"admin\",\n           \
-            \ \"phone_number\": \"13512345678\"\n        },\n        \"extra\": {\n\
-            \            \"subscribing_cnt\": 3,\n            \"subscriber_cnt\":\
-            \ 2,\n            \"video_cnt\": 3\n        }\n    }\n}\n```"
+          description: |-
+            ```json
+            {
+                "code": 200,
+                "message": "success",
+                "data": {
+                    "user": {
+                        "uid": 1,
+                        "username": "admin",
+                        "sex": "male",
+                        "profile": "Demo admin profile",
+                        "avatar_url": "http://localhost:3344/v1/raw/image/avatar.jpg",
+                        "birth_time": "2020-01-10",
+                        "authority": "admin",
+                        "phone_number": "13512345678"
+                    },
+                    "extra": {
+                        "subscribing_cnt": 3,
+                        "subscriber_cnt": 2,
+                        "video_cnt": 3
+                    }
+                }
+            }
+            ```
         '400':
-          description: '"request param error"'
+          description: |-
+            "request param error"
         '404':
-          description: '"user not found"'
+          description: |-
+            "user not found"
       summary: 查询用户
       tags:
       - User
@@ -514,7 +720,7 @@ paths:
       consumes:
       - multipart/form-data
       description: 查询用户所有粉丝，返回分页数据
-      operationId: -v1-user-{uid}-subscriber-get
+      operationId: v1-user-uid-subscriber-get
       parameters:
       - description: 查询的用户id
         in: path
@@ -530,19 +736,35 @@ paths:
       - application/json
       responses:
         '200':
-          description: "```json\n{\n    \"code\": 200,\n    \"message\": \"success\"\
-            ,\n    \"data\": {\n        \"count\": 1,\n        \"page\": 1,\n    \
-            \    \"data\": [\n            {\n                \"uid\": 1,\n       \
-            \         \"username\": \"admin\",\n                \"sex\": \"male\"\
-            ,\n                \"profile\": \"Demo admin profile\",\n            \
-            \    \"avatar_url\": \"http://localhost:3344/v1/raw/image/avatar.jpg\"\
-            ,\n                \"birth_time\": \"2020-01-10\",\n                \"\
-            authority\": \"admin\",\n                \"phone_number\": \"13512345678\"\
-            \n            }\n        ]\n    }\n}\n```"
+          description: |-
+            ```json
+            {
+                "code": 200,
+                "message": "success",
+                "data": {
+                    "count": 1,
+                    "page": 1,
+                    "data": [
+                        {
+                            "uid": 1,
+                            "username": "admin",
+                            "sex": "male",
+                            "profile": "Demo admin profile",
+                            "avatar_url": "http://localhost:3344/v1/raw/image/avatar.jpg",
+                            "birth_time": "2020-01-10",
+                            "authority": "admin",
+                            "phone_number": "13512345678"
+                        }
+                    ]
+                }
+            }
+            ```
         '400':
-          description: '"request param error"'
+          description: |-
+            "request param error"
         '404':
-          description: '"user not found"'
+          description: |-
+            "user not found"
       summary: 用户粉丝
       tags:
       - Subscribe
@@ -551,7 +773,7 @@ paths:
       consumes:
       - multipart/form-data
       description: 查询用户所有关注，返回分页数据
-      operationId: -v1-user-{uid}-subscribing-get
+      operationId: v1-user-uid-subscribing-get
       parameters:
       - description: 查询的用户id
         in: path
@@ -566,20 +788,12 @@ paths:
       produces:
       - application/json
       responses:
-        '200':
-          description: "```json\n{\n    \"code\": 200,\n    \"message\": \"success\"\
-            ,\n    \"data\": {\n        \"count\": 1,\n        \"page\": 1,\n    \
-            \    \"data\": [\n            {\n                \"uid\": 1,\n       \
-            \         \"username\": \"admin\",\n                \"sex\": \"male\"\
-            ,\n                \"profile\": \"Demo admin profile\",\n            \
-            \    \"avatar_url\": \"http://localhost:3344/v1/raw/image/avatar.jpg\"\
-            ,\n                \"birth_time\": \"2020-01-10\",\n                \"\
-            authority\": \"admin\",\n                \"phone_number\": \"13512345678\"\
-            \n            }\n        ]\n    }\n}\n```"
         '400':
-          description: '"request param error"'
+          description: |-
+            "request param error"
         '404':
-          description: '"user not found"'
+          description: |-
+            "user not found"
       summary: 用户关注
       tags:
       - Subscribe
@@ -588,7 +802,7 @@ paths:
       consumes:
       - multipart/form-data
       description: 查询作者为用户的所有视频，返回分页数据
-      operationId: -v1-user-{uid}-video?page-get
+      operationId: v1-user-uid-video-page-get
       parameters:
       - description: 用户id
         in: path
@@ -604,24 +818,43 @@ paths:
       - application/json
       responses:
         '200':
-          description: "```json\n{\n    \"code\": 200,\n    \"message\": \"success\"\
-            ,\n    \"data\": {\n        \"count\": 1,\n        \"page\": 1,\n    \
-            \    \"data\": [\n            {\n                \"vid\": 1,\n       \
-            \         \"title\": \"The First Video\",\n                \"description\"\
-            : \"This is the first video uploaded\",\n                \"video_url\"\
-            : \"123\",\n                \"cover_url\": \"http://localhost:3344/v1/raw/image/avatar.jpg\"\
-            ,\n                \"upload_time\": \"2020-01-10 00:55:36\",\n       \
-            \         \"update_time\": \"2020-01-10 14:31:00\",\n                \"\
-            author\": {\n                    \"uid\": 1,\n                    \"username\"\
-            : \"admin\",\n                    \"sex\": \"male\",\n               \
-            \     \"profile\": \"Demo admin profile\",\n                    \"avatar_url\"\
-            : \"http://localhost:3344/v1/raw/image/cover.jpg\",\n                \
-            \    \"birth_time\": \"2020-01-10\",\n                    \"authority\"\
-            : \"admin\"\n                }\n            }\n        ]\n    }\n}\n```"
+          description: |-
+            ```json
+            {
+                "code": 200,
+                "message": "success",
+                "data": {
+                    "count": 1,
+                    "page": 1,
+                    "data": [
+                        {
+                            "vid": 1,
+                            "title": "The First Video",
+                            "description": "This is the first video uploaded",
+                            "video_url": "123",
+                            "cover_url": "http://localhost:3344/v1/raw/image/avatar.jpg",
+                            "upload_time": "2020-01-10 00:55:36",
+                            "update_time": "2020-01-10 14:31:00",
+                            "author": {
+                                "uid": 1,
+                                "username": "admin",
+                                "sex": "male",
+                                "profile": "Demo admin profile",
+                                "avatar_url": "http://localhost:3344/v1/raw/image/cover.jpg",
+                                "birth_time": "2020-01-10",
+                                "authority": "admin"
+                            }
+                        }
+                    ]
+                }
+            }
+            ```
         '400':
-          description: '"request param error"'
+          description: |-
+            "request param error"
         '404':
-          description: '"user not found"'
+          description: |-
+            "user not found"
       summary: 查询用户视频
       tags:
       - Video
@@ -630,32 +863,51 @@ paths:
       consumes:
       - multipart/form-data
       description: 管理员查询所有用户，返回分页数据，管理员权限，此处可见用户手机号码
-      operationId: -v1-user?page-get
+      operationId: v1-user-page-get
       parameters:
-      - *id001
       - description: 分页
         in: query
         name: page
         required: false
         type: integer
+      - description: 用户登录令牌
+        in: header
+        name: Authorization
+        required: true
+        type: string
       produces:
       - application/json
       responses:
         '200':
-          description: "```json\n{\n    \"code\": 200,\n    \"message\": \"success\"\
-            ,\n    \"data\": {\n        \"count\": 1,\n        \"page\": 1,\n    \
-            \    \"data\": [\n            {\n                \"uid\": 1,\n       \
-            \         \"username\": \"admin\",\n                \"sex\": \"male\"\
-            ,\n                \"profile\": \"Demo admin profile\",\n            \
-            \    \"avatar_url\": \"http://localhost:3344/v1/raw/image/avatar.jpg\"\
-            ,\n                \"birth_time\": \"2020-01-10\",\n                \"\
-            authority\": \"admin\",\n                \"phone_number\": \"13512345678\"\
-            \n            }\n        ]\n    }\n}\n```"
+          description: |-
+            ```json
+            {
+                "code": 200,
+                "message": "success",
+                "data": {
+                    "count": 1,
+                    "page": 1,
+                    "data": [
+                        {
+                            "uid": 1,
+                            "username": "admin",
+                            "sex": "male",
+                            "profile": "Demo admin profile",
+                            "avatar_url": "http://localhost:3344/v1/raw/image/avatar.jpg",
+                            "birth_time": "2020-01-10",
+                            "authority": "admin",
+                            "phone_number": "13512345678"
+                        }
+                    ]
+                }
+            }
+            ```
         '400':
-          description: '"request param error"'
+          description: |-
+            "request param error"
         '401':
-          description: '"authorization failed" / "token has expired" / "need admin
-            authority"'
+          description: |-
+            "need admin authority", "authorization failed", "token has expired"
       security:
       - basicAuth: ''
       summary: 查询所有用户
@@ -667,9 +919,8 @@ paths:
       consumes:
       - multipart/form-data
       description: 新建用户视频
-      operationId: -v1-video-post
+      operationId: v1-video-post
       parameters:
-      - *id001
       - description: 视频标题，长度在 [1, 100] 之间
         in: formData
         name: title
@@ -690,28 +941,49 @@ paths:
         name: video_url
         required: true
         type: string
+      - description: 用户登录令牌
+        in: header
+        name: Authorization
+        required: true
+        type: string
       produces:
       - application/json
       responses:
         '200':
-          description: "```json\n{\n    \"code\": 201,\n    \"message\": \"created\"\
-            ,\n    \"data\": {\n        \"vid\": 1,\n        \"title\": \"The First\
-            \ Video\",\n        \"description\": \"This is the first video uploaded\"\
-            ,\n        \"video_url\": \"123\",\n        \"cover_url\": \"http://localhost:3344/v1/raw/image/avatar.jpg\"\
-            ,\n        \"upload_time\": \"2020-01-10 00:55:36\",\n        \"update_time\"\
-            : \"2020-01-10 14:31:00\",\n        \"author\": {\n            \"uid\"\
-            : 1,\n            \"username\": \"admin\",\n            \"sex\": \"male\"\
-            ,\n            \"profile\": \"Demo admin profile\",\n            \"avatar_url\"\
-            : \"http://localhost:3344/v1/raw/image/cover.jpg\",\n            \"birth_time\"\
-            : \"2020-01-10\",\n            \"authority\": \"admin\"\n        }\n \
-            \   }\n}\n```"
+          description: |-
+            ```json
+            {
+                "code": 201,
+                "message": "created",
+                "data": {
+                    "vid": 1,
+                    "title": "The First Video",
+                    "description": "This is the first video uploaded",
+                    "video_url": "123",
+                    "cover_url": "http://localhost:3344/v1/raw/image/avatar.jpg",
+                    "upload_time": "2020-01-10 00:55:36",
+                    "update_time": "2020-01-10 14:31:00",
+                    "author": {
+                        "uid": 1,
+                        "username": "admin",
+                        "sex": "male",
+                        "profile": "Demo admin profile",
+                        "avatar_url": "http://localhost:3344/v1/raw/image/cover.jpg",
+                        "birth_time": "2020-01-10",
+                        "authority": "admin"
+                    }
+                }
+            }
+            ```
         '400':
-          description: '"request param error" / "request format error" / "request
-            body too large" / "image type not supported" / "video resource has been
-            used"'
-        '401': *id002
+          description: |-
+            "request param error", "request format error", "request body too large", "image type not supported", "video resource has been used"
+        '401':
+          description: |-
+            "authorization failed", "token has expired"
         '500':
-          description: '"image save failed" / "video insert failed"'
+          description: |-
+            "image save failed", "video insert failed"
       security:
       - basicAuth: ''
       summary: 新建视频
@@ -722,29 +994,41 @@ paths:
       consumes:
       - multipart/form-data
       description: 删除用户视频，管理员或者作者本人可以操作
-      operationId: -v1-video-{vid}-delete
+      operationId: v1-video-vid-delete
       parameters:
-      - *id001
       - description: 删除视频id
         in: path
         name: vid
+        required: true
+        type: string
+      - description: 用户登录令牌
+        in: header
+        name: Authorization
         required: true
         type: string
       produces:
       - application/json
       responses:
         '200':
-          description: "```json\n{\n    \"code\": 200,\n    \"message\": \"success\"\
-            \n}\n```"
+          description: |-
+            ```json
+            {
+                "code": 200,
+                "message": "success"
+            }
+            ```
         '400':
-          description: '"request param error"'
+          description: |-
+            "request param error"
         '401':
-          description: '"authorization failed" / "token has expired" / "need admin
-            authority"'
+          description: |-
+            "need admin authority", "authorization failed", "token has expired"
         '404':
-          description: '"video not found"'
+          description: |-
+            "video not found"
         '500':
-          description: '"video delete failed"'
+          description: |-
+            "video delete failed"
       security:
       - basicAuth: ''
       summary: 删除视频
@@ -755,7 +1039,7 @@ paths:
       consumes:
       - multipart/form-data
       description: 查询视频信息，作者id为-1表示已删除的用户
-      operationId: -v1-video-{vid}-get
+      operationId: v1-video-vid-get
       parameters:
       - description: 视频id
         in: path
@@ -766,21 +1050,37 @@ paths:
       - application/json
       responses:
         '200':
-          description: "```json\n{\n    \"code\": 200,\n    \"message\": \"success\"\
-            ,\n    \"data\": {\n        \"vid\": 1,\n        \"title\": \"The First\
-            \ Video\",\n        \"description\": \"This is the first video uploaded\"\
-            ,\n        \"video_url\": \"123\",\n        \"cover_url\": \"http://localhost:3344/v1/raw/image/avatar.jpg\"\
-            ,\n        \"upload_time\": \"2020-01-10 00:55:36\",\n        \"update_time\"\
-            : \"2020-01-10 14:31:00\",\n        \"author\": {\n            \"uid\"\
-            : 1,\n            \"username\": \"admin\",\n            \"sex\": \"male\"\
-            ,\n            \"profile\": \"Demo admin profile\",\n            \"avatar_url\"\
-            : \"http://localhost:3344/v1/raw/image/cover.jpg\",\n            \"birth_time\"\
-            : \"2020-01-10\",\n            \"authority\": \"admin\"\n        }\n \
-            \   }\n}\n```"
+          description: |-
+            ```json
+            {
+                "code": 200,
+                "message": "success",
+                "data": {
+                    "vid": 1,
+                    "title": "The First Video",
+                    "description": "This is the first video uploaded",
+                    "video_url": "123",
+                    "cover_url": "http://localhost:3344/v1/raw/image/avatar.jpg",
+                    "upload_time": "2020-01-10 00:55:36",
+                    "update_time": "2020-01-10 14:31:00",
+                    "author": {
+                        "uid": 1,
+                        "username": "admin",
+                        "sex": "male",
+                        "profile": "Demo admin profile",
+                        "avatar_url": "http://localhost:3344/v1/raw/image/cover.jpg",
+                        "birth_time": "2020-01-10",
+                        "authority": "admin"
+                    }
+                }
+            }
+            ```
         '400':
-          description: '"request param error"'
+          description: |-
+            "request param error"
         '404':
-          description: '"video not found"'
+          description: |-
+            "video not found"
       summary: 查询视频
       tags:
       - Video
@@ -788,9 +1088,8 @@ paths:
       consumes:
       - multipart/form-data
       description: 更新用户视频信息，管理员或者作者本人可以操作
-      operationId: -v1-video-{vid}-post
+      operationId: v1-video-vid-post
       parameters:
-      - *id001
       - description: 更新视频id
         in: path
         name: vid
@@ -816,30 +1115,26 @@ paths:
         name: video_url
         required: true
         type: string
+      - description: 用户登录令牌
+        in: header
+        name: Authorization
+        required: true
+        type: string
       produces:
       - application/json
       responses:
-        '200':
-          description: "```json\n{\n    \"code\": 200,\n    \"message\": \"success\"\
-            ,\n    \"data\": {\n        \"vid\": 1,\n        \"title\": \"The First\
-            \ Video\",\n        \"description\": \"This is the first video uploaded\"\
-            ,\n        \"video_url\": \"123\",\n        \"cover_url\": \"http://localhost:3344/v1/raw/image/avatar.jpg\"\
-            ,\n        \"upload_time\": \"2020-01-10 00:55:36\",\n        \"update_time\"\
-            : \"2020-01-10 14:31:00\",\n        \"author\": {\n            \"uid\"\
-            : 1,\n            \"username\": \"admin\",\n            \"sex\": \"male\"\
-            ,\n            \"profile\": \"Demo admin profile\",\n            \"avatar_url\"\
-            : \"http://localhost:3344/v1/raw/image/cover.jpg\",\n            \"birth_time\"\
-            : \"2020-01-10\",\n            \"authority\": \"admin\"\n        }\n \
-            \   }\n}\n```"
         '400':
-          description: '"request param error" / "request format error"'
+          description: |-
+            "request param error", "request format error"
         '401':
-          description: '"authorization failed" / "token has expired" / "need admin
-            authority"'
+          description: |-
+            "need admin authority", "authorization failed", "token has expired"
         '404':
-          description: '"video not found"'
+          description: |-
+            "video not found"
         '500':
-          description: '"video update failed"'
+          description: |-
+            "video update failed"
       security:
       - basicAuth: ''
       summary: 更新视频
@@ -851,37 +1146,59 @@ paths:
       consumes:
       - multipart/form-data
       description: 管理员查询所有视频，返回分页数据，Admin
-      operationId: -v1-video?page-get
+      operationId: v1-video-page-get
       parameters:
-      - *id001
       - description: 分页
         in: query
         name: page
         required: false
         type: integer
+      - description: 用户登录令牌
+        in: header
+        name: Authorization
+        required: true
+        type: string
       produces:
       - application/json
       responses:
         '200':
-          description: "```json\n{\n    \"code\": 200,\n    \"message\": \"success\"\
-            ,\n    \"data\": {\n        \"count\": 1,\n        \"page\": 1,\n    \
-            \    \"data\": [\n            {\n                \"vid\": 1,\n       \
-            \         \"title\": \"The First Video\",\n                \"description\"\
-            : \"This is the first video uploaded\",\n                \"video_url\"\
-            : \"123\",\n                \"cover_url\": \"http://localhost:3344/v1/raw/image/avatar.jpg\"\
-            ,\n                \"upload_time\": \"2020-01-10 00:55:36\",\n       \
-            \         \"update_time\": \"2020-01-10 14:31:00\",\n                \"\
-            author\": {\n                    \"uid\": 1,\n                    \"username\"\
-            : \"admin\",\n                    \"sex\": \"male\",\n               \
-            \     \"profile\": \"Demo admin profile\",\n                    \"avatar_url\"\
-            : \"http://localhost:3344/v1/raw/image/cover.jpg\",\n                \
-            \    \"birth_time\": \"2020-01-10\",\n                    \"authority\"\
-            : \"admin\"\n                }\n            }\n        ]\n    }\n}\n```"
+          description: |-
+            ```json
+            {
+                "code": 200,
+                "message": "success",
+                "data": {
+                    "count": 1,
+                    "page": 1,
+                    "data": [
+                        {
+                            "vid": 1,
+                            "title": "The First Video",
+                            "description": "This is the first video uploaded",
+                            "video_url": "123",
+                            "cover_url": "http://localhost:3344/v1/raw/image/avatar.jpg",
+                            "upload_time": "2020-01-10 00:55:36",
+                            "update_time": "2020-01-10 14:31:00",
+                            "author": {
+                                "uid": 1,
+                                "username": "admin",
+                                "sex": "male",
+                                "profile": "Demo admin profile",
+                                "avatar_url": "http://localhost:3344/v1/raw/image/cover.jpg",
+                                "birth_time": "2020-01-10",
+                                "authority": "admin"
+                            }
+                        }
+                    ]
+                }
+            }
+            ```
         '400':
-          description: '"request param error"'
+          description: |-
+            "request param error"
         '401':
-          description: '"authorization failed" / "token has expired" / "need admin
-            authority"'
+          description: |-
+            "need admin authority", "authorization failed", "token has expired"
       security:
       - basicAuth: ''
       summary: 查询所有视频

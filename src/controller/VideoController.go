@@ -46,7 +46,7 @@ func NewVideoController(dic *xdi.DiContainer) *VideoController {
 // @Accept				multipart/form-data
 // @ErrorCode			400 request param error
 // @ErrorCode			401 need admin authority
-/* @Success 200			{
+/* @Response 200		{
 							"code": 200,
 							"message": "success",
 							"data": {
@@ -77,7 +77,7 @@ func (v *VideoController) QueryAllVideos(c *gin.Context) {
 // @Accept				multipart/form-data
 // @ErrorCode			400 request param error
 // @ErrorCode			404 user not found
-/* @Success 200			{
+/* @Response 200		{
 							"code": 200,
 							"message": "success",
 							"data": {
@@ -112,7 +112,7 @@ func (v *VideoController) QueryVideosByUid(c *gin.Context) {
 // @Accept				multipart/form-data
 // @ErrorCode			400 request param error
 // @ErrorCode			404 video not found
-/* @Success 200			{
+/* @Response 200		{
 							"code": 200,
 							"message": "success",
 							"data": ${video}
@@ -150,7 +150,7 @@ func (v *VideoController) QueryVideoByVid(c *gin.Context) {
 // @ErrorCode			400 video resource has been used
 // @ErrorCode			500 image save failed
 // @ErrorCode			500 video insert failed
-/* @Success 200			{
+/* @Response 200		{
 							"code": 201,
 							"message": "created",
 							"data": ${video}
@@ -268,7 +268,7 @@ func (v *VideoController) UpdateVideo(c *gin.Context) {
 // @ErrorCode			401 need admin authority
 // @ErrorCode			404 video not found
 // @ErrorCode			500 video delete failed
-/* @Success 200			{
+/* @Response 200		{
 							"code": 200,
 							"message": "success"
  						} */

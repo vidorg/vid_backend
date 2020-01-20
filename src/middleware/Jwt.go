@@ -18,12 +18,12 @@ type JwtService struct {
 	TokenDao *dao.TokenDao        `di:"~"`
 	UserDao  *dao.UserDao         `di:"~"`
 
-	userKey string `di:"-"`
+	UserKey string `di:"-"`
 }
 
 func NewJwtService(dic *xdi.DiContainer) *JwtService {
 	srv := &JwtService{
-		userKey: "user",
+		UserKey: "user",
 	}
 	dic.Inject(srv)
 	if xdi.HasNilDi(srv) {
@@ -49,7 +49,7 @@ func (j *JwtService) JwtMiddleware(needAdmin bool) gin.HandlerFunc {
 			return
 		}
 
-		c.Set(j.userKey, user)
+		c.Set(j.UserKey, user)
 		c.Next()
 	}
 }
@@ -89,10 +89,10 @@ func (j *JwtService) JwtCheck(token string) (*po.User, error) {
 }
 
 func (j *JwtService) GetAuthUser(c *gin.Context) *po.User {
-	_user, exist := c.Get(j.userKey)
+	_user, exist := c.Get(j.UserKey)
 	if !exist { // not jet check auth
 		j.JwtMiddleware(false)(c)
-		_user, exist = c.Get(j.userKey)
+		_user, exist = c.Get(j.UserKey)
 		if !exist { // Non-Auth
 			return nil
 		}

@@ -48,7 +48,7 @@ func NewAuthController(dic *xdi.DiContainer) *AuthController {
 // @ErrorCode			401 password error
 // @ErrorCode			404 user not found
 // @ErrorCode			500 login failed
-/* @Success 200			{
+/* @Response 200		{
 							"code": 200,
 							"message": "success",
 							"data": {
@@ -108,7 +108,7 @@ func (a *AuthController) Login(c *gin.Context) {
 // @ErrorCode			400 request format error
 // @ErrorCode			500 username has been used
 // @ErrorCode			500 register failed
-/* @Success 200			{
+/* @Response 200		{
 							"code": 200,
 							"message": "success",
 							"data": ${user}
@@ -150,7 +150,7 @@ func (a *AuthController) Register(c *gin.Context) {
 // @Description			根据认证信息，查看当前登录用户
 // @Tag					Authorization
 // @Accept				multipart/form-data
-/* @Success 200			{
+/* @Response 200		{
 							"code": 200,
 							"message": "success",
 							"data": ${user}
@@ -167,7 +167,7 @@ func (a *AuthController) CurrentUser(c *gin.Context) {
 // @Tag					Authorization
 // @Accept				multipart/form-data
 // @ErrorCode			500 logout failed
-/* @Success 200			{
+/* @Response 200		{
 							"code": 200,
 							"message": "success"
  						} */
@@ -193,7 +193,7 @@ func (a *AuthController) Logout(c *gin.Context) {
 // @ErrorCode			400 request format error
 // @ErrorCode			404 user not found
 // @ErrorCode			500 update password failed
-/* @Success 200			{
+/* @Response 200		{
 							"code": 200,
 							"message": "success"
  						} */

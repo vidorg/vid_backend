@@ -37,13 +37,13 @@ func NewRawController(dic *xdi.DiContainer) *RawController {
 // @ErrorCode			400 image type not supported
 // @ErrorCode			413 request body too large
 // @ErrorCode			500 image save failed
-/* @Success 200			{
-							"code": 200,
-							"message": "success",
-							"data": {
-								"url": "http://localhost:3344/v1/raw/image/20200110130323908439.jpg"
-							}
- 						} */
+/* @Response 200        {
+                            "code": 200,
+                            "message": "success",
+                            "data": {
+                                "url": "http://localhost:3344/v1/raw/image/20200110130323908439.jpg"
+                            }
+                        } */
 func (r *RawController) UploadImage(c *gin.Context) {
 	imageFile, imageHeader, err := c.Request.FormFile("image")
 	if err != nil || imageFile == nil {
@@ -74,7 +74,7 @@ func (r *RawController) UploadImage(c *gin.Context) {
 // @Param				filename path string true "图片文件名，jpg后缀名"
 // @Accept				multipart/form-data
 // @ErrorCode			404 image not found
-/* @Success 200			{ "Content-Type": "image/jpeg" } */
+/* @Response 200		{ "Content-Type": "image/jpeg" } */
 func (r *RawController) RawImage(c *gin.Context) {
 	filename := c.Param("filename")
 	filePath := fmt.Sprintf("%s%s", r.Config.FileConfig.ImagePath, filename)

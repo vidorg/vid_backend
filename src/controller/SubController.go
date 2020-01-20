@@ -43,7 +43,7 @@ func NewSubController(dic *xdi.DiContainer) *SubController {
 // @Accept				multipart/form-data
 // @ErrorCode			400 request param error
 // @ErrorCode			404 user not found
-/* @Success 200			{
+/* @Response 200		{
 							"code": 200,
 							"message": "success",
 							"data": {
@@ -117,7 +117,7 @@ func (s *SubController) QuerySubscribingUsers(c *gin.Context) {
 // @ErrorCode			400 subscribe oneself invalid
 // @ErrorCode			404 user not found
 // @ErrorCode			500 subscribe failed
-/* @Success 200			{
+/* @Response 200		{
 							"code": 200,
 							"message": "success",
 							"data": {
@@ -160,7 +160,7 @@ func (s *SubController) SubscribeUser(c *gin.Context) {
 // @ErrorCode			400 request format error
 // @ErrorCode			404 user not found
 // @ErrorCode			500 unsubscribe failed
-/* @Success 200			{
+/* @Response 200		{
 							"code": 200,
 							"message": "success",
 							"data": {
