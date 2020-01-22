@@ -36,18 +36,18 @@ func NewAuthController(dic *xdi.DiContainer) *AuthController {
 	return ctrl
 }
 
-// @Router				/v1/auth/login [POST]
-// @Summary				登录
-// @Description			用户登录
-// @Tag					Authorization
-// @Param				username formData string true "用户名"
-// @Param				password formData string true "用户密码"
-// @Param				expire formData integer false "登录有效期，默认为七天"
-// @Accept				multipart/form-data
-// @ErrorCode			400 request param error
-// @ErrorCode			401 password error
-// @ErrorCode			404 user not found
-// @ErrorCode			500 login failed
+// @Router              /v1/auth/login [POST]
+// @Summary             登录
+// @Description         用户登录
+// @Tag                 Authorization
+// @Param               username formData string true "用户名"
+// @Param               password formData string true "用户密码"
+// @Param               expire formData integer false "登录有效期，默认为七天"
+// @Accept              multipart/form-data
+// @ErrorCode           400 request param error
+// @ErrorCode           401 password error
+// @ErrorCode           404 user not found
+// @ErrorCode           500 login failed
 /* @Response 200		{
 							"code": 200,
 							"message": "success",
@@ -97,17 +97,17 @@ func (a *AuthController) Login(c *gin.Context) {
 		PutData("expire", loginParam.Expire).JSON(c)
 }
 
-// @Router				/v1/auth/register [POST]
-// @Summary				注册
-// @Description			用户注册
-// @Tag					Authorization
-// @Param				username formData string true "用户名，长度在 [5, 30] 之间"
-// @Param				password formData string true "用户密码，长度在 [8, 30] 之间"
-// @Accept				multipart/form-data
-// @ErrorCode			400 request param error
-// @ErrorCode			400 request format error
-// @ErrorCode			500 username has been used
-// @ErrorCode			500 register failed
+// @Router              /v1/auth/register [POST]
+// @Summary             注册
+// @Description         注册新用户
+// @Tag                 Authorization
+// @Param               username formData string true "用户名，长度在 [5, 30] 之间"
+// @Param               password formData string true "用户密码，长度在 [8, 30] 之间"
+// @Accept              multipart/form-data
+// @ErrorCode           400 request param error
+// @ErrorCode           400 request format error
+// @ErrorCode           500 username has been used
+// @ErrorCode           500 register failed
 /* @Response 200		{
 							"code": 200,
 							"message": "success",
@@ -145,11 +145,12 @@ func (a *AuthController) Register(c *gin.Context) {
 	common.Result{}.Ok().SetData(retDto).JSON(c)
 }
 
-// @Router				/v1/auth/ [GET] [Auth]
-// @Summary				当前登录用户
-// @Description			根据认证信息，查看当前登录用户
-// @Tag					Authorization
-// @Accept				multipart/form-data
+// @Router              /v1/auth/ [GET]
+// @Template            Auth
+// @Summary             当前登录用户
+// @Description         根据认证信息，查看当前登录用户
+// @Tag                 Authorization
+// @Accept              multipart/form-data
 /* @Response 200		{
 							"code": 200,
 							"message": "success",
@@ -161,12 +162,13 @@ func (a *AuthController) CurrentUser(c *gin.Context) {
 	common.Result{}.Ok().SetData(retDto).JSON(c)
 }
 
-// @Router				/v1/auth/logout [POST] [Auth]
-// @Summary				注销
-// @Description			用户注销，删除认证信息
-// @Tag					Authorization
-// @Accept				multipart/form-data
-// @ErrorCode			500 logout failed
+// @Router              /v1/auth/logout [POST]
+// @Template            Auth
+// @Summary             注销
+// @Description         用户注销
+// @Tag                 Authorization
+// @Accept              multipart/form-data
+// @ErrorCode           500 logout failed
 /* @Response 200		{
 							"code": 200,
 							"message": "success"
@@ -183,16 +185,17 @@ func (a *AuthController) Logout(c *gin.Context) {
 	common.Result{}.Ok().JSON(c)
 }
 
-// @Router				/v1/auth/password [PUT] [Auth]
-// @Summary				修改密码
-// @Description			用户修改密码
-// @Tag					Authorization
-// @Param				password formData string true "用户密码，长度在 [8, 30] 之间"
-// @Accept				multipart/form-data
-// @ErrorCode			400 request param error
-// @ErrorCode			400 request format error
-// @ErrorCode			404 user not found
-// @ErrorCode			500 update password failed
+// @Router              /v1/auth/password [PUT] [Auth]
+// @Template            Auth
+// @Summary             修改密码
+// @Description         用户修改密码
+// @Tag                 Authorization
+// @Param               password formData string true "用户密码，长度在 [8, 30] 之间"
+// @Accept              multipart/form-data
+// @ErrorCode           400 request param error
+// @ErrorCode           400 request format error
+// @ErrorCode           404 user not found
+// @ErrorCode           500 update password failed
 /* @Response 200		{
 							"code": 200,
 							"message": "success"

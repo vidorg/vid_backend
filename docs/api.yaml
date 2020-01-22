@@ -21,9 +21,7 @@ paths:
         '200':
           description: |-
             ```json
-            {
-                "ping": "pong"
-            }
+            Content-Type: application/json; charset=utf-8
             ```
       summary: Ping
       tags:
@@ -135,7 +133,7 @@ paths:
     post:
       consumes:
       - multipart/form-data
-      description: 用户注销，删除认证信息
+      description: 用户注销
       operationId: v1-auth-logout-post
       parameters:
       - description: 用户登录令牌
@@ -172,14 +170,14 @@ paths:
       description: 用户修改密码
       operationId: v1-auth-password-put
       parameters:
-      - description: 用户密码，长度在 [8, 30] 之间
-        in: formData
-        name: password
-        required: true
-        type: string
       - description: 用户登录令牌
         in: header
         name: Authorization
+        required: true
+        type: string
+      - description: 用户密码，长度在 [8, 30] 之间
+        in: formData
+        name: password
         required: true
         type: string
       produces:
@@ -214,7 +212,7 @@ paths:
     post:
       consumes:
       - multipart/form-data
-      description: 用户注册
+      description: 注册新用户
       operationId: v1-auth-register-post
       parameters:
       - description: 用户名，长度在 [5, 30] 之间
@@ -264,16 +262,16 @@ paths:
       description: 上传公共图片，包括用户头像和视频封面
       operationId: v1-raw-image-post
       parameters:
-      - description: 上传的图片，大小限制在2M，允许后缀名为 {.jpg, .jpeg, .png, .bmp, .gif}
-        in: formData
-        name: image
-        required: true
-        type: file
       - description: 用户登录令牌
         in: header
         name: Authorization
         required: true
         type: string
+      - description: 上传的图片，大小限制在2M，允许后缀名为 {.jpg, .jpeg, .png, .bmp, .gif}
+        in: formData
+        name: image
+        required: true
+        type: file
       produces:
       - application/json
       responses:
@@ -284,7 +282,8 @@ paths:
                 "code": 200,
                 "message": "success",
                 "data": {
-                    "url": "http://localhost:3344/v1/raw/image/20200110130323908439.jpg"
+                    "url": "http://localhost:3344/v1/raw/image/20200110130323908439.jpg",
+                    "size": 381952
                 }
             }
             ```
@@ -323,9 +322,7 @@ paths:
         '200':
           description: |-
             ```json
-            {
-                "Content-Type": "image/jpeg"
-            }
+            Content-Type: image/jpeg
             ```
         '404':
           description: |-
@@ -337,7 +334,7 @@ paths:
     delete:
       consumes:
       - multipart/form-data
-      description: 删除用户所有信息
+      description: 删除用户账户以及所有信息
       operationId: v1-user-delete
       parameters:
       - description: 用户登录令牌
@@ -367,15 +364,20 @@ paths:
             "user delete failed"
       security:
       - basicAuth: ''
-      summary: 删除登录用户
+      summary: 删除用户
       tags:
       - User
     put:
       consumes:
       - multipart/form-data
-      description: 更新用户信息
+      description: 更新用户个人信息
       operationId: v1-user-put
       parameters:
+      - description: 用户登录令牌
+        in: header
+        name: Authorization
+        required: true
+        type: string
       - description: 用户名，长度在 [8, 30] 之间
         in: formData
         name: username
@@ -406,11 +408,6 @@ paths:
         name: avatar_file
         required: true
         type: file
-      - description: 用户登录令牌
-        in: header
-        name: Authorization
-        required: true
-        type: string
       produces:
       - application/json
       responses:
@@ -446,14 +443,14 @@ paths:
             "user update failed"
       security:
       - basicAuth: ''
-      summary: 更新登录用户
+      summary: 更新用户
       tags:
       - User
   /v1/user/admin/{uid}:
     delete:
       consumes:
       - multipart/form-data
-      description: 删除用户所有信息，管理员权限
+      description: 删除用户账户，管理员权限
       operationId: v1-user-admin-uid-delete
       parameters:
       - description: 用户登录令牌
@@ -474,7 +471,7 @@ paths:
             ```
         '401':
           description: |-
-            "need admin authority", "authorization failed", "token has expired"
+            "authorization failed", "token has expired", "need admin authority"
         '404':
           description: |-
             "user not found"
@@ -493,6 +490,11 @@ paths:
       description: 更新用户信息，管理员权限
       operationId: v1-user-admin-uid-put
       parameters:
+      - description: 用户登录令牌
+        in: header
+        name: Authorization
+        required: true
+        type: string
       - description: 用户名，长度在 [8, 30] 之间
         in: formData
         name: username
@@ -523,11 +525,6 @@ paths:
         name: avatar_file
         required: true
         type: file
-      - description: 用户登录令牌
-        in: header
-        name: Authorization
-        required: true
-        type: string
       produces:
       - application/json
       responses:
@@ -554,7 +551,7 @@ paths:
             "request param error", "request format error", "username has been used"
         '401':
           description: |-
-            "need admin authority", "authorization failed", "token has expired"
+            "authorization failed", "token has expired", "need admin authority"
         '404':
           description: |-
             "user not found"
@@ -574,16 +571,16 @@ paths:
       description: 取消关注某一用户
       operationId: v1-user-subscribing-delete
       parameters:
-      - description: 取消关注用户id
-        in: formData
-        name: to
-        required: true
-        type: integer
       - description: 用户登录令牌
         in: header
         name: Authorization
         required: true
         type: string
+      - description: 取消关注用户id
+        in: formData
+        name: to
+        required: true
+        type: integer
       produces:
       - application/json
       responses:
@@ -592,12 +589,7 @@ paths:
             ```json
             {
                 "code": 200,
-                "message": "success",
-                "data": {
-                    "me_uid": 10,
-                    "to_uid": 3,
-                    "action": "unsubscribe"
-                }
+                "message": "success"
             }
             ```
         '400':
@@ -614,7 +606,7 @@ paths:
             "unsubscribe failed"
       security:
       - basicAuth: ''
-      summary: 取消关注用户
+      summary: 取消关注
       tags:
       - Subscribe
     put:
@@ -623,16 +615,16 @@ paths:
       description: 关注某一用户
       operationId: v1-user-subscribing-put
       parameters:
-      - description: 关注用户id
-        in: formData
-        name: to
-        required: true
-        type: integer
       - description: 用户登录令牌
         in: header
         name: Authorization
         required: true
         type: string
+      - description: 关注用户id
+        in: formData
+        name: to
+        required: true
+        type: integer
       produces:
       - application/json
       responses:
@@ -641,12 +633,7 @@ paths:
             ```json
             {
                 "code": 200,
-                "message": "success",
-                "data": {
-                    "me_uid": 10,
-                    "to_uid": 3,
-                    "action": "subscribe"
-                }
+                "message": "success"
             }
             ```
         '400':
@@ -663,14 +650,14 @@ paths:
             "subscribe failed"
       security:
       - basicAuth: ''
-      summary: 关注用户
+      summary: 关注
       tags:
       - Subscribe
   /v1/user/{uid}:
     get:
       consumes:
       - multipart/form-data
-      description: 查询用户信息，此处可见用户手机号码
+      description: 查询用户个人信息和数量信息，此处可见用户手机号码
       operationId: v1-user-uid-get
       parameters:
       - description: 用户id
@@ -715,12 +702,12 @@ paths:
       summary: 查询用户
       tags:
       - User
-  /v1/user/{uid}/subscriber:
+  /v1/user/{uid}/subscriber?page:
     get:
       consumes:
       - multipart/form-data
       description: 查询用户所有粉丝，返回分页数据
-      operationId: v1-user-uid-subscriber-get
+      operationId: v1-user-uid-subscriber-page-get
       parameters:
       - description: 查询的用户id
         in: path
@@ -765,15 +752,15 @@ paths:
         '404':
           description: |-
             "user not found"
-      summary: 用户粉丝
+      summary: 查询粉丝
       tags:
       - Subscribe
-  /v1/user/{uid}/subscribing:
+  /v1/user/{uid}/subscribing?page:
     get:
       consumes:
       - multipart/form-data
       description: 查询用户所有关注，返回分页数据
-      operationId: v1-user-uid-subscribing-get
+      operationId: v1-user-uid-subscribing-page-get
       parameters:
       - description: 查询的用户id
         in: path
@@ -794,14 +781,14 @@ paths:
         '404':
           description: |-
             "user not found"
-      summary: 用户关注
+      summary: 查询关注
       tags:
       - Subscribe
   /v1/user/{uid}/video?page:
     get:
       consumes:
       - multipart/form-data
-      description: 查询作者为用户的所有视频，返回分页数据
+      description: 查询作者为指定用户的所有视频，返回分页数据
       operationId: v1-user-uid-video-page-get
       parameters:
       - description: 用户id
@@ -865,16 +852,16 @@ paths:
       description: 管理员查询所有用户，返回分页数据，管理员权限，此处可见用户手机号码
       operationId: v1-user-page-get
       parameters:
-      - description: 分页
-        in: query
-        name: page
-        required: false
-        type: integer
       - description: 用户登录令牌
         in: header
         name: Authorization
         required: true
         type: string
+      - description: 分页
+        in: query
+        name: page
+        required: false
+        type: integer
       produces:
       - application/json
       responses:
@@ -907,7 +894,7 @@ paths:
             "request param error"
         '401':
           description: |-
-            "need admin authority", "authorization failed", "token has expired"
+            "authorization failed", "token has expired", "need admin authority"
       security:
       - basicAuth: ''
       summary: 查询所有用户
@@ -921,6 +908,11 @@ paths:
       description: 新建用户视频
       operationId: v1-video-post
       parameters:
+      - description: 用户登录令牌
+        in: header
+        name: Authorization
+        required: true
+        type: string
       - description: 视频标题，长度在 [1, 100] 之间
         in: formData
         name: title
@@ -939,11 +931,6 @@ paths:
       - description: 视频资源链接
         in: formData
         name: video_url
-        required: true
-        type: string
-      - description: 用户登录令牌
-        in: header
-        name: Authorization
         required: true
         type: string
       produces:
@@ -977,13 +964,13 @@ paths:
             ```
         '400':
           description: |-
-            "request param error", "request format error", "request body too large", "image type not supported", "video resource has been used"
+            "request param error", "request format error", "video has been updated"
         '401':
           description: |-
             "authorization failed", "token has expired"
         '500':
           description: |-
-            "image save failed", "video insert failed"
+            "video insert failed"
       security:
       - basicAuth: ''
       summary: 新建视频
@@ -996,14 +983,14 @@ paths:
       description: 删除用户视频，管理员或者作者本人可以操作
       operationId: v1-video-vid-delete
       parameters:
-      - description: 删除视频id
-        in: path
-        name: vid
-        required: true
-        type: string
       - description: 用户登录令牌
         in: header
         name: Authorization
+        required: true
+        type: string
+      - description: 删除视频id
+        in: path
+        name: vid
         required: true
         type: string
       produces:
@@ -1022,7 +1009,7 @@ paths:
             "request param error"
         '401':
           description: |-
-            "need admin authority", "authorization failed", "token has expired"
+            "authorization failed", "token has expired", "need admin authority"
         '404':
           description: |-
             "video not found"
@@ -1090,6 +1077,11 @@ paths:
       description: 更新用户视频信息，管理员或者作者本人可以操作
       operationId: v1-video-vid-post
       parameters:
+      - description: 用户登录令牌
+        in: header
+        name: Authorization
+        required: true
+        type: string
       - description: 更新视频id
         in: path
         name: vid
@@ -1115,20 +1107,15 @@ paths:
         name: video_url
         required: true
         type: string
-      - description: 用户登录令牌
-        in: header
-        name: Authorization
-        required: true
-        type: string
       produces:
       - application/json
       responses:
         '400':
           description: |-
-            "request param error", "request format error"
+            "request param error", "request format error", "video has been updated"
         '401':
           description: |-
-            "need admin authority", "authorization failed", "token has expired"
+            "authorization failed", "token has expired", "need admin authority"
         '404':
           description: |-
             "video not found"
@@ -1145,19 +1132,19 @@ paths:
     get:
       consumes:
       - multipart/form-data
-      description: 管理员查询所有视频，返回分页数据，Admin
+      description: 管理员查询所有视频，返回分页数据，管理员权限
       operationId: v1-video-page-get
       parameters:
-      - description: 分页
-        in: query
-        name: page
-        required: false
-        type: integer
       - description: 用户登录令牌
         in: header
         name: Authorization
         required: true
         type: string
+      - description: 分页
+        in: query
+        name: page
+        required: false
+        type: integer
       produces:
       - application/json
       responses:
@@ -1198,7 +1185,7 @@ paths:
             "request param error"
         '401':
           description: |-
-            "need admin authority", "authorization failed", "token has expired"
+            "authorization failed", "token has expired", "need admin authority"
       security:
       - basicAuth: ''
       summary: 查询所有视频

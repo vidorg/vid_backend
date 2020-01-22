@@ -37,15 +37,15 @@ func NewVideoController(dic *xdi.DiContainer) *VideoController {
 	return ctrl
 }
 
-// @Router				/v1/video?page [GET] [Auth]
-// @Summary				查询所有视频
-// @Description			管理员查询所有视频，返回分页数据，Admin
-// @Tag					Video
-// @Tag					Administration
-// @Param				page query integer false "分页"
-// @Accept				multipart/form-data
-// @ErrorCode			400 request param error
-// @ErrorCode			401 need admin authority
+// @Router              /v1/video?page [GET]
+// @Template            Auth, Admin
+// @Summary             查询所有视频
+// @Description         管理员查询所有视频，返回分页数据，管理员权限
+// @Tag                 Video
+// @Tag                 Administration
+// @Param               page query integer false "分页"
+// @Accept              multipart/form-data
+// @ErrorCode           400 request param error
 /* @Response 200		{
 							"code": 200,
 							"message": "success",
@@ -68,15 +68,15 @@ func (v *VideoController) QueryAllVideos(c *gin.Context) {
 	common.Result{}.Ok().SetPage(count, page, retDto).JSON(c)
 }
 
-// @Router				/v1/user/{uid}/video?page [GET]
-// @Summary				查询用户视频
-// @Description			查询作者为用户的所有视频，返回分页数据
-// @Tag					Video
-// @Param				uid path integer true "用户id"
-// @Param				page query integer false "分页"
-// @Accept				multipart/form-data
-// @ErrorCode			400 request param error
-// @ErrorCode			404 user not found
+// @Router              /v1/user/{uid}/video?page [GET]
+// @Summary             查询用户视频
+// @Description         查询作者为指定用户的所有视频，返回分页数据
+// @Tag                 Video
+// @Param               uid path integer true "用户id"
+// @Param               page query integer false "分页"
+// @Accept              multipart/form-data
+// @ErrorCode           400 request param error
+// @ErrorCode           404 user not found
 /* @Response 200		{
 							"code": 200,
 							"message": "success",
@@ -104,14 +104,14 @@ func (v *VideoController) QueryVideosByUid(c *gin.Context) {
 	common.Result{}.Ok().SetPage(count, page, retDto).JSON(c)
 }
 
-// @Router				/v1/video/{vid} [GET]
-// @Summary				查询视频
-// @Description			查询视频信息，作者id为-1表示已删除的用户
-// @Tag					Video
-// @Param				vid path integer true "视频id"
-// @Accept				multipart/form-data
-// @ErrorCode			400 request param error
-// @ErrorCode			404 video not found
+// @Router              /v1/video/{vid} [GET]
+// @Summary             查询视频
+// @Description         查询视频信息，作者id为-1表示已删除的用户
+// @Tag                 Video
+// @Param               vid path integer true "视频id"
+// @Accept              multipart/form-data
+// @ErrorCode           400 request param error
+// @ErrorCode           404 video not found
 /* @Response 200		{
 							"code": 200,
 							"message": "success",
@@ -134,22 +134,20 @@ func (v *VideoController) QueryVideoByVid(c *gin.Context) {
 	common.Result{}.Ok().SetData(retDto).JSON(c)
 }
 
-// @Router				/v1/video/ [POST] [Auth]
-// @Summary				新建视频
-// @Description			新建用户视频
-// @Tag					Video
-// @Param				title formData string true "视频标题，长度在 [1, 100] 之间"
-// @Param				description formData string true "视频简介，长度在 [0, 1024] 之间"
-// @Param				cover_url formData string false "视频封面链接"
-// @Param				video_url formData string true "视频资源链接"
-// @Accept				multipart/form-data
-// @ErrorCode			400 request param error
-// @ErrorCode			400 request format error
-// @ErrorCode			400 request body too large
-// @ErrorCode			400 image type not supported
-// @ErrorCode			400 video resource has been used
-// @ErrorCode			500 image save failed
-// @ErrorCode			500 video insert failed
+// @Router              /v1/video/ [POST]
+// @Template            Auth
+// @Summary             新建视频
+// @Description         新建用户视频
+// @Tag                 Video
+// @Param               title formData string true "视频标题，长度在 [1, 100] 之间"
+// @Param               description formData string true "视频简介，长度在 [0, 1024] 之间"
+// @Param               cover_url formData string false "视频封面链接"
+// @Param               video_url formData string true "视频资源链接"
+// @Accept              multipart/form-data
+// @ErrorCode           400 request param error
+// @ErrorCode           400 request format error
+// @ErrorCode           400 video has been updated
+// @ErrorCode           500 video insert failed
 /* @Response 200		{
 							"code": 201,
 							"message": "created",
@@ -190,22 +188,23 @@ func (v *VideoController) InsertVideo(c *gin.Context) {
 	common.Result{}.Ok().SetData(retDto).JSON(c)
 }
 
-// @Router				/v1/video/{vid} [POST] [Auth]
-// @Summary				更新视频
-// @Description			更新用户视频信息，管理员或者作者本人可以操作
-// @Tag					Video
-// @Tag					Administration
-// @Param				vid path string true "更新视频id"
-// @Param				title formData string true "视频标题，长度在 [1, 100] 之间"
-// @Param				description formData string true "视频简介，长度在 [0, 1024] 之间"
-// @Param				cover_url formData string true "视频封面链接"
-// @Param				video_url formData string true "视频资源链接"
-// @Accept				multipart/form-data
-// @ErrorCode			400 request param error
-// @ErrorCode			400 request format error
-// @ErrorCode			401 need admin authority
-// @ErrorCode			404 video not found
-// @ErrorCode			500 video update failed
+// @Router              /v1/video/{vid} [POST]
+// @Template            Auth, Admin
+// @Summary             更新视频
+// @Description         更新用户视频信息，管理员或者作者本人可以操作
+// @Tag                 Video
+// @Tag                 Administration
+// @Param               vid path string true "更新视频id"
+// @Param               title formData string true "视频标题，长度在 [1, 100] 之间"
+// @Param               description formData string true "视频简介，长度在 [0, 1024] 之间"
+// @Param               cover_url formData string true "视频封面链接"
+// @Param               video_url formData string true "视频资源链接"
+// @Accept              multipart/form-data
+// @ErrorCode           400 request param error
+// @ErrorCode           400 request format error
+// @ErrorCode           400 video has been updated
+// @ErrorCode           404 video not found
+// @ErrorCode           500 video update failed
 /* @Success 200 		{
 							"code": 200,
 							"message": "success",
@@ -245,7 +244,10 @@ func (v *VideoController) UpdateVideo(c *gin.Context) {
 	video.CoverUrl = coverUrl
 
 	status := v.VideoDao.Update(video)
-	if status == database.DbNotFound {
+	if status == database.DbExisted {
+		common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.VideoExistError.Error()).JSON(c)
+		return
+	} else if status == database.DbNotFound {
 		common.Result{}.Error(http.StatusNotFound).SetMessage(exception.VideoNotFoundError.Error()).JSON(c)
 		return
 	} else if status == database.DbFailed {
@@ -257,17 +259,17 @@ func (v *VideoController) UpdateVideo(c *gin.Context) {
 	common.Result{}.Ok().SetData(retDto).JSON(c)
 }
 
-// @Router				/v1/video/{vid} [DELETE] [Auth]
-// @Summary				删除视频
-// @Description			删除用户视频，管理员或者作者本人可以操作
-// @Tag					Video
-// @Tag					Administration
-// @Param				vid path string true "删除视频id"
-// @Accept				multipart/form-data
-// @ErrorCode			400 request param error
-// @ErrorCode			401 need admin authority
-// @ErrorCode			404 video not found
-// @ErrorCode			500 video delete failed
+// @Router              /v1/video/{vid} [DELETE]
+// @Template            Auth, Admin
+// @Summary             删除视频
+// @Description         删除用户视频，管理员或者作者本人可以操作
+// @Tag                 Video
+// @Tag                 Administration
+// @Param               vid path string true "删除视频id"
+// @Accept              multipart/form-data
+// @ErrorCode           400 request param error
+// @ErrorCode           404 video not found
+// @ErrorCode           500 video delete failed
 /* @Response 200		{
 							"code": 200,
 							"message": "success"

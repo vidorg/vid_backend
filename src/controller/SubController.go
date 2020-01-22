@@ -34,15 +34,15 @@ func NewSubController(dic *xdi.DiContainer) *SubController {
 	return ctrl
 }
 
-// @Router				/v1/user/{uid}/subscriber [GET]
-// @Summary				用户粉丝
-// @Description			查询用户所有粉丝，返回分页数据
-// @Tag					Subscribe
-// @Param				uid path integer true "查询的用户id"
-// @Param				page query integer false "分页"
-// @Accept				multipart/form-data
-// @ErrorCode			400 request param error
-// @ErrorCode			404 user not found
+// @Router              /v1/user/{uid}/subscriber?page [GET]
+// @Summary             查询粉丝
+// @Description         查询用户所有粉丝，返回分页数据
+// @Tag                 Subscribe
+// @Param               uid path integer true "查询的用户id"
+// @Param               page query integer false "分页"
+// @Accept              multipart/form-data
+// @ErrorCode           400 request param error
+// @ErrorCode           404 user not found
 /* @Response 200		{
 							"code": 200,
 							"message": "success",
@@ -70,15 +70,15 @@ func (s *SubController) QuerySubscriberUsers(c *gin.Context) {
 	common.Result{}.Ok().SetPage(count, page, retDto).JSON(c)
 }
 
-// @Router 				/v1/user/{uid}/subscribing [GET]
-// @Summary 			用户关注
-// @Description 		查询用户所有关注，返回分页数据
-// @Tag					Subscribe
-// @Param 				uid path integer true "查询的用户id"
-// @Param 				page query integer false "分页"
-// @Accept 				multipart/form-data
-// @ErrorCode			400 request param error
-// @ErrorCode			404 user not found
+// @Router              /v1/user/{uid}/subscribing?page [GET]
+// @Summary             查询关注
+// @Description         查询用户所有关注，返回分页数据
+// @Tag                 Subscribe
+// @Param               uid path integer true "查询的用户id"
+// @Param               page query integer false "分页"
+// @Accept              multipart/form-data
+// @ErrorCode           400 request param error
+// @ErrorCode           404 user not found
 /* @Success 200 		{
 							"code": 200,
 							"message": "success",
@@ -106,25 +106,21 @@ func (s *SubController) QuerySubscribingUsers(c *gin.Context) {
 	common.Result{}.Ok().SetPage(count, page, retDto).JSON(c)
 }
 
-// @Router				/v1/user/subscribing [PUT] [Auth]
-// @Summary				关注用户
-// @Description			关注某一用户
-// @Tag					Subscribe
-// @Param				to formData integer true "关注用户id"
-// @Accept				multipart/form-data
-// @ErrorCode			400 request param error
-// @ErrorCode			400 request format error
-// @ErrorCode			400 subscribe oneself invalid
-// @ErrorCode			404 user not found
-// @ErrorCode			500 subscribe failed
+// @Router              /v1/user/subscribing [PUT]
+// @Template            Auth
+// @Summary             关注
+// @Description         关注某一用户
+// @Tag                 Subscribe
+// @Param               to formData integer true "关注用户id"
+// @Accept              multipart/form-data
+// @ErrorCode           400 request param error
+// @ErrorCode           400 request format error
+// @ErrorCode           400 subscribe oneself invalid
+// @ErrorCode           404 user not found
+// @ErrorCode           500 subscribe failed
 /* @Response 200		{
 							"code": 200,
-							"message": "success",
-							"data": {
-								"me_uid": 10,
-								"to_uid": 3,
-								"action": "subscribe"
-							}
+							"message": "success"
  						} */
 func (s *SubController) SubscribeUser(c *gin.Context) {
 	authUser := s.JwtService.GetAuthUser(c)
@@ -147,27 +143,23 @@ func (s *SubController) SubscribeUser(c *gin.Context) {
 		return
 	}
 
-	common.Result{}.Ok().PutData("me_uid", authUser.Uid).PutData("to_uid", subParam.Uid).PutData("action", "subscribe").JSON(c)
+	common.Result{}.Ok().JSON(c)
 }
 
-// @Router				/v1/user/subscribing [DELETE] [Auth]
-// @Summary				取消关注用户
-// @Description			取消关注某一用户
-// @Tag					Subscribe
-// @Param				to formData integer true "取消关注用户id"
-// @Accept				multipart/form-data
-// @ErrorCode			400 request param error
-// @ErrorCode			400 request format error
-// @ErrorCode			404 user not found
-// @ErrorCode			500 unsubscribe failed
+// @Router              /v1/user/subscribing [DELETE]
+// @Template            Auth
+// @Summary             取消关注
+// @Description         取消关注某一用户
+// @Tag                 Subscribe
+// @Param               to formData integer true "取消关注用户id"
+// @Accept              multipart/form-data
+// @ErrorCode           400 request param error
+// @ErrorCode           400 request format error
+// @ErrorCode           404 user not found
+// @ErrorCode           500 unsubscribe failed
 /* @Response 200		{
 							"code": 200,
-							"message": "success",
-							"data": {
-								"me_uid": 10,
-								"to_uid": 3,
-								"action": "unsubscribe"
-							}
+							"message": "success"
  						} */
 func (s *SubController) UnSubscribeUser(c *gin.Context) {
 	authUser := s.JwtService.GetAuthUser(c)
@@ -186,5 +178,5 @@ func (s *SubController) UnSubscribeUser(c *gin.Context) {
 		return
 	}
 
-	common.Result{}.Ok().PutData("me_uid", authUser.Uid).PutData("to_uid", subParam.Uid).PutData("action", "unsubscribe").JSON(c)
+	common.Result{}.Ok().JSON(c)
 }

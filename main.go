@@ -28,19 +28,20 @@ func main() {
 	}
 }
 
-// @Title 					vid backend
-// @Version 				1.1
-// @Description 			Backend of repo https://github.com/vidorg/vid_vue
-// @TermsOfService 			https://github.com/vidorg
-// @Host 					localhost:3344
-// @BasePath 				/
-// @License.Name 			MIT
-// @License.Url 			https://github.com/vidorg/vid_backend/blob/master/LICENSE
+// @Title                       vid backend
+// @Version                     1.1
+// @Description                 Backend of repo https://github.com/vidorg/vid_vue
+// @TermsOfService              https://github.com/vidorg
+// @Host                        localhost:3344
+// @BasePath                    /
+// @License.Name                MIT
+// @License.Url                 https://github.com/vidorg/vid_backend/blob/master/LICENSE
 
-// @DemoResponse			./docs/demo.json
-// @Authorization.Param 	Authorization header string true "用户登录令牌"
-// @Authorization.Error		401 authorization failed
-// @Authorization.Error		401 token has expired
+// @DemoModel                   ./docs/demo.json
+// @Template Auth.Param         Authorization header string true "用户登录令牌"
+// @Template Auth.ErrorCode     401 authorization failed
+// @Template Auth.ErrorCode     401 token has expired
+// @Template Admin.ErrorCode    401 need admin authority
 
 func run() {
 	cfg, err := config.Load(configPath)

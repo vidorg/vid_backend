@@ -38,15 +38,15 @@ func NewUserController(dic *xdi.DiContainer) *UserController {
 	return ctrl
 }
 
-// @Router				/v1/user?page [GET] [Auth]
-// @Summary				查询所有用户
-// @Description			管理员查询所有用户，返回分页数据，管理员权限，此处可见用户手机号码
-// @Tag					User
-// @Tag					Administration
-// @Param				page query integer false "分页"
-// @Accept				multipart/form-data
-// @ErrorCode			400 request param error
-// @ErrorCode			401 need admin authority
+// @Router              /v1/user?page [GET]
+// @Template            Auth, Admin
+// @Summary             查询所有用户
+// @Description         管理员查询所有用户，返回分页数据，管理员权限，此处可见用户手机号码
+// @Tag                 User
+// @Tag                 Administration
+// @Param               page query integer false "分页"
+// @Accept              multipart/form-data
+// @ErrorCode           400 request param error
 /* @Response 200		{
 							"code": 200,
 							"message": "success",
@@ -70,14 +70,14 @@ func (u *UserController) QueryAllUsers(c *gin.Context) {
 	common.Result{}.Ok().SetPage(count, page, retDto).JSON(c)
 }
 
-// @Router				/v1/user/{uid} [GET]
-// @Summary				查询用户
-// @Description			查询用户信息，此处可见用户手机号码
-// @Tag					User
-// @Param				uid path integer true "用户id"
-// @Accept				multipart/form-data
-// @ErrorCode			400 request param error
-// @ErrorCode			404 user not found
+// @Router              /v1/user/{uid} [GET]
+// @Summary             查询用户
+// @Description         查询用户个人信息和数量信息，此处可见用户手机号码
+// @Tag                 User
+// @Param               uid path integer true "用户id"
+// @Accept              multipart/form-data
+// @ErrorCode           400 request param error
+// @ErrorCode           404 user not found
 /* @Response 200		{
 							"code": 200,
 							"message": "success",
@@ -116,45 +116,46 @@ func (u *UserController) QueryUser(c *gin.Context) {
 	common.Result{}.Ok().PutData("user", retDto).PutData("extra", extraInfo).JSON(c)
 }
 
-// @Router				/v1/user/ [PUT] [Auth]
-// @Summary				更新登录用户
-// @Description			更新用户信息
-// @Tag					User
-// @Param				username formData string true "用户名，长度在 [8, 30] 之间"
-// @Param				sex formData string true "用户性别，允许值为 {male, female, unknown}"
-// @Param				profile formData string true "用户简介，长度在 [0, 255] 之间"
-// @Param				birth_time formData string true "用户生日，固定格式为 2000-01-01"
-// @Param				phone_number formData string true "用户手机号码，长度为 11，仅限中国大陆手机号码"
-// @Param				avatar_file formData file true "用户头像链接"
-// @Accept				multipart/form-data
-// @ErrorCode			400 request param error
-// @ErrorCode			400 request format error
-// @ErrorCode			400 username has been used
-// @ErrorCode			404 user not found
-// @ErrorCode			500 user update failed
+// @Router              /v1/user/ [PUT]
+// @Template            Auth
+// @Summary             更新用户
+// @Description         更新用户个人信息
+// @Tag                 User
+// @Param               username formData string true "用户名，长度在 [8, 30] 之间"
+// @Param               sex formData string true "用户性别，允许值为 {male, female, unknown}"
+// @Param               profile formData string true "用户简介，长度在 [0, 255] 之间"
+// @Param               birth_time formData string true "用户生日，固定格式为 2000-01-01"
+// @Param               phone_number formData string true "用户手机号码，长度为 11，仅限中国大陆手机号码"
+// @Param               avatar_file formData file true "用户头像链接"
+// @Accept              multipart/form-data
+// @ErrorCode           400 request param error
+// @ErrorCode           400 request format error
+// @ErrorCode           400 username has been used
+// @ErrorCode           404 user not found
+// @ErrorCode           500 user update failed
 /* @Response 200		{
 							"code": 200,
 							"message": "success",
 							"data": ${user}
  						} */
-// @Router				/v1/user/admin/{uid} [PUT] [Auth]
-// @Summary				管理员更新用户
-// @Description			更新用户信息，管理员权限
-// @Tag					User
-// @Tag					Administration
-// @Param				username formData string true "用户名，长度在 [8, 30] 之间"
-// @Param				sex formData string true "用户性别，允许值为 {male, female, unknown}"
-// @Param				profile formData string true "用户简介，长度在 [0, 255] 之间"
-// @Param				birth_time formData string true "用户生日，固定格式为 2000-01-01"
-// @Param				phone_number formData string true "用户手机号码，长度为 11，仅限中国大陆手机号码"
-// @Param				avatar_file formData file true "用户头像链接"
-// @Accept				multipart/form-data
-// @ErrorCode			400 request param error
-// @ErrorCode			400 request format error
-// @ErrorCode			400 username has been used
-// @ErrorCode			401 need admin authority
-// @ErrorCode			404 user not found
-// @ErrorCode			500 user update failed
+// @Router              /v1/user/admin/{uid} [PUT]
+// @Template            Auth, Admin
+// @Summary             管理员更新用户
+// @Description         更新用户信息，管理员权限
+// @Tag                 User
+// @Tag                 Administration
+// @Param               username formData string true "用户名，长度在 [8, 30] 之间"
+// @Param               sex formData string true "用户性别，允许值为 {male, female, unknown}"
+// @Param               profile formData string true "用户简介，长度在 [0, 255] 之间"
+// @Param               birth_time formData string true "用户生日，固定格式为 2000-01-01"
+// @Param               phone_number formData string true "用户手机号码，长度为 11，仅限中国大陆手机号码"
+// @Param               avatar_file formData file true "用户头像链接"
+// @Accept              multipart/form-data
+// @ErrorCode           400 request param error
+// @ErrorCode           400 request format error
+// @ErrorCode           400 username has been used
+// @ErrorCode           404 user not found
+// @ErrorCode           500 user update failed
 /* @Response 200		{
 							"code": 200,
 							"message": "success",
@@ -212,26 +213,27 @@ func (u *UserController) UpdateUser(isExact bool) func(c *gin.Context) {
 	}
 }
 
-// @Router				/v1/user/ [DELETE] [Auth]
-// @Summary				删除登录用户
-// @Description			删除用户所有信息
-// @Tag					User
-// @Accept				multipart/form-data
-// @ErrorCode			404 user not found
-// @ErrorCode			500 user delete failed
+// @Router              /v1/user/ [DELETE]
+// @Template            Auth
+// @Summary             删除用户
+// @Description         删除用户账户以及所有信息
+// @Tag                 User
+// @Accept              multipart/form-data
+// @ErrorCode           404 user not found
+// @ErrorCode           500 user delete failed
 /* @Response 200		{
 							"code": 200,
 							"message": "success"
  						} */
-// @Router				/v1/user/admin/{uid} [DELETE] [Auth]
-// @Summary				管理员删除用户
-// @Description			删除用户所有信息，管理员权限
-// @Tag					User
-// @Tag					Administration
-// @Accept				multipart/form-data
-// @ErrorCode			401 need admin authority
-// @ErrorCode			404 user not found
-// @ErrorCode			500 user delete failed
+// @Router              /v1/user/admin/{uid} [DELETE]
+// @Template            Auth, Admin
+// @Summary             管理员删除用户
+// @Description         删除用户账户，管理员权限
+// @Tag                 User
+// @Tag                 Administration
+// @Accept              multipart/form-data
+// @ErrorCode           404 user not found
+// @ErrorCode           500 user delete failed
 /* @Response 200		{
 							"code": 200,
 							"message": "success"

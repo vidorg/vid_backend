@@ -43,7 +43,7 @@ var (
 	VideoUpdateError   = errors.New("video update failed") // U
 	VideoDeleteError   = errors.New("video delete failed") // D
 
-	VideoExistError = errors.New("video resource has been used")
+	VideoExistError = errors.New("video has been updated")
 )
 
 // File
