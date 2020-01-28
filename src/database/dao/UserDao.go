@@ -67,6 +67,6 @@ func (u *UserDao) Delete(uid int32) database.DbStatus {
 	} else if rdb.RowsAffected == 0 {
 		return database.DbNotFound
 	}
-	u.Db.Delete(&po.PassRecord{Uid: uid})
+	u.Db.Delete(&po.Account{Uid: uid})
 	return database.DbSuccess
 }

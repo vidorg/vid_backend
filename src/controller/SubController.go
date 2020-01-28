@@ -5,14 +5,14 @@ import (
 	"github.com/Aoi-hosizora/ahlib/xdi"
 	"github.com/Aoi-hosizora/ahlib/xmapper"
 	"github.com/gin-gonic/gin"
+	"github.com/vidorg/vid_backend/src/common/exception"
+	"github.com/vidorg/vid_backend/src/common/result"
 	"github.com/vidorg/vid_backend/src/config"
-	"github.com/vidorg/vid_backend/src/controller/exception"
 	"github.com/vidorg/vid_backend/src/database"
 	"github.com/vidorg/vid_backend/src/database/dao"
 	"github.com/vidorg/vid_backend/src/middleware"
-	"github.com/vidorg/vid_backend/src/model/common"
 	"github.com/vidorg/vid_backend/src/model/dto"
-	"github.com/vidorg/vid_backend/src/model/dto/param"
+	"github.com/vidorg/vid_backend/src/model/param"
 	"net/http"
 )
 
@@ -54,18 +54,18 @@ func (s *SubController) QuerySubscriberUsers(c *gin.Context) {
 	uid, ok1 := param.BindRouteId(c, "uid")
 	page, ok2 := param.BindQueryPage(c)
 	if !ok1 || !ok2 {
-		common.Result{}.Result(http.StatusBadRequest).SetMessage(exception.RequestParamError.Error()).JSON(c)
+		result.Result{}.Result(http.StatusBadRequest).SetMessage(exception.RequestParamError.Error()).JSON(c)
 		return
 	}
 
 	users, count, status := s.SubDao.QuerySubscriberUsers(uid, page)
 	if status == database.DbNotFound {
-		common.Result{}.Result(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()).JSON(c)
+		result.Result{}.Result(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()).JSON(c)
 		return
 	}
 
 	retDto := xcondition.First(s.Mapper.Map([]*dto.UserDto{}, users)).([]*dto.UserDto)
-	common.Result{}.Ok().SetPage(count, page, retDto).JSON(c)
+	result.Result{}.Ok().SetPage(count, page, retDto).JSON(c)
 }
 
 // @Router              /v1/user/{uid}/subscribing?page [GET]
@@ -90,18 +90,18 @@ func (s *SubController) QuerySubscribingUsers(c *gin.Context) {
 	uid, ok1 := param.BindRouteId(c, "uid")
 	page, ok2 := param.BindQueryPage(c)
 	if !ok1 || !ok2 {
-		common.Result{}.Result(http.StatusBadRequest).SetMessage(exception.RequestParamError.Error()).JSON(c)
+		result.Result{}.Result(http.StatusBadRequest).SetMessage(exception.RequestParamError.Error()).JSON(c)
 		return
 	}
 
 	users, count, status := s.SubDao.QuerySubscribingUsers(uid, page)
 	if status == database.DbNotFound {
-		common.Result{}.Result(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()).JSON(c)
+		result.Result{}.Result(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()).JSON(c)
 		return
 	}
 
 	retDto := xcondition.First(s.Mapper.Map([]*dto.UserDto{}, users)).([]*dto.UserDto)
-	common.Result{}.Ok().SetPage(count, page, retDto).JSON(c)
+	result.Result{}.Ok().SetPage(count, page, retDto).JSON(c)
 }
 
 // @Router              /v1/user/subscribing [PUT]
@@ -124,24 +124,24 @@ func (s *SubController) SubscribeUser(c *gin.Context) {
 	authUser := s.JwtService.GetAuthUser(c)
 	subParam := &param.SubParam{}
 	if err := c.ShouldBind(subParam); err != nil {
-		common.Result{}.Result(http.StatusBadRequest).SetMessage(exception.WrapValidationError(err).Error()).JSON(c)
+		result.Result{}.Result(http.StatusBadRequest).SetMessage(exception.WrapValidationError(err).Error()).JSON(c)
 		return
 	}
 	if authUser.Uid == subParam.Uid {
-		common.Result{}.Result(http.StatusBadRequest).SetMessage(exception.SubscribeSelfError.Error()).JSON(c)
+		result.Result{}.Result(http.StatusBadRequest).SetMessage(exception.SubscribeSelfError.Error()).JSON(c)
 		return
 	}
 
 	status := s.SubDao.SubscribeUser(authUser.Uid, subParam.Uid)
 	if status == database.DbNotFound {
-		common.Result{}.Result(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()).JSON(c)
+		result.Result{}.Result(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()).JSON(c)
 		return
 	} else if status == database.DbFailed {
-		common.Result{}.Error().SetMessage(exception.SubscribeError.Error()).JSON(c)
+		result.Result{}.Error().SetMessage(exception.SubscribeError.Error()).JSON(c)
 		return
 	}
 
-	common.Result{}.Ok().JSON(c)
+	result.Result{}.Ok().JSON(c)
 }
 
 // @Router              /v1/user/subscribing [DELETE]
@@ -163,18 +163,18 @@ func (s *SubController) UnSubscribeUser(c *gin.Context) {
 	authUser := s.JwtService.GetAuthUser(c)
 	subParam := &param.SubParam{}
 	if err := c.ShouldBind(subParam); err != nil {
-		common.Result{}.Result(http.StatusBadRequest).SetMessage(exception.WrapValidationError(err).Error()).JSON(c)
+		result.Result{}.Result(http.StatusBadRequest).SetMessage(exception.WrapValidationError(err).Error()).JSON(c)
 		return
 	}
 
 	status := s.SubDao.UnSubscribeUser(authUser.Uid, subParam.Uid)
 	if status == database.DbNotFound {
-		common.Result{}.Result(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()).JSON(c)
+		result.Result{}.Result(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()).JSON(c)
 		return
 	} else if status == database.DbFailed {
-		common.Result{}.Error().SetMessage(exception.UnSubscribeError.Error()).JSON(c)
+		result.Result{}.Error().SetMessage(exception.UnSubscribeError.Error()).JSON(c)
 		return
 	}
 
-	common.Result{}.Ok().JSON(c)
+	result.Result{}.Ok().JSON(c)
 }

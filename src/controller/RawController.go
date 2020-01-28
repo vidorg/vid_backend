@@ -6,9 +6,9 @@ import (
 	"github.com/Aoi-hosizora/ahlib/xmapper"
 	"github.com/Aoi-hosizora/ahlib/xstring"
 	"github.com/gin-gonic/gin"
+	"github.com/vidorg/vid_backend/src/common/exception"
+	"github.com/vidorg/vid_backend/src/common/result"
 	"github.com/vidorg/vid_backend/src/config"
-	"github.com/vidorg/vid_backend/src/controller/exception"
-	"github.com/vidorg/vid_backend/src/model/common"
 	"github.com/vidorg/vid_backend/src/util"
 	"net/http"
 )
@@ -48,24 +48,24 @@ func NewRawController(dic *xdi.DiContainer) *RawController {
 func (r *RawController) UploadImage(c *gin.Context) {
 	imageFile, imageHeader, err := c.Request.FormFile("image")
 	if err != nil || imageFile == nil {
-		common.Result{}.Result(http.StatusBadRequest).SetMessage(exception.RequestParamError.Error()).JSON(c)
+		result.Result{}.Result(http.StatusBadRequest).SetMessage(exception.RequestParamError.Error()).JSON(c)
 		return
 	}
 	supported, ext := util.ImageUtil.CheckImageExt(imageHeader.Filename)
 	if !supported {
-		common.Result{}.Result(http.StatusBadRequest).SetMessage(exception.ImageNotSupportedError.Error()).JSON(c)
+		result.Result{}.Result(http.StatusBadRequest).SetMessage(exception.ImageNotSupportedError.Error()).JSON(c)
 		return
 	}
 
 	filename := fmt.Sprintf("%s.jpg", xstring.CurrentTimeUuid(20))
 	savePath := fmt.Sprintf("%s%s", r.Config.FileConfig.ImagePath, filename)
 	if err := util.ImageUtil.SaveAsJpg(imageFile, ext, savePath); err != nil {
-		common.Result{}.Error().SetMessage(exception.ImageSaveError.Error()).JSON(c)
+		result.Result{}.Error().SetMessage(exception.ImageSaveError.Error()).JSON(c)
 		return
 	}
 
 	url := fmt.Sprintf("%s%s", r.Config.FileConfig.ImageUrlPrefix, filename)
-	common.Result{}.Ok().PutData("url", url).PutData("size", imageHeader.Size).JSON(c)
+	result.Result{}.Ok().PutData("url", url).PutData("size", imageHeader.Size).JSON(c)
 }
 
 // @Router              /v1/raw/image/{filename} [GET]
@@ -80,7 +80,7 @@ func (r *RawController) RawImage(c *gin.Context) {
 	filename := c.Param("filename")
 	filePath := fmt.Sprintf("%s%s", r.Config.FileConfig.ImagePath, filename)
 	if !util.CommonUtil.IsDirOrFileExist(filePath) {
-		common.Result{}.Result(http.StatusNotFound).SetMessage(exception.ImageNotFoundError.Error()).JSON(c)
+		result.Result{}.Result(http.StatusNotFound).SetMessage(exception.ImageNotFoundError.Error()).JSON(c)
 		return
 	}
 

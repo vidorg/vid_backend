@@ -34,7 +34,7 @@ func SetupDBConn(cfg *config.MySqlConfig) *gorm.DB {
 		}
 	}
 	authMigrate(&po.User{})
-	authMigrate(&po.PassRecord{})
+	authMigrate(&po.Account{})
 	authMigrate(&po.Video{})
 
 	// Change default deletedAt field behavior

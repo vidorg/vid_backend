@@ -3,11 +3,11 @@ package middleware
 import (
 	"github.com/Aoi-hosizora/ahlib/xdi"
 	"github.com/gin-gonic/gin"
+	"github.com/vidorg/vid_backend/src/common/enum"
+	"github.com/vidorg/vid_backend/src/common/exception"
+	"github.com/vidorg/vid_backend/src/common/result"
 	"github.com/vidorg/vid_backend/src/config"
-	"github.com/vidorg/vid_backend/src/controller/exception"
 	"github.com/vidorg/vid_backend/src/database/dao"
-	"github.com/vidorg/vid_backend/src/model/common"
-	"github.com/vidorg/vid_backend/src/model/common/enum"
 	"github.com/vidorg/vid_backend/src/model/po"
 	"github.com/vidorg/vid_backend/src/util"
 	"net/http"
@@ -34,13 +34,13 @@ func (j *JwtService) JwtMiddleware(needAdmin bool) gin.HandlerFunc {
 		authHeader := c.Request.Header.Get("Authorization")
 		user, err := j.JwtCheck(authHeader)
 		if err != nil {
-			// AuthorizationError / TokenExpiredError
-			common.Result{}.Result(http.StatusUnauthorized).SetMessage(err.Error()).JSON(c)
+			// UnAuthorizedError / TokenExpiredError
+			result.Result{}.Result(http.StatusUnauthorized).SetMessage(err.Error()).JSON(c)
 			c.Abort()
 			return
 		}
 		if needAdmin && user.Authority != enum.AuthAdmin {
-			common.Result{}.Result(http.StatusUnauthorized).SetMessage(exception.NeedAdminError.Error()).JSON(c)
+			result.Result{}.Result(http.StatusUnauthorized).SetMessage(exception.NeedAdminError.Error()).JSON(c)
 			c.Abort()
 			return
 		}
@@ -52,7 +52,7 @@ func (j *JwtService) JwtMiddleware(needAdmin bool) gin.HandlerFunc {
 
 func (j *JwtService) JwtCheck(token string) (*po.User, error) {
 	if token == "" {
-		return nil, exception.AuthorizationError
+		return nil, exception.UnAuthorizedError
 	}
 
 	// parse
@@ -65,20 +65,20 @@ func (j *JwtService) JwtCheck(token string) (*po.User, error) {
 			// Other Error
 			// Signature is invalid
 			// illegal base64 data at input byte
-			return nil, exception.AuthorizationError
+			return nil, exception.UnAuthorizedError
 		}
 	}
 
 	// check redis
 	ok := j.TokenDao.Query(token)
 	if !ok {
-		return nil, exception.AuthorizationError
+		return nil, exception.UnAuthorizedError
 	}
 
 	// check dao & admin
-	user := j.UserDao.QueryByUid(claims.UserID)
+	user := j.UserDao.QueryByUid(claims.UserId)
 	if user == nil {
-		return nil, exception.AuthorizationError
+		return nil, exception.AuthorizedUserError
 	}
 
 	return user, nil
@@ -95,7 +95,7 @@ func (j *JwtService) GetAuthUser(c *gin.Context) *po.User {
 	}
 	user, ok := _user.(*po.User)
 	if !ok { // auth failed
-		common.Result{}.Result(http.StatusUnauthorized).SetMessage(exception.AuthorizationError.Error()).JSON(c)
+		result.Result{}.Result(http.StatusUnauthorized).SetMessage(exception.UnAuthorizedError.Error()).JSON(c)
 		c.Abort()
 		return nil
 	}

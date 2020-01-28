@@ -5,14 +5,14 @@ import (
 	"github.com/Aoi-hosizora/ahlib/xdi"
 	"github.com/Aoi-hosizora/ahlib/xmapper"
 	"github.com/gin-gonic/gin"
+	"github.com/vidorg/vid_backend/src/common/exception"
+	"github.com/vidorg/vid_backend/src/common/result"
 	"github.com/vidorg/vid_backend/src/config"
-	"github.com/vidorg/vid_backend/src/controller/exception"
 	"github.com/vidorg/vid_backend/src/database"
 	"github.com/vidorg/vid_backend/src/database/dao"
 	"github.com/vidorg/vid_backend/src/middleware"
-	"github.com/vidorg/vid_backend/src/model/common"
 	"github.com/vidorg/vid_backend/src/model/dto"
-	"github.com/vidorg/vid_backend/src/model/dto/param"
+	"github.com/vidorg/vid_backend/src/model/param"
 	"github.com/vidorg/vid_backend/src/model/po"
 	"github.com/vidorg/vid_backend/src/util"
 	"net/http"
@@ -58,7 +58,7 @@ func NewAuthController(dic *xdi.DiContainer) *AuthController {
 func (a *AuthController) Login(c *gin.Context) {
 	loginParam := &param.LoginParam{}
 	if err := c.ShouldBind(loginParam); err != nil {
-		common.Result{}.Result(http.StatusBadRequest).SetMessage(exception.RequestParamError.Error()).JSON(c) // Login only use param error
+		result.Result{}.Result(http.StatusBadRequest).SetMessage(exception.RequestParamError.Error()).JSON(c) // Login only use param error
 		return
 	}
 	if loginParam.Expire <= 0 {
@@ -67,29 +67,29 @@ func (a *AuthController) Login(c *gin.Context) {
 
 	passRecord := a.PassDao.QueryByUsername(loginParam.Username)
 	if passRecord == nil {
-		common.Result{}.Result(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()).JSON(c)
+		result.Result{}.Result(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()).JSON(c)
 		return
 	}
 
 	if !util.AuthUtil.CheckPassword(loginParam.Password, passRecord.EncryptedPass) {
-		common.Result{}.Result(http.StatusUnauthorized).SetMessage(exception.PasswordError.Error()).JSON(c)
+		result.Result{}.Result(http.StatusUnauthorized).SetMessage(exception.PasswordError.Error()).JSON(c)
 		return
 	}
 
 	token, err := util.AuthUtil.GenerateToken(passRecord.User.Uid, loginParam.Expire, a.Config.JwtConfig)
 	if err != nil {
-		common.Result{}.Error().SetMessage(exception.LoginError.Error()).JSON(c)
+		result.Result{}.Error().SetMessage(exception.LoginError.Error()).JSON(c)
 		return
 	}
 
 	ok := a.TokenDao.Insert(token, passRecord.Uid, loginParam.Expire)
 	if !ok {
-		common.Result{}.Error().SetMessage(exception.LoginError.Error()).JSON(c)
+		result.Result{}.Error().SetMessage(exception.LoginError.Error()).JSON(c)
 		return
 	}
 
 	retDto := xcondition.First(a.Mapper.Map(&dto.UserDto{}, passRecord.User)).(*dto.UserDto)
-	common.Result{}.Ok().
+	result.Result{}.Ok().
 		PutData("user", retDto).
 		PutData("token", token).
 		PutData("expire", loginParam.Expire).JSON(c)
@@ -114,16 +114,16 @@ func (a *AuthController) Login(c *gin.Context) {
 func (a *AuthController) Register(c *gin.Context) {
 	registerParam := &param.RegisterParam{}
 	if err := c.ShouldBind(registerParam); err != nil {
-		common.Result{}.Result(http.StatusBadRequest).SetMessage(exception.WrapValidationError(err).Error()).JSON(c) // Register use wrap error
+		result.Result{}.Result(http.StatusBadRequest).SetMessage(exception.WrapValidationError(err).Error()).JSON(c) // Register use wrap error
 		return
 	}
 
 	encrypted, err := util.AuthUtil.EncryptPassword(registerParam.Password)
 	if err != nil {
-		common.Result{}.Error().SetMessage(exception.RegisterError.Error()).JSON(c)
+		result.Result{}.Error().SetMessage(exception.RegisterError.Error()).JSON(c)
 		return
 	}
-	passRecord := &po.PassRecord{
+	passRecord := &po.Account{
 		EncryptedPass: encrypted,
 		User: &po.User{
 			Username:   registerParam.Username,
@@ -132,15 +132,15 @@ func (a *AuthController) Register(c *gin.Context) {
 	}
 	status := a.PassDao.Insert(passRecord)
 	if status == database.DbExisted {
-		common.Result{}.Error().SetMessage(exception.UsernameUsedError.Error()).JSON(c)
+		result.Result{}.Error().SetMessage(exception.UsernameUsedError.Error()).JSON(c)
 		return
 	} else if status == database.DbFailed {
-		common.Result{}.Error().SetMessage(exception.RegisterError.Error()).JSON(c)
+		result.Result{}.Error().SetMessage(exception.RegisterError.Error()).JSON(c)
 		return
 	}
 
 	retDto := xcondition.First(a.Mapper.Map(&dto.UserDto{}, passRecord.User)).(*dto.UserDto)
-	common.Result{}.Result(http.StatusCreated).SetData(retDto).JSON(c)
+	result.Result{}.Result(http.StatusCreated).SetData(retDto).JSON(c)
 }
 
 // @Router              /v1/auth/ [GET]
@@ -157,7 +157,7 @@ func (a *AuthController) Register(c *gin.Context) {
 func (a *AuthController) CurrentUser(c *gin.Context) {
 	authUser := a.JwtService.GetAuthUser(c)
 	retDto := xcondition.First(a.Mapper.Map(&dto.UserDto{}, authUser)).(*dto.UserDto)
-	common.Result{}.Ok().SetData(retDto).JSON(c)
+	result.Result{}.Ok().SetData(retDto).JSON(c)
 }
 
 // @Router              /v1/auth/logout [POST]
@@ -177,11 +177,11 @@ func (a *AuthController) Logout(c *gin.Context) {
 	// only delete current token
 	ok := a.TokenDao.Delete(authHeader)
 	if !ok {
-		common.Result{}.Error().SetMessage(exception.LogoutError.Error()).JSON(c)
+		result.Result{}.Error().SetMessage(exception.LogoutError.Error()).JSON(c)
 		return
 	}
 
-	common.Result{}.Ok().JSON(c)
+	result.Result{}.Ok().JSON(c)
 }
 
 // @Router              /v1/auth/password [PUT] [Auth]
@@ -203,29 +203,29 @@ func (a *AuthController) UpdatePassword(c *gin.Context) {
 	authUser := a.JwtService.GetAuthUser(c)
 	passParam := &param.PassParam{}
 	if err := c.ShouldBind(passParam); err != nil {
-		common.Result{}.Result(http.StatusBadRequest).SetMessage(exception.WrapValidationError(err).Error()).JSON(c)
+		result.Result{}.Result(http.StatusBadRequest).SetMessage(exception.WrapValidationError(err).Error()).JSON(c)
 		return
 	}
 
 	encrypted, err := util.AuthUtil.EncryptPassword(passParam.Password)
 	if err != nil {
-		common.Result{}.Error().SetMessage(exception.UpdatePassError.Error()).JSON(c)
+		result.Result{}.Error().SetMessage(exception.UpdatePassError.Error()).JSON(c)
 		return
 	}
-	passRecord := &po.PassRecord{
+	passRecord := &po.Account{
 		EncryptedPass: encrypted,
 		Uid:           authUser.Uid,
 	}
 	status := a.PassDao.Update(passRecord)
 	if status == database.DbNotFound {
-		common.Result{}.Result(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()).JSON(c)
+		result.Result{}.Result(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()).JSON(c)
 		return
 	} else if status == database.DbFailed {
-		common.Result{}.Error().SetMessage(exception.UpdatePassError.Error()).JSON(c)
+		result.Result{}.Error().SetMessage(exception.UpdatePassError.Error()).JSON(c)
 		return
 	}
 	// Delete all token but ignore result
 	_ = a.TokenDao.DeleteAll(authUser.Uid)
 
-	common.Result{}.Ok().JSON(c)
+	result.Result{}.Ok().JSON(c)
 }

@@ -2,7 +2,7 @@ package dto
 
 import (
 	"github.com/Aoi-hosizora/ahlib/xmapper"
-	"github.com/vidorg/vid_backend/src/model/common/enum"
+	"github.com/vidorg/vid_backend/src/common/enum"
 	"github.com/vidorg/vid_backend/src/model/po"
 )
 

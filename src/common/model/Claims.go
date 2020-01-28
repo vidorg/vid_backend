@@ -1,8 +1,8 @@
-package common
+package model
 
 import "github.com/dgrijalva/jwt-go"
 
-type Claims struct {
-	UserID int32
+type UserClaims struct {
+	UserId int32
 	jwt.StandardClaims
 }

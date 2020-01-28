@@ -3,8 +3,8 @@ package util
 import (
 	"github.com/Aoi-hosizora/ahlib/xcondition"
 	"github.com/dgrijalva/jwt-go"
+	"github.com/vidorg/vid_backend/src/common/model"
 	"github.com/vidorg/vid_backend/src/config"
-	"github.com/vidorg/vid_backend/src/model/common"
 	"golang.org/x/crypto/bcrypt"
 	"time"
 )
@@ -26,8 +26,8 @@ func (a *authUtil) CheckPassword(password string, encrypted string) bool {
 }
 
 func (a *authUtil) GenerateToken(uid int32, ex int64, config *config.JwtConfig) (string, error) {
-	claims := &common.Claims{
-		UserID: uid,
+	claims := &model.UserClaims{
+		UserId: uid,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: time.Now().Unix() + ex,
 			Issuer:    config.Issuer,
@@ -37,17 +37,17 @@ func (a *authUtil) GenerateToken(uid int32, ex int64, config *config.JwtConfig) 
 	return token.SignedString([]byte(config.Secret))
 }
 
-func (a *authUtil) ParseToken(signedToken string, config *config.JwtConfig) (*common.Claims, error) {
+func (a *authUtil) ParseToken(signedToken string, config *config.JwtConfig) (*model.UserClaims, error) {
 	keyFunc := func(token *jwt.Token) (interface{}, error) {
 		return []byte(config.Secret), nil
 	}
-	token, err := jwt.ParseWithClaims(signedToken, &common.Claims{}, keyFunc)
+	token, err := jwt.ParseWithClaims(signedToken, &model.UserClaims{}, keyFunc)
 	if err != nil || !token.Valid {
 		err = xcondition.IfThenElse(err == nil, jwt.ValidationError{}, err).(error)
 		return nil, err
 	}
 
-	claims, ok := token.Claims.(*common.Claims)
+	claims, ok := token.Claims.(*model.UserClaims)
 	if !ok {
 		return nil, jwt.ValidationError{}
 	}

@@ -39,8 +39,9 @@ func main() {
 
 // @DemoModel                   ./docs/demo.json
 // @Template Auth.Param         Authorization header string true "用户登录令牌"
-// @Template Auth.ErrorCode     401 authorization failed
+// @Template Auth.ErrorCode     401 unauthorized user
 // @Template Auth.ErrorCode     401 token has expired
+// @Template Auth.ErrorCode     401 authorized user not found
 // @Template Admin.ErrorCode    401 need admin authority
 
 func run() {

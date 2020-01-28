@@ -3,11 +3,11 @@ package server
 import (
 	"github.com/Aoi-hosizora/ahlib/xdi"
 	"github.com/gomodule/redigo/redis"
+	"github.com/vidorg/vid_backend/src/common/profile"
 	"github.com/vidorg/vid_backend/src/config"
 	"github.com/vidorg/vid_backend/src/database"
 	"github.com/vidorg/vid_backend/src/database/dao"
 	"github.com/vidorg/vid_backend/src/middleware"
-	"github.com/vidorg/vid_backend/src/model/common/profile"
 )
 
 func ProvideService(config *config.ServerConfig) *xdi.DiContainer {

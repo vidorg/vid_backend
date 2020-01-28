@@ -13,8 +13,9 @@ var (
 
 // Authorization
 var (
-	AuthorizationError = errors.New("authorization failed")
-	TokenExpiredError  = errors.New("token has expired")
+	UnAuthorizedError   = errors.New("unauthorized user")
+	TokenExpiredError   = errors.New("token has expired")
+	AuthorizedUserError = errors.New("authorized user not found")
 
 	PasswordError   = errors.New("password error")
 	LoginError      = errors.New("login failed")

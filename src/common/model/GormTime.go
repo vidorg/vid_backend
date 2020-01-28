@@ -1,4 +1,4 @@
-package po
+package model
 
 import "time"
 

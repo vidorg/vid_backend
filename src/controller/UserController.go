@@ -5,15 +5,16 @@ import (
 	"github.com/Aoi-hosizora/ahlib/xdi"
 	"github.com/Aoi-hosizora/ahlib/xmapper"
 	"github.com/gin-gonic/gin"
+	"github.com/vidorg/vid_backend/src/common/enum"
+	"github.com/vidorg/vid_backend/src/common/exception"
+	"github.com/vidorg/vid_backend/src/common/model"
+	"github.com/vidorg/vid_backend/src/common/result"
 	"github.com/vidorg/vid_backend/src/config"
-	"github.com/vidorg/vid_backend/src/controller/exception"
 	"github.com/vidorg/vid_backend/src/database"
 	"github.com/vidorg/vid_backend/src/database/dao"
 	"github.com/vidorg/vid_backend/src/middleware"
-	"github.com/vidorg/vid_backend/src/model/common"
-	"github.com/vidorg/vid_backend/src/model/common/enum"
 	"github.com/vidorg/vid_backend/src/model/dto"
-	"github.com/vidorg/vid_backend/src/model/dto/param"
+	"github.com/vidorg/vid_backend/src/model/param"
 	"github.com/vidorg/vid_backend/src/model/po"
 	"github.com/vidorg/vid_backend/src/util"
 	"net/http"
@@ -57,7 +58,7 @@ func NewUserController(dic *xdi.DiContainer) *UserController {
 func (u *UserController) QueryAllUsers(c *gin.Context) {
 	page, ok := param.BindQueryPage(c)
 	if !ok {
-		common.Result{}.Result(http.StatusBadRequest).SetMessage(exception.RequestParamError.Error()).JSON(c)
+		result.Result{}.Result(http.StatusBadRequest).SetMessage(exception.RequestParamError.Error()).JSON(c)
 		return
 	}
 
@@ -65,7 +66,7 @@ func (u *UserController) QueryAllUsers(c *gin.Context) {
 
 	// show all user's info
 	retDto := xcondition.First(u.Mapper.Map([]*dto.UserDto{}, users, dto.UserDtoAdminMapOption())).([]*dto.UserDto)
-	common.Result{}.Ok().SetPage(count, page, retDto).JSON(c)
+	result.Result{}.Ok().SetPage(count, page, retDto).JSON(c)
 }
 
 // @Router              /v1/user/{uid} [GET]
@@ -91,13 +92,13 @@ func (u *UserController) QueryAllUsers(c *gin.Context) {
 func (u *UserController) QueryUser(c *gin.Context) {
 	uid, ok := param.BindRouteId(c, "uid")
 	if !ok {
-		common.Result{}.Result(http.StatusBadRequest).SetMessage(exception.RequestParamError.Error()).JSON(c)
+		result.Result{}.Result(http.StatusBadRequest).SetMessage(exception.RequestParamError.Error()).JSON(c)
 		return
 	}
 
 	user := u.UserDao.QueryByUid(uid)
 	if user == nil {
-		common.Result{}.Result(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()).JSON(c)
+		result.Result{}.Result(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()).JSON(c)
 		return
 	}
 	subscribingCnt, subscriberCnt, _ := u.SubDao.QuerySubCnt(user.Uid)
@@ -111,7 +112,7 @@ func (u *UserController) QueryUser(c *gin.Context) {
 	// need to squeeze out whether you can see the admin info
 	authUser := u.JwtService.GetAuthUser(c)
 	retDto := xcondition.First(u.Mapper.Map(&dto.UserDto{}, user, dto.UserDtoExtraMapOption(authUser))).(*dto.UserDto)
-	common.Result{}.Ok().PutData("user", retDto).PutData("extra", extraInfo).JSON(c)
+	result.Result{}.Ok().PutData("user", retDto).PutData("extra", extraInfo).JSON(c)
 }
 
 // @Router              /v1/user/ [PUT]
@@ -167,47 +168,47 @@ func (u *UserController) UpdateUser(isExact bool) func(c *gin.Context) {
 		} else {
 			uid, ok := param.BindRouteId(c, "uid")
 			if !ok {
-				common.Result{}.Result(http.StatusBadRequest).SetMessage(exception.RequestParamError.Error()).JSON(c)
+				result.Result{}.Result(http.StatusBadRequest).SetMessage(exception.RequestParamError.Error()).JSON(c)
 				return
 			}
 			user = u.UserDao.QueryByUid(uid)
 			if user == nil {
-				common.Result{}.Result(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()).JSON(c)
+				result.Result{}.Result(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()).JSON(c)
 				return
 			}
 		}
 		// Update
 		userParam := &param.UserParam{}
 		if err := c.ShouldBind(userParam); err != nil {
-			common.Result{}.Result(http.StatusBadRequest).SetMessage(exception.WrapValidationError(err).Error()).JSON(c)
+			result.Result{}.Result(http.StatusBadRequest).SetMessage(exception.WrapValidationError(err).Error()).JSON(c)
 			return
 		}
 		user.Username = userParam.Username
 		user.Sex = enum.StringToSexType(userParam.Sex)
 		user.Profile = *userParam.Profile
-		user.BirthTime, _ = common.JsonDate{}.Parse(userParam.BirthTime)
+		user.BirthTime, _ = model.JsonDate{}.Parse(userParam.BirthTime)
 		user.PhoneNumber = userParam.PhoneNumber
 		url, ok := util.CommonUtil.GetFilenameFromUrl(userParam.AvatarUrl, u.Config.FileConfig.ImageUrlPrefix)
 		if !ok {
-			common.Result{}.Result(http.StatusBadRequest).SetMessage(exception.RequestParamError.Error()).JSON(c)
+			result.Result{}.Result(http.StatusBadRequest).SetMessage(exception.RequestParamError.Error()).JSON(c)
 			return
 		}
 		user.AvatarUrl = url
 
 		status := u.UserDao.Update(user)
 		if status == database.DbNotFound {
-			common.Result{}.Result(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()).JSON(c)
+			result.Result{}.Result(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()).JSON(c)
 			return
 		} else if status == database.DbExisted {
-			common.Result{}.Result(http.StatusBadRequest).SetMessage(exception.UsernameUsedError.Error()).JSON(c)
+			result.Result{}.Result(http.StatusBadRequest).SetMessage(exception.UsernameUsedError.Error()).JSON(c)
 			return
 		} else if status == database.DbFailed {
-			common.Result{}.Error().SetMessage(exception.UserUpdateError.Error()).JSON(c)
+			result.Result{}.Error().SetMessage(exception.UserUpdateError.Error()).JSON(c)
 			return
 		}
 
 		retDto := xcondition.First(u.Mapper.Map(&dto.UserDto{}, user)).(*dto.UserDto)
-		common.Result{}.Ok().SetData(retDto).JSON(c)
+		result.Result{}.Ok().SetData(retDto).JSON(c)
 	}
 }
 
@@ -244,7 +245,7 @@ func (u *UserController) DeleteUser(isExact bool) func(c *gin.Context) {
 		} else {
 			_uid, ok := param.BindRouteId(c, "uid")
 			if !ok {
-				common.Result{}.Result(http.StatusBadRequest).SetMessage(exception.RequestParamError.Error()).JSON(c)
+				result.Result{}.Result(http.StatusBadRequest).SetMessage(exception.RequestParamError.Error()).JSON(c)
 				return
 			}
 			uid = _uid
@@ -252,12 +253,12 @@ func (u *UserController) DeleteUser(isExact bool) func(c *gin.Context) {
 		// Delete
 		status := u.UserDao.Delete(uid)
 		if status == database.DbNotFound {
-			common.Result{}.Result(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()).JSON(c)
+			result.Result{}.Result(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()).JSON(c)
 			return
 		} else if status == database.DbFailed {
-			common.Result{}.Error().SetMessage(exception.UserDeleteError.Error()).JSON(c)
+			result.Result{}.Error().SetMessage(exception.UserDeleteError.Error()).JSON(c)
 			return
 		}
-		common.Result{}.Ok().JSON(c)
+		result.Result{}.Ok().JSON(c)
 	}
 }

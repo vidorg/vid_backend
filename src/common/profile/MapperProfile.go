@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"github.com/Aoi-hosizora/ahlib/xcondition"
 	"github.com/Aoi-hosizora/ahlib/xmapper"
+	"github.com/vidorg/vid_backend/src/common/model"
 	"github.com/vidorg/vid_backend/src/config"
-	"github.com/vidorg/vid_backend/src/model/common"
 	"github.com/vidorg/vid_backend/src/model/dto"
 	"github.com/vidorg/vid_backend/src/model/po"
 	"strings"
@@ -34,7 +34,7 @@ func CreateMapperProfile(config *config.ServerConfig) *xmapper.EntityMapper {
 	mapper = mapper.
 		CreateMapper(&po.Video{}, &dto.VideoDto{}).
 		ForMember("UploadTime", func(i interface{}) interface{} { return i.(po.Video).UploadTime.String() }).
-		ForMember("UpdateTime", func(i interface{}) interface{} { return common.JsonDateTime(i.(po.Video).UpdatedAt).String() }).
+		ForMember("UpdateTime", func(i interface{}) interface{} { return model.JsonDateTime(i.(po.Video).UpdatedAt).String() }).
 		ForMember("CoverUrl", func(i interface{}) interface{} {
 			cover := i.(po.Video).CoverUrl
 			if !strings.HasPrefix(cover, "http") {

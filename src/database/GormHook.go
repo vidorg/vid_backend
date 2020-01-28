@@ -3,7 +3,7 @@ package database
 import (
 	"fmt"
 	"github.com/jinzhu/gorm"
-	"github.com/vidorg/vid_backend/src/model/po"
+	"github.com/vidorg/vid_backend/src/common/model"
 	"strings"
 	"time"
 )
@@ -13,7 +13,7 @@ func newBeforeQueryUpdateCallback(scope *gorm.Scope) {
 	var (
 		quotedTableName                   = scope.QuotedTableName()
 		deletedAtField, hasDeletedAtField = scope.FieldByName("DeletedAt")
-		defaultTimeStamp                  = po.DefaultDeleteAtTimeStamp
+		defaultTimeStamp                  = model.DefaultDeleteAtTimeStamp
 	)
 
 	if !scope.HasError() && !scope.Search.Unscoped && hasDeletedAtField {
@@ -35,7 +35,7 @@ func newDeleteCallback(scope *gorm.Scope) {
 	var (
 		quotedTableName                   = scope.QuotedTableName()
 		deletedAtField, hasDeletedAtField = scope.FieldByName("DeletedAt")
-		defaultTimeStamp                  = po.DefaultDeleteAtTimeStamp
+		defaultTimeStamp                  = model.DefaultDeleteAtTimeStamp
 	)
 
 	addExtraSpaceIfExist := func(str string) string {

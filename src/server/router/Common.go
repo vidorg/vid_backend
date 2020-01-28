@@ -3,7 +3,7 @@ package router
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"github.com/vidorg/vid_backend/src/model/common"
+	"github.com/vidorg/vid_backend/src/common/result"
 	"net/http"
 )
 
@@ -20,9 +20,9 @@ func SetupCommonRouter(router *gin.Engine) {
 	})
 
 	router.NoMethod(func(c *gin.Context) {
-		common.Result{}.Result(http.StatusMethodNotAllowed).JSON(c)
+		result.Result{}.Result(http.StatusMethodNotAllowed).JSON(c)
 	})
 	router.NoRoute(func(c *gin.Context) {
-		common.Result{}.Result(http.StatusNotFound).SetMessage(fmt.Sprintf("route %s is not found", c.Request.URL.Path)).JSON(c)
+		result.Result{}.Result(http.StatusNotFound).SetMessage(fmt.Sprintf("route %s is not found", c.Request.URL.Path)).JSON(c)
 	})
 }

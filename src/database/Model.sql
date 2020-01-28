@@ -3,9 +3,9 @@
 -- host: localhost:3306
 -- charset: utf8
 
--- tbl: tbl_password
+-- tbl: tbl_account
 
-CREATE TABLE `tbl_password`
+CREATE TABLE `tbl_account`
 (
     `uid`            int(11)      NOT NULL AUTO_INCREMENT,
     `encrypted_pass` varchar(255) NOT NULL,

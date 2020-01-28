@@ -10,7 +10,7 @@
 -- tbl: tbl_password
 -- passwords are all 12345678
 
-INSERT INTO `tbl_password` (`uid`, `encrypted_pass`, `created_at`, `updated_at`, `deleted_at`)
+INSERT INTO `tbl_account` (`uid`, `encrypted_pass`, `created_at`, `updated_at`, `deleted_at`)
 VALUES (1, '$2a$10$iq6j.QEU0Nvj5EmZtj2fsu4WTJGNdM5rJBSn0.qbafxc8ZYXviq/y', '2020-01-10 00:30:49', '2020-01-10 00:47:02',
         '2000-01-01 00:00:00'),
        (2, '$2a$10$NSV3DOeIugCPLxJYkpjdLeNJJ/EeOUlEqtlbl9/nz4q1tPCXIU63y', '2020-01-10 00:31:04', '2020-01-10 00:31:04',

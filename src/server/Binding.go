@@ -2,7 +2,7 @@ package server
 
 import (
 	"github.com/gin-gonic/gin/binding"
-	"github.com/vidorg/vid_backend/src/model/common"
+	"github.com/vidorg/vid_backend/src/common/model"
 	"gopkg.in/go-playground/validator.v9"
 	"regexp"
 	"time"
@@ -21,7 +21,7 @@ func setupDateTimeBinding() {
 	if ok {
 		_ = val.RegisterValidation("date", func(fl validator.FieldLevel) bool {
 			dateStr := fl.Field().String()
-			_, err := time.ParseInLocation(common.DateFormat, dateStr, common.CurrLocation)
+			_, err := time.ParseInLocation(model.DateFormat, dateStr, model.CurrLocation)
 			if err != nil {
 				return false
 			}
@@ -29,7 +29,7 @@ func setupDateTimeBinding() {
 		})
 		_ = val.RegisterValidation("datetime", func(fl validator.FieldLevel) bool {
 			datetimeStr := fl.Field().String()
-			_, err := time.ParseInLocation(common.DateTimeFormat, datetimeStr, common.CurrLocation)
+			_, err := time.ParseInLocation(model.DateTimeFormat, datetimeStr, model.CurrLocation)
 			if err != nil {
 				return false
 			}

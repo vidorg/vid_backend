@@ -3,8 +3,8 @@ package middleware
 import (
 	"bytes"
 	"github.com/gin-gonic/gin"
-	"github.com/vidorg/vid_backend/src/controller/exception"
-	"github.com/vidorg/vid_backend/src/model/common"
+	"github.com/vidorg/vid_backend/src/common/exception"
+	"github.com/vidorg/vid_backend/src/common/result"
 	"io/ioutil"
 	"net/http"
 )
@@ -17,7 +17,7 @@ func LimitMiddleware(maxSize int64) gin.HandlerFunc {
 		if err != nil {
 			// https://github.com/gin-gonic/gin/issues/1136
 			// conn, bufRw, err := c.Writer.Hijack()
-			common.Result{}.Result(http.StatusRequestEntityTooLarge).SetMessage(exception.RequestSizeError.Error()).JSON(c)
+			result.Result{}.Result(http.StatusRequestEntityTooLarge).SetMessage(exception.RequestSizeError.Error()).JSON(c)
 			c.Abort()
 			return
 		}

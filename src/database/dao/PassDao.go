@@ -19,14 +19,14 @@ func NewPassDao(dic *xdi.DiContainer) *PassDao {
 	return repo
 }
 
-func (p *PassDao) QueryByUsername(username string) *po.PassRecord {
+func (p *PassDao) QueryByUsername(username string) *po.Account {
 	user := &po.User{Username: username}
 	rdb := p.Db.Model(&po.User{}).Where(user).First(user)
 	if rdb.RecordNotFound() {
 		return nil
 	}
-	pass := &po.PassRecord{Uid: user.Uid}
-	rdb = p.Db.Model(&po.PassRecord{}).Where(pass).First(pass)
+	pass := &po.Account{Uid: user.Uid}
+	rdb = p.Db.Model(&po.Account{}).Where(pass).First(pass)
 	if rdb.RecordNotFound() {
 		return nil
 	}
@@ -34,8 +34,8 @@ func (p *PassDao) QueryByUsername(username string) *po.PassRecord {
 	return pass
 }
 
-func (p *PassDao) Insert(pass *po.PassRecord) database.DbStatus {
-	rdb := p.Db.Model(&po.PassRecord{}).Create(pass) // cascade create
+func (p *PassDao) Insert(pass *po.Account) database.DbStatus {
+	rdb := p.Db.Model(&po.Account{}).Create(pass) // cascade create
 	if database.IsDuplicateError(rdb.Error) {
 		return database.DbExisted
 	} else if rdb.Error != nil || rdb.RowsAffected == 0 {
@@ -44,8 +44,8 @@ func (p *PassDao) Insert(pass *po.PassRecord) database.DbStatus {
 	return database.DbSuccess
 }
 
-func (p *PassDao) Update(pass *po.PassRecord) database.DbStatus {
-	rdb := p.Db.Model(&po.PassRecord{}).Update(pass)
+func (p *PassDao) Update(pass *po.Account) database.DbStatus {
+	rdb := p.Db.Model(&po.Account{}).Update(pass)
 	if rdb.Error != nil {
 		return database.DbFailed
 	} else if rdb.RowsAffected == 0 {

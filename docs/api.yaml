@@ -61,7 +61,7 @@ paths:
             ```
         '401':
           description: |-
-            "authorization failed", "token has expired"
+            "unauthorized user", "token has expired", "authorized user not found"
       security:
       - basicAuth: ''
       summary: 当前登录用户
@@ -154,7 +154,7 @@ paths:
             ```
         '401':
           description: |-
-            "authorization failed", "token has expired"
+            "unauthorized user", "token has expired", "authorized user not found"
         '500':
           description: |-
             "logout failed"
@@ -196,7 +196,7 @@ paths:
             "request param error", "request format error"
         '401':
           description: |-
-            "authorization failed", "token has expired"
+            "unauthorized user", "token has expired", "authorized user not found"
         '404':
           description: |-
             "user not found"
@@ -292,7 +292,7 @@ paths:
             "request param error", "image type not supported"
         '401':
           description: |-
-            "authorization failed", "token has expired"
+            "unauthorized user", "token has expired", "authorized user not found"
         '413':
           description: |-
             "request body too large"
@@ -355,7 +355,7 @@ paths:
             ```
         '401':
           description: |-
-            "authorization failed", "token has expired"
+            "unauthorized user", "token has expired", "authorized user not found"
         '404':
           description: |-
             "user not found"
@@ -434,7 +434,7 @@ paths:
             "request param error", "request format error", "username has been used"
         '401':
           description: |-
-            "authorization failed", "token has expired"
+            "unauthorized user", "token has expired", "authorized user not found"
         '404':
           description: |-
             "user not found"
@@ -471,7 +471,7 @@ paths:
             ```
         '401':
           description: |-
-            "authorization failed", "token has expired", "need admin authority"
+            "unauthorized user", "token has expired", "authorized user not found", "need admin authority"
         '404':
           description: |-
             "user not found"
@@ -551,7 +551,7 @@ paths:
             "request param error", "request format error", "username has been used"
         '401':
           description: |-
-            "authorization failed", "token has expired", "need admin authority"
+            "unauthorized user", "token has expired", "authorized user not found", "need admin authority"
         '404':
           description: |-
             "user not found"
@@ -597,7 +597,7 @@ paths:
             "request param error", "request format error"
         '401':
           description: |-
-            "authorization failed", "token has expired"
+            "unauthorized user", "token has expired", "authorized user not found"
         '404':
           description: |-
             "user not found"
@@ -641,7 +641,7 @@ paths:
             "request param error", "request format error", "subscribe oneself invalid"
         '401':
           description: |-
-            "authorization failed", "token has expired"
+            "unauthorized user", "token has expired", "authorized user not found"
         '404':
           description: |-
             "user not found"
@@ -894,7 +894,7 @@ paths:
             "request param error"
         '401':
           description: |-
-            "authorization failed", "token has expired", "need admin authority"
+            "unauthorized user", "token has expired", "authorized user not found", "need admin authority"
       security:
       - basicAuth: ''
       summary: 查询所有用户
@@ -967,7 +967,7 @@ paths:
             "request param error", "request format error", "video has been updated"
         '401':
           description: |-
-            "authorization failed", "token has expired"
+            "unauthorized user", "token has expired", "authorized user not found"
         '500':
           description: |-
             "video insert failed"
@@ -1009,7 +1009,7 @@ paths:
             "request param error"
         '401':
           description: |-
-            "authorization failed", "token has expired", "need admin authority"
+            "unauthorized user", "token has expired", "authorized user not found", "need admin authority"
         '404':
           description: |-
             "video not found"
@@ -1115,7 +1115,7 @@ paths:
             "request param error", "request format error", "video has been updated"
         '401':
           description: |-
-            "authorization failed", "token has expired", "need admin authority"
+            "unauthorized user", "token has expired", "authorized user not found", "need admin authority"
         '404':
           description: |-
             "video not found"
@@ -1185,7 +1185,7 @@ paths:
             "request param error"
         '401':
           description: |-
-            "authorization failed", "token has expired", "need admin authority"
+            "unauthorized user", "token has expired", "authorized user not found", "need admin authority"
       security:
       - basicAuth: ''
       summary: 查询所有视频

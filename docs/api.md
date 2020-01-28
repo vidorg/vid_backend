@@ -47,7 +47,7 @@ Ping
 | Code | Description |
 | ---- | ----------- |
 | 200 | ```json {     "code": 200,     "message": "success",     "data": {         "uid": 1,         "username": "admin",         "sex": "male",         "profile": "Demo admin profile",         "avatar_url": "http://localhost:3344/v1/raw/image/avatar.jpg",         "birth_time": "2020-01-10",         "authority": "admin",         "phone_number": "13512345678"     } } ``` |
-| 401 | "authorization failed", "token has expired" |
+| 401 | "unauthorized user", "token has expired", "authorized user not found" |
 
 ##### Security
 
@@ -106,7 +106,7 @@ Ping
 | Code | Description |
 | ---- | ----------- |
 | 200 | ```json {     "code": 200,     "message": "success" } ``` |
-| 401 | "authorization failed", "token has expired" |
+| 401 | "unauthorized user", "token has expired", "authorized user not found" |
 | 500 | "logout failed" |
 
 ##### Security
@@ -139,7 +139,7 @@ Ping
 | ---- | ----------- |
 | 200 | ```json {     "code": 200,     "message": "success" } ``` |
 | 400 | "request param error", "request format error" |
-| 401 | "authorization failed", "token has expired" |
+| 401 | "unauthorized user", "token has expired", "authorized user not found" |
 | 404 | "user not found" |
 | 500 | "update password failed" |
 
@@ -199,7 +199,7 @@ Ping
 | ---- | ----------- |
 | 200 | ```json {     "code": 200,     "message": "success",     "data": {         "url": "http://localhost:3344/v1/raw/image/20200110130323908439.jpg",         "size": 381952     } } ``` |
 | 400 | "request param error", "image type not supported" |
-| 401 | "authorization failed", "token has expired" |
+| 401 | "unauthorized user", "token has expired", "authorized user not found" |
 | 413 | "request body too large" |
 | 500 | "image save failed" |
 
@@ -255,7 +255,7 @@ Ping
 | Code | Description |
 | ---- | ----------- |
 | 200 | ```json {     "code": 200,     "message": "success" } ``` |
-| 401 | "authorization failed", "token has expired" |
+| 401 | "unauthorized user", "token has expired", "authorized user not found" |
 | 404 | "user not found" |
 | 500 | "user delete failed" |
 
@@ -292,7 +292,7 @@ Ping
 | ---- | ----------- |
 | 200 | ```json {     "code": 200,     "message": "success",     "data": {         "uid": 1,         "username": "admin",         "sex": "male",         "profile": "Demo admin profile",         "avatar_url": "http://localhost:3344/v1/raw/image/avatar.jpg",         "birth_time": "2020-01-10",         "authority": "admin",         "phone_number": "13512345678"     } } ``` |
 | 400 | "request param error", "request format error", "username has been used" |
-| 401 | "authorization failed", "token has expired" |
+| 401 | "unauthorized user", "token has expired", "authorized user not found" |
 | 404 | "user not found" |
 | 500 | "user update failed" |
 
@@ -324,7 +324,7 @@ Ping
 | Code | Description |
 | ---- | ----------- |
 | 200 | ```json {     "code": 200,     "message": "success" } ``` |
-| 401 | "authorization failed", "token has expired", "need admin authority" |
+| 401 | "unauthorized user", "token has expired", "authorized user not found", "need admin authority" |
 | 404 | "user not found" |
 | 500 | "user delete failed" |
 
@@ -361,7 +361,7 @@ Ping
 | ---- | ----------- |
 | 200 | ```json {     "code": 200,     "message": "success",     "data": {         "uid": 1,         "username": "admin",         "sex": "male",         "profile": "Demo admin profile",         "avatar_url": "http://localhost:3344/v1/raw/image/avatar.jpg",         "birth_time": "2020-01-10",         "authority": "admin",         "phone_number": "13512345678"     } } ``` |
 | 400 | "request param error", "request format error", "username has been used" |
-| 401 | "authorization failed", "token has expired", "need admin authority" |
+| 401 | "unauthorized user", "token has expired", "authorized user not found", "need admin authority" |
 | 404 | "user not found" |
 | 500 | "user update failed" |
 
@@ -395,7 +395,7 @@ Ping
 | ---- | ----------- |
 | 200 | ```json {     "code": 200,     "message": "success" } ``` |
 | 400 | "request param error", "request format error" |
-| 401 | "authorization failed", "token has expired" |
+| 401 | "unauthorized user", "token has expired", "authorized user not found" |
 | 404 | "user not found" |
 | 500 | "unsubscribe failed" |
 
@@ -427,7 +427,7 @@ Ping
 | ---- | ----------- |
 | 200 | ```json {     "code": 200,     "message": "success" } ``` |
 | 400 | "request param error", "request format error", "subscribe oneself invalid" |
-| 401 | "authorization failed", "token has expired" |
+| 401 | "unauthorized user", "token has expired", "authorized user not found" |
 | 404 | "user not found" |
 | 500 | "subscribe failed" |
 
@@ -563,7 +563,7 @@ Ping
 | ---- | ----------- |
 | 200 | ```json {     "code": 200,     "message": "success",     "data": {         "count": 1,         "page": 1,         "data": [             {                 "uid": 1,                 "username": "admin",                 "sex": "male",                 "profile": "Demo admin profile",                 "avatar_url": "http://localhost:3344/v1/raw/image/avatar.jpg",                 "birth_time": "2020-01-10",                 "authority": "admin",                 "phone_number": "13512345678"             }         ]     } } ``` |
 | 400 | "request param error" |
-| 401 | "authorization failed", "token has expired", "need admin authority" |
+| 401 | "unauthorized user", "token has expired", "authorized user not found", "need admin authority" |
 
 ##### Security
 
@@ -598,7 +598,7 @@ Ping
 | ---- | ----------- |
 | 200 | ```json {     "code": 201,     "message": "created",     "data": {         "vid": 1,         "title": "The First Video",         "description": "This is the first video uploaded",         "video_url": "123",         "cover_url": "http://localhost:3344/v1/raw/image/avatar.jpg",         "upload_time": "2020-01-10 00:55:36",         "update_time": "2020-01-10 14:31:00",         "author": {             "uid": 1,             "username": "admin",             "sex": "male",             "profile": "Demo admin profile",             "avatar_url": "http://localhost:3344/v1/raw/image/cover.jpg",             "birth_time": "2020-01-10",             "authority": "admin"         }     } } ``` |
 | 400 | "request param error", "request format error", "video has been updated" |
-| 401 | "authorization failed", "token has expired" |
+| 401 | "unauthorized user", "token has expired", "authorized user not found" |
 | 500 | "video insert failed" |
 
 ##### Security
@@ -631,7 +631,7 @@ Ping
 | ---- | ----------- |
 | 200 | ```json {     "code": 200,     "message": "success" } ``` |
 | 400 | "request param error" |
-| 401 | "authorization failed", "token has expired", "need admin authority" |
+| 401 | "unauthorized user", "token has expired", "authorized user not found", "need admin authority" |
 | 404 | "video not found" |
 | 500 | "video delete failed" |
 
@@ -689,7 +689,7 @@ Ping
 | Code | Description |
 | ---- | ----------- |
 | 400 | "request param error", "request format error", "video has been updated" |
-| 401 | "authorization failed", "token has expired", "need admin authority" |
+| 401 | "unauthorized user", "token has expired", "authorized user not found", "need admin authority" |
 | 404 | "video not found" |
 | 500 | "video update failed" |
 
@@ -723,7 +723,7 @@ Ping
 | ---- | ----------- |
 | 200 | ```json {     "code": 200,     "message": "success",     "data": {         "count": 1,         "page": 1,         "data": [             {                 "vid": 1,                 "title": "The First Video",                 "description": "This is the first video uploaded",                 "video_url": "123",                 "cover_url": "http://localhost:3344/v1/raw/image/avatar.jpg",                 "upload_time": "2020-01-10 00:55:36",                 "update_time": "2020-01-10 14:31:00",                 "author": {                     "uid": 1,                     "username": "admin",                     "sex": "male",                     "profile": "Demo admin profile",                     "avatar_url": "http://localhost:3344/v1/raw/image/cover.jpg",                     "birth_time": "2020-01-10",                     "authority": "admin"                 }             }         ]     } } ``` |
 | 400 | "request param error" |
-| 401 | "authorization failed", "token has expired", "need admin authority" |
+| 401 | "unauthorized user", "token has expired", "authorized user not found", "need admin authority" |
 
 ##### Security
 
