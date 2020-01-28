@@ -18,11 +18,9 @@ type TokenDao struct {
 
 func NewTokenDao(dic *xdi.DiContainer) *TokenDao {
 	repo := &TokenDao{}
-	dic.Inject(repo)
-	if xdi.HasNilDi(repo) {
-		panic("Has nil di field")
+	if !dic.Inject(repo) {
+		panic("Inject failed")
 	}
-
 	repo.JwtFmt = repo.Config.JwtConfig.RedisFmt
 	return repo
 }

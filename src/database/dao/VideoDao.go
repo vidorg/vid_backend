@@ -18,11 +18,9 @@ type VideoDao struct {
 
 func NewVideoDao(dic *xdi.DiContainer) *VideoDao {
 	repo := &VideoDao{}
-	dic.Inject(repo)
-	if xdi.HasNilDi(repo) {
-		panic("Has nil di field")
+	if !dic.Inject(repo) {
+		panic("Inject failed")
 	}
-
 	repo.PageSize = repo.Config.MySqlConfig.PageSize
 	return repo
 }

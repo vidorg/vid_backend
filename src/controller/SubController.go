@@ -26,11 +26,9 @@ type SubController struct {
 
 func NewSubController(dic *xdi.DiContainer) *SubController {
 	ctrl := &SubController{}
-	dic.Inject(ctrl)
-	if xdi.HasNilDi(ctrl) {
-		panic("Has nil di field")
+	if !dic.Inject(ctrl) {
+		panic("Inject failed")
 	}
-
 	return ctrl
 }
 

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/Aoi-hosizora/ahlib/xdi"
 	"github.com/Aoi-hosizora/ahlib/xmapper"
+	"github.com/Aoi-hosizora/ahlib/xstring"
 	"github.com/gin-gonic/gin"
 	"github.com/vidorg/vid_backend/src/config"
 	"github.com/vidorg/vid_backend/src/controller/exception"
@@ -19,11 +20,9 @@ type RawController struct {
 
 func NewRawController(dic *xdi.DiContainer) *RawController {
 	ctrl := &RawController{}
-	dic.Inject(ctrl)
-	if xdi.HasNilDi(ctrl) {
-		panic("Has nil di field")
+	if !dic.Inject(ctrl) {
+		panic("Inject failed")
 	}
-
 	return ctrl
 }
 
@@ -58,7 +57,7 @@ func (r *RawController) UploadImage(c *gin.Context) {
 		return
 	}
 
-	filename := fmt.Sprintf("%s.jpg", util.CommonUtil.CurrentTimeUuid())
+	filename := fmt.Sprintf("%s.jpg", xstring.CurrentTimeUuid(20))
 	savePath := fmt.Sprintf("%s%s", r.Config.FileConfig.ImagePath, filename)
 	if err := util.ImageUtil.SaveAsJpg(imageFile, ext, savePath); err != nil {
 		common.Result{}.Error().SetMessage(exception.ImageSaveError.Error()).JSON(c)

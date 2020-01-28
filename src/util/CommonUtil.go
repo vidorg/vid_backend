@@ -1,30 +1,19 @@
 package util
 
 import (
+	"github.com/Aoi-hosizora/ahlib/xcondition"
 	"os"
 	"path"
 	"strings"
-	"time"
 )
 
 type commonUtil struct{}
 
 var CommonUtil = new(commonUtil)
 
-// Time UUID (20bit)
-func (c *commonUtil) CurrentTimeUuid() string {
-	return strings.Replace(time.Now().Format("20060102150405.000000"), ".", "", -1)
-}
-
-// Time UUID (14bit)
-func (c *commonUtil) CurrentTimeString() string {
-	return time.Now().Format("20060102150405")
-}
-
 // Check directory or file exist
 func (c *commonUtil) IsDirOrFileExist(filename string) bool {
-	_, err := os.Stat(filename)
-	return err == nil
+	return xcondition.Second(os.Stat(filename)) == nil
 }
 
 // Check exist and create it if not exist

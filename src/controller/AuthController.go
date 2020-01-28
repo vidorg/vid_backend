@@ -28,11 +28,9 @@ type AuthController struct {
 
 func NewAuthController(dic *xdi.DiContainer) *AuthController {
 	ctrl := &AuthController{}
-	dic.Inject(ctrl)
-	if xdi.HasNilDi(ctrl) {
-		panic("Has nil di field")
+	if !dic.Inject(ctrl) {
+		panic("Inject failed")
 	}
-
 	return ctrl
 }
 

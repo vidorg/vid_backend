@@ -22,14 +22,10 @@ type JwtService struct {
 }
 
 func NewJwtService(dic *xdi.DiContainer) *JwtService {
-	srv := &JwtService{
-		UserKey: "user",
+	srv := &JwtService{UserKey: "user"}
+	if !dic.Inject(srv) {
+		panic("Inject failed")
 	}
-	dic.Inject(srv)
-	if xdi.HasNilDi(srv) {
-		panic("Has nil di field")
-	}
-
 	return srv
 }
 

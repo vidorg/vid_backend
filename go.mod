@@ -1,7 +1,7 @@
 module github.com/vidorg/vid_backend
 
 require (
-	github.com/Aoi-hosizora/ahlib v0.0.0-20200117192634-be61d5ed2915
+	github.com/Aoi-hosizora/ahlib v0.0.0-20200128181747-318e0c2b28df
 	github.com/DeanThompson/ginpprof v0.0.0-20190408063150-3be636683586
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/gin-contrib/cors v1.3.0

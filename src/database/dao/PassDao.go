@@ -13,11 +13,9 @@ type PassDao struct {
 
 func NewPassDao(dic *xdi.DiContainer) *PassDao {
 	repo := &PassDao{}
-	dic.Inject(repo)
-	if xdi.HasNilDi(repo) {
-		panic("Has nil di field")
+	if !dic.Inject(repo) {
+		panic("Inject failed")
 	}
-
 	return repo
 }
 

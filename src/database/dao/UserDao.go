@@ -17,11 +17,9 @@ type UserDao struct {
 
 func NewUserDao(dic *xdi.DiContainer) *UserDao {
 	repo := &UserDao{}
-	dic.Inject(repo)
-	if xdi.HasNilDi(repo) {
-		panic("Has nil di field")
+	if !dic.Inject(repo) {
+		panic("Inject failed")
 	}
-
 	repo.PageSize = repo.Config.MySqlConfig.PageSize
 	return repo
 }
