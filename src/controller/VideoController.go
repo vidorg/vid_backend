@@ -58,7 +58,7 @@ func NewVideoController(dic *xdi.DiContainer) *VideoController {
 func (v *VideoController) QueryAllVideos(c *gin.Context) {
 	page, ok := param.BindQueryPage(c)
 	if !ok {
-		common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.RequestParamError.Error()).JSON(c)
+		common.Result{}.Result(http.StatusBadRequest).SetMessage(exception.RequestParamError.Error()).JSON(c)
 		return
 	}
 
@@ -90,13 +90,13 @@ func (v *VideoController) QueryVideosByUid(c *gin.Context) {
 	uid, ok1 := param.BindRouteId(c, "uid")
 	page, ok2 := param.BindQueryPage(c)
 	if !ok1 || !ok2 {
-		common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.RequestParamError.Error()).JSON(c)
+		common.Result{}.Result(http.StatusBadRequest).SetMessage(exception.RequestParamError.Error()).JSON(c)
 		return
 	}
 
 	videos, count, status := v.VideoDao.QueryByUid(uid, page)
 	if status == database.DbNotFound {
-		common.Result{}.Error(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()).JSON(c)
+		common.Result{}.Result(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()).JSON(c)
 		return
 	}
 
@@ -120,13 +120,13 @@ func (v *VideoController) QueryVideosByUid(c *gin.Context) {
 func (v *VideoController) QueryVideoByVid(c *gin.Context) {
 	vid, ok := param.BindRouteId(c, "vid")
 	if !ok {
-		common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.RequestParamError.Error()).JSON(c)
+		common.Result{}.Result(http.StatusBadRequest).SetMessage(exception.RequestParamError.Error()).JSON(c)
 		return
 	}
 
 	video := v.VideoDao.QueryByVid(vid)
 	if video == nil {
-		common.Result{}.Error(http.StatusNotFound).SetMessage(exception.VideoNotFoundError.Error()).JSON(c)
+		common.Result{}.Result(http.StatusNotFound).SetMessage(exception.VideoNotFoundError.Error()).JSON(c)
 		return
 	}
 
@@ -157,12 +157,12 @@ func (v *VideoController) InsertVideo(c *gin.Context) {
 	authUser := v.JwtService.GetAuthUser(c)
 	videoParam := &param.VideoParam{}
 	if err := c.ShouldBind(videoParam); err != nil {
-		common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.WrapValidationError(err).Error()).JSON(c)
+		common.Result{}.Result(http.StatusBadRequest).SetMessage(exception.WrapValidationError(err).Error()).JSON(c)
 		return
 	}
 	coverUrl, ok := util.CommonUtil.GetFilenameFromUrl(videoParam.CoverUrl, v.Config.FileConfig.ImageUrlPrefix)
 	if !ok {
-		common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.RequestParamError.Error()).JSON(c)
+		common.Result{}.Result(http.StatusBadRequest).SetMessage(exception.RequestParamError.Error()).JSON(c)
 		return
 	}
 
@@ -177,15 +177,15 @@ func (v *VideoController) InsertVideo(c *gin.Context) {
 	}
 	status := v.VideoDao.Insert(video)
 	if status == database.DbExisted {
-		common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.VideoExistError.Error()).JSON(c)
+		common.Result{}.Result(http.StatusBadRequest).SetMessage(exception.VideoExistError.Error()).JSON(c)
 		return
 	} else if status == database.DbFailed {
-		common.Result{}.Error(http.StatusInternalServerError).SetMessage(exception.VideoInsertError.Error()).JSON(c)
+		common.Result{}.Error().SetMessage(exception.VideoInsertError.Error()).JSON(c)
 		return
 	}
 
 	retDto := xcondition.First(v.Mapper.Map(&dto.VideoDto{}, video)).(*dto.VideoDto)
-	common.Result{}.Ok().SetData(retDto).JSON(c)
+	common.Result{}.Result(http.StatusCreated).SetData(retDto).JSON(c)
 }
 
 // @Router              /v1/video/{vid} [POST]
@@ -214,22 +214,22 @@ func (v *VideoController) UpdateVideo(c *gin.Context) {
 	authUser := v.JwtService.GetAuthUser(c)
 	vid, ok := param.BindRouteId(c, "vid")
 	if !ok {
-		common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.RequestParamError.Error()).JSON(c)
+		common.Result{}.Result(http.StatusBadRequest).SetMessage(exception.RequestParamError.Error()).JSON(c)
 		return
 	}
 	videoParam := &param.VideoParam{}
 	if err := c.ShouldBind(videoParam); err != nil {
-		common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.WrapValidationError(err).Error()).JSON(c)
+		common.Result{}.Result(http.StatusBadRequest).SetMessage(exception.WrapValidationError(err).Error()).JSON(c)
 		return
 	}
 
 	video := v.VideoDao.QueryByVid(vid)
 	if video == nil {
-		common.Result{}.Error(http.StatusNotFound).SetMessage(exception.VideoNotFoundError.Error()).JSON(c)
+		common.Result{}.Result(http.StatusNotFound).SetMessage(exception.VideoNotFoundError.Error()).JSON(c)
 		return
 	}
 	if authUser.Authority != enum.AuthAdmin && authUser.Uid != video.AuthorUid {
-		common.Result{}.Error(http.StatusUnauthorized).SetMessage(exception.NeedAdminError.Error()).JSON(c)
+		common.Result{}.Result(http.StatusUnauthorized).SetMessage(exception.NeedAdminError.Error()).JSON(c)
 		return
 	}
 	// Update
@@ -238,20 +238,20 @@ func (v *VideoController) UpdateVideo(c *gin.Context) {
 	video.VideoUrl = videoParam.VideoUrl // TODO
 	coverUrl, ok := util.CommonUtil.GetFilenameFromUrl(videoParam.CoverUrl, v.Config.FileConfig.ImageUrlPrefix)
 	if !ok {
-		common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.RequestParamError.Error()).JSON(c)
+		common.Result{}.Result(http.StatusBadRequest).SetMessage(exception.RequestParamError.Error()).JSON(c)
 		return
 	}
 	video.CoverUrl = coverUrl
 
 	status := v.VideoDao.Update(video)
 	if status == database.DbExisted {
-		common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.VideoExistError.Error()).JSON(c)
+		common.Result{}.Result(http.StatusBadRequest).SetMessage(exception.VideoExistError.Error()).JSON(c)
 		return
 	} else if status == database.DbNotFound {
-		common.Result{}.Error(http.StatusNotFound).SetMessage(exception.VideoNotFoundError.Error()).JSON(c)
+		common.Result{}.Result(http.StatusNotFound).SetMessage(exception.VideoNotFoundError.Error()).JSON(c)
 		return
 	} else if status == database.DbFailed {
-		common.Result{}.Error(http.StatusInternalServerError).SetMessage(exception.VideoUpdateError.Error()).JSON(c)
+		common.Result{}.Error().SetMessage(exception.VideoUpdateError.Error()).JSON(c)
 		return
 	}
 
@@ -278,26 +278,26 @@ func (v *VideoController) DeleteVideo(c *gin.Context) {
 	authUser := v.JwtService.GetAuthUser(c)
 	vid, ok := param.BindRouteId(c, "vid")
 	if !ok {
-		common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.RequestParamError.Error()).JSON(c)
+		common.Result{}.Result(http.StatusBadRequest).SetMessage(exception.RequestParamError.Error()).JSON(c)
 		return
 	}
 	// Check author and authorization
 	video := v.VideoDao.QueryByVid(vid)
 	if video == nil {
-		common.Result{}.Error(http.StatusNotFound).SetMessage(exception.VideoNotFoundError.Error()).JSON(c)
+		common.Result{}.Result(http.StatusNotFound).SetMessage(exception.VideoNotFoundError.Error()).JSON(c)
 		return
 	}
 	if authUser.Authority != enum.AuthAdmin && authUser.Uid != video.AuthorUid {
-		common.Result{}.Error(http.StatusUnauthorized).SetMessage(exception.NeedAdminError.Error()).JSON(c)
+		common.Result{}.Result(http.StatusUnauthorized).SetMessage(exception.NeedAdminError.Error()).JSON(c)
 		return
 	}
 	// Delete
 	status := v.VideoDao.Delete(vid)
 	if status == database.DbNotFound {
-		common.Result{}.Error(http.StatusNotFound).SetMessage(exception.VideoNotFoundError.Error()).JSON(c)
+		common.Result{}.Result(http.StatusNotFound).SetMessage(exception.VideoNotFoundError.Error()).JSON(c)
 		return
 	} else if status == database.DbFailed {
-		common.Result{}.Error(http.StatusInternalServerError).SetMessage(exception.VideoDeleteError.Error()).JSON(c)
+		common.Result{}.Error().SetMessage(exception.VideoDeleteError.Error()).JSON(c)
 		return
 	}
 

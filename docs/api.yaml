@@ -232,8 +232,8 @@ paths:
           description: |-
             ```json
             {
-                "code": 200,
-                "message": "success",
+                "code": 201,
+                "message": "created",
                 "data": {
                     "uid": 1,
                     "username": "admin",

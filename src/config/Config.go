@@ -30,7 +30,7 @@ type RedisConfig struct {
 	ConnType string `yaml:"conn-type"`
 	Host     string `yaml:"host"`
 	Port     int32  `yaml:"port"`
-	Db       int32    `yaml:"db"`
+	Db       int32  `yaml:"db"`
 	Password string `yaml:"password"`
 
 	ConnectTimeout int32 `yaml:"connect-timeout"`
@@ -39,10 +39,10 @@ type RedisConfig struct {
 }
 
 type JwtConfig struct {
-	Secret      string `yaml:"secret"`
-	Expire      int64  `yaml:"expire"`
-	Issuer      string `yaml:"issuer"`
-	RedisHeader string `yaml:"redis-header"`
+	Secret   string `yaml:"secret"`
+	Expire   int64  `yaml:"expire"`
+	Issuer   string `yaml:"issuer"`
+	RedisFmt string `yaml:"redis-fmt"`
 }
 
 type ServerConfig struct {

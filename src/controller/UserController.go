@@ -59,7 +59,7 @@ func NewUserController(dic *xdi.DiContainer) *UserController {
 func (u *UserController) QueryAllUsers(c *gin.Context) {
 	page, ok := param.BindQueryPage(c)
 	if !ok {
-		common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.RequestParamError.Error()).JSON(c)
+		common.Result{}.Result(http.StatusBadRequest).SetMessage(exception.RequestParamError.Error()).JSON(c)
 		return
 	}
 
@@ -93,13 +93,13 @@ func (u *UserController) QueryAllUsers(c *gin.Context) {
 func (u *UserController) QueryUser(c *gin.Context) {
 	uid, ok := param.BindRouteId(c, "uid")
 	if !ok {
-		common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.RequestParamError.Error()).JSON(c)
+		common.Result{}.Result(http.StatusBadRequest).SetMessage(exception.RequestParamError.Error()).JSON(c)
 		return
 	}
 
 	user := u.UserDao.QueryByUid(uid)
 	if user == nil {
-		common.Result{}.Error(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()).JSON(c)
+		common.Result{}.Result(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()).JSON(c)
 		return
 	}
 	subscribingCnt, subscriberCnt, _ := u.SubDao.QuerySubCnt(user.Uid)
@@ -169,19 +169,19 @@ func (u *UserController) UpdateUser(isExact bool) func(c *gin.Context) {
 		} else {
 			uid, ok := param.BindRouteId(c, "uid")
 			if !ok {
-				common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.RequestParamError.Error()).JSON(c)
+				common.Result{}.Result(http.StatusBadRequest).SetMessage(exception.RequestParamError.Error()).JSON(c)
 				return
 			}
 			user = u.UserDao.QueryByUid(uid)
 			if user == nil {
-				common.Result{}.Error(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()).JSON(c)
+				common.Result{}.Result(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()).JSON(c)
 				return
 			}
 		}
 		// Update
 		userParam := &param.UserParam{}
 		if err := c.ShouldBind(userParam); err != nil {
-			common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.WrapValidationError(err).Error()).JSON(c)
+			common.Result{}.Result(http.StatusBadRequest).SetMessage(exception.WrapValidationError(err).Error()).JSON(c)
 			return
 		}
 		user.Username = userParam.Username
@@ -191,20 +191,20 @@ func (u *UserController) UpdateUser(isExact bool) func(c *gin.Context) {
 		user.PhoneNumber = userParam.PhoneNumber
 		url, ok := util.CommonUtil.GetFilenameFromUrl(userParam.AvatarUrl, u.Config.FileConfig.ImageUrlPrefix)
 		if !ok {
-			common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.RequestParamError.Error()).JSON(c)
+			common.Result{}.Result(http.StatusBadRequest).SetMessage(exception.RequestParamError.Error()).JSON(c)
 			return
 		}
 		user.AvatarUrl = url
 
 		status := u.UserDao.Update(user)
 		if status == database.DbNotFound {
-			common.Result{}.Error(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()).JSON(c)
+			common.Result{}.Result(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()).JSON(c)
 			return
 		} else if status == database.DbExisted {
-			common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.UsernameUsedError.Error()).JSON(c)
+			common.Result{}.Result(http.StatusBadRequest).SetMessage(exception.UsernameUsedError.Error()).JSON(c)
 			return
 		} else if status == database.DbFailed {
-			common.Result{}.Error(http.StatusInternalServerError).SetMessage(exception.UserUpdateError.Error()).JSON(c)
+			common.Result{}.Error().SetMessage(exception.UserUpdateError.Error()).JSON(c)
 			return
 		}
 
@@ -246,7 +246,7 @@ func (u *UserController) DeleteUser(isExact bool) func(c *gin.Context) {
 		} else {
 			_uid, ok := param.BindRouteId(c, "uid")
 			if !ok {
-				common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.RequestParamError.Error()).JSON(c)
+				common.Result{}.Result(http.StatusBadRequest).SetMessage(exception.RequestParamError.Error()).JSON(c)
 				return
 			}
 			uid = _uid
@@ -254,10 +254,10 @@ func (u *UserController) DeleteUser(isExact bool) func(c *gin.Context) {
 		// Delete
 		status := u.UserDao.Delete(uid)
 		if status == database.DbNotFound {
-			common.Result{}.Error(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()).JSON(c)
+			common.Result{}.Result(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()).JSON(c)
 			return
 		} else if status == database.DbFailed {
-			common.Result{}.Error(http.StatusInternalServerError).SetMessage(exception.UserDeleteError.Error()).JSON(c)
+			common.Result{}.Error().SetMessage(exception.UserDeleteError.Error()).JSON(c)
 			return
 		}
 		common.Result{}.Ok().JSON(c)

@@ -171,7 +171,7 @@ Ping
 
 | Code | Description |
 | ---- | ----------- |
-| 200 | ```json {     "code": 200,     "message": "success",     "data": {         "uid": 1,         "username": "admin",         "sex": "male",         "profile": "Demo admin profile",         "avatar_url": "http://localhost:3344/v1/raw/image/avatar.jpg",         "birth_time": "2020-01-10",         "authority": "admin",         "phone_number": "13512345678"     } } ``` |
+| 200 | ```json {     "code": 201,     "message": "created",     "data": {         "uid": 1,         "username": "admin",         "sex": "male",         "profile": "Demo admin profile",         "avatar_url": "http://localhost:3344/v1/raw/image/avatar.jpg",         "birth_time": "2020-01-10",         "authority": "admin",         "phone_number": "13512345678"     } } ``` |
 | 400 | "request param error", "request format error" |
 | 500 | "username has been used", "register failed" |
 

@@ -13,23 +13,13 @@ type Result struct {
 	Data    *xhashmap.LinkedHashMap `json:"data,omitempty"`
 }
 
-func (Result) Ok() *Result {
-	return &Result{
-		Code:    http.StatusOK, // 200
-		Message: "success",
-	}
-}
-
-func (Result) Created() *Result {
-	return &Result{
-		Code:    http.StatusCreated, // 201
-		Message: "created",
-	}
-}
-
-func (Result) Error(code int) *Result {
+func (Result) Result(code int) *Result {
 	var message string
 	switch code {
+	case http.StatusOK: // 200
+		message = "success"
+	case http.StatusCreated: // 201
+		message = "created"
 	case http.StatusBadRequest: // 400
 		message = "bad Request"
 	case http.StatusUnauthorized: // 401
@@ -42,18 +32,28 @@ func (Result) Error(code int) *Result {
 		message = "method not allowed"
 	case http.StatusNotAcceptable: // 406
 		message = "not acceptable"
+	case http.StatusRequestEntityTooLarge: // 413
+		message = "request entity too large"
 	case http.StatusUnsupportedMediaType: // 415
 		message = "unsupported media type"
 	case http.StatusInternalServerError: // 500
 		message = "internal server error"
 	default:
-		message = "unknown error"
+		message = "unknown status"
 	}
 
 	return &Result{
 		Code:    code,
 		Message: message,
 	}
+}
+
+func (Result) Ok() *Result {
+	return Result{}.Result(http.StatusOK)
+}
+
+func (Result) Error() *Result {
+	return Result{}.Result(http.StatusInternalServerError)
 }
 
 func (r *Result) SetCode(code int) *Result {

@@ -20,9 +20,9 @@ func SetupCommonRouter(router *gin.Engine) {
 	})
 
 	router.NoMethod(func(c *gin.Context) {
-		common.Result{}.Error(http.StatusMethodNotAllowed).SetMessage("method not allowed").JSON(c)
+		common.Result{}.Result(http.StatusMethodNotAllowed).JSON(c)
 	})
 	router.NoRoute(func(c *gin.Context) {
-		common.Result{}.Error(http.StatusNotFound).SetMessage(fmt.Sprintf("route %s is not found", c.Request.URL.Path)).JSON(c)
+		common.Result{}.Result(http.StatusNotFound).SetMessage(fmt.Sprintf("route %s is not found", c.Request.URL.Path)).JSON(c)
 	})
 }

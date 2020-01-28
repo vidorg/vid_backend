@@ -49,19 +49,19 @@ func NewRawController(dic *xdi.DiContainer) *RawController {
 func (r *RawController) UploadImage(c *gin.Context) {
 	imageFile, imageHeader, err := c.Request.FormFile("image")
 	if err != nil || imageFile == nil {
-		common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.RequestParamError.Error()).JSON(c)
+		common.Result{}.Result(http.StatusBadRequest).SetMessage(exception.RequestParamError.Error()).JSON(c)
 		return
 	}
 	supported, ext := util.ImageUtil.CheckImageExt(imageHeader.Filename)
 	if !supported {
-		common.Result{}.Error(http.StatusBadRequest).SetMessage(exception.ImageNotSupportedError.Error()).JSON(c)
+		common.Result{}.Result(http.StatusBadRequest).SetMessage(exception.ImageNotSupportedError.Error()).JSON(c)
 		return
 	}
 
 	filename := fmt.Sprintf("%s.jpg", util.CommonUtil.CurrentTimeUuid())
 	savePath := fmt.Sprintf("%s%s", r.Config.FileConfig.ImagePath, filename)
 	if err := util.ImageUtil.SaveAsJpg(imageFile, ext, savePath); err != nil {
-		common.Result{}.Error(http.StatusInternalServerError).SetMessage(exception.ImageSaveError.Error()).JSON(c)
+		common.Result{}.Error().SetMessage(exception.ImageSaveError.Error()).JSON(c)
 		return
 	}
 
@@ -81,7 +81,7 @@ func (r *RawController) RawImage(c *gin.Context) {
 	filename := c.Param("filename")
 	filePath := fmt.Sprintf("%s%s", r.Config.FileConfig.ImagePath, filename)
 	if !util.CommonUtil.IsDirOrFileExist(filePath) {
-		common.Result{}.Error(http.StatusNotFound).SetMessage(exception.ImageNotFoundError.Error()).JSON(c)
+		common.Result{}.Result(http.StatusNotFound).SetMessage(exception.ImageNotFoundError.Error()).JSON(c)
 		return
 	}
 

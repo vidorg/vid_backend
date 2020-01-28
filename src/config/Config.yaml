@@ -32,4 +32,4 @@ jwt:
   secret: 9C27D0C7C04BDA8A1F1B099CF4F9B1956AF5164F
   expire: 604800 # second
   issuer: vid.srv.auth
-  redis-header: vid_token
+  redis-fmt: vid-token-%s-%s

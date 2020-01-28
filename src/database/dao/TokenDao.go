@@ -2,16 +2,18 @@ package dao
 
 import (
 	"fmt"
+	"github.com/Aoi-hosizora/ahlib/xcondition"
 	"github.com/Aoi-hosizora/ahlib/xdi"
 	"github.com/gomodule/redigo/redis"
 	"github.com/vidorg/vid_backend/src/config"
+	"strconv"
 )
 
 type TokenDao struct {
 	Config *config.ServerConfig `di:"~"`
 	Conn   redis.Conn           `di:"~"`
 
-	Header string `di:"-"`
+	JwtFmt string `di:"-"`
 }
 
 func NewTokenDao(dic *xdi.DiContainer) *TokenDao {
@@ -21,28 +23,51 @@ func NewTokenDao(dic *xdi.DiContainer) *TokenDao {
 		panic("Has nil di field")
 	}
 
-	repo.Header = repo.Config.JwtConfig.RedisHeader
+	repo.JwtFmt = repo.Config.JwtConfig.RedisFmt
 	return repo
 }
 
-func (t *TokenDao) catHeader(token string) string {
-	return fmt.Sprintf("%s-%s", t.Header, token)
+func (t *TokenDao) concat(uid string, token string) string {
+	return fmt.Sprintf(t.JwtFmt, uid, token)
 }
 
 func (t *TokenDao) Query(token string) bool {
-	data := t.catHeader(token)
-	n, _ := redis.Int(t.Conn.Do("EXISTS", data))
-	return n >= 1
+	pattern := t.concat("*", token)
+	keys, err := redis.Strings(t.Conn.Do("KEYS", pattern))
+	if err != nil {
+		return false
+	}
+	return len(keys) >= 1
 }
 
 func (t *TokenDao) Insert(token string, uid int32, ex int64) bool {
-	data := t.catHeader(token)
-	_, err := t.Conn.Do("SET", data, uid, "EX", ex)
+	value := t.concat(strconv.Itoa(int(uid)), token)
+	_, err := t.Conn.Do("SET", value, uid, "EX", ex)
 	return err == nil
 }
 
+func (t *TokenDao) _deleteAll(pattern string) bool {
+	keys, err := redis.Strings(t.Conn.Do("KEYS", pattern))
+	if err != nil {
+		return false
+	}
+	if len(keys) == 0 {
+		return true
+	}
+	
+	cnt := 0
+	for _, key := range keys {
+		cnt += xcondition.First(redis.Int(t.Conn.Do("DEL", key))).(int)
+	}
+	return cnt >= 1
+}
+
 func (t *TokenDao) Delete(token string) bool {
-	data := t.catHeader(token)
-	n, _ := redis.Int(t.Conn.Do("DEL", data))
-	return n >= 1
+	pattern := t.concat("*", token)
+	return t._deleteAll(pattern)
+}
+
+func (t *TokenDao) DeleteAll(uid int32) bool {
+	pattern := t.concat(strconv.Itoa(int(uid)), "*")
+	return t._deleteAll(pattern)
 }
