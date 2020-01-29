@@ -1,32 +1,118 @@
 {
-  "user": {
-    "uid": 1,
-    "username": "admin",
-    "sex": "male",
-    "profile": "Demo admin profile",
-    "avatar_url": "http://localhost:3344/v1/raw/image/avatar.jpg",
-    "birth_time": "2020-01-10",
-    "authority": "admin",
-    "phone_number": "13512345678",
-    "register_time": "2020-01-10 00:30:49"
+  "resp_success": {
+    "code": 200,
+    "message": "success"
   },
-  "video": {
-    "vid": 1,
-    "title": "The First Video",
-    "description": "This is the first video uploaded",
-    "video_url": "123",
-    "cover_url": "http://localhost:3344/v1/raw/image/avatar.jpg",
-    "upload_time": "2020-01-10 00:55:36",
-    "update_time": "2020-01-10 14:31:00",
-    "author": {
+  "resp_login": {
+    "code": 200,
+    "message": "success",
+    "data": {
+      "user": {
+        "$ref": "#/$models/user"
+      },
+      "token": "Bearer xxx",
+      "expire": 604800
+    }
+  },
+  "resp_register": {
+    "code": 201,
+    "message": "created",
+    "data": {
+      "$ref": "#/$models/user"
+    }
+  },
+  "resp_user": {
+    "code": 200,
+    "message": "success",
+    "data": {
+      "$ref": "#/$models/user"
+    }
+  },
+  "resp_page_users": {
+    "code": 200,
+    "message": "success",
+    "data": {
+      "count": 1,
+      "page": 1,
+      "data": [
+        {
+          "$ref": "#/$models/user"
+        }
+      ]
+    }
+  },
+  "resp_user_info": {
+    "code": 200,
+    "message": "success",
+    "data": {
+      "user": {
+        "$ref": "#/$models/user"
+      },
+      "extra": {
+        "subscribing_cnt": 3,
+        "subscriber_cnt": 2,
+        "video_cnt": 3
+      }
+    }
+  },
+  "resp_page_videos": {
+    "code": 200,
+    "message": "success",
+    "data": {
+      "count": 1,
+      "page": 1,
+      "data": [
+        {
+          "$ref": "#/$models/video"
+        }
+      ]
+    }
+  },
+  "resp_video": {
+    "code": 200,
+    "message": "success",
+    "data": {
+      "$ref": "#/$models/video"
+    }
+  },
+  "resp_new_video": {
+    "code": 201,
+    "message": "created",
+    "data": {
+      "$ref": "#/$models/video"
+    }
+  },
+  "resp_upload_image": {
+    "code": 200,
+    "message": "success",
+    "data": {
+      "url": "http://localhost:3344/v1/raw/image/20200110130323908439.jpg",
+      "size": 381952
+    }
+  },
+  "$models": {
+    "user": {
       "uid": 1,
       "username": "admin",
       "sex": "male",
       "profile": "Demo admin profile",
-      "avatar_url": "http://localhost:3344/v1/raw/image/cover.jpg",
+      "avatar_url": "http://localhost:3344/v1/raw/image/avatar.jpg",
       "birth_time": "2020-01-10",
       "authority": "admin",
+      "phone_number": "13512345678",
       "register_time": "2020-01-10 00:30:49"
+    },
+    "video": {
+      "vid": 1,
+      "title": "The First Video",
+      "description": "This is the first video uploaded",
+      "video_url": "123",
+      "cover_url": "http://localhost:3344/v1/raw/image/avatar.jpg",
+      "upload_time": "2020-01-10 00:55:36",
+      "update_time": "2020-01-10 14:31:00",
+      "author": {
+        "$ref": "#/$models/user"
+      }
     }
   }
 }

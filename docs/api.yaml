@@ -23,13 +23,18 @@ paths:
             ```json
             Content-Type: application/json; charset=utf-8
             ```
+            ```json
+            {
+                "ping": "pong"
+            }
+            ```
       summary: Ping
       tags:
       - Ping
   /v1/auth/:
     get:
       consumes:
-      - multipart/form-data
+      - application/json
       description: 根据认证信息，查看当前登录用户
       operationId: v1-auth-get
       produces:
@@ -65,7 +70,7 @@ paths:
   /v1/auth/login:
     post:
       consumes:
-      - multipart/form-data
+      - application/json
       description: 用户登录
       operationId: v1-auth-login-post
       parameters:
@@ -128,7 +133,7 @@ paths:
   /v1/auth/logout:
     post:
       consumes:
-      - multipart/form-data
+      - application/json
       description: 用户注销
       operationId: v1-auth-logout-post
       produces:
@@ -156,7 +161,7 @@ paths:
   /v1/auth/password:
     put:
       consumes:
-      - multipart/form-data
+      - application/json
       description: 用户修改密码
       operationId: v1-auth-password-put
       parameters:
@@ -196,7 +201,7 @@ paths:
   /v1/auth/register:
     post:
       consumes:
-      - multipart/form-data
+      - application/json
       description: 注册新用户
       operationId: v1-auth-register-post
       parameters:
@@ -213,7 +218,7 @@ paths:
       produces:
       - application/json
       responses:
-        '200':
+        '201':
           description: |-
             ```json
             {
@@ -244,7 +249,7 @@ paths:
   /v1/raw/image:
     post:
       consumes:
-      - multipart/form-data
+      - application/json
       description: 上传公共图片，包括用户头像和视频封面
       operationId: v1-raw-image-post
       parameters:
@@ -288,7 +293,7 @@ paths:
   /v1/raw/image/{filename}:
     get:
       consumes:
-      - multipart/form-data
+      - application/json
       description: 获取用户头像图片以及视频封面
       operationId: v1-raw-image-filename-get
       parameters:
@@ -314,7 +319,7 @@ paths:
   /v1/user/:
     delete:
       consumes:
-      - multipart/form-data
+      - application/json
       description: 删除用户账户以及所有信息
       operationId: v1-user-delete
       produces:
@@ -344,7 +349,7 @@ paths:
       - User
     put:
       consumes:
-      - multipart/form-data
+      - application/json
       description: 更新用户个人信息
       operationId: v1-user-put
       parameters:
@@ -420,9 +425,15 @@ paths:
   /v1/user/admin/{uid}:
     delete:
       consumes:
-      - multipart/form-data
+      - application/json
       description: 删除用户账户，管理员权限
       operationId: v1-user-admin-uid-delete
+      parameters:
+      - description: 用户id
+        in: path
+        name: uid
+        required: true
+        type: integer
       produces:
       - application/json
       responses:
@@ -455,6 +466,11 @@ paths:
       description: 更新用户信息，管理员权限
       operationId: v1-user-admin-uid-put
       parameters:
+      - description: 用户id
+        in: path
+        name: uid
+        required: true
+        type: integer
       - description: 用户名，长度在 [8, 30] 之间
         in: formData
         name: username
@@ -528,7 +544,7 @@ paths:
   /v1/user/subscribing:
     delete:
       consumes:
-      - multipart/form-data
+      - application/json
       description: 取消关注某一用户
       operationId: v1-user-subscribing-delete
       parameters:
@@ -567,7 +583,7 @@ paths:
       - Subscribe
     put:
       consumes:
-      - multipart/form-data
+      - application/json
       description: 关注某一用户
       operationId: v1-user-subscribing-put
       parameters:
@@ -607,7 +623,7 @@ paths:
   /v1/user/{uid}:
     get:
       consumes:
-      - multipart/form-data
+      - application/json
       description: 查询用户个人信息和数量信息，此处可见用户手机号码
       operationId: v1-user-uid-get
       parameters:
@@ -657,7 +673,7 @@ paths:
   /v1/user/{uid}/subscriber?page:
     get:
       consumes:
-      - multipart/form-data
+      - application/json
       description: 查询用户所有粉丝，返回分页数据
       operationId: v1-user-uid-subscriber-page-get
       parameters:
@@ -711,7 +727,7 @@ paths:
   /v1/user/{uid}/subscribing?page:
     get:
       consumes:
-      - multipart/form-data
+      - application/json
       description: 查询用户所有关注，返回分页数据
       operationId: v1-user-uid-subscribing-page-get
       parameters:
@@ -728,6 +744,31 @@ paths:
       produces:
       - application/json
       responses:
+        '200':
+          description: |-
+            ```json
+            {
+                "code": 200,
+                "message": "success",
+                "data": {
+                    "count": 1,
+                    "page": 1,
+                    "data": [
+                        {
+                            "uid": 1,
+                            "username": "admin",
+                            "sex": "male",
+                            "profile": "Demo admin profile",
+                            "avatar_url": "http://localhost:3344/v1/raw/image/avatar.jpg",
+                            "birth_time": "2020-01-10",
+                            "authority": "admin",
+                            "phone_number": "13512345678",
+                            "register_time": "2020-01-10 00:30:49"
+                        }
+                    ]
+                }
+            }
+            ```
         '400':
           description: |-
             "request param error"
@@ -740,7 +781,7 @@ paths:
   /v1/user/{uid}/video?page:
     get:
       consumes:
-      - multipart/form-data
+      - application/json
       description: 查询作者为指定用户的所有视频，返回分页数据
       operationId: v1-user-uid-video-page-get
       parameters:
@@ -780,9 +821,10 @@ paths:
                                 "username": "admin",
                                 "sex": "male",
                                 "profile": "Demo admin profile",
-                                "avatar_url": "http://localhost:3344/v1/raw/image/cover.jpg",
+                                "avatar_url": "http://localhost:3344/v1/raw/image/avatar.jpg",
                                 "birth_time": "2020-01-10",
                                 "authority": "admin",
+                                "phone_number": "13512345678",
                                 "register_time": "2020-01-10 00:30:49"
                             }
                         }
@@ -802,7 +844,7 @@ paths:
   /v1/user?page:
     get:
       consumes:
-      - multipart/form-data
+      - application/json
       description: 管理员查询所有用户，返回分页数据，管理员权限，此处可见用户手机号码
       operationId: v1-user-page-get
       parameters:
@@ -855,7 +897,7 @@ paths:
   /v1/video/:
     post:
       consumes:
-      - multipart/form-data
+      - application/json
       description: 新建用户视频
       operationId: v1-video-post
       parameters:
@@ -882,7 +924,7 @@ paths:
       produces:
       - application/json
       responses:
-        '200':
+        '201':
           description: |-
             ```json
             {
@@ -901,9 +943,10 @@ paths:
                         "username": "admin",
                         "sex": "male",
                         "profile": "Demo admin profile",
-                        "avatar_url": "http://localhost:3344/v1/raw/image/cover.jpg",
+                        "avatar_url": "http://localhost:3344/v1/raw/image/avatar.jpg",
                         "birth_time": "2020-01-10",
                         "authority": "admin",
+                        "phone_number": "13512345678",
                         "register_time": "2020-01-10 00:30:49"
                     }
                 }
@@ -926,7 +969,7 @@ paths:
   /v1/video/{vid}:
     delete:
       consumes:
-      - multipart/form-data
+      - application/json
       description: 删除用户视频，管理员或者作者本人可以操作
       operationId: v1-video-vid-delete
       parameters:
@@ -966,7 +1009,7 @@ paths:
       - Administration
     get:
       consumes:
-      - multipart/form-data
+      - application/json
       description: 查询视频信息，作者id为-1表示已删除的用户
       operationId: v1-video-vid-get
       parameters:
@@ -997,9 +1040,10 @@ paths:
                         "username": "admin",
                         "sex": "male",
                         "profile": "Demo admin profile",
-                        "avatar_url": "http://localhost:3344/v1/raw/image/cover.jpg",
+                        "avatar_url": "http://localhost:3344/v1/raw/image/avatar.jpg",
                         "birth_time": "2020-01-10",
                         "authority": "admin",
+                        "phone_number": "13512345678",
                         "register_time": "2020-01-10 00:30:49"
                     }
                 }
@@ -1016,7 +1060,7 @@ paths:
       - Video
     post:
       consumes:
-      - multipart/form-data
+      - application/json
       description: 更新用户视频信息，管理员或者作者本人可以操作
       operationId: v1-video-vid-post
       parameters:
@@ -1048,6 +1092,34 @@ paths:
       produces:
       - application/json
       responses:
+        '200':
+          description: |-
+            ```json
+            {
+                "code": 200,
+                "message": "success",
+                "data": {
+                    "vid": 1,
+                    "title": "The First Video",
+                    "description": "This is the first video uploaded",
+                    "video_url": "123",
+                    "cover_url": "http://localhost:3344/v1/raw/image/avatar.jpg",
+                    "upload_time": "2020-01-10 00:55:36",
+                    "update_time": "2020-01-10 14:31:00",
+                    "author": {
+                        "uid": 1,
+                        "username": "admin",
+                        "sex": "male",
+                        "profile": "Demo admin profile",
+                        "avatar_url": "http://localhost:3344/v1/raw/image/avatar.jpg",
+                        "birth_time": "2020-01-10",
+                        "authority": "admin",
+                        "phone_number": "13512345678",
+                        "register_time": "2020-01-10 00:30:49"
+                    }
+                }
+            }
+            ```
         '400':
           description: |-
             "request param error", "request format error", "video has been updated"
@@ -1069,7 +1141,7 @@ paths:
   /v1/video?page:
     get:
       consumes:
-      - multipart/form-data
+      - application/json
       description: 管理员查询所有视频，返回分页数据，管理员权限
       operationId: v1-video-page-get
       parameters:
@@ -1105,9 +1177,10 @@ paths:
                                 "username": "admin",
                                 "sex": "male",
                                 "profile": "Demo admin profile",
-                                "avatar_url": "http://localhost:3344/v1/raw/image/cover.jpg",
+                                "avatar_url": "http://localhost:3344/v1/raw/image/avatar.jpg",
                                 "birth_time": "2020-01-10",
                                 "authority": "admin",
+                                "phone_number": "13512345678",
                                 "register_time": "2020-01-10 00:30:49"
                             }
                         }
@@ -1134,6 +1207,8 @@ securityDefinitions:
     type: apiKey
 swagger: '2.0'
 tags:
+- description: Ping
+  name: Ping
 - description: Auth-Controller
   name: Authorization
 - description: User-Controller

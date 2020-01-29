@@ -33,19 +33,11 @@ func NewRawController(dic *xdi.DiContainer) *RawController {
 // @Description         上传公共图片，包括用户头像和视频封面
 // @Tag                 Raw
 // @Param               image formData file true "上传的图片，大小限制在2M，允许后缀名为 {.jpg, .jpeg, .png, .bmp, .gif}"
-// @Accept              multipart/form-data
 // @ErrorCode           400 request param error
 // @ErrorCode           400 image type not supported
 // @ErrorCode           413 request body too large
 // @ErrorCode           500 image save failed
-/* @Response 200		{
-							"code": 200,
-							"message": "success",
-							"data": {
-								"url": "http://localhost:3344/v1/raw/image/20200110130323908439.jpg",
-								"size": 381952
-							}
- 						} */
+/* @Response 200        ${resp_upload_image} */
 func (r *RawController) UploadImage(c *gin.Context) {
 	imageFile, imageHeader, err := c.Request.FormFile("image")
 	if err != nil || imageFile == nil {
@@ -74,7 +66,6 @@ func (r *RawController) UploadImage(c *gin.Context) {
 // @Description         获取用户头像图片以及视频封面
 // @Tag                 Raw
 // @Param               filename path string true "图片文件名，jpg后缀名"
-// @Accept              multipart/form-data
 // @ErrorCode           404 image not found
 /* @Response 200        {| "Content-Type": "image/jpeg" |} */
 func (r *RawController) RawImage(c *gin.Context) {

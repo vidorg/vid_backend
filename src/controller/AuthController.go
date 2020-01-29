@@ -38,23 +38,14 @@ func NewAuthController(dic *xdi.DiContainer) *AuthController {
 // @Summary             登录
 // @Description         用户登录
 // @Tag                 Authorization
-// @Param               username formData string true "用户名"
-// @Param               password formData string true "用户密码"
-// @Param               expire formData integer false "登录有效期，默认为七天"
-// @Accept              multipart/form-data
+// @Param               username formData string  true  "用户名"
+// @Param               password formData string  true  "用户密码"
+// @Param               expire   formData integer false "登录有效期，默认为七天"
 // @ErrorCode           400 request param error
 // @ErrorCode           401 password error
 // @ErrorCode           404 user not found
 // @ErrorCode           500 login failed
-/* @Response 200		{
-							"code": 200,
-							"message": "success",
-							"data": {
-								"user": ${user},
-								"token": "Bearer xxx",
-								"expire": 604800
-							}
- 						} */
+/* @Response 200        ${resp_login} */
 func (a *AuthController) Login(c *gin.Context) {
 	loginParam := &param.LoginParam{}
 	if err := c.ShouldBind(loginParam); err != nil {
@@ -101,16 +92,11 @@ func (a *AuthController) Login(c *gin.Context) {
 // @Tag                 Authorization
 // @Param               username formData string true "用户名，长度在 [5, 30] 之间"
 // @Param               password formData string true "用户密码，长度在 [8, 30] 之间"
-// @Accept              multipart/form-data
 // @ErrorCode           400 request param error
 // @ErrorCode           400 request format error
 // @ErrorCode           500 username has been used
 // @ErrorCode           500 register failed
-/* @Response 200		{
-							"code": 201,
-							"message": "created",
-							"data": ${user}
- 						} */
+/* @Response 201        ${resp_register} */
 func (a *AuthController) Register(c *gin.Context) {
 	registerParam := &param.RegisterParam{}
 	if err := c.ShouldBind(registerParam); err != nil {
@@ -149,12 +135,7 @@ func (a *AuthController) Register(c *gin.Context) {
 // @Summary             当前登录用户
 // @Description         根据认证信息，查看当前登录用户
 // @Tag                 Authorization
-// @Accept              multipart/form-data
-/* @Response 200		{
-							"code": 200,
-							"message": "success",
-							"data": ${user}
- 						} */
+/* @Response 200        ${resp_user} */
 func (a *AuthController) CurrentUser(c *gin.Context) {
 	authUser := a.JwtService.GetAuthUser(c)
 	retDto := xcondition.First(a.Mapper.Map(&dto.UserDto{}, authUser)).(*dto.UserDto)
@@ -167,12 +148,8 @@ func (a *AuthController) CurrentUser(c *gin.Context) {
 // @Summary             注销
 // @Description         用户注销
 // @Tag                 Authorization
-// @Accept              multipart/form-data
 // @ErrorCode           500 logout failed
-/* @Response 200		{
-							"code": 200,
-							"message": "success"
- 						} */
+/* @Response 200        ${resp_success} */
 func (a *AuthController) Logout(c *gin.Context) {
 	authHeader := c.GetHeader("Authorization")
 
@@ -193,15 +170,11 @@ func (a *AuthController) Logout(c *gin.Context) {
 // @Description         用户修改密码
 // @Tag                 Authorization
 // @Param               password formData string true "用户密码，长度在 [8, 30] 之间"
-// @Accept              multipart/form-data
 // @ErrorCode           400 request param error
 // @ErrorCode           400 request format error
 // @ErrorCode           404 user not found
 // @ErrorCode           500 update password failed
-/* @Response 200		{
-							"code": 200,
-							"message": "success"
- 						} */
+/* @Response 200        ${resp_success} */
 func (a *AuthController) UpdatePassword(c *gin.Context) {
 	authUser := a.JwtService.GetAuthUser(c)
 	passParam := &param.PassParam{}

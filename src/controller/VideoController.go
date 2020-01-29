@@ -42,17 +42,8 @@ func NewVideoController(dic *xdi.DiContainer) *VideoController {
 // @Tag                 Video
 // @Tag                 Administration
 // @Param               page query integer false "分页" 1
-// @Accept              multipart/form-data
 // @ErrorCode           400 request param error
-/* @Response 200		{
-							"code": 200,
-							"message": "success",
-							"data": {
-								"count": 1,
-								"page": 1,
-								"data": [ ${video} ]
-							}
- 						} */
+/* @Response 200        ${resp_page_videos} */
 func (v *VideoController) QueryAllVideos(c *gin.Context) {
 	page, ok := param.BindQueryPage(c)
 	if !ok {
@@ -72,18 +63,9 @@ func (v *VideoController) QueryAllVideos(c *gin.Context) {
 // @Tag                 Video
 // @Param               uid path integer true "用户id"
 // @Param               page query integer false "分页"
-// @Accept              multipart/form-data
 // @ErrorCode           400 request param error
 // @ErrorCode           404 user not found
-/* @Response 200		{
-							"code": 200,
-							"message": "success",
-							"data": {
-								"count": 1,
-								"page": 1,
-								"data": [ ${video} ]
-							}
- 						} */
+/* @Response 200        ${resp_page_videos} */
 func (v *VideoController) QueryVideosByUid(c *gin.Context) {
 	uid, ok1 := param.BindRouteId(c, "uid")
 	page, ok2 := param.BindQueryPage(c)
@@ -107,14 +89,9 @@ func (v *VideoController) QueryVideosByUid(c *gin.Context) {
 // @Description         查询视频信息，作者id为-1表示已删除的用户
 // @Tag                 Video
 // @Param               vid path integer true "视频id"
-// @Accept              multipart/form-data
 // @ErrorCode           400 request param error
 // @ErrorCode           404 video not found
-/* @Response 200		{
-							"code": 200,
-							"message": "success",
-							"data": ${video}
- 						} */
+/* @Response 200        ${resp_video} */
 func (v *VideoController) QueryVideoByVid(c *gin.Context) {
 	vid, ok := param.BindRouteId(c, "vid")
 	if !ok {
@@ -138,20 +115,15 @@ func (v *VideoController) QueryVideoByVid(c *gin.Context) {
 // @Summary             新建视频
 // @Description         新建用户视频
 // @Tag                 Video
-// @Param               title formData string true "视频标题，长度在 [1, 100] 之间"
+// @Param               title       formData string true "视频标题，长度在 [1, 100] 之间"
 // @Param               description formData string true "视频简介，长度在 [0, 1024] 之间"
-// @Param               cover_url formData string true "视频封面链接"
-// @Param               video_url formData string true "视频资源链接"
-// @Accept              multipart/form-data
+// @Param               cover_url   formData string true "视频封面链接"
+// @Param               video_url   formData string true "视频资源链接"
 // @ErrorCode           400 request param error
 // @ErrorCode           400 request format error
 // @ErrorCode           400 video has been updated
 // @ErrorCode           500 video insert failed
-/* @Response 200		{
-							"code": 201,
-							"message": "created",
-							"data": ${video}
- 						} */
+/* @Response 201        ${resp_new_video} */
 func (v *VideoController) InsertVideo(c *gin.Context) {
 	authUser := v.JwtService.GetAuthUser(c)
 	videoParam := &param.VideoParam{}
@@ -193,22 +165,17 @@ func (v *VideoController) InsertVideo(c *gin.Context) {
 // @Description         更新用户视频信息，管理员或者作者本人可以操作
 // @Tag                 Video
 // @Tag                 Administration
-// @Param               vid path string true "更新视频id"
-// @Param               title formData string true "视频标题，长度在 [1, 100] 之间"
+// @Param               vid         path     string true "更新视频id"
+// @Param               title       formData string true "视频标题，长度在 [1, 100] 之间"
 // @Param               description formData string true "视频简介，长度在 [0, 1024] 之间"
-// @Param               cover_url formData string true "视频封面链接"
-// @Param               video_url formData string true "视频资源链接"
-// @Accept              multipart/form-data
+// @Param               cover_url   formData string true "视频封面链接"
+// @Param               video_url   formData string true "视频资源链接"
 // @ErrorCode           400 request param error
 // @ErrorCode           400 request format error
 // @ErrorCode           400 video has been updated
 // @ErrorCode           404 video not found
 // @ErrorCode           500 video update failed
-/* @Success 200 		{
-							"code": 200,
-							"message": "success",
-							"data": ${video}
- 						} */
+/* @Response 200        ${resp_video} */
 func (v *VideoController) UpdateVideo(c *gin.Context) {
 	authUser := v.JwtService.GetAuthUser(c)
 	vid, ok := param.BindRouteId(c, "vid")
@@ -266,14 +233,10 @@ func (v *VideoController) UpdateVideo(c *gin.Context) {
 // @Tag                 Video
 // @Tag                 Administration
 // @Param               vid path string true "删除视频id"
-// @Accept              multipart/form-data
 // @ErrorCode           400 request param error
 // @ErrorCode           404 video not found
 // @ErrorCode           500 video delete failed
-/* @Response 200		{
-							"code": 200,
-							"message": "success"
- 						} */
+/* @Response 200        ${resp_success} */
 func (v *VideoController) DeleteVideo(c *gin.Context) {
 	authUser := v.JwtService.GetAuthUser(c)
 	vid, ok := param.BindRouteId(c, "vid")

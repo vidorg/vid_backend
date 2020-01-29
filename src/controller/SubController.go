@@ -38,18 +38,9 @@ func NewSubController(dic *xdi.DiContainer) *SubController {
 // @Tag                 Subscribe
 // @Param               uid path integer true "查询的用户id"
 // @Param               page query integer false "分页"
-// @Accept              multipart/form-data
 // @ErrorCode           400 request param error
 // @ErrorCode           404 user not found
-/* @Response 200		{
-							"code": 200,
-							"message": "success",
-							"data": {
-								"count": 1,
-								"page": 1,
-								"data": [ ${user} ]
-							}
- 						} */
+/* @Response 200        ${resp_page_users} */
 func (s *SubController) QuerySubscriberUsers(c *gin.Context) {
 	uid, ok1 := param.BindRouteId(c, "uid")
 	page, ok2 := param.BindQueryPage(c)
@@ -74,18 +65,9 @@ func (s *SubController) QuerySubscriberUsers(c *gin.Context) {
 // @Tag                 Subscribe
 // @Param               uid path integer true "查询的用户id"
 // @Param               page query integer false "分页"
-// @Accept              multipart/form-data
 // @ErrorCode           400 request param error
 // @ErrorCode           404 user not found
-/* @Success 200 		{
-							"code": 200,
-							"message": "success",
-							"data": {
-								"count": 1,
-								"page": 1,
-								"data": [ ${user} ]
-							}
- 						} */
+/* @Response 200        ${resp_page_users} */
 func (s *SubController) QuerySubscribingUsers(c *gin.Context) {
 	uid, ok1 := param.BindRouteId(c, "uid")
 	page, ok2 := param.BindQueryPage(c)
@@ -111,16 +93,12 @@ func (s *SubController) QuerySubscribingUsers(c *gin.Context) {
 // @Description         关注某一用户
 // @Tag                 Subscribe
 // @Param               to formData integer true "关注用户id"
-// @Accept              multipart/form-data
 // @ErrorCode           400 request param error
 // @ErrorCode           400 request format error
 // @ErrorCode           400 subscribe oneself invalid
 // @ErrorCode           404 user not found
 // @ErrorCode           500 subscribe failed
-/* @Response 200		{
-							"code": 200,
-							"message": "success"
- 						} */
+/* @Response 200        ${resp_success} */
 func (s *SubController) SubscribeUser(c *gin.Context) {
 	authUser := s.JwtService.GetAuthUser(c)
 	subParam := &param.SubParam{}
@@ -152,15 +130,11 @@ func (s *SubController) SubscribeUser(c *gin.Context) {
 // @Description         取消关注某一用户
 // @Tag                 Subscribe
 // @Param               to formData integer true "取消关注用户id"
-// @Accept              multipart/form-data
 // @ErrorCode           400 request param error
 // @ErrorCode           400 request format error
 // @ErrorCode           404 user not found
 // @ErrorCode           500 unsubscribe failed
-/* @Response 200		{
-							"code": 200,
-							"message": "success"
- 						} */
+/* @Response 200        ${resp_success} */
 func (s *SubController) UnSubscribeUser(c *gin.Context) {
 	authUser := s.JwtService.GetAuthUser(c)
 	subParam := &param.SubParam{}
