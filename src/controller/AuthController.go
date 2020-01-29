@@ -21,7 +21,7 @@ import (
 type AuthController struct {
 	Config     *config.ServerConfig   `di:"~"`
 	JwtService *middleware.JwtService `di:"~"`
-	PassDao    *dao.PassDao           `di:"~"`
+	AccountDao *dao.AccountDao        `di:"~"`
 	TokenDao   *dao.TokenDao          `di:"~"`
 	Mapper     *xmapper.EntityMapper  `di:"~"`
 }
@@ -65,30 +65,30 @@ func (a *AuthController) Login(c *gin.Context) {
 		loginParam.Expire = a.Config.JwtConfig.Expire
 	}
 
-	passRecord := a.PassDao.QueryByUsername(loginParam.Username)
-	if passRecord == nil {
+	account := a.AccountDao.QueryByUsername(loginParam.Username)
+	if account == nil {
 		result.Result{}.Result(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()).JSON(c)
 		return
 	}
 
-	if !util.AuthUtil.CheckPassword(loginParam.Password, passRecord.EncryptedPass) {
+	if !util.AuthUtil.CheckPassword(loginParam.Password, account.EncryptedPass) {
 		result.Result{}.Result(http.StatusUnauthorized).SetMessage(exception.PasswordError.Error()).JSON(c)
 		return
 	}
 
-	token, err := util.AuthUtil.GenerateToken(passRecord.User.Uid, loginParam.Expire, a.Config.JwtConfig)
+	token, err := util.AuthUtil.GenerateToken(account.User.Uid, loginParam.Expire, a.Config.JwtConfig)
 	if err != nil {
 		result.Result{}.Error().SetMessage(exception.LoginError.Error()).JSON(c)
 		return
 	}
 
-	ok := a.TokenDao.Insert(token, passRecord.Uid, loginParam.Expire)
+	ok := a.TokenDao.Insert(token, account.Uid, loginParam.Expire)
 	if !ok {
 		result.Result{}.Error().SetMessage(exception.LoginError.Error()).JSON(c)
 		return
 	}
 
-	retDto := xcondition.First(a.Mapper.Map(&dto.UserDto{}, passRecord.User)).(*dto.UserDto)
+	retDto := xcondition.First(a.Mapper.Map(&dto.UserDto{}, account.User)).(*dto.UserDto)
 	result.Result{}.Ok().
 		PutData("user", retDto).
 		PutData("token", token).
@@ -130,7 +130,7 @@ func (a *AuthController) Register(c *gin.Context) {
 			RegisterIP: c.ClientIP(),
 		},
 	}
-	status := a.PassDao.Insert(passRecord)
+	status := a.AccountDao.Insert(passRecord)
 	if status == database.DbExisted {
 		result.Result{}.Error().SetMessage(exception.UsernameUsedError.Error()).JSON(c)
 		return
@@ -216,7 +216,7 @@ func (a *AuthController) UpdatePassword(c *gin.Context) {
 		EncryptedPass: encrypted,
 		Uid:           authUser.Uid,
 	}
-	status := a.PassDao.Update(passRecord)
+	status := a.AccountDao.Update(passRecord)
 	if status == database.DbNotFound {
 		result.Result{}.Result(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()).JSON(c)
 		return

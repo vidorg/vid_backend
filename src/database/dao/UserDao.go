@@ -1,6 +1,7 @@
 package dao
 
 import (
+	"github.com/Aoi-hosizora/ahlib-gin-gorm/xgorm"
 	"github.com/Aoi-hosizora/ahlib/xdi"
 	"github.com/jinzhu/gorm"
 	"github.com/vidorg/vid_backend/src/config"
@@ -49,7 +50,7 @@ func (u *UserDao) Exist(uid int32) bool {
 func (u *UserDao) Update(user *po.User) database.DbStatus {
 	rdb := u.Db.Model(&po.User{}).Update(user)
 	if rdb.Error != nil {
-		if database.IsDuplicateError(rdb.Error) {
+		if xgorm.IsMySqlDuplicateError(rdb.Error) {
 			return database.DbExisted
 		} else {
 			return database.DbFailed

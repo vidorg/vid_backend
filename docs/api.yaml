@@ -55,7 +55,8 @@ paths:
                     "avatar_url": "http://localhost:3344/v1/raw/image/avatar.jpg",
                     "birth_time": "2020-01-10",
                     "authority": "admin",
-                    "phone_number": "13512345678"
+                    "phone_number": "13512345678",
+                    "register_time": "2020-01-10 00:30:49"
                 }
             }
             ```
@@ -107,7 +108,8 @@ paths:
                         "avatar_url": "http://localhost:3344/v1/raw/image/avatar.jpg",
                         "birth_time": "2020-01-10",
                         "authority": "admin",
-                        "phone_number": "13512345678"
+                        "phone_number": "13512345678",
+                        "register_time": "2020-01-10 00:30:49"
                     },
                     "token": "Bearer xxx",
                     "expire": 604800
@@ -242,7 +244,8 @@ paths:
                     "avatar_url": "http://localhost:3344/v1/raw/image/avatar.jpg",
                     "birth_time": "2020-01-10",
                     "authority": "admin",
-                    "phone_number": "13512345678"
+                    "phone_number": "13512345678",
+                    "register_time": "2020-01-10 00:30:49"
                 }
             }
             ```
@@ -425,7 +428,8 @@ paths:
                     "avatar_url": "http://localhost:3344/v1/raw/image/avatar.jpg",
                     "birth_time": "2020-01-10",
                     "authority": "admin",
-                    "phone_number": "13512345678"
+                    "phone_number": "13512345678",
+                    "register_time": "2020-01-10 00:30:49"
                 }
             }
             ```
@@ -542,7 +546,8 @@ paths:
                     "avatar_url": "http://localhost:3344/v1/raw/image/avatar.jpg",
                     "birth_time": "2020-01-10",
                     "authority": "admin",
-                    "phone_number": "13512345678"
+                    "phone_number": "13512345678",
+                    "register_time": "2020-01-10 00:30:49"
                 }
             }
             ```
@@ -683,7 +688,8 @@ paths:
                         "avatar_url": "http://localhost:3344/v1/raw/image/avatar.jpg",
                         "birth_time": "2020-01-10",
                         "authority": "admin",
-                        "phone_number": "13512345678"
+                        "phone_number": "13512345678",
+                        "register_time": "2020-01-10 00:30:49"
                     },
                     "extra": {
                         "subscribing_cnt": 3,
@@ -740,7 +746,8 @@ paths:
                             "avatar_url": "http://localhost:3344/v1/raw/image/avatar.jpg",
                             "birth_time": "2020-01-10",
                             "authority": "admin",
-                            "phone_number": "13512345678"
+                            "phone_number": "13512345678",
+                            "register_time": "2020-01-10 00:30:49"
                         }
                     ]
                 }
@@ -883,7 +890,8 @@ paths:
                             "avatar_url": "http://localhost:3344/v1/raw/image/avatar.jpg",
                             "birth_time": "2020-01-10",
                             "authority": "admin",
-                            "phone_number": "13512345678"
+                            "phone_number": "13512345678",
+                            "register_time": "2020-01-10 00:30:49"
                         }
                     ]
                 }

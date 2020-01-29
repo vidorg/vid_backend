@@ -7,14 +7,15 @@ import (
 )
 
 type UserDto struct {
-	Uid         int32  `json:"uid"`
-	Username    string `json:"username"`
-	Sex         string `json:"sex"`
-	Profile     string `json:"profile"`
-	AvatarUrl   string `json:"avatar_url"`
-	BirthTime   string `json:"birth_time"`
-	Authority   string `json:"authority"`
-	PhoneNumber string `json:"phone_number,omitempty"`
+	Uid          int32  `json:"uid"`
+	Username     string `json:"username"`
+	Sex          string `json:"sex"`
+	Profile      string `json:"profile"`
+	AvatarUrl    string `json:"avatar_url"`
+	BirthTime    string `json:"birth_time"`
+	Authority    string `json:"authority"`
+	PhoneNumber  string `json:"phone_number,omitempty"`
+	RegisterTime string `json:"register_time"`
 }
 
 // show all info

@@ -7,7 +7,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/vidorg/vid_backend/src/common/enum"
 	"github.com/vidorg/vid_backend/src/common/exception"
-	"github.com/vidorg/vid_backend/src/common/model"
 	"github.com/vidorg/vid_backend/src/common/result"
 	"github.com/vidorg/vid_backend/src/config"
 	"github.com/vidorg/vid_backend/src/database"
@@ -18,7 +17,6 @@ import (
 	"github.com/vidorg/vid_backend/src/model/po"
 	"github.com/vidorg/vid_backend/src/util"
 	"net/http"
-	"time"
 )
 
 type VideoController struct {
@@ -170,7 +168,6 @@ func (v *VideoController) InsertVideo(c *gin.Context) {
 		Description: *videoParam.Description,
 		CoverUrl:    coverUrl,
 		VideoUrl:    videoParam.VideoUrl, // TODO
-		UploadTime:  model.JsonDateTime(time.Now()),
 		AuthorUid:   authUser.Uid,
 		Author:      authUser,
 	}

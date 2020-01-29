@@ -2,6 +2,7 @@ package exception
 
 import (
 	"errors"
+	"github.com/Aoi-hosizora/ahlib-gin-gorm/xgin"
 )
 
 // Request
@@ -53,3 +54,12 @@ var (
 	ImageNotSupportedError = errors.New("image type not supported")
 	ImageSaveError         = errors.New("image save failed")
 )
+
+func WrapValidationError(err error) error {
+	isf := xgin.IsValidationFormatError(err)
+	if isf {
+		return RequestFormatError
+	} else {
+		return RequestParamError
+	}
+}

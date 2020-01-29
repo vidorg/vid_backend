@@ -46,7 +46,7 @@ Ping
 
 | Code | Description |
 | ---- | ----------- |
-| 200 | ```json {     "code": 200,     "message": "success",     "data": {         "uid": 1,         "username": "admin",         "sex": "male",         "profile": "Demo admin profile",         "avatar_url": "http://localhost:3344/v1/raw/image/avatar.jpg",         "birth_time": "2020-01-10",         "authority": "admin",         "phone_number": "13512345678"     } } ``` |
+| 200 | ```json {     "code": 200,     "message": "success",     "data": {         "uid": 1,         "username": "admin",         "sex": "male",         "profile": "Demo admin profile",         "avatar_url": "http://localhost:3344/v1/raw/image/avatar.jpg",         "birth_time": "2020-01-10",         "authority": "admin",         "phone_number": "13512345678",         "register_time": "2020-01-10 00:30:49"     } } ``` |
 | 401 | "unauthorized user", "token has expired", "authorized user not found" |
 
 ##### Security
@@ -78,7 +78,7 @@ Ping
 
 | Code | Description |
 | ---- | ----------- |
-| 200 | ```json {     "code": 200,     "message": "success",     "data": {         "user": {             "uid": 1,             "username": "admin",             "sex": "male",             "profile": "Demo admin profile",             "avatar_url": "http://localhost:3344/v1/raw/image/avatar.jpg",             "birth_time": "2020-01-10",             "authority": "admin",             "phone_number": "13512345678"         },         "token": "Bearer xxx",         "expire": 604800     } } ``` |
+| 200 | ```json {     "code": 200,     "message": "success",     "data": {         "user": {             "uid": 1,             "username": "admin",             "sex": "male",             "profile": "Demo admin profile",             "avatar_url": "http://localhost:3344/v1/raw/image/avatar.jpg",             "birth_time": "2020-01-10",             "authority": "admin",             "phone_number": "13512345678",             "register_time": "2020-01-10 00:30:49"         },         "token": "Bearer xxx",         "expire": 604800     } } ``` |
 | 400 | "request param error" |
 | 401 | "password error" |
 | 404 | "user not found" |
@@ -171,7 +171,7 @@ Ping
 
 | Code | Description |
 | ---- | ----------- |
-| 200 | ```json {     "code": 201,     "message": "created",     "data": {         "uid": 1,         "username": "admin",         "sex": "male",         "profile": "Demo admin profile",         "avatar_url": "http://localhost:3344/v1/raw/image/avatar.jpg",         "birth_time": "2020-01-10",         "authority": "admin",         "phone_number": "13512345678"     } } ``` |
+| 200 | ```json {     "code": 201,     "message": "created",     "data": {         "uid": 1,         "username": "admin",         "sex": "male",         "profile": "Demo admin profile",         "avatar_url": "http://localhost:3344/v1/raw/image/avatar.jpg",         "birth_time": "2020-01-10",         "authority": "admin",         "phone_number": "13512345678",         "register_time": "2020-01-10 00:30:49"     } } ``` |
 | 400 | "request param error", "request format error" |
 | 500 | "username has been used", "register failed" |
 
@@ -290,7 +290,7 @@ Ping
 
 | Code | Description |
 | ---- | ----------- |
-| 200 | ```json {     "code": 200,     "message": "success",     "data": {         "uid": 1,         "username": "admin",         "sex": "male",         "profile": "Demo admin profile",         "avatar_url": "http://localhost:3344/v1/raw/image/avatar.jpg",         "birth_time": "2020-01-10",         "authority": "admin",         "phone_number": "13512345678"     } } ``` |
+| 200 | ```json {     "code": 200,     "message": "success",     "data": {         "uid": 1,         "username": "admin",         "sex": "male",         "profile": "Demo admin profile",         "avatar_url": "http://localhost:3344/v1/raw/image/avatar.jpg",         "birth_time": "2020-01-10",         "authority": "admin",         "phone_number": "13512345678",         "register_time": "2020-01-10 00:30:49"     } } ``` |
 | 400 | "request param error", "request format error", "username has been used" |
 | 401 | "unauthorized user", "token has expired", "authorized user not found" |
 | 404 | "user not found" |
@@ -359,7 +359,7 @@ Ping
 
 | Code | Description |
 | ---- | ----------- |
-| 200 | ```json {     "code": 200,     "message": "success",     "data": {         "uid": 1,         "username": "admin",         "sex": "male",         "profile": "Demo admin profile",         "avatar_url": "http://localhost:3344/v1/raw/image/avatar.jpg",         "birth_time": "2020-01-10",         "authority": "admin",         "phone_number": "13512345678"     } } ``` |
+| 200 | ```json {     "code": 200,     "message": "success",     "data": {         "uid": 1,         "username": "admin",         "sex": "male",         "profile": "Demo admin profile",         "avatar_url": "http://localhost:3344/v1/raw/image/avatar.jpg",         "birth_time": "2020-01-10",         "authority": "admin",         "phone_number": "13512345678",         "register_time": "2020-01-10 00:30:49"     } } ``` |
 | 400 | "request param error", "request format error", "username has been used" |
 | 401 | "unauthorized user", "token has expired", "authorized user not found", "need admin authority" |
 | 404 | "user not found" |
@@ -458,7 +458,7 @@ Ping
 
 | Code | Description |
 | ---- | ----------- |
-| 200 | ```json {     "code": 200,     "message": "success",     "data": {         "user": {             "uid": 1,             "username": "admin",             "sex": "male",             "profile": "Demo admin profile",             "avatar_url": "http://localhost:3344/v1/raw/image/avatar.jpg",             "birth_time": "2020-01-10",             "authority": "admin",             "phone_number": "13512345678"         },         "extra": {             "subscribing_cnt": 3,             "subscriber_cnt": 2,             "video_cnt": 3         }     } } ``` |
+| 200 | ```json {     "code": 200,     "message": "success",     "data": {         "user": {             "uid": 1,             "username": "admin",             "sex": "male",             "profile": "Demo admin profile",             "avatar_url": "http://localhost:3344/v1/raw/image/avatar.jpg",             "birth_time": "2020-01-10",             "authority": "admin",             "phone_number": "13512345678",             "register_time": "2020-01-10 00:30:49"         },         "extra": {             "subscribing_cnt": 3,             "subscriber_cnt": 2,             "video_cnt": 3         }     } } ``` |
 | 400 | "request param error" |
 | 404 | "user not found" |
 
@@ -484,7 +484,7 @@ Ping
 
 | Code | Description |
 | ---- | ----------- |
-| 200 | ```json {     "code": 200,     "message": "success",     "data": {         "count": 1,         "page": 1,         "data": [             {                 "uid": 1,                 "username": "admin",                 "sex": "male",                 "profile": "Demo admin profile",                 "avatar_url": "http://localhost:3344/v1/raw/image/avatar.jpg",                 "birth_time": "2020-01-10",                 "authority": "admin",                 "phone_number": "13512345678"             }         ]     } } ``` |
+| 200 | ```json {     "code": 200,     "message": "success",     "data": {         "count": 1,         "page": 1,         "data": [             {                 "uid": 1,                 "username": "admin",                 "sex": "male",                 "profile": "Demo admin profile",                 "avatar_url": "http://localhost:3344/v1/raw/image/avatar.jpg",                 "birth_time": "2020-01-10",                 "authority": "admin",                 "phone_number": "13512345678",                 "register_time": "2020-01-10 00:30:49"             }         ]     } } ``` |
 | 400 | "request param error" |
 | 404 | "user not found" |
 
@@ -561,7 +561,7 @@ Ping
 
 | Code | Description |
 | ---- | ----------- |
-| 200 | ```json {     "code": 200,     "message": "success",     "data": {         "count": 1,         "page": 1,         "data": [             {                 "uid": 1,                 "username": "admin",                 "sex": "male",                 "profile": "Demo admin profile",                 "avatar_url": "http://localhost:3344/v1/raw/image/avatar.jpg",                 "birth_time": "2020-01-10",                 "authority": "admin",                 "phone_number": "13512345678"             }         ]     } } ``` |
+| 200 | ```json {     "code": 200,     "message": "success",     "data": {         "count": 1,         "page": 1,         "data": [             {                 "uid": 1,                 "username": "admin",                 "sex": "male",                 "profile": "Demo admin profile",                 "avatar_url": "http://localhost:3344/v1/raw/image/avatar.jpg",                 "birth_time": "2020-01-10",                 "authority": "admin",                 "phone_number": "13512345678",                 "register_time": "2020-01-10 00:30:49"             }         ]     } } ``` |
 | 400 | "request param error" |
 | 401 | "unauthorized user", "token has expired", "authorized user not found", "need admin authority" |
 

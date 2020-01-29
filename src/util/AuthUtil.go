@@ -6,6 +6,7 @@ import (
 	"github.com/vidorg/vid_backend/src/common/model"
 	"github.com/vidorg/vid_backend/src/config"
 	"golang.org/x/crypto/bcrypt"
+	"strings"
 	"time"
 )
 
@@ -34,13 +35,18 @@ func (a *authUtil) GenerateToken(uid int32, ex int64, config *config.JwtConfig) 
 		},
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	return token.SignedString([]byte(config.Secret))
+	t, err := token.SignedString([]byte(config.Secret))
+	if err != nil {
+		return "", err
+	}
+	return "Bearer " + t, nil
 }
 
 func (a *authUtil) ParseToken(signedToken string, config *config.JwtConfig) (*model.UserClaims, error) {
 	keyFunc := func(token *jwt.Token) (interface{}, error) {
 		return []byte(config.Secret), nil
 	}
+	signedToken = strings.TrimPrefix(signedToken, "Bearer ")
 	token, err := jwt.ParseWithClaims(signedToken, &model.UserClaims{}, keyFunc)
 	if err != nil || !token.Valid {
 		err = xcondition.IfThenElse(err == nil, jwt.ValidationError{}, err).(error)

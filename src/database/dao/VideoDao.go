@@ -1,6 +1,7 @@
 package dao
 
 import (
+	"github.com/Aoi-hosizora/ahlib-gin-gorm/xgorm"
 	"github.com/Aoi-hosizora/ahlib/xdi"
 	"github.com/jinzhu/gorm"
 	"github.com/vidorg/vid_backend/src/config"
@@ -84,7 +85,7 @@ func (v *VideoDao) Exist(vid int32) bool {
 
 func (v *VideoDao) Insert(video *po.Video) database.DbStatus {
 	rdb := v.Db.Model(&po.Video{}).Model(&po.Video{}).Create(video)
-	if database.IsDuplicateError(rdb.Error) {
+	if xgorm.IsMySqlDuplicateError(rdb.Error) {
 		return database.DbExisted
 	} else if rdb.Error != nil || rdb.RowsAffected == 0 {
 		return database.DbFailed
@@ -95,7 +96,7 @@ func (v *VideoDao) Insert(video *po.Video) database.DbStatus {
 func (v *VideoDao) Update(video *po.Video) database.DbStatus {
 	rdb := v.Db.Model(&po.Video{}).Update(video)
 	if rdb.Error != nil {
-		if database.IsDuplicateError(rdb.Error) {
+		if xgorm.IsMySqlDuplicateError(rdb.Error) {
 			return database.DbExisted
 		} else {
 			return database.DbFailed

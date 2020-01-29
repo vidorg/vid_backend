@@ -2,12 +2,16 @@ package database
 
 import (
 	"fmt"
-	"github.com/go-sql-driver/mysql"
+	"github.com/Aoi-hosizora/ahlib-gin-gorm/xgorm"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 	"github.com/vidorg/vid_backend/src/config"
 	"github.com/vidorg/vid_backend/src/model/po"
 	"log"
+)
+
+const (
+	DefaultDeleteAtTimeStamp = "2000-01-01 00:00:00"
 )
 
 func SetupDBConn(cfg *config.MySqlConfig) *gorm.DB {
@@ -20,6 +24,8 @@ func SetupDBConn(cfg *config.MySqlConfig) *gorm.DB {
 	if err != nil {
 		log.Fatalln("Failed to connect mysql:", err)
 	}
+	// Change default deletedAt field behavior
+	xgorm.HookDeleteAtField(db, DefaultDeleteAtTimeStamp)
 
 	db.LogMode(cfg.IsLog)
 	db.SingularTable(true)
@@ -37,19 +43,5 @@ func SetupDBConn(cfg *config.MySqlConfig) *gorm.DB {
 	authMigrate(&po.Account{})
 	authMigrate(&po.Video{})
 
-	// Change default deletedAt field behavior
-	db.Callback().Query().Before("gorm:query").Register("new_deleted_at_before_query_callback", newBeforeQueryUpdateCallback)
-	db.Callback().RowQuery().Before("gorm:row_query").Register("new_deleted_at_before_row_query_callback", newBeforeQueryUpdateCallback)
-	db.Callback().Update().Before("gorm:update").Register("new_deleted_at_before_update_callback", newBeforeQueryUpdateCallback)
-	db.Callback().Delete().Replace("gorm:delete", newDeleteCallback)
-
 	return db
-}
-
-func IsDuplicateError(err error) bool {
-	if err == nil {
-		return false
-	}
-	mysqlErr, ok := err.(*mysql.MySQLError)
-	return ok && mysqlErr.Number == 1062
 }

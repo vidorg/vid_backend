@@ -56,7 +56,6 @@ CREATE TABLE `tbl_video`
     `description` varchar(255)   DEFAULT NULL,
     `video_url`   varchar(255)   DEFAULT NULL,
     `cover_url`   varchar(255)   DEFAULT NULL,
-    `upload_time` datetime       DEFAULT CURRENT_TIMESTAMP,
     `author_uid`  int(11)        DEFAULT NULL,
     `created_at`  timestamp NULL DEFAULT NULL,
     `updated_at`  timestamp NULL DEFAULT NULL,

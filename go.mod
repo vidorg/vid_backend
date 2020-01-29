@@ -1,7 +1,9 @@
 module github.com/vidorg/vid_backend
 
 require (
+	cloud.google.com/go v0.46.3 // indirect
 	github.com/Aoi-hosizora/ahlib v0.0.0-20200128181747-318e0c2b28df
+	github.com/Aoi-hosizora/ahlib-gin-gorm v0.0.0-20200129064644-7d937045c25c
 	github.com/DeanThompson/ginpprof v0.0.0-20190408063150-3be636683586
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/gin-contrib/cors v1.3.0
@@ -10,12 +12,12 @@ require (
 	github.com/go-openapi/spec v0.19.3 // indirect
 	github.com/go-sql-driver/mysql v1.4.1
 	github.com/gomodule/redigo v2.0.0+incompatible
-	github.com/jinzhu/gorm v1.9.10
+	github.com/jinzhu/gorm v1.9.12
 	github.com/mailru/easyjson v0.7.0 // indirect
 	github.com/mattn/go-isatty v0.0.10 // indirect
 	github.com/swaggo/gin-swagger v1.2.0
 	github.com/swaggo/swag v1.6.3
-	golang.org/x/crypto v0.0.0-20191011191535-87dc89f01550
+	golang.org/x/crypto v0.0.0-20191205180655-e7c4368fe9dd
 	golang.org/x/image v0.0.0-20190802002840-cff245a6509b
 	golang.org/x/net v0.0.0-20191011234655-491137f69257 // indirect
 	gopkg.in/check.v1 v1.0.0-20190902080502-41f04d3bba15 // indirect

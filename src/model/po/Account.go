@@ -1,6 +1,8 @@
 package po
 
-import "github.com/vidorg/vid_backend/src/common/model"
+import (
+	"github.com/Aoi-hosizora/ahlib-gin-gorm/xgorm"
+)
 
 type Account struct {
 	Uid           int32  `gorm:"primary_key"`
@@ -8,5 +10,5 @@ type Account struct {
 
 	User *User `gorm:"foreignkey:Uid"`
 
-	model.GormTime
+	xgorm.GormTime
 }

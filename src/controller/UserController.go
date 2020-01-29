@@ -1,13 +1,13 @@
 package controller
 
 import (
+	"github.com/Aoi-hosizora/ahlib-gin-gorm/xdatetime"
 	"github.com/Aoi-hosizora/ahlib/xcondition"
 	"github.com/Aoi-hosizora/ahlib/xdi"
 	"github.com/Aoi-hosizora/ahlib/xmapper"
 	"github.com/gin-gonic/gin"
 	"github.com/vidorg/vid_backend/src/common/enum"
 	"github.com/vidorg/vid_backend/src/common/exception"
-	"github.com/vidorg/vid_backend/src/common/model"
 	"github.com/vidorg/vid_backend/src/common/result"
 	"github.com/vidorg/vid_backend/src/config"
 	"github.com/vidorg/vid_backend/src/database"
@@ -186,7 +186,7 @@ func (u *UserController) UpdateUser(isExact bool) func(c *gin.Context) {
 		user.Username = userParam.Username
 		user.Sex = enum.StringToSexType(userParam.Sex)
 		user.Profile = *userParam.Profile
-		user.BirthTime, _ = model.JsonDate{}.Parse(userParam.BirthTime)
+		user.BirthTime, _ = xdatetime.JsonDate{}.Parse(userParam.BirthTime, u.Config.CurrentLoc)
 		user.PhoneNumber = userParam.PhoneNumber
 		url, ok := util.CommonUtil.GetFilenameFromUrl(userParam.AvatarUrl, u.Config.FileConfig.ImageUrlPrefix)
 		if !ok {

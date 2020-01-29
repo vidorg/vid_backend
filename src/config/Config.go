@@ -3,6 +3,7 @@ package config
 import (
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
+	"time"
 )
 
 type HTTPConfig struct {
@@ -52,6 +53,17 @@ type ServerConfig struct {
 	MySqlConfig *MySqlConfig `yaml:"mysql"`
 	RedisConfig *RedisConfig `yaml:"redis"`
 	JwtConfig   *JwtConfig   `yaml:"jwt"`
+
+	CurrentLocString string         `yaml:"current-loc"`
+	CurrentLoc       *time.Location `yaml:"-"`
+}
+
+func preLoad(config *ServerConfig) {
+	loc, err := time.LoadLocation(config.CurrentLocString)
+	if err != nil {
+		panic(err)
+	}
+	config.CurrentLoc = loc
 }
 
 func Load(configPath string) (*ServerConfig, error) {
@@ -65,5 +77,6 @@ func Load(configPath string) (*ServerConfig, error) {
 	if err != nil {
 		return nil, err
 	}
+	preLoad(config)
 	return config, nil
 }

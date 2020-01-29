@@ -1,6 +1,7 @@
 run-mode: debug
 
 http:
+  current-loc: Asia/Shanghai
   port: 3344
 
 file:

@@ -1,6 +1,7 @@
 package param
 
 // https://godoc.org/github.com/go-playground/validator#hdr-Baked_In_Validators_and_Tags
+
 type UserParam struct {
 	Username    string  `form:"username"     json:"username"     binding:"required,min=5,max=30,name"`
 	Profile     *string `form:"profile"      json:"profile"      binding:"required,min=0,max=255"`
