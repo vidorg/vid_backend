@@ -105,6 +105,7 @@ func (s *SubController) QuerySubscribingUsers(c *gin.Context) {
 }
 
 // @Router              /v1/user/subscribing [PUT]
+// @Security            Jwt
 // @Template            Auth
 // @Summary             关注
 // @Description         关注某一用户
@@ -145,6 +146,7 @@ func (s *SubController) SubscribeUser(c *gin.Context) {
 }
 
 // @Router              /v1/user/subscribing [DELETE]
+// @Security            Jwt
 // @Template            Auth
 // @Summary             取消关注
 // @Description         取消关注某一用户

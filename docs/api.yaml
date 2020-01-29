@@ -32,12 +32,6 @@ paths:
       - multipart/form-data
       description: 根据认证信息，查看当前登录用户
       operationId: v1-auth-get
-      parameters:
-      - description: 用户登录令牌
-        in: header
-        name: Authorization
-        required: true
-        type: string
       produces:
       - application/json
       responses:
@@ -64,7 +58,7 @@ paths:
           description: |-
             "unauthorized user", "token has expired", "authorized user not found"
       security:
-      - basicAuth: ''
+      - Jwt: []
       summary: 当前登录用户
       tags:
       - Authorization
@@ -137,12 +131,6 @@ paths:
       - multipart/form-data
       description: 用户注销
       operationId: v1-auth-logout-post
-      parameters:
-      - description: 用户登录令牌
-        in: header
-        name: Authorization
-        required: true
-        type: string
       produces:
       - application/json
       responses:
@@ -161,7 +149,7 @@ paths:
           description: |-
             "logout failed"
       security:
-      - basicAuth: ''
+      - Jwt: []
       summary: 注销
       tags:
       - Authorization
@@ -172,11 +160,6 @@ paths:
       description: 用户修改密码
       operationId: v1-auth-password-put
       parameters:
-      - description: 用户登录令牌
-        in: header
-        name: Authorization
-        required: true
-        type: string
       - description: 用户密码，长度在 [8, 30] 之间
         in: formData
         name: password
@@ -206,7 +189,7 @@ paths:
           description: |-
             "update password failed"
       security:
-      - basicAuth: ''
+      - Jwt: []
       summary: 修改密码
       tags:
       - Authorization
@@ -265,11 +248,6 @@ paths:
       description: 上传公共图片，包括用户头像和视频封面
       operationId: v1-raw-image-post
       parameters:
-      - description: 用户登录令牌
-        in: header
-        name: Authorization
-        required: true
-        type: string
       - description: 上传的图片，大小限制在2M，允许后缀名为 {.jpg, .jpeg, .png, .bmp, .gif}
         in: formData
         name: image
@@ -303,7 +281,7 @@ paths:
           description: |-
             "image save failed"
       security:
-      - basicAuth: ''
+      - Jwt: []
       summary: 上传图片
       tags:
       - Raw
@@ -339,12 +317,6 @@ paths:
       - multipart/form-data
       description: 删除用户账户以及所有信息
       operationId: v1-user-delete
-      parameters:
-      - description: 用户登录令牌
-        in: header
-        name: Authorization
-        required: true
-        type: string
       produces:
       - application/json
       responses:
@@ -366,7 +338,7 @@ paths:
           description: |-
             "user delete failed"
       security:
-      - basicAuth: ''
+      - Jwt: []
       summary: 删除用户
       tags:
       - User
@@ -376,11 +348,6 @@ paths:
       description: 更新用户个人信息
       operationId: v1-user-put
       parameters:
-      - description: 用户登录令牌
-        in: header
-        name: Authorization
-        required: true
-        type: string
       - description: 用户名，长度在 [8, 30] 之间
         in: formData
         name: username
@@ -446,7 +413,7 @@ paths:
           description: |-
             "user update failed"
       security:
-      - basicAuth: ''
+      - Jwt: []
       summary: 更新用户
       tags:
       - User
@@ -456,12 +423,6 @@ paths:
       - multipart/form-data
       description: 删除用户账户，管理员权限
       operationId: v1-user-admin-uid-delete
-      parameters:
-      - description: 用户登录令牌
-        in: header
-        name: Authorization
-        required: true
-        type: string
       produces:
       - application/json
       responses:
@@ -483,7 +444,7 @@ paths:
           description: |-
             "user delete failed"
       security:
-      - basicAuth: ''
+      - Jwt: []
       summary: 管理员删除用户
       tags:
       - User
@@ -494,11 +455,6 @@ paths:
       description: 更新用户信息，管理员权限
       operationId: v1-user-admin-uid-put
       parameters:
-      - description: 用户登录令牌
-        in: header
-        name: Authorization
-        required: true
-        type: string
       - description: 用户名，长度在 [8, 30] 之间
         in: formData
         name: username
@@ -564,7 +520,7 @@ paths:
           description: |-
             "user update failed"
       security:
-      - basicAuth: ''
+      - Jwt: []
       summary: 管理员更新用户
       tags:
       - User
@@ -576,11 +532,6 @@ paths:
       description: 取消关注某一用户
       operationId: v1-user-subscribing-delete
       parameters:
-      - description: 用户登录令牌
-        in: header
-        name: Authorization
-        required: true
-        type: string
       - description: 取消关注用户id
         in: formData
         name: to
@@ -610,7 +561,7 @@ paths:
           description: |-
             "unsubscribe failed"
       security:
-      - basicAuth: ''
+      - Jwt: []
       summary: 取消关注
       tags:
       - Subscribe
@@ -620,11 +571,6 @@ paths:
       description: 关注某一用户
       operationId: v1-user-subscribing-put
       parameters:
-      - description: 用户登录令牌
-        in: header
-        name: Authorization
-        required: true
-        type: string
       - description: 关注用户id
         in: formData
         name: to
@@ -654,7 +600,7 @@ paths:
           description: |-
             "subscribe failed"
       security:
-      - basicAuth: ''
+      - Jwt: []
       summary: 关注
       tags:
       - Subscribe
@@ -860,12 +806,8 @@ paths:
       description: 管理员查询所有用户，返回分页数据，管理员权限，此处可见用户手机号码
       operationId: v1-user-page-get
       parameters:
-      - description: 用户登录令牌
-        in: header
-        name: Authorization
-        required: true
-        type: string
-      - description: 分页
+      - default: 1
+        description: 分页
         in: query
         name: page
         required: false
@@ -905,7 +847,7 @@ paths:
           description: |-
             "unauthorized user", "token has expired", "authorized user not found", "need admin authority"
       security:
-      - basicAuth: ''
+      - Jwt: []
       summary: 查询所有用户
       tags:
       - User
@@ -917,11 +859,6 @@ paths:
       description: 新建用户视频
       operationId: v1-video-post
       parameters:
-      - description: 用户登录令牌
-        in: header
-        name: Authorization
-        required: true
-        type: string
       - description: 视频标题，长度在 [1, 100] 之间
         in: formData
         name: title
@@ -982,7 +919,7 @@ paths:
           description: |-
             "video insert failed"
       security:
-      - basicAuth: ''
+      - Jwt: []
       summary: 新建视频
       tags:
       - Video
@@ -993,11 +930,6 @@ paths:
       description: 删除用户视频，管理员或者作者本人可以操作
       operationId: v1-video-vid-delete
       parameters:
-      - description: 用户登录令牌
-        in: header
-        name: Authorization
-        required: true
-        type: string
       - description: 删除视频id
         in: path
         name: vid
@@ -1027,7 +959,7 @@ paths:
           description: |-
             "video delete failed"
       security:
-      - basicAuth: ''
+      - Jwt: []
       summary: 删除视频
       tags:
       - Video
@@ -1088,11 +1020,6 @@ paths:
       description: 更新用户视频信息，管理员或者作者本人可以操作
       operationId: v1-video-vid-post
       parameters:
-      - description: 用户登录令牌
-        in: header
-        name: Authorization
-        required: true
-        type: string
       - description: 更新视频id
         in: path
         name: vid
@@ -1134,7 +1061,7 @@ paths:
           description: |-
             "video update failed"
       security:
-      - basicAuth: ''
+      - Jwt: []
       summary: 更新视频
       tags:
       - Video
@@ -1146,12 +1073,8 @@ paths:
       description: 管理员查询所有视频，返回分页数据，管理员权限
       operationId: v1-video-page-get
       parameters:
-      - description: 用户登录令牌
-        in: header
-        name: Authorization
-        required: true
-        type: string
-      - description: 分页
+      - default: 1
+        description: 分页
         in: query
         name: page
         required: false
@@ -1199,9 +1122,27 @@ paths:
           description: |-
             "unauthorized user", "token has expired", "authorized user not found", "need admin authority"
       security:
-      - basicAuth: ''
+      - Jwt: []
       summary: 查询所有视频
       tags:
       - Video
       - Administration
+securityDefinitions:
+  Jwt:
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: '2.0'
+tags:
+- description: Auth-Controller
+  name: Authorization
+- description: User-Controller
+  name: User
+- description: Sub-Controller
+  name: Subscribe
+- description: Video-Controller
+  name: Video
+- description: Raw-Controller
+  name: Raw
+- description: '*-Controller'
+  name: Administration

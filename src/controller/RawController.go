@@ -27,6 +27,7 @@ func NewRawController(dic *xdi.DiContainer) *RawController {
 }
 
 // @Router              /v1/raw/image [POST]
+// @Security            Jwt
 // @Template            Auth
 // @Summary             上传图片
 // @Description         上传公共图片，包括用户头像和视频封面

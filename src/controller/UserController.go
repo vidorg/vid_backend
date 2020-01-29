@@ -38,12 +38,13 @@ func NewUserController(dic *xdi.DiContainer) *UserController {
 }
 
 // @Router              /v1/user?page [GET]
-// @Template            Auth, Admin
+// @Security            Jwt
+// @Template            Auth Admin
 // @Summary             查询所有用户
 // @Description         管理员查询所有用户，返回分页数据，管理员权限，此处可见用户手机号码
 // @Tag                 User
 // @Tag                 Administration
-// @Param               page query integer false "分页"
+// @Param               page query integer false "分页" 1
 // @Accept              multipart/form-data
 // @ErrorCode           400 request param error
 /* @Response 200		{
@@ -116,6 +117,7 @@ func (u *UserController) QueryUser(c *gin.Context) {
 }
 
 // @Router              /v1/user/ [PUT]
+// @Security            Jwt
 // @Template            Auth
 // @Summary             更新用户
 // @Description         更新用户个人信息
@@ -138,7 +140,8 @@ func (u *UserController) QueryUser(c *gin.Context) {
 							"data": ${user}
  						} */
 // @Router              /v1/user/admin/{uid} [PUT]
-// @Template            Auth, Admin
+// @Security            Jwt
+// @Template            Auth Admin
 // @Summary             管理员更新用户
 // @Description         更新用户信息，管理员权限
 // @Tag                 User
@@ -213,6 +216,7 @@ func (u *UserController) UpdateUser(isExact bool) func(c *gin.Context) {
 }
 
 // @Router              /v1/user/ [DELETE]
+// @Security            Jwt
 // @Template            Auth
 // @Summary             删除用户
 // @Description         删除用户账户以及所有信息
@@ -225,7 +229,8 @@ func (u *UserController) UpdateUser(isExact bool) func(c *gin.Context) {
 							"message": "success"
  						} */
 // @Router              /v1/user/admin/{uid} [DELETE]
-// @Template            Auth, Admin
+// @Security            Jwt
+// @Template            Auth Admin
 // @Summary             管理员删除用户
 // @Description         删除用户账户，管理员权限
 // @Tag                 User

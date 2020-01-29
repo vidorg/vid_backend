@@ -8,6 +8,14 @@ https://github.com/vidorg
 
 **License:** [MIT](https://github.com/vidorg/vid_backend/blob/master/LICENSE)
 
+### Security
+**Jwt**  
+
+|apiKey|*API Key*|
+|---|---|
+|In|header|
+|Name|Authorization|
+
 ### /ping
 
 #### GET
@@ -36,12 +44,6 @@ Ping
 
 根据认证信息，查看当前登录用户
 
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
-| Authorization | header | 用户登录令牌 | Yes | string |
-
 ##### Responses
 
 | Code | Description |
@@ -53,7 +55,7 @@ Ping
 
 | Security Schema | Scopes |
 | --- | --- |
-| basicAuth | |
+| Jwt | |
 
 ### /v1/auth/login
 
@@ -95,12 +97,6 @@ Ping
 
 用户注销
 
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
-| Authorization | header | 用户登录令牌 | Yes | string |
-
 ##### Responses
 
 | Code | Description |
@@ -113,7 +109,7 @@ Ping
 
 | Security Schema | Scopes |
 | --- | --- |
-| basicAuth | |
+| Jwt | |
 
 ### /v1/auth/password
 
@@ -130,7 +126,6 @@ Ping
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ---- |
-| Authorization | header | 用户登录令牌 | Yes | string |
 | password | formData | 用户密码，长度在 [8, 30] 之间 | Yes | string |
 
 ##### Responses
@@ -147,7 +142,7 @@ Ping
 
 | Security Schema | Scopes |
 | --- | --- |
-| basicAuth | |
+| Jwt | |
 
 ### /v1/auth/register
 
@@ -190,7 +185,6 @@ Ping
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ---- |
-| Authorization | header | 用户登录令牌 | Yes | string |
 | image | formData | 上传的图片，大小限制在2M，允许后缀名为 {.jpg, .jpeg, .png, .bmp, .gif} | Yes | file |
 
 ##### Responses
@@ -207,7 +201,7 @@ Ping
 
 | Security Schema | Scopes |
 | --- | --- |
-| basicAuth | |
+| Jwt | |
 
 ### /v1/raw/image/{filename}
 
@@ -244,12 +238,6 @@ Ping
 
 删除用户账户以及所有信息
 
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
-| Authorization | header | 用户登录令牌 | Yes | string |
-
 ##### Responses
 
 | Code | Description |
@@ -263,7 +251,7 @@ Ping
 
 | Security Schema | Scopes |
 | --- | --- |
-| basicAuth | |
+| Jwt | |
 
 #### PUT
 ##### Summary:
@@ -278,7 +266,6 @@ Ping
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ---- |
-| Authorization | header | 用户登录令牌 | Yes | string |
 | username | formData | 用户名，长度在 [8, 30] 之间 | Yes | string |
 | sex | formData | 用户性别，允许值为 {male, female, unknown} | Yes | string |
 | profile | formData | 用户简介，长度在 [0, 255] 之间 | Yes | string |
@@ -300,7 +287,7 @@ Ping
 
 | Security Schema | Scopes |
 | --- | --- |
-| basicAuth | |
+| Jwt | |
 
 ### /v1/user/admin/{uid}
 
@@ -312,12 +299,6 @@ Ping
 ##### Description:
 
 删除用户账户，管理员权限
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
-| Authorization | header | 用户登录令牌 | Yes | string |
 
 ##### Responses
 
@@ -332,7 +313,7 @@ Ping
 
 | Security Schema | Scopes |
 | --- | --- |
-| basicAuth | |
+| Jwt | |
 
 #### PUT
 ##### Summary:
@@ -347,7 +328,6 @@ Ping
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ---- |
-| Authorization | header | 用户登录令牌 | Yes | string |
 | username | formData | 用户名，长度在 [8, 30] 之间 | Yes | string |
 | sex | formData | 用户性别，允许值为 {male, female, unknown} | Yes | string |
 | profile | formData | 用户简介，长度在 [0, 255] 之间 | Yes | string |
@@ -369,7 +349,7 @@ Ping
 
 | Security Schema | Scopes |
 | --- | --- |
-| basicAuth | |
+| Jwt | |
 
 ### /v1/user/subscribing
 
@@ -386,7 +366,6 @@ Ping
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ---- |
-| Authorization | header | 用户登录令牌 | Yes | string |
 | to | formData | 取消关注用户id | Yes | integer |
 
 ##### Responses
@@ -403,7 +382,7 @@ Ping
 
 | Security Schema | Scopes |
 | --- | --- |
-| basicAuth | |
+| Jwt | |
 
 #### PUT
 ##### Summary:
@@ -418,7 +397,6 @@ Ping
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ---- |
-| Authorization | header | 用户登录令牌 | Yes | string |
 | to | formData | 关注用户id | Yes | integer |
 
 ##### Responses
@@ -435,7 +413,7 @@ Ping
 
 | Security Schema | Scopes |
 | --- | --- |
-| basicAuth | |
+| Jwt | |
 
 ### /v1/user/{uid}
 
@@ -554,7 +532,6 @@ Ping
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ---- |
-| Authorization | header | 用户登录令牌 | Yes | string |
 | page | query | 分页 | No | integer |
 
 ##### Responses
@@ -569,7 +546,7 @@ Ping
 
 | Security Schema | Scopes |
 | --- | --- |
-| basicAuth | |
+| Jwt | |
 
 ### /v1/video/
 
@@ -586,7 +563,6 @@ Ping
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ---- |
-| Authorization | header | 用户登录令牌 | Yes | string |
 | title | formData | 视频标题，长度在 [1, 100] 之间 | Yes | string |
 | description | formData | 视频简介，长度在 [0, 1024] 之间 | Yes | string |
 | cover_url | formData | 视频封面链接 | Yes | string |
@@ -605,7 +581,7 @@ Ping
 
 | Security Schema | Scopes |
 | --- | --- |
-| basicAuth | |
+| Jwt | |
 
 ### /v1/video/{vid}
 
@@ -622,7 +598,6 @@ Ping
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ---- |
-| Authorization | header | 用户登录令牌 | Yes | string |
 | vid | path | 删除视频id | Yes | string |
 
 ##### Responses
@@ -639,7 +614,7 @@ Ping
 
 | Security Schema | Scopes |
 | --- | --- |
-| basicAuth | |
+| Jwt | |
 
 #### GET
 ##### Summary:
@@ -677,7 +652,6 @@ Ping
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ---- |
-| Authorization | header | 用户登录令牌 | Yes | string |
 | vid | path | 更新视频id | Yes | string |
 | title | formData | 视频标题，长度在 [1, 100] 之间 | Yes | string |
 | description | formData | 视频简介，长度在 [0, 1024] 之间 | Yes | string |
@@ -697,7 +671,7 @@ Ping
 
 | Security Schema | Scopes |
 | --- | --- |
-| basicAuth | |
+| Jwt | |
 
 ### /v1/video?page
 
@@ -714,7 +688,6 @@ Ping
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ---- |
-| Authorization | header | 用户登录令牌 | Yes | string |
 | page | query | 分页 | No | integer |
 
 ##### Responses
@@ -729,4 +702,4 @@ Ping
 
 | Security Schema | Scopes |
 | --- | --- |
-| basicAuth | |
+| Jwt | |

@@ -35,12 +35,13 @@ func NewVideoController(dic *xdi.DiContainer) *VideoController {
 }
 
 // @Router              /v1/video?page [GET]
-// @Template            Auth, Admin
+// @Security            Jwt
+// @Template            Auth Admin
 // @Summary             查询所有视频
 // @Description         管理员查询所有视频，返回分页数据，管理员权限
 // @Tag                 Video
 // @Tag                 Administration
-// @Param               page query integer false "分页"
+// @Param               page query integer false "分页" 1
 // @Accept              multipart/form-data
 // @ErrorCode           400 request param error
 /* @Response 200		{
@@ -132,6 +133,7 @@ func (v *VideoController) QueryVideoByVid(c *gin.Context) {
 }
 
 // @Router              /v1/video/ [POST]
+// @Security            Jwt
 // @Template            Auth
 // @Summary             新建视频
 // @Description         新建用户视频
@@ -185,7 +187,8 @@ func (v *VideoController) InsertVideo(c *gin.Context) {
 }
 
 // @Router              /v1/video/{vid} [POST]
-// @Template            Auth, Admin
+// @Security            Jwt
+// @Template            Auth Admin
 // @Summary             更新视频
 // @Description         更新用户视频信息，管理员或者作者本人可以操作
 // @Tag                 Video
@@ -256,7 +259,8 @@ func (v *VideoController) UpdateVideo(c *gin.Context) {
 }
 
 // @Router              /v1/video/{vid} [DELETE]
-// @Template            Auth, Admin
+// @Security            Jwt
+// @Template            Auth Admin
 // @Summary             删除视频
 // @Description         删除用户视频，管理员或者作者本人可以操作
 // @Tag                 Video

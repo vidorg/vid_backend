@@ -144,6 +144,7 @@ func (a *AuthController) Register(c *gin.Context) {
 }
 
 // @Router              /v1/auth/ [GET]
+// @Security            Jwt
 // @Template            Auth
 // @Summary             当前登录用户
 // @Description         根据认证信息，查看当前登录用户
@@ -161,6 +162,7 @@ func (a *AuthController) CurrentUser(c *gin.Context) {
 }
 
 // @Router              /v1/auth/logout [POST]
+// @Security            Jwt
 // @Template            Auth
 // @Summary             注销
 // @Description         用户注销
@@ -185,6 +187,7 @@ func (a *AuthController) Logout(c *gin.Context) {
 }
 
 // @Router              /v1/auth/password [PUT] [Auth]
+// @Security            Jwt
 // @Template            Auth
 // @Summary             修改密码
 // @Description         用户修改密码
