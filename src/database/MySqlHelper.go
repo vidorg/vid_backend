@@ -11,6 +11,7 @@ import (
 )
 
 const (
+	// pay attention to use xgorm.GormTimeWithoutDeletedAt
 	DefaultDeleteAtTimeStamp = "2000-01-01 00:00:00"
 )
 
@@ -24,6 +25,7 @@ func SetupDBConn(cfg *config.MySqlConfig) *gorm.DB {
 	if err != nil {
 		log.Fatalln("Failed to connect mysql:", err)
 	}
+
 	// Change default deletedAt field behavior
 	xgorm.HookDeleteAtField(db, DefaultDeleteAtTimeStamp)
 

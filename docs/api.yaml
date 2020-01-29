@@ -408,9 +408,9 @@ paths:
         type: string
       - description: 用户头像链接
         in: formData
-        name: avatar_file
+        name: avatar_url
         required: true
-        type: file
+        type: string
       produces:
       - application/json
       responses:
@@ -526,9 +526,9 @@ paths:
         type: string
       - description: 用户头像链接
         in: formData
-        name: avatar_file
+        name: avatar_url
         required: true
-        type: file
+        type: string
       produces:
       - application/json
       responses:
@@ -836,7 +836,8 @@ paths:
                                 "profile": "Demo admin profile",
                                 "avatar_url": "http://localhost:3344/v1/raw/image/cover.jpg",
                                 "birth_time": "2020-01-10",
-                                "authority": "admin"
+                                "authority": "admin",
+                                "register_time": "2020-01-10 00:30:49"
                             }
                         }
                     ]
@@ -934,7 +935,7 @@ paths:
       - description: 视频封面链接
         in: formData
         name: cover_url
-        required: false
+        required: true
         type: string
       - description: 视频资源链接
         in: formData
@@ -965,7 +966,8 @@ paths:
                         "profile": "Demo admin profile",
                         "avatar_url": "http://localhost:3344/v1/raw/image/cover.jpg",
                         "birth_time": "2020-01-10",
-                        "authority": "admin"
+                        "authority": "admin",
+                        "register_time": "2020-01-10 00:30:49"
                     }
                 }
             }
@@ -1065,7 +1067,8 @@ paths:
                         "profile": "Demo admin profile",
                         "avatar_url": "http://localhost:3344/v1/raw/image/cover.jpg",
                         "birth_time": "2020-01-10",
-                        "authority": "admin"
+                        "authority": "admin",
+                        "register_time": "2020-01-10 00:30:49"
                     }
                 }
             }
@@ -1181,7 +1184,8 @@ paths:
                                 "profile": "Demo admin profile",
                                 "avatar_url": "http://localhost:3344/v1/raw/image/cover.jpg",
                                 "birth_time": "2020-01-10",
-                                "authority": "admin"
+                                "authority": "admin",
+                                "register_time": "2020-01-10 00:30:49"
                             }
                         }
                     ]

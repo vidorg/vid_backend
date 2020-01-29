@@ -7,6 +7,6 @@ type UserParam struct {
 	Profile     *string `form:"profile"      json:"profile"      binding:"required,min=0,max=255"`
 	Sex         string  `form:"sex"          json:"sex"          binding:"required"`
 	BirthTime   string  `form:"birth_time"   json:"birth_time"   binding:"required,date"`
-	PhoneNumber string  `form:"phone_number" json:"phone_number" binding:"required,len=11,phone"`
+	PhoneNumber string  `form:"phone_number" json:"phone_number" binding:"required,phone"`
 	AvatarUrl   string  `form:"avatar_url"   json:"avatar_url"   binding:"required,url"`
 }

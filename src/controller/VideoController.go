@@ -138,7 +138,7 @@ func (v *VideoController) QueryVideoByVid(c *gin.Context) {
 // @Tag                 Video
 // @Param               title formData string true "视频标题，长度在 [1, 100] 之间"
 // @Param               description formData string true "视频简介，长度在 [0, 1024] 之间"
-// @Param               cover_url formData string false "视频封面链接"
+// @Param               cover_url formData string true "视频封面链接"
 // @Param               video_url formData string true "视频资源链接"
 // @Accept              multipart/form-data
 // @ErrorCode           400 request param error

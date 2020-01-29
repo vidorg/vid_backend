@@ -23,6 +23,7 @@ go run main.go
 
 ### Dependencies
 + [ahlib](https://github.com/Aoi-hosizora/ahlib)
++ [ahlib-gin-gorm](https://github.com/Aoi-hosizora/ahlib-gin-gorm)
 + [gin](https://github.com/gin-gonic/gin)
 + [gorm](https://github.com/jinzhu/gorm)
 + [jwt-go](https://github.com/dgrijalva/jwt-go)

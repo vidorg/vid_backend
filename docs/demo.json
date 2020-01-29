@@ -25,7 +25,8 @@
       "profile": "Demo admin profile",
       "avatar_url": "http://localhost:3344/v1/raw/image/cover.jpg",
       "birth_time": "2020-01-10",
-      "authority": "admin"
+      "authority": "admin",
+      "register_time": "2020-01-10 00:30:49"
     }
   }
 }

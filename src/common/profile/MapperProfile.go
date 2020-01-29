@@ -16,10 +16,18 @@ func CreateMapperProfile(config *config.ServerConfig) *xmapper.EntityMapper {
 
 	mapper = mapper.
 		CreateMapper(&po.User{}, &dto.UserDto{}).
-		ForMember("Sex", func(i interface{}) interface{} { return i.(po.User).Sex.String() }).
-		ForMember("BirthTime", func(i interface{}) interface{} { return i.(po.User).BirthTime.String() }).
-		ForMember("Authority", func(i interface{}) interface{} { return i.(po.User).Authority.String() }).
-		ForMember("RegisterTime", func(i interface{}) interface{} { return xdatetime.NewJsonDateTime(i.(po.User).CreatedAt).String() }).
+		ForMember("Sex", func(i interface{}) interface{} {
+			return i.(po.User).Sex.String() // SexType
+		}).
+		ForMember("BirthTime", func(i interface{}) interface{} {
+			return i.(po.User).BirthTime.String() // JsonDate
+		}).
+		ForMember("Authority", func(i interface{}) interface{} {
+			return i.(po.User).Authority.String() // AuthType
+		}).
+		ForMember("RegisterTime", func(i interface{}) interface{} {
+			return xdatetime.NewJsonDateTime(i.(po.User).CreatedAt).String() // time.Time
+		}).
 		ForMember("AvatarUrl", func(i interface{}) interface{} {
 			avatar := i.(po.User).AvatarUrl
 			if !strings.HasPrefix(avatar, "http") {
@@ -29,13 +37,19 @@ func CreateMapperProfile(config *config.ServerConfig) *xmapper.EntityMapper {
 			}
 			return avatar
 		}).
-		ForMember("PhoneNumber", func(i interface{}) interface{} { return "" }).
+		ForMember("PhoneNumber", func(i interface{}) interface{} {
+			return ""
+		}).
 		Build()
 
 	mapper = mapper.
 		CreateMapper(&po.Video{}, &dto.VideoDto{}).
-		ForMember("UploadTime", func(i interface{}) interface{} { return i.(po.Video).UploadTime.String() }).
-		ForMember("UpdateTime", func(i interface{}) interface{} { return xdatetime.NewJsonDateTime(i.(po.Video).UpdatedAt).String() }).
+		ForMember("UploadTime", func(i interface{}) interface{} {
+			return xdatetime.NewJsonDateTime(i.(po.Video).CreatedAt).String() // time.Time
+		}).
+		ForMember("UpdateTime", func(i interface{}) interface{} {
+			return xdatetime.NewJsonDateTime(i.(po.Video).UpdatedAt).String() // time.Time
+		}).
 		ForMember("CoverUrl", func(i interface{}) interface{} {
 			cover := i.(po.Video).CoverUrl
 			if !strings.HasPrefix(cover, "http") {

@@ -125,7 +125,7 @@ func (u *UserController) QueryUser(c *gin.Context) {
 // @Param               profile formData string true "用户简介，长度在 [0, 255] 之间"
 // @Param               birth_time formData string true "用户生日，固定格式为 2000-01-01"
 // @Param               phone_number formData string true "用户手机号码，长度为 11，仅限中国大陆手机号码"
-// @Param               avatar_file formData file true "用户头像链接"
+// @Param               avatar_url formData string true "用户头像链接"
 // @Accept              multipart/form-data
 // @ErrorCode           400 request param error
 // @ErrorCode           400 request format error
@@ -148,7 +148,7 @@ func (u *UserController) QueryUser(c *gin.Context) {
 // @Param               profile formData string true "用户简介，长度在 [0, 255] 之间"
 // @Param               birth_time formData string true "用户生日，固定格式为 2000-01-01"
 // @Param               phone_number formData string true "用户手机号码，长度为 11，仅限中国大陆手机号码"
-// @Param               avatar_file formData file true "用户头像链接"
+// @Param               avatar_url formData string true "用户头像链接"
 // @Accept              multipart/form-data
 // @ErrorCode           400 request param error
 // @ErrorCode           400 request format error

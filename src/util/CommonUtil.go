@@ -27,10 +27,13 @@ func (c *commonUtil) CheckCreateDir(filename string) error {
 
 // Get image / video filename from url: split prefix and query
 func (c *commonUtil) GetFilenameFromUrl(url string, prefix string) (filename string, ok bool) {
+	if url == "" {
+		return "", true
+	}
 	if len(url) <= len(prefix) {
 		return url, false
 	}
-	filename = (url)[len(prefix):]
+	filename = url[len(prefix):]
 	idx := strings.Index(filename, "?")
 	if idx != -1 {
 		filename = filename[:idx]

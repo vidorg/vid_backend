@@ -2,6 +2,7 @@ package result
 
 import (
 	"net/http"
+	"strings"
 
 	"github.com/Aoi-hosizora/ahlib/xhashmap"
 	"github.com/gin-gonic/gin"
@@ -20,7 +21,7 @@ func (Result) Result(code int) *Result {
 	}
 	return &Result{
 		Code:    code,
-		Message: message,
+		Message: strings.ToLower(message),
 	}
 }
 
@@ -38,7 +39,7 @@ func (r *Result) SetCode(code int) *Result {
 }
 
 func (r *Result) SetMessage(message string) *Result {
-	r.Message = message
+	r.Message = strings.ToLower(message)
 	return r
 }
 

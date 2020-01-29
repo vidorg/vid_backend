@@ -284,7 +284,7 @@ Ping
 | profile | formData | 用户简介，长度在 [0, 255] 之间 | Yes | string |
 | birth_time | formData | 用户生日，固定格式为 2000-01-01 | Yes | string |
 | phone_number | formData | 用户手机号码，长度为 11，仅限中国大陆手机号码 | Yes | string |
-| avatar_file | formData | 用户头像链接 | Yes | file |
+| avatar_url | formData | 用户头像链接 | Yes | string |
 
 ##### Responses
 
@@ -353,7 +353,7 @@ Ping
 | profile | formData | 用户简介，长度在 [0, 255] 之间 | Yes | string |
 | birth_time | formData | 用户生日，固定格式为 2000-01-01 | Yes | string |
 | phone_number | formData | 用户手机号码，长度为 11，仅限中国大陆手机号码 | Yes | string |
-| avatar_file | formData | 用户头像链接 | Yes | file |
+| avatar_url | formData | 用户头像链接 | Yes | string |
 
 ##### Responses
 
@@ -535,7 +535,7 @@ Ping
 
 | Code | Description |
 | ---- | ----------- |
-| 200 | ```json {     "code": 200,     "message": "success",     "data": {         "count": 1,         "page": 1,         "data": [             {                 "vid": 1,                 "title": "The First Video",                 "description": "This is the first video uploaded",                 "video_url": "123",                 "cover_url": "http://localhost:3344/v1/raw/image/avatar.jpg",                 "upload_time": "2020-01-10 00:55:36",                 "update_time": "2020-01-10 14:31:00",                 "author": {                     "uid": 1,                     "username": "admin",                     "sex": "male",                     "profile": "Demo admin profile",                     "avatar_url": "http://localhost:3344/v1/raw/image/cover.jpg",                     "birth_time": "2020-01-10",                     "authority": "admin"                 }             }         ]     } } ``` |
+| 200 | ```json {     "code": 200,     "message": "success",     "data": {         "count": 1,         "page": 1,         "data": [             {                 "vid": 1,                 "title": "The First Video",                 "description": "This is the first video uploaded",                 "video_url": "123",                 "cover_url": "http://localhost:3344/v1/raw/image/avatar.jpg",                 "upload_time": "2020-01-10 00:55:36",                 "update_time": "2020-01-10 14:31:00",                 "author": {                     "uid": 1,                     "username": "admin",                     "sex": "male",                     "profile": "Demo admin profile",                     "avatar_url": "http://localhost:3344/v1/raw/image/cover.jpg",                     "birth_time": "2020-01-10",                     "authority": "admin",                     "register_time": "2020-01-10 00:30:49"                 }             }         ]     } } ``` |
 | 400 | "request param error" |
 | 404 | "user not found" |
 
@@ -589,14 +589,14 @@ Ping
 | Authorization | header | 用户登录令牌 | Yes | string |
 | title | formData | 视频标题，长度在 [1, 100] 之间 | Yes | string |
 | description | formData | 视频简介，长度在 [0, 1024] 之间 | Yes | string |
-| cover_url | formData | 视频封面链接 | No | string |
+| cover_url | formData | 视频封面链接 | Yes | string |
 | video_url | formData | 视频资源链接 | Yes | string |
 
 ##### Responses
 
 | Code | Description |
 | ---- | ----------- |
-| 200 | ```json {     "code": 201,     "message": "created",     "data": {         "vid": 1,         "title": "The First Video",         "description": "This is the first video uploaded",         "video_url": "123",         "cover_url": "http://localhost:3344/v1/raw/image/avatar.jpg",         "upload_time": "2020-01-10 00:55:36",         "update_time": "2020-01-10 14:31:00",         "author": {             "uid": 1,             "username": "admin",             "sex": "male",             "profile": "Demo admin profile",             "avatar_url": "http://localhost:3344/v1/raw/image/cover.jpg",             "birth_time": "2020-01-10",             "authority": "admin"         }     } } ``` |
+| 200 | ```json {     "code": 201,     "message": "created",     "data": {         "vid": 1,         "title": "The First Video",         "description": "This is the first video uploaded",         "video_url": "123",         "cover_url": "http://localhost:3344/v1/raw/image/avatar.jpg",         "upload_time": "2020-01-10 00:55:36",         "update_time": "2020-01-10 14:31:00",         "author": {             "uid": 1,             "username": "admin",             "sex": "male",             "profile": "Demo admin profile",             "avatar_url": "http://localhost:3344/v1/raw/image/cover.jpg",             "birth_time": "2020-01-10",             "authority": "admin",             "register_time": "2020-01-10 00:30:49"         }     } } ``` |
 | 400 | "request param error", "request format error", "video has been updated" |
 | 401 | "unauthorized user", "token has expired", "authorized user not found" |
 | 500 | "video insert failed" |
@@ -660,7 +660,7 @@ Ping
 
 | Code | Description |
 | ---- | ----------- |
-| 200 | ```json {     "code": 200,     "message": "success",     "data": {         "vid": 1,         "title": "The First Video",         "description": "This is the first video uploaded",         "video_url": "123",         "cover_url": "http://localhost:3344/v1/raw/image/avatar.jpg",         "upload_time": "2020-01-10 00:55:36",         "update_time": "2020-01-10 14:31:00",         "author": {             "uid": 1,             "username": "admin",             "sex": "male",             "profile": "Demo admin profile",             "avatar_url": "http://localhost:3344/v1/raw/image/cover.jpg",             "birth_time": "2020-01-10",             "authority": "admin"         }     } } ``` |
+| 200 | ```json {     "code": 200,     "message": "success",     "data": {         "vid": 1,         "title": "The First Video",         "description": "This is the first video uploaded",         "video_url": "123",         "cover_url": "http://localhost:3344/v1/raw/image/avatar.jpg",         "upload_time": "2020-01-10 00:55:36",         "update_time": "2020-01-10 14:31:00",         "author": {             "uid": 1,             "username": "admin",             "sex": "male",             "profile": "Demo admin profile",             "avatar_url": "http://localhost:3344/v1/raw/image/cover.jpg",             "birth_time": "2020-01-10",             "authority": "admin",             "register_time": "2020-01-10 00:30:49"         }     } } ``` |
 | 400 | "request param error" |
 | 404 | "video not found" |
 
@@ -721,7 +721,7 @@ Ping
 
 | Code | Description |
 | ---- | ----------- |
-| 200 | ```json {     "code": 200,     "message": "success",     "data": {         "count": 1,         "page": 1,         "data": [             {                 "vid": 1,                 "title": "The First Video",                 "description": "This is the first video uploaded",                 "video_url": "123",                 "cover_url": "http://localhost:3344/v1/raw/image/avatar.jpg",                 "upload_time": "2020-01-10 00:55:36",                 "update_time": "2020-01-10 14:31:00",                 "author": {                     "uid": 1,                     "username": "admin",                     "sex": "male",                     "profile": "Demo admin profile",                     "avatar_url": "http://localhost:3344/v1/raw/image/cover.jpg",                     "birth_time": "2020-01-10",                     "authority": "admin"                 }             }         ]     } } ``` |
+| 200 | ```json {     "code": 200,     "message": "success",     "data": {         "count": 1,         "page": 1,         "data": [             {                 "vid": 1,                 "title": "The First Video",                 "description": "This is the first video uploaded",                 "video_url": "123",                 "cover_url": "http://localhost:3344/v1/raw/image/avatar.jpg",                 "upload_time": "2020-01-10 00:55:36",                 "update_time": "2020-01-10 14:31:00",                 "author": {                     "uid": 1,                     "username": "admin",                     "sex": "male",                     "profile": "Demo admin profile",                     "avatar_url": "http://localhost:3344/v1/raw/image/cover.jpg",                     "birth_time": "2020-01-10",                     "authority": "admin",                     "register_time": "2020-01-10 00:30:49"                 }             }         ]     } } ``` |
 | 400 | "request param error" |
 | 401 | "unauthorized user", "token has expired", "authorized user not found", "need admin authority" |
 
