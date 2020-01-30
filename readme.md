@@ -6,7 +6,6 @@
 ### Documents
 + Run the following code to generate the swagger api document
 + See
-[api.md](https://github.com/vidorg/Vid_Backend/tree/master/docs/api.md)
 [api.yaml](https://github.com/vidorg/vid_backend/blob/master/docs/api.yaml) 
 [api.html](https://github.com/vidorg/vid_backend/blob/master/docs/api.html)
 

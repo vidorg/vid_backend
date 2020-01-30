@@ -44,7 +44,6 @@ paths:
       parameters:
       - name: param
         in: body
-        type: object
         required: true
         allowEmptyValue: false
         description: 登录请求参数
@@ -101,7 +100,6 @@ paths:
       parameters:
       - name: param
         in: body
-        type: object
         required: true
         allowEmptyValue: false
         description: 注册请求参数
@@ -212,7 +210,6 @@ paths:
       parameters:
       - name: param
         in: body
-        type: object
         required: true
         allowEmptyValue: false
         description: 修改密码请求参数
@@ -443,7 +440,6 @@ paths:
       parameters:
       - name: param
         in: body
-        type: object
         required: true
         allowEmptyValue: false
         description: 关注请求参数
@@ -485,7 +481,6 @@ paths:
       parameters:
       - name: param
         in: body
-        type: object
         required: true
         allowEmptyValue: false
         description: 关注请求参数
@@ -633,7 +628,6 @@ paths:
       parameters:
       - name: param
         in: body
-        type: object
         required: true
         allowEmptyValue: false
         description: 用户请求参数
@@ -725,7 +719,6 @@ paths:
         description: 用户id
       - name: param
         in: body
-        type: object
         required: true
         allowEmptyValue: false
         description: 用户请求参数
@@ -1011,7 +1004,6 @@ paths:
         description: 视频id
       - name: param
         in: body
-        type: object
         required: true
         allowEmptyValue: false
         description: 视频请求参数
@@ -1116,7 +1108,6 @@ paths:
       parameters:
       - name: param
         in: body
-        type: object
         required: true
         allowEmptyValue: false
         description: 视频请求参数

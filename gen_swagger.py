@@ -333,7 +333,7 @@ def gen_ctrl(content: str, *, demo_model: {}, template: {}) -> (str, str, {}):
             obj_name = obj_ptn.findall(ptype)
             if len(obj_name) != 0:
                 obj_name = trim(obj_name[0])
-                obj['type'] = 'object'
+                del obj['type']
                 obj['schema'] = {
                     '$ref': f'#/definitions/{obj_name}'
                 }
