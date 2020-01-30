@@ -37,23 +37,16 @@ func NewUserController(dic *xdi.DiContainer) *UserController {
 	return ctrl
 }
 
-// @Router              /v1/user?page [GET]
-// @Security            Jwt
-// @Template            Auth Admin
-// @Summary             查询所有用户
-// @Description         管理员查询所有用户，返回分页数据，管理员权限，此处可见用户手机号码
-// @Tag                 User
-// @Tag                 Administration
-// @Param               page query integer false "分页" 1
-// @ErrorCode           400 request param error
-/* @Response 200        ${resp_page_users} */
+// @Router             /v1/user?page [GET]
+// @Security           Jwt
+// @Template           Admin Auth Page
+// @Summary            查询所有用户
+// @Description        管理员权限，此处可见用户手机号码
+// @Tag                User
+// @Tag                Administration
+// @Response 200       ${resp_page_users}
 func (u *UserController) QueryAllUsers(c *gin.Context) {
-	page, ok := param.BindQueryPage(c)
-	if !ok {
-		result.Result{}.Result(http.StatusBadRequest).SetMessage(exception.RequestParamError.Error()).JSON(c)
-		return
-	}
-
+	page := param.BindQueryPage(c)
 	users, count := u.UserDao.QueryAll(page)
 
 	// show all user's info
@@ -61,14 +54,14 @@ func (u *UserController) QueryAllUsers(c *gin.Context) {
 	result.Result{}.Ok().SetPage(count, page, retDto).JSON(c)
 }
 
-// @Router              /v1/user/{uid} [GET]
-// @Summary             查询用户
-// @Description         查询用户个人信息和数量信息，此处可见用户手机号码
-// @Tag                 User
-// @Param               uid path integer true "用户id"
-// @ErrorCode           400 request param error
-// @ErrorCode           404 user not found
-/* @Response 200        ${resp_user_info} */
+// @Router             /v1/user/{uid} [GET]
+// @Template           ParamA
+// @Summary            查询用户
+// @Description        此处可见用户手机号码
+// @Tag                User
+// @Param              uid path integer true false "用户id"
+// @ResponseDesc 404   "user not found"
+// @Response 200       ${resp_user_info}
 func (u *UserController) QueryUser(c *gin.Context) {
 	uid, ok := param.BindRouteId(c, "uid")
 	if !ok {
@@ -95,45 +88,40 @@ func (u *UserController) QueryUser(c *gin.Context) {
 	result.Result{}.Ok().PutData("user", retDto).PutData("extra", extraInfo).JSON(c)
 }
 
-// @Router              /v1/user/ [PUT]
-// @Security            Jwt
-// @Template            Auth
-// @Summary             更新用户
-// @Description         更新用户个人信息
-// @Tag                 User
-// @Param               username     formData string true "用户名，长度在 [8, 30] 之间"
-// @Param               sex          formData string true "用户性别，允许值为 {male, female, unknown}"
-// @Param               profile      formData string true "用户简介，长度在 [0, 255] 之间"
-// @Param               birth_time   formData string true "用户生日，固定格式为 2000-01-01"
-// @Param               phone_number formData string true "用户手机号码，长度为 11，仅限中国大陆手机号码"
-// @Param               avatar_url   formData string true "用户头像链接"
-// @ErrorCode           400 request param error
-// @ErrorCode           400 request format error
-// @ErrorCode           400 username has been used
-// @ErrorCode           404 user not found
-// @ErrorCode           500 user update failed
-/* @Response 200        ${resp_user} */
-// @Router              /v1/user/admin/{uid} [PUT]
-// @Security            Jwt
-// @Template            Auth Admin
-// @Summary             管理员更新用户
-// @Description         更新用户信息，管理员权限
-// @Tag                 User
-// @Tag                 Administration
-// @Param               uid          path     integer true "用户id"
-// @Param               username     formData string  true "用户名，长度在 [8, 30] 之间"
-// @Param               sex          formData string  true "用户性别，允许值为 {male, female, unknown}"
-// @Param               profile      formData string  true "用户简介，长度在 [0, 255] 之间"
-// @Param               birth_time   formData string  true "用户生日，固定格式为 2000-01-01"
-// @Param               phone_number formData string  true "用户手机号码，长度为 11，仅限中国大陆手机号码"
-// @Param               avatar_url   formData string  true "用户头像链接"
-// @Accept              multipart/form-data
-// @ErrorCode           400 request param error
-// @ErrorCode           400 request format error
-// @ErrorCode           400 username has been used
-// @ErrorCode           404 user not found
-// @ErrorCode           500 user update failed
-/* @Response 200        ${resp_user} */
+// @Router             /v1/user/ [PUT]
+// @Security           Jwt
+// @Template           Auth Param
+// @Summary            更新用户
+// @Tag                User
+// @Param              username     formData string true false "用户名，长度在 [8, 30] 之间"
+// @Param              sex          formData string true false "用户性别，允许值为 {male, female, unknown}"
+// @Param              profile      formData string true false "用户简介，长度在 [0, 255] 之间"
+// @Param              birth_time   formData string true false "用户生日，固定格式为 2000-01-01"
+// @Param              phone_number formData string true false "用户手机号码，长度为 11，仅限中国大陆手机号码"
+// @Param              avatar_url   formData string true false "用户头像链接"
+// @ResponseDesc 400   "username has been used"
+// @ResponseDesc 404   "user not found"
+// @ResponseDesc 500   "user update failed"
+// @Response 200       ${resp_user}
+//
+// @Router             /v1/user/admin/{uid} [PUT]
+// @Security           Jwt
+// @Template           Admin Auth Param
+// @Summary            更新用户
+// @Description        管理员权限
+// @Tag                User
+// @Tag                Administration
+// @Param              uid          path     integer true false "用户id"
+// @Param              username     formData string  true false "用户名，长度在 [8, 30] 之间"
+// @Param              sex          formData string  true false "用户性别，允许值为 {male, female, unknown}"
+// @Param              profile      formData string  true false "用户简介，长度在 [0, 255] 之间"
+// @Param              birth_time   formData string  true false "用户生日，固定格式为 2000-01-01"
+// @Param              phone_number formData string  true false "用户手机号码，长度为 11，仅限中国大陆手机号码"
+// @Param              avatar_url   formData string  true false "用户头像链接"
+// @ResponseDesc 400   "username has been used"
+// @ResponseDesc 404   "user not found"
+// @ResponseDesc 500   "user update failed"
+// @Response 200       ${resp_user}
 func (u *UserController) UpdateUser(isExact bool) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		user := &po.User{}
@@ -186,26 +174,26 @@ func (u *UserController) UpdateUser(isExact bool) func(c *gin.Context) {
 	}
 }
 
-// @Router              /v1/user/ [DELETE]
-// @Security            Jwt
-// @Template            Auth
-// @Summary             删除用户
-// @Description         删除用户账户以及所有信息
-// @Tag                 User
-// @ErrorCode           404 user not found
-// @ErrorCode           500 user delete failed
-/* @Response 200        ${resp_success} */
-// @Router              /v1/user/admin/{uid} [DELETE]
-// @Security            Jwt
-// @Template            Auth Admin
-// @Summary             管理员删除用户
-// @Description         删除用户账户，管理员权限
-// @Tag                 User
-// @Tag                 Administration
-// @Param               uid path integer true "用户id"
-// @ErrorCode           404 user not found
-// @ErrorCode           500 user delete failed
-/* @Response 200        ${resp_success} */
+// @Router             /v1/user/ [DELETE]
+// @Security           Jwt
+// @Template           Auth
+// @Summary            删除用户
+// @Tag                User
+// @ResponseDesc 404   user not found
+// @ResponseDesc 500   user delete failed
+// @Response 200       ${resp_success}
+//
+// @Router             /v1/user/admin/{uid} [DELETE]
+// @Security           Jwt
+// @Template           Admin Auth ParamA
+// @Summary            删除用户
+// @Description        管理员权限
+// @Tag                User
+// @Tag                Administration
+// @Param              uid path integer true false "用户id"
+// @ResponseDesc 404   "user not found"
+// @ResponseDesc 500   "user delete failed"
+// @Response 200       ${resp_success}
 func (u *UserController) DeleteUser(isExact bool) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		var uid int32

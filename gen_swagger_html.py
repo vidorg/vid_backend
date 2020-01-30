@@ -9,7 +9,7 @@ TEMPLATE = """
     <meta charset="UTF-8">
     <title>Swagger UI</title>
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,700|Source+Code+Pro:300,600|Titillium+Web:400,600,700" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/3.24.2/swagger-ui.css" >
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/3.24.2/swagger-ui.css" rel="stylesheet">
     <style>
     html {
         box-sizing: border-box;
@@ -23,9 +23,24 @@ TEMPLATE = """
       margin:0;
       background: #fafafa;
     }
-    .markdown pre>code.language-json {
+    div#swagger-ui .markdown pre code.language-json, /* markdown json block */
+    div#swagger-ui div.highlight-code pre.microlight, /* swagger example */
+    div#swagger-ui span.model, /* example model */
+    div#swagger-ui table.model, /* example model */
+    div#swagger-ui table.headers td.header-col { /* header */
         font-family: consolas;
+        font-weight: 600;
+        font-size: 14px;
         font-style: italic;
+    }
+    div#swagger-ui div.highlight-code pre.microlight { /* swagger example value */
+        background: rgba(0, 0, 0, 0.05);
+    }
+    div#swagger-ui div.highlight-code pre.microlight span { /* swagger example value */
+        color: #9012fe!important;
+    }
+    div#swagger-ui div.model-box { /* swagger example json display */
+        display: block;
     }
     </style>
 </head>
@@ -74,6 +89,7 @@ def main():
     except:
         print(f'Error: failed to open file {args.input}.')
         exit(1)
+        return
 
     spec = yaml.load(content, Loader=yaml.FullLoader)
     html = TEMPLATE % json.dumps(spec)
@@ -88,5 +104,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-# python gen_swagger_html.py main.go ./docs/api.yaml

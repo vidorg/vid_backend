@@ -20,14 +20,15 @@ paths:
       responses:
         '200':
           description: |-
-            ```json
-            Content-Type: application/json; charset=utf-8
-            ```
-            ```json
+            "OK"
+          example: |-
             {
                 "ping": "pong"
             }
-            ```
+          headers:
+            Content-Type:
+              description: application/json; charset=utf-8
+              type: string
       summary: Ping
       tags:
       - Ping
@@ -35,14 +36,12 @@ paths:
     get:
       consumes:
       - application/json
-      description: 根据认证信息，查看当前登录用户
       operationId: v1-auth-get
       produces:
       - application/json
       responses:
         '200':
-          description: |-
-            ```json
+          example: |-
             {
                 "code": 200,
                 "message": "success",
@@ -58,7 +57,6 @@ paths:
                     "register_time": "2020-01-10 00:30:49"
                 }
             }
-            ```
         '401':
           description: |-
             "unauthorized user", "token has expired", "authorized user not found"
@@ -71,20 +69,22 @@ paths:
     post:
       consumes:
       - application/json
-      description: 用户登录
       operationId: v1-auth-login-post
       parameters:
-      - description: 用户名
+      - allowEmptyValue: false
+        description: 用户名
         in: formData
         name: username
         required: true
         type: string
-      - description: 用户密码
+      - allowEmptyValue: false
+        description: 密码
         in: formData
         name: password
         required: true
         type: string
-      - description: 登录有效期，默认为七天
+      - allowEmptyValue: false
+        description: 登录有效期，默认为七天
         in: formData
         name: expire
         required: false
@@ -93,8 +93,7 @@ paths:
       - application/json
       responses:
         '200':
-          description: |-
-            ```json
+          example: |-
             {
                 "code": 200,
                 "message": "success",
@@ -114,7 +113,6 @@ paths:
                     "expire": 604800
                 }
             }
-            ```
         '400':
           description: |-
             "request param error"
@@ -134,19 +132,16 @@ paths:
     post:
       consumes:
       - application/json
-      description: 用户注销
       operationId: v1-auth-logout-post
       produces:
       - application/json
       responses:
         '200':
-          description: |-
-            ```json
+          example: |-
             {
                 "code": 200,
                 "message": "success"
             }
-            ```
         '401':
           description: |-
             "unauthorized user", "token has expired", "authorized user not found"
@@ -162,10 +157,10 @@ paths:
     put:
       consumes:
       - application/json
-      description: 用户修改密码
       operationId: v1-auth-password-put
       parameters:
-      - description: 用户密码，长度在 [8, 30] 之间
+      - allowEmptyValue: false
+        description: 密码，长度在 [8, 30] 之间
         in: formData
         name: password
         required: true
@@ -174,13 +169,11 @@ paths:
       - application/json
       responses:
         '200':
-          description: |-
-            ```json
+          example: |-
             {
                 "code": 200,
                 "message": "success"
             }
-            ```
         '400':
           description: |-
             "request param error", "request format error"
@@ -202,15 +195,16 @@ paths:
     post:
       consumes:
       - application/json
-      description: 注册新用户
       operationId: v1-auth-register-post
       parameters:
-      - description: 用户名，长度在 [5, 30] 之间
+      - allowEmptyValue: false
+        description: 用户名，长度在 [5, 30] 之间
         in: formData
         name: username
         required: true
         type: string
-      - description: 用户密码，长度在 [8, 30] 之间
+      - allowEmptyValue: false
+        description: 密码，长度在 [8, 30] 之间
         in: formData
         name: password
         required: true
@@ -219,8 +213,7 @@ paths:
       - application/json
       responses:
         '201':
-          description: |-
-            ```json
+          example: |-
             {
                 "code": 201,
                 "message": "created",
@@ -236,7 +229,6 @@ paths:
                     "register_time": "2020-01-10 00:30:49"
                 }
             }
-            ```
         '400':
           description: |-
             "request param error", "request format error"
@@ -250,10 +242,10 @@ paths:
     post:
       consumes:
       - application/json
-      description: 上传公共图片，包括用户头像和视频封面
       operationId: v1-raw-image-post
       parameters:
-      - description: 上传的图片，大小限制在2M，允许后缀名为 {.jpg, .jpeg, .png, .bmp, .gif}
+      - allowEmptyValue: false
+        description: 上传的图片，大小限制在2M，允许后缀名为 {.jpg, .jpeg, .png, .bmp, .gif}
         in: formData
         name: image
         required: true
@@ -262,8 +254,7 @@ paths:
       - application/json
       responses:
         '200':
-          description: |-
-            ```json
+          example: |-
             {
                 "code": 200,
                 "message": "success",
@@ -272,7 +263,6 @@ paths:
                     "size": 381952
                 }
             }
-            ```
         '400':
           description: |-
             "request param error", "image type not supported"
@@ -294,10 +284,10 @@ paths:
     get:
       consumes:
       - application/json
-      description: 获取用户头像图片以及视频封面
       operationId: v1-raw-image-filename-get
       parameters:
-      - description: 图片文件名，jpg后缀名
+      - allowEmptyValue: false
+        description: 图片文件名
         in: path
         name: filename
         required: true
@@ -306,10 +296,10 @@ paths:
       - application/json
       responses:
         '200':
-          description: |-
-            ```json
-            Content-Type: image/jpeg
-            ```
+          headers:
+            Content-Type:
+              description: image/jpeg
+              type: string
         '404':
           description: |-
             "image not found"
@@ -320,28 +310,25 @@ paths:
     delete:
       consumes:
       - application/json
-      description: 删除用户账户以及所有信息
       operationId: v1-user-delete
       produces:
       - application/json
       responses:
         '200':
-          description: |-
-            ```json
+          example: |-
             {
                 "code": 200,
                 "message": "success"
             }
-            ```
         '401':
           description: |-
             "unauthorized user", "token has expired", "authorized user not found"
         '404':
           description: |-
-            "user not found"
+            user not found
         '500':
           description: |-
-            "user delete failed"
+            user delete failed
       security:
       - Jwt: []
       summary: 删除用户
@@ -350,35 +337,40 @@ paths:
     put:
       consumes:
       - application/json
-      description: 更新用户个人信息
       operationId: v1-user-put
       parameters:
-      - description: 用户名，长度在 [8, 30] 之间
+      - allowEmptyValue: false
+        description: 用户名，长度在 [8, 30] 之间
         in: formData
         name: username
         required: true
         type: string
-      - description: 用户性别，允许值为 {male, female, unknown}
+      - allowEmptyValue: false
+        description: 用户性别，允许值为 {male, female, unknown}
         in: formData
         name: sex
         required: true
         type: string
-      - description: 用户简介，长度在 [0, 255] 之间
+      - allowEmptyValue: false
+        description: 用户简介，长度在 [0, 255] 之间
         in: formData
         name: profile
         required: true
         type: string
-      - description: 用户生日，固定格式为 2000-01-01
+      - allowEmptyValue: false
+        description: 用户生日，固定格式为 2000-01-01
         in: formData
         name: birth_time
         required: true
         type: string
-      - description: 用户手机号码，长度为 11，仅限中国大陆手机号码
+      - allowEmptyValue: false
+        description: 用户手机号码，长度为 11，仅限中国大陆手机号码
         in: formData
         name: phone_number
         required: true
         type: string
-      - description: 用户头像链接
+      - allowEmptyValue: false
+        description: 用户头像链接
         in: formData
         name: avatar_url
         required: true
@@ -387,8 +379,7 @@ paths:
       - application/json
       responses:
         '200':
-          description: |-
-            ```json
+          example: |-
             {
                 "code": 200,
                 "message": "success",
@@ -404,7 +395,6 @@ paths:
                     "register_time": "2020-01-10 00:30:49"
                 }
             }
-            ```
         '400':
           description: |-
             "request param error", "request format error", "username has been used"
@@ -426,10 +416,11 @@ paths:
     delete:
       consumes:
       - application/json
-      description: 删除用户账户，管理员权限
+      description: 管理员权限
       operationId: v1-user-admin-uid-delete
       parameters:
-      - description: 用户id
+      - allowEmptyValue: false
+        description: 用户id
         in: path
         name: uid
         required: true
@@ -438,13 +429,14 @@ paths:
       - application/json
       responses:
         '200':
-          description: |-
-            ```json
+          example: |-
             {
                 "code": 200,
                 "message": "success"
             }
-            ```
+        '400':
+          description: |-
+            "request param error"
         '401':
           description: |-
             "unauthorized user", "token has expired", "authorized user not found", "need admin authority"
@@ -456,47 +448,54 @@ paths:
             "user delete failed"
       security:
       - Jwt: []
-      summary: 管理员删除用户
+      summary: 删除用户
       tags:
       - User
       - Administration
     put:
       consumes:
-      - multipart/form-data
-      description: 更新用户信息，管理员权限
+      - application/json
+      description: 管理员权限
       operationId: v1-user-admin-uid-put
       parameters:
-      - description: 用户id
+      - allowEmptyValue: false
+        description: 用户id
         in: path
         name: uid
         required: true
         type: integer
-      - description: 用户名，长度在 [8, 30] 之间
+      - allowEmptyValue: false
+        description: 用户名，长度在 [8, 30] 之间
         in: formData
         name: username
         required: true
         type: string
-      - description: 用户性别，允许值为 {male, female, unknown}
+      - allowEmptyValue: false
+        description: 用户性别，允许值为 {male, female, unknown}
         in: formData
         name: sex
         required: true
         type: string
-      - description: 用户简介，长度在 [0, 255] 之间
+      - allowEmptyValue: false
+        description: 用户简介，长度在 [0, 255] 之间
         in: formData
         name: profile
         required: true
         type: string
-      - description: 用户生日，固定格式为 2000-01-01
+      - allowEmptyValue: false
+        description: 用户生日，固定格式为 2000-01-01
         in: formData
         name: birth_time
         required: true
         type: string
-      - description: 用户手机号码，长度为 11，仅限中国大陆手机号码
+      - allowEmptyValue: false
+        description: 用户手机号码，长度为 11，仅限中国大陆手机号码
         in: formData
         name: phone_number
         required: true
         type: string
-      - description: 用户头像链接
+      - allowEmptyValue: false
+        description: 用户头像链接
         in: formData
         name: avatar_url
         required: true
@@ -505,8 +504,7 @@ paths:
       - application/json
       responses:
         '200':
-          description: |-
-            ```json
+          example: |-
             {
                 "code": 200,
                 "message": "success",
@@ -522,7 +520,6 @@ paths:
                     "register_time": "2020-01-10 00:30:49"
                 }
             }
-            ```
         '400':
           description: |-
             "request param error", "request format error", "username has been used"
@@ -537,7 +534,7 @@ paths:
             "user update failed"
       security:
       - Jwt: []
-      summary: 管理员更新用户
+      summary: 更新用户
       tags:
       - User
       - Administration
@@ -545,10 +542,10 @@ paths:
     delete:
       consumes:
       - application/json
-      description: 取消关注某一用户
       operationId: v1-user-subscribing-delete
       parameters:
-      - description: 取消关注用户id
+      - allowEmptyValue: false
+        description: 用户id
         in: formData
         name: to
         required: true
@@ -557,13 +554,11 @@ paths:
       - application/json
       responses:
         '200':
-          description: |-
-            ```json
+          example: |-
             {
                 "code": 200,
                 "message": "success"
             }
-            ```
         '400':
           description: |-
             "request param error", "request format error"
@@ -578,16 +573,16 @@ paths:
             "unsubscribe failed"
       security:
       - Jwt: []
-      summary: 取消关注
+      summary: 取消关注用户
       tags:
       - Subscribe
     put:
       consumes:
       - application/json
-      description: 关注某一用户
       operationId: v1-user-subscribing-put
       parameters:
-      - description: 关注用户id
+      - allowEmptyValue: false
+        description: 用户id
         in: formData
         name: to
         required: true
@@ -596,13 +591,11 @@ paths:
       - application/json
       responses:
         '200':
-          description: |-
-            ```json
+          example: |-
             {
                 "code": 200,
                 "message": "success"
             }
-            ```
         '400':
           description: |-
             "request param error", "request format error", "subscribe oneself invalid"
@@ -617,17 +610,18 @@ paths:
             "subscribe failed"
       security:
       - Jwt: []
-      summary: 关注
+      summary: 关注用户
       tags:
       - Subscribe
   /v1/user/{uid}:
     get:
       consumes:
       - application/json
-      description: 查询用户个人信息和数量信息，此处可见用户手机号码
+      description: 此处可见用户手机号码
       operationId: v1-user-uid-get
       parameters:
-      - description: 用户id
+      - allowEmptyValue: false
+        description: 用户id
         in: path
         name: uid
         required: true
@@ -636,8 +630,7 @@ paths:
       - application/json
       responses:
         '200':
-          description: |-
-            ```json
+          example: |-
             {
                 "code": 200,
                 "message": "success",
@@ -660,7 +653,6 @@ paths:
                     }
                 }
             }
-            ```
         '400':
           description: |-
             "request param error"
@@ -674,25 +666,26 @@ paths:
     get:
       consumes:
       - application/json
-      description: 查询用户所有粉丝，返回分页数据
       operationId: v1-user-uid-subscriber-page-get
       parameters:
-      - description: 查询的用户id
-        in: path
-        name: uid
-        required: true
-        type: integer
-      - description: 分页
+      - allowEmptyValue: false
+        default: 1
+        description: 当前页
         in: query
         name: page
         required: false
+        type: integer
+      - allowEmptyValue: false
+        description: 用户id
+        in: path
+        name: uid
+        required: true
         type: integer
       produces:
       - application/json
       responses:
         '200':
-          description: |-
-            ```json
+          example: |-
             {
                 "code": 200,
                 "message": "success",
@@ -714,39 +707,39 @@ paths:
                     ]
                 }
             }
-            ```
         '400':
           description: |-
             "request param error"
         '404':
           description: |-
             "user not found"
-      summary: 查询粉丝
+      summary: 查询用户粉丝
       tags:
       - Subscribe
   /v1/user/{uid}/subscribing?page:
     get:
       consumes:
       - application/json
-      description: 查询用户所有关注，返回分页数据
       operationId: v1-user-uid-subscribing-page-get
       parameters:
-      - description: 查询的用户id
-        in: path
-        name: uid
-        required: true
-        type: integer
-      - description: 分页
+      - allowEmptyValue: false
+        default: 1
+        description: 当前页
         in: query
         name: page
         required: false
+        type: integer
+      - allowEmptyValue: false
+        description: 用户id
+        in: path
+        name: uid
+        required: true
         type: integer
       produces:
       - application/json
       responses:
         '200':
-          description: |-
-            ```json
+          example: |-
             {
                 "code": 200,
                 "message": "success",
@@ -768,39 +761,39 @@ paths:
                     ]
                 }
             }
-            ```
         '400':
           description: |-
             "request param error"
         '404':
           description: |-
             "user not found"
-      summary: 查询关注
+      summary: 查询用户关注
       tags:
       - Subscribe
   /v1/user/{uid}/video?page:
     get:
       consumes:
       - application/json
-      description: 查询作者为指定用户的所有视频，返回分页数据
       operationId: v1-user-uid-video-page-get
       parameters:
-      - description: 用户id
-        in: path
-        name: uid
-        required: true
-        type: integer
-      - description: 分页
+      - allowEmptyValue: false
+        default: 1
+        description: 当前页
         in: query
         name: page
         required: false
+        type: integer
+      - allowEmptyValue: false
+        description: 用户id
+        in: path
+        name: uid
+        required: true
         type: integer
       produces:
       - application/json
       responses:
         '200':
-          description: |-
-            ```json
+          example: |-
             {
                 "code": 200,
                 "message": "success",
@@ -831,25 +824,25 @@ paths:
                     ]
                 }
             }
-            ```
         '400':
           description: |-
             "request param error"
         '404':
           description: |-
             "user not found"
-      summary: 查询用户视频
+      summary: 查询用户发布的视频
       tags:
       - Video
   /v1/user?page:
     get:
       consumes:
       - application/json
-      description: 管理员查询所有用户，返回分页数据，管理员权限，此处可见用户手机号码
+      description: 管理员权限，此处可见用户手机号码
       operationId: v1-user-page-get
       parameters:
-      - default: 1
-        description: 分页
+      - allowEmptyValue: false
+        default: 1
+        description: 当前页
         in: query
         name: page
         required: false
@@ -858,8 +851,7 @@ paths:
       - application/json
       responses:
         '200':
-          description: |-
-            ```json
+          example: |-
             {
                 "code": 200,
                 "message": "success",
@@ -881,10 +873,6 @@ paths:
                     ]
                 }
             }
-            ```
-        '400':
-          description: |-
-            "request param error"
         '401':
           description: |-
             "unauthorized user", "token has expired", "authorized user not found", "need admin authority"
@@ -898,25 +886,28 @@ paths:
     post:
       consumes:
       - application/json
-      description: 新建用户视频
       operationId: v1-video-post
       parameters:
-      - description: 视频标题，长度在 [1, 100] 之间
+      - allowEmptyValue: false
+        description: 视频标题，长度在 [1, 100] 之间
         in: formData
         name: title
         required: true
         type: string
-      - description: 视频简介，长度在 [0, 1024] 之间
+      - allowEmptyValue: false
+        description: 视频简介，长度在 [0, 1024] 之间
         in: formData
         name: description
         required: true
         type: string
-      - description: 视频封面链接
+      - allowEmptyValue: false
+        description: 视频封面链接
         in: formData
         name: cover_url
         required: true
         type: string
-      - description: 视频资源链接
+      - allowEmptyValue: false
+        description: 视频资源链接
         in: formData
         name: video_url
         required: true
@@ -925,8 +916,7 @@ paths:
       - application/json
       responses:
         '201':
-          description: |-
-            ```json
+          example: |-
             {
                 "code": 201,
                 "message": "created",
@@ -951,10 +941,9 @@ paths:
                     }
                 }
             }
-            ```
         '400':
           description: |-
-            "request param error", "request format error", "video has been updated"
+            "request param error", "request format error", "video has been uploaded"
         '401':
           description: |-
             "unauthorized user", "token has expired", "authorized user not found"
@@ -970,10 +959,11 @@ paths:
     delete:
       consumes:
       - application/json
-      description: 删除用户视频，管理员或者作者本人可以操作
+      description: 管理员或者作者本人权限
       operationId: v1-video-vid-delete
       parameters:
-      - description: 删除视频id
+      - allowEmptyValue: false
+        description: 视频id
         in: path
         name: vid
         required: true
@@ -982,13 +972,11 @@ paths:
       - application/json
       responses:
         '200':
-          description: |-
-            ```json
+          example: |-
             {
                 "code": 200,
                 "message": "success"
             }
-            ```
         '400':
           description: |-
             "request param error"
@@ -1010,10 +998,11 @@ paths:
     get:
       consumes:
       - application/json
-      description: 查询视频信息，作者id为-1表示已删除的用户
+      description: 作者id为-1表示已删除的用户
       operationId: v1-video-vid-get
       parameters:
-      - description: 视频id
+      - allowEmptyValue: false
+        description: 视频id
         in: path
         name: vid
         required: true
@@ -1022,8 +1011,7 @@ paths:
       - application/json
       responses:
         '200':
-          description: |-
-            ```json
+          example: |-
             {
                 "code": 200,
                 "message": "success",
@@ -1048,7 +1036,6 @@ paths:
                     }
                 }
             }
-            ```
         '400':
           description: |-
             "request param error"
@@ -1061,30 +1048,35 @@ paths:
     post:
       consumes:
       - application/json
-      description: 更新用户视频信息，管理员或者作者本人可以操作
+      description: 管理员或者作者本人权限
       operationId: v1-video-vid-post
       parameters:
-      - description: 更新视频id
+      - allowEmptyValue: false
+        description: 视频id
         in: path
         name: vid
         required: true
         type: string
-      - description: 视频标题，长度在 [1, 100] 之间
+      - allowEmptyValue: false
+        description: 视频标题，长度在 [1, 100] 之间
         in: formData
         name: title
         required: true
         type: string
-      - description: 视频简介，长度在 [0, 1024] 之间
+      - allowEmptyValue: false
+        description: 视频简介，长度在 [0, 1024] 之间
         in: formData
         name: description
         required: true
         type: string
-      - description: 视频封面链接
+      - allowEmptyValue: false
+        description: 视频封面链接
         in: formData
         name: cover_url
         required: true
         type: string
-      - description: 视频资源链接
+      - allowEmptyValue: false
+        description: 视频资源链接
         in: formData
         name: video_url
         required: true
@@ -1093,8 +1085,7 @@ paths:
       - application/json
       responses:
         '200':
-          description: |-
-            ```json
+          example: |-
             {
                 "code": 200,
                 "message": "success",
@@ -1119,10 +1110,9 @@ paths:
                     }
                 }
             }
-            ```
         '400':
           description: |-
-            "request param error", "request format error", "video has been updated"
+            "request param error", "request format error", "video has been uploaded"
         '401':
           description: |-
             "unauthorized user", "token has expired", "authorized user not found", "need admin authority"
@@ -1142,11 +1132,12 @@ paths:
     get:
       consumes:
       - application/json
-      description: 管理员查询所有视频，返回分页数据，管理员权限
+      description: 管理员权限
       operationId: v1-video-page-get
       parameters:
-      - default: 1
-        description: 分页
+      - allowEmptyValue: false
+        default: 1
+        description: 当前页
         in: query
         name: page
         required: false
@@ -1155,8 +1146,7 @@ paths:
       - application/json
       responses:
         '200':
-          description: |-
-            ```json
+          example: |-
             {
                 "code": 200,
                 "message": "success",
@@ -1187,10 +1177,6 @@ paths:
                     ]
                 }
             }
-            ```
-        '400':
-          description: |-
-            "request param error"
         '401':
           description: |-
             "unauthorized user", "token has expired", "authorized user not found", "need admin authority"

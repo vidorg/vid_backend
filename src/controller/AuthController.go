@@ -34,18 +34,17 @@ func NewAuthController(dic *xdi.DiContainer) *AuthController {
 	return ctrl
 }
 
-// @Router              /v1/auth/login [POST]
-// @Summary             登录
-// @Description         用户登录
-// @Tag                 Authorization
-// @Param               username formData string  true  "用户名"
-// @Param               password formData string  true  "用户密码"
-// @Param               expire   formData integer false "登录有效期，默认为七天"
-// @ErrorCode           400 request param error
-// @ErrorCode           401 password error
-// @ErrorCode           404 user not found
-// @ErrorCode           500 login failed
-/* @Response 200        ${resp_login} */
+// @Router             /v1/auth/login [POST]
+// @Template           ParamA
+// @Summary            登录
+// @Tag                Authorization
+// @Param              username formData string  true  false "用户名"
+// @Param              password formData string  true  false "密码"
+// @Param              expire   formData integer false false "登录有效期，默认为七天"
+// @ResponseDesc 401   "password error"
+// @ResponseDesc 404   "user not found"
+// @ResponseDesc 500   "login failed"
+// @Response 200       ${resp_login}
 func (a *AuthController) Login(c *gin.Context) {
 	loginParam := &param.LoginParam{}
 	if err := c.ShouldBind(loginParam); err != nil {
@@ -86,17 +85,15 @@ func (a *AuthController) Login(c *gin.Context) {
 		PutData("expire", loginParam.Expire).JSON(c)
 }
 
-// @Router              /v1/auth/register [POST]
-// @Summary             注册
-// @Description         注册新用户
-// @Tag                 Authorization
-// @Param               username formData string true "用户名，长度在 [5, 30] 之间"
-// @Param               password formData string true "用户密码，长度在 [8, 30] 之间"
-// @ErrorCode           400 request param error
-// @ErrorCode           400 request format error
-// @ErrorCode           500 username has been used
-// @ErrorCode           500 register failed
-/* @Response 201        ${resp_register} */
+// @Router             /v1/auth/register [POST]
+// @Template           Param
+// @Summary            注册
+// @Tag                Authorization
+// @Param              username formData string true false "用户名，长度在 [5, 30] 之间"
+// @Param              password formData string true false "密码，长度在 [8, 30] 之间"
+// @ResponseDesc 500   "username has been used"
+// @ResponseDesc 500   "register failed"
+// @Response 201       ${resp_register}
 func (a *AuthController) Register(c *gin.Context) {
 	registerParam := &param.RegisterParam{}
 	if err := c.ShouldBind(registerParam); err != nil {
@@ -129,27 +126,25 @@ func (a *AuthController) Register(c *gin.Context) {
 	result.Result{}.Result(http.StatusCreated).SetData(retDto).JSON(c)
 }
 
-// @Router              /v1/auth/ [GET]
-// @Security            Jwt
-// @Template            Auth
-// @Summary             当前登录用户
-// @Description         根据认证信息，查看当前登录用户
-// @Tag                 Authorization
-/* @Response 200        ${resp_user} */
+// @Router         /v1/auth/ [GET]
+// @Security       Jwt
+// @Template       Auth
+// @Summary        当前登录用户
+// @Tag            Authorization
+// @Response 200   ${resp_user}
 func (a *AuthController) CurrentUser(c *gin.Context) {
 	authUser := a.JwtService.GetAuthUser(c)
 	retDto := xcondition.First(a.Mapper.Map(&dto.UserDto{}, authUser)).(*dto.UserDto)
 	result.Result{}.Ok().SetData(retDto).JSON(c)
 }
 
-// @Router              /v1/auth/logout [POST]
-// @Security            Jwt
-// @Template            Auth
-// @Summary             注销
-// @Description         用户注销
-// @Tag                 Authorization
-// @ErrorCode           500 logout failed
-/* @Response 200        ${resp_success} */
+// @Router             /v1/auth/logout [POST]
+// @Security           Jwt
+// @Template           Auth
+// @Summary            注销
+// @Tag                Authorization
+// @ResponseDesc 500   "logout failed"
+// @Response 200       ${resp_success}
 func (a *AuthController) Logout(c *gin.Context) {
 	authHeader := c.GetHeader("Authorization")
 
@@ -163,18 +158,15 @@ func (a *AuthController) Logout(c *gin.Context) {
 	result.Result{}.Ok().JSON(c)
 }
 
-// @Router              /v1/auth/password [PUT] [Auth]
-// @Security            Jwt
-// @Template            Auth
-// @Summary             修改密码
-// @Description         用户修改密码
-// @Tag                 Authorization
-// @Param               password formData string true "用户密码，长度在 [8, 30] 之间"
-// @ErrorCode           400 request param error
-// @ErrorCode           400 request format error
-// @ErrorCode           404 user not found
-// @ErrorCode           500 update password failed
-/* @Response 200        ${resp_success} */
+// @Router             /v1/auth/password [PUT]
+// @Security           Jwt
+// @Template           Auth Param
+// @Summary            修改密码
+// @Tag                Authorization
+// @Param              password formData string true false "密码，长度在 [8, 30] 之间"
+// @ResponseDesc 404   "user not found"
+// @ResponseDesc 500   "update password failed"
+// @Response 200       ${resp_success}
 func (a *AuthController) UpdatePassword(c *gin.Context) {
 	authUser := a.JwtService.GetAuthUser(c)
 	passParam := &param.PassParam{}
