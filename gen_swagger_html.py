@@ -1,6 +1,7 @@
 import argparse
 import json
 import yaml
+#
 
 TEMPLATE = """
 <!DOCTYPE html>
@@ -41,6 +42,10 @@ TEMPLATE = """
     }
     div#swagger-ui div.model-box { /* swagger example json display */
         display: block;
+    }
+    div#swagger-ui textarea {
+        font-family: consolas;
+        font-size: 14px;
     }
     </style>
 </head>

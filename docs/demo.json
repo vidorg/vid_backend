@@ -86,8 +86,7 @@
     "code": 200,
     "message": "success",
     "data": {
-      "url": "http://localhost:3344/v1/raw/image/20200110130323908439.jpg",
-      "size": 381952
+      "$ref": "#/$models/image"
     }
   },
   "$models": {
@@ -113,6 +112,10 @@
       "author": {
         "$ref": "#/$models/user"
       }
+    },
+    "image": {
+      "url": "http://localhost:3344/v1/raw/image/20200110130323908439.jpg",
+      "size": 381952
     }
   }
 }

@@ -32,13 +32,14 @@ func NewSubController(dic *xdi.DiContainer) *SubController {
 	return ctrl
 }
 
-// @Router             /v1/user/{uid}/subscriber?page [GET]
-// @Template           Page ParamA
-// @Summary            查询用户粉丝
-// @Tag                Subscribe
-// @Param              uid path integer true false "用户id"
-// @ResponseDesc 404   "user not found"
-// @Response 200       ${resp_page_users}
+// @Router              /v1/user/{uid}/subscriber?page [GET]
+// @Template            Page ParamA
+// @Summary             查询用户粉丝
+// @Tag                 Subscribe
+// @Param               uid path integer true false "用户id"
+// @ResponseDesc 404    "user not found"
+// @ResponseModel 200   #UserDtoPageResult
+// @Response 200        ${resp_page_users}
 func (s *SubController) QuerySubscriberUsers(c *gin.Context) {
 	uid, ok := param.BindRouteId(c, "uid")
 	page := param.BindQueryPage(c)
@@ -57,13 +58,14 @@ func (s *SubController) QuerySubscriberUsers(c *gin.Context) {
 	result.Result{}.Ok().SetPage(count, page, retDto).JSON(c)
 }
 
-// @Router             /v1/user/{uid}/subscribing?page [GET]
-// @Template           Page ParamA
-// @Summary            查询用户关注
-// @Tag                Subscribe
-// @Param              uid path integer true false "用户id"
-// @ResponseDesc 404   "user not found"
-// @Response 200       ${resp_page_users}
+// @Router              /v1/user/{uid}/subscribing?page [GET]
+// @Template            Page ParamA
+// @Summary             查询用户关注
+// @Tag                 Subscribe
+// @Param               uid path integer true false "用户id"
+// @ResponseDesc 404    "user not found"
+// @ResponseModel 200   #UserDtoPageResult
+// @Response 200        ${resp_page_users}
 func (s *SubController) QuerySubscribingUsers(c *gin.Context) {
 	uid, ok := param.BindRouteId(c, "uid")
 	page := param.BindQueryPage(c)
@@ -82,16 +84,17 @@ func (s *SubController) QuerySubscribingUsers(c *gin.Context) {
 	result.Result{}.Ok().SetPage(count, page, retDto).JSON(c)
 }
 
-// @Router             /v1/user/subscribing [PUT]
-// @Security           Jwt
-// @Template           Auth Param
-// @Summary            关注用户
-// @Tag                Subscribe
-// @Param              to formData integer true false "用户id"
-// @ResponseDesc 400   "subscribe oneself invalid"
-// @ResponseDesc 404   "user not found"
-// @ResponseDesc 500   "subscribe failed"
-// @Response 200       ${resp_success}
+// @Router              /v1/user/subscribing [PUT]
+// @Security            Jwt
+// @Template            Auth Param
+// @Summary             关注用户
+// @Tag                 Subscribe
+// @Param               param body #SubParam true false "关注请求参数"
+// @ResponseDesc 400    "subscribe oneself invalid"
+// @ResponseDesc 404    "user not found"
+// @ResponseDesc 500    "subscribe failed"
+// @ResponseModel 200   #Result
+// @Response 200        ${resp_success}
 func (s *SubController) SubscribeUser(c *gin.Context) {
 	authUser := s.JwtService.GetAuthUser(c)
 	subParam := &param.SubParam{}
@@ -116,15 +119,16 @@ func (s *SubController) SubscribeUser(c *gin.Context) {
 	result.Result{}.Ok().JSON(c)
 }
 
-// @Router             /v1/user/subscribing [DELETE]
-// @Security           Jwt
-// @Template           Auth Param
-// @Summary            取消关注用户
-// @Tag                Subscribe
-// @Param              to formData integer true false "用户id"
-// @ResponseDesc 404   "user not found"
-// @ResponseDesc 500   "unsubscribe failed"
-// @Response 200       ${resp_success}
+// @Router              /v1/user/subscribing [DELETE]
+// @Security            Jwt
+// @Template            Auth Param
+// @Summary             取消关注用户
+// @Tag                 Subscribe
+// @Param               param body #SubParam true false "关注请求参数"
+// @ResponseDesc 404    "user not found"
+// @ResponseDesc 500    "unsubscribe failed"
+// @ResponseModel 200   #Result
+// @Response 200        ${resp_success}
 func (s *SubController) UnSubscribeUser(c *gin.Context) {
 	authUser := s.JwtService.GetAuthUser(c)
 	subParam := &param.SubParam{}

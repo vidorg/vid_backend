@@ -7,12 +7,16 @@ import (
 	"net/http"
 )
 
+// @Model      Ping "Ping"
+// @Property   ping string true false "pong" pong
+
 // @Router               /ping [GET]
 // @Summary              Ping
 // @Description          Ping
 // @Tag                  Ping
 // @ResponseDesc 200     "OK"
 // @ResponseHeader 200   { "Content-Type": "application/json; charset=utf-8" }
+// @ResponseModel 200    #Ping
 // @Response 200         { "ping": "pong" }
 func SetupCommonRouter(router *gin.Engine) {
 	router.HandleMethodNotAllowed = true
