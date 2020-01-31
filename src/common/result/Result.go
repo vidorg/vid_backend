@@ -8,9 +8,10 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// @Model      Result "返回统一响应结果"
-// @Property   code    integer true false "响应码"
-// @Property   message string  true false "状态信息"
+// @Model         Result
+// @Description   返回统一响应结果
+// @Property      code    integer true false "响应码"
+// @Property      message string  true false "状态信息"
 type Result struct {
 	Code    int                     `json:"code"`
 	Message string                  `json:"message"`

@@ -1,5 +1,5 @@
 swagger: '2.0'
-host: localhost:3344
+host: 127.0.0.1:3344
 basePath: /
 tags:
 - name: Ping
@@ -65,7 +65,7 @@ paths:
             "login failed"
         '200':
           schema:
-            $ref: '#/definitions/LoginDtoResult'
+            $ref: '#/definitions/Result<LoginDto>'
           examples:
             application/json: |-
               {
@@ -115,7 +115,7 @@ paths:
             "username has been used", "register failed"
         '201':
           schema:
-            $ref: '#/definitions/UserDtoResult'
+            $ref: '#/definitions/Result<UserDto>'
           examples:
             application/json: |-
               {
@@ -151,7 +151,7 @@ paths:
             "unauthorized user", "token has expired", "authorized user not found"
         '200':
           schema:
-            $ref: '#/definitions/UserDtoResult'
+            $ref: '#/definitions/Result<UserDto>'
           examples:
             application/json: |-
               {
@@ -273,7 +273,7 @@ paths:
             "image save failed"
         '200':
           schema:
-            $ref: '#/definitions/ImageDtoResult'
+            $ref: '#/definitions/Result<ImageDto>'
           examples:
             application/json: |-
               {
@@ -345,7 +345,7 @@ paths:
             "user not found"
         '200':
           schema:
-            $ref: '#/definitions/UserDtoPageResult'
+            $ref: '#/definitions/Result<Page<UserDto>>'
           examples:
             application/json: |-
               {
@@ -403,7 +403,7 @@ paths:
             "user not found"
         '200':
           schema:
-            $ref: '#/definitions/UserDtoPageResult'
+            $ref: '#/definitions/Result<Page<UserDto>>'
           examples:
             application/json: |-
               {
@@ -538,7 +538,7 @@ paths:
             "unauthorized user", "token has expired", "authorized user not found", "need admin authority"
         '200':
           schema:
-            $ref: '#/definitions/UserDtoPageResult'
+            $ref: '#/definitions/Result<Page<UserDto>>'
           examples:
             application/json: |-
               {
@@ -590,7 +590,7 @@ paths:
             "user not found"
         '200':
           schema:
-            $ref: '#/definitions/UserExtraDtoResult'
+            $ref: '#/definitions/Result<UserExtraDto>'
           examples:
             application/json: |-
               {
@@ -650,7 +650,7 @@ paths:
             "user update failed"
         '200':
           schema:
-            $ref: '#/definitions/UserDtoResult'
+            $ref: '#/definitions/Result<UserDto>'
           examples:
             application/json: |-
               {
@@ -685,10 +685,10 @@ paths:
             "unauthorized user", "token has expired", "authorized user not found"
         '404':
           description: |-
-            user not found
+            "user not found"
         '500':
           description: |-
-            user delete failed
+            "user delete failed"
         '200':
           schema:
             $ref: '#/definitions/Result'
@@ -741,7 +741,7 @@ paths:
             "user update failed"
         '200':
           schema:
-            $ref: '#/definitions/UserDtoResult'
+            $ref: '#/definitions/Result<UserDto>'
           examples:
             application/json: |-
               {
@@ -829,7 +829,7 @@ paths:
             "unauthorized user", "token has expired", "authorized user not found", "need admin authority"
         '200':
           schema:
-            $ref: '#/definitions/VideoDtoPageResult'
+            $ref: '#/definitions/Result<Page<VideoDto>>'
           examples:
             application/json: |-
               {
@@ -896,7 +896,7 @@ paths:
             "user not found"
         '200':
           schema:
-            $ref: '#/definitions/VideoDtoPageResult'
+            $ref: '#/definitions/Result<Page<VideoDto>>'
           examples:
             application/json: |-
               {
@@ -957,7 +957,7 @@ paths:
             "video not found"
         '200':
           schema:
-            $ref: '#/definitions/VideoDtoResult'
+            $ref: '#/definitions/Result<VideoDto>'
           examples:
             application/json: |-
               {
@@ -1026,7 +1026,7 @@ paths:
             "video update failed"
         '200':
           schema:
-            $ref: '#/definitions/VideoDtoResult'
+            $ref: '#/definitions/Result<VideoDto>'
           examples:
             application/json: |-
               {
@@ -1127,7 +1127,7 @@ paths:
             "video insert failed"
         '201':
           schema:
-            $ref: '#/definitions/VideoDtoResult'
+            $ref: '#/definitions/Result<VideoDto>'
           examples:
             application/json: |-
               {
@@ -1198,8 +1198,22 @@ definitions:
         description: 状态信息
         type: string
         allowEmptyValue: false
-  UserDtoResult:
-    title: UserDtoResult
+  _ImageDto:
+    title: _ImageDto
+    description: 上传图片信息
+    type: object
+    required:
+    - url
+    - size
+    properties:
+      url:
+        description: 图片链接
+        type: string
+      size:
+        description: 图片大小，单位为字节
+        type: integer
+  Result<UserDto>:
+    title: Result<UserDto>
     description: 返回用户信息
     type: object
     required:
@@ -1210,63 +1224,15 @@ definitions:
       code:
         description: 返回响应码
         type: integer
-        allowEmptyValue: false
       message:
         description: 返回信息
         type: string
-        allowEmptyValue: false
       data:
         description: 返回数据
         type: object
-        allowEmptyValue: false
         $ref: '#/definitions/_UserDto'
-  UserDtoPageResult:
-    title: UserDtoPageResult
-    description: 返回用户分页信息
-    type: object
-    required:
-    - code
-    - message
-    - data
-    properties:
-      code:
-        description: 返回响应码
-        type: integer
-        allowEmptyValue: false
-      message:
-        description: 返回信息
-        type: string
-        allowEmptyValue: false
-      data:
-        description: 返回数据
-        type: object
-        allowEmptyValue: false
-        $ref: '#/definitions/_UserDtoPage'
-  _UserDtoPage:
-    title: _UserDtoPage
-    description: 用户分页信息
-    type: object
-    required:
-    - total
-    - message
-    - data
-    properties:
-      total:
-        description: 数据总量
-        type: integer
-        allowEmptyValue: false
-      message:
-        description: 当前页
-        type: string
-        allowEmptyValue: false
-      data:
-        description: 返回数据
-        type: array
-        allowEmptyValue: false
-        items:
-          $ref: '#/definitions/_UserDto'
-  LoginDtoResult:
-    title: LoginDtoResult
+  Result<LoginDto>:
+    title: Result<LoginDto>
     description: 登录信息
     type: object
     required:
@@ -1277,16 +1243,148 @@ definitions:
       code:
         description: 返回响应码
         type: integer
-        allowEmptyValue: false
       message:
         description: 返回信息
         type: string
-        allowEmptyValue: false
       data:
         description: 返回数据
         type: object
-        allowEmptyValue: false
         $ref: '#/definitions/_LoginDto'
+  Result<UserExtraDto>:
+    title: Result<UserExtraDto>
+    description: 返回用户与数量信息
+    type: object
+    required:
+    - code
+    - message
+    - data
+    properties:
+      code:
+        description: 返回响应码
+        type: integer
+      message:
+        description: 返回信息
+        type: string
+      data:
+        description: 返回数据
+        type: object
+        $ref: '#/definitions/_UserAndExtraDto'
+  Result<VideoDto>:
+    title: Result<VideoDto>
+    description: 返回视频信息
+    type: object
+    required:
+    - code
+    - message
+    - data
+    properties:
+      code:
+        description: 返回响应码
+        type: integer
+      message:
+        description: 返回信息
+        type: string
+      data:
+        description: 返回数据
+        type: object
+        $ref: '#/definitions/_VideoDto'
+  Result<ImageDto>:
+    title: Result<ImageDto>
+    description: 返回上传图片信息
+    type: object
+    required:
+    - code
+    - message
+    - data
+    properties:
+      code:
+        description: 返回响应码
+        type: integer
+      message:
+        description: 返回信息
+        type: string
+      data:
+        description: 返回数据
+        type: object
+        $ref: '#/definitions/_ImageDto'
+  Page<UserDto>:
+    title: Page<UserDto>
+    description: 用户分页信息
+    type: object
+    required:
+    - total
+    - message
+    - data
+    properties:
+      total:
+        description: 数据总量
+        type: integer
+      message:
+        description: 当前页
+        type: string
+      data:
+        description: 返回数据
+        type: array
+        items:
+          $ref: '#/definitions/_UserDto'
+  Page<VideoDto>:
+    title: Page<VideoDto>
+    description: 视频分页信息
+    type: object
+    required:
+    - total
+    - message
+    - data
+    properties:
+      total:
+        description: 数据总量
+        type: integer
+      message:
+        description: 当前页
+        type: string
+      data:
+        description: 返回数据
+        type: array
+        items:
+          $ref: '#/definitions/_VideoDto'
+  Result<Page<UserDto>>:
+    title: Result<Page<UserDto>>
+    description: 返回用户分页信息
+    type: object
+    required:
+    - code
+    - message
+    - data
+    properties:
+      code:
+        description: 返回响应码
+        type: integer
+      message:
+        description: 返回信息
+        type: string
+      data:
+        description: 返回数据
+        type: object
+        $ref: '#/definitions/Page<UserDto>'
+  Result<Page<VideoDto>>:
+    title: Result<Page<VideoDto>>
+    description: 返回视频分页信息
+    type: object
+    required:
+    - code
+    - message
+    - data
+    properties:
+      code:
+        description: 返回响应码
+        type: integer
+      message:
+        description: 返回信息
+        type: string
+      data:
+        description: 返回数据
+        type: object
+        $ref: '#/definitions/Page<VideoDto>'
   _LoginDto:
     title: _LoginDto
     description: 登录信息
@@ -1299,16 +1397,13 @@ definitions:
       user:
         description: 用户信息
         type: object
-        allowEmptyValue: false
         $ref: '#/definitions/_UserDto'
       token:
         description: 登录令牌
         type: string
-        allowEmptyValue: false
       expire:
         description: 登录有效期，单位为秒
         type: integer
-        allowEmptyValue: false
   _UserDto:
     title: _UserDto
     description: 用户信息
@@ -1327,61 +1422,39 @@ definitions:
       uid:
         description: 用户id
         type: integer
-        allowEmptyValue: false
       username:
         description: 用户名
         type: string
-        allowEmptyValue: false
       sex:
-        description: 用户性别，枚举 {male, female, unknown}
+        description: 用户性别
         type: string
-        allowEmptyValue: false
+        enum:
+        - male
+        - female
+        - unknown
       profile:
         description: 用户简介
         type: string
-        allowEmptyValue: true
       avatar_url:
         description: 用户头像
         type: string
-        allowEmptyValue: false
       birth_time:
-        description: 用户生日，固定格式为 2000-01-01
+        description: 用户生日
         type: string
-        allowEmptyValue: false
+        format: '2000-01-01'
       authority:
-        description: 用户权限，枚举 {normal, admin}
+        description: 用户权限
         type: string
-        allowEmptyValue: false
+        enum:
+        - normal
+        - admin
       phone_number:
         description: 用户手机号码，部分接口可见
         type: string
-        allowEmptyValue: false
       register_time:
-        description: 用户注册时间，固定格式为 2000-01-01 00:00:00
+        description: 用户注册时间
         type: string
-        allowEmptyValue: false
-  UserExtraDtoResult:
-    title: UserExtraDtoResult
-    description: 返回用户与数量信息
-    type: object
-    required:
-    - code
-    - message
-    - data
-    properties:
-      code:
-        description: 返回响应码
-        type: integer
-        allowEmptyValue: false
-      message:
-        description: 返回信息
-        type: string
-        allowEmptyValue: false
-      data:
-        description: 返回数据
-        type: object
-        allowEmptyValue: false
-        $ref: '#/definitions/_UserAndExtraDto'
+        format: '2000-01-01 00:00:00'
   _UserAndExtraDto:
     title: _UserAndExtraDto
     description: 用户与数量信息
@@ -1393,51 +1466,11 @@ definitions:
       user:
         description: 用户信息
         type: object
-        allowEmptyValue: false
         $ref: '#/definitions/_UserDto'
       extra:
         description: 用户额外信息
         type: object
-        allowEmptyValue: false
         $ref: '#/definitions/_UserExtraDto'
-  ImageDtoResult:
-    title: ImageDtoResult
-    description: 返回上传图片信息
-    type: object
-    required:
-    - code
-    - message
-    - data
-    properties:
-      code:
-        description: 返回响应码
-        type: integer
-        allowEmptyValue: false
-      message:
-        description: 返回信息
-        type: string
-        allowEmptyValue: false
-      data:
-        description: 返回数据
-        type: object
-        allowEmptyValue: false
-        $ref: '#/definitions/_ImageDto'
-  _ImageDto:
-    title: _ImageDto
-    description: 上传图片信息
-    type: object
-    required:
-    - url
-    - size
-    properties:
-      url:
-        description: 图片链接
-        type: string
-        allowEmptyValue: false
-      size:
-        description: 图片大小，单位为字节
-        type: integer
-        allowEmptyValue: false
   _UserExtraDto:
     title: _UserExtraDto
     description: 用户额外信息
@@ -1450,82 +1483,12 @@ definitions:
       subscribing_cnt:
         description: 用户关注数量
         type: integer
-        allowEmptyValue: false
       subscriber_cnt:
         description: 用户粉丝数量
         type: integer
-        allowEmptyValue: false
       video_cnt:
         description: 用户视频数量
         type: integer
-        allowEmptyValue: false
-  VideoDtoResult:
-    title: VideoDtoResult
-    description: 返回视频信息
-    type: object
-    required:
-    - code
-    - message
-    - data
-    properties:
-      code:
-        description: 返回响应码
-        type: integer
-        allowEmptyValue: false
-      message:
-        description: 返回信息
-        type: string
-        allowEmptyValue: false
-      data:
-        description: 返回数据
-        type: object
-        allowEmptyValue: false
-        $ref: '#/definitions/_VideoDto'
-  VideoDtoPageResult:
-    title: VideoDtoPageResult
-    description: 返回视频分页信息
-    type: object
-    required:
-    - code
-    - message
-    - data
-    properties:
-      code:
-        description: 返回响应码
-        type: integer
-        allowEmptyValue: false
-      message:
-        description: 返回信息
-        type: string
-        allowEmptyValue: false
-      data:
-        description: 返回数据
-        type: object
-        allowEmptyValue: false
-        $ref: '#/definitions/_VideoDtoPage'
-  _VideoDtoPage:
-    title: _VideoDtoPage
-    description: 视频分页信息
-    type: object
-    required:
-    - total
-    - message
-    - data
-    properties:
-      total:
-        description: 数据总量
-        type: integer
-        allowEmptyValue: false
-      message:
-        description: 当前页
-        type: string
-        allowEmptyValue: false
-      data:
-        description: 返回数据
-        type: array
-        allowEmptyValue: false
-        items:
-          $ref: '#/definitions/_VideoDto'
   _VideoDto:
     title: _VideoDto
     description: 视频信息
@@ -1543,35 +1506,29 @@ definitions:
       vid:
         description: 视频id
         type: integer
-        allowEmptyValue: false
       title:
         description: 视频标题
         type: string
-        allowEmptyValue: false
       description:
         description: 标题简介
         type: string
-        allowEmptyValue: false
       video_url:
         description: 视频资源链接
         type: string
-        allowEmptyValue: false
       cover_url:
         description: 视频封面连接
         type: string
-        allowEmptyValue: false
       upload_time:
-        description: 视频上传时间，固定格式为 2000-01-01 00:00:00
+        description: 视频上传时间
         type: string
-        allowEmptyValue: false
+        format: '2000-01-01 00:00:00'
       update_time:
-        description: 视频修改时间，固定格式为 2000-01-01 00:00:00
+        description: 视频修改时间
         type: string
-        allowEmptyValue: false
+        format: '2000-01-01 00:00:00'
       author:
         description: 视频作者，用户id为-1表示用户已删除
         type: object
-        allowEmptyValue: false
         $ref: '#/definitions/_UserDto'
   LoginParam:
     title: LoginParam
@@ -1584,15 +1541,12 @@ definitions:
       username:
         description: 用户名
         type: string
-        allowEmptyValue: false
       password:
         description: 密码
         type: string
-        allowEmptyValue: false
       expire:
         description: 登录有效期，默认为七天
         type: integer
-        allowEmptyValue: false
         example: 604800
   RegisterParam:
     title: RegisterParam
@@ -1605,11 +1559,9 @@ definitions:
       username:
         description: 用户名，长度在 [5, 30] 之间
         type: string
-        allowEmptyValue: false
       password:
         description: 密码，长度在 [8, 30] 之间
         type: string
-        allowEmptyValue: false
   PassParam:
     title: PassParam
     description: 修改密码请求参数
@@ -1620,7 +1572,6 @@ definitions:
       password:
         description: 密码，长度在 [8, 30] 之间
         type: string
-        allowEmptyValue: false
   SubParam:
     title: SubParam
     description: 关注请求参数
@@ -1654,13 +1605,18 @@ definitions:
         type: string
         allowEmptyValue: true
       sex:
-        description: 用户性别，允许值为 {male, female, unknown}
+        description: 用户性别
         type: string
         allowEmptyValue: false
+        enum:
+        - male
+        - female
+        - unknown
       birth_time:
-        description: 用户生日，固定格式为 2000-01-01
+        description: 用户生日
         type: string
         allowEmptyValue: false
+        format: '2000-01-01'
       phone_number:
         description: 用户手机号码，长度为 11，仅限中国大陆手机号码
         type: string
@@ -1697,7 +1653,6 @@ definitions:
         allowEmptyValue: false
   Ping:
     title: Ping
-    description: Ping
     type: object
     required:
     - ping
@@ -1705,5 +1660,4 @@ definitions:
       ping:
         description: pong
         type: string
-        allowEmptyValue: false
         example: pong

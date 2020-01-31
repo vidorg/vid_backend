@@ -42,7 +42,7 @@ func NewAuthController(dic *xdi.DiContainer) *AuthController {
 // @ResponseDesc 401    "password error"
 // @ResponseDesc 404    "user not found"
 // @ResponseDesc 500    "login failed"
-// @ResponseModel 200   #LoginDtoResult
+// @ResponseModel 200   #Result<LoginDto>
 // @Response 200        ${resp_login}
 func (a *AuthController) Login(c *gin.Context) {
 	loginParam := &param.LoginParam{}
@@ -91,7 +91,7 @@ func (a *AuthController) Login(c *gin.Context) {
 // @Param               param body #RegisterParam true false "注册请求参数"
 // @ResponseDesc 500    "username has been used"
 // @ResponseDesc 500    "register failed"
-// @ResponseModel 201   #UserDtoResult
+// @ResponseModel 201   #Result<UserDto>
 // @Response 201        ${resp_register}
 func (a *AuthController) Register(c *gin.Context) {
 	registerParam := &param.RegisterParam{}
@@ -130,7 +130,7 @@ func (a *AuthController) Register(c *gin.Context) {
 // @Template            Auth
 // @Summary             当前登录用户
 // @Tag                 Authorization
-// @ResponseModel 200   #UserDtoResult
+// @ResponseModel 200   #Result<UserDto>
 // @Response 200        ${resp_user}
 func (a *AuthController) CurrentUser(c *gin.Context) {
 	authUser := a.JwtService.GetAuthUser(c)

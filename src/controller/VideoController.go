@@ -41,7 +41,7 @@ func NewVideoController(dic *xdi.DiContainer) *VideoController {
 // @Description         管理员权限
 // @Tag                 Video
 // @Tag                 Administration
-// @ResponseModel 200   #VideoDtoPageResult
+// @ResponseModel 200   #Result<Page<VideoDto>>
 // @Response 200        ${resp_page_videos}
 func (v *VideoController) QueryAllVideos(c *gin.Context) {
 	page := param.BindQueryPage(c)
@@ -57,7 +57,7 @@ func (v *VideoController) QueryAllVideos(c *gin.Context) {
 // @Tag                 Video
 // @Param               uid path integer true false "用户id"
 // @ResponseDesc 404    "user not found"
-// @ResponseModel 200   #VideoDtoPageResult
+// @ResponseModel 200   #Result<Page<VideoDto>>
 // @Response 200        ${resp_page_videos}
 func (v *VideoController) QueryVideosByUid(c *gin.Context) {
 	uid, ok := param.BindRouteId(c, "uid")
@@ -84,7 +84,7 @@ func (v *VideoController) QueryVideosByUid(c *gin.Context) {
 // @Tag                 Video
 // @Param               vid path integer true false "视频id"
 // @ResponseDesc 404    "video not found"
-// @ResponseModel 200   #VideoDtoResult
+// @ResponseModel 200   #Result<VideoDto>
 // @Response 200        ${resp_video}
 func (v *VideoController) QueryVideoByVid(c *gin.Context) {
 	vid, ok := param.BindRouteId(c, "vid")
@@ -111,7 +111,7 @@ func (v *VideoController) QueryVideoByVid(c *gin.Context) {
 // @Param               param body #VideoParam true false "视频请求参数"
 // @ResponseDesc 400    "video has been uploaded"
 // @ResponseDesc 500    "video insert failed"
-// @ResponseModel 201   #VideoDtoResult
+// @ResponseModel 201   #Result<VideoDto>
 // @Response 201        ${resp_new_video}
 func (v *VideoController) InsertVideo(c *gin.Context) {
 	authUser := v.JwtService.GetAuthUser(c)
@@ -159,7 +159,7 @@ func (v *VideoController) InsertVideo(c *gin.Context) {
 // @ResponseDesc 400    "video has been uploaded"
 // @ResponseDesc 404    "video not found"
 // @ResponseDesc 500    "video update failed"
-// @ResponseModel 200   #VideoDtoResult
+// @ResponseModel 200   #Result<VideoDto>
 // @Response 200        ${resp_video}
 func (v *VideoController) UpdateVideo(c *gin.Context) {
 	authUser := v.JwtService.GetAuthUser(c)

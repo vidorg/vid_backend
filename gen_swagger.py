@@ -14,7 +14,20 @@ def trim(content: str) -> str:
 
 
 def split_bs(content: str) -> []:
-    return list(filter(None, re.split(r'[ \t]', content)))
+    bl_ptn = re.compile(r'\((.+?)\)')
+    bls = bl_ptn.findall(content)
+    for bl in bls:
+        content = content.replace(bl, bl.replace(' ', ',,'))
+    ret = list(filter(None, re.split(r'[ \t]', content)))
+    return [cnt.replace(',,', ' ') for cnt in ret]
+
+
+def split_comma(content: str, t: str) -> []:
+    ctns = content.replace(',', ',,').replace('\\,,', ',').split(',,')
+    if trim(t) == 'integer':
+        return [int(trim(ctn)) for ctn in ctns]
+    else:
+        return [trim(ctn) for ctn in ctns]
 
 
 def stripper(dict_data, ex_key: []):
@@ -63,6 +76,57 @@ def literal_presenter(dumper, data):
 
 
 yaml.add_representer(Literal, literal_presenter)
+
+
+def split_type(content: str) -> {}:
+    """
+    :param content: string(enum:a,b,c)(format:FORMAT) / object(#xxx) / array(#xxx)
+    :return: {type, enum, format, $ref, items}
+    """
+    content = trim(content)
+    # Param obj
+    if content[0] == '#':
+        obj_name = trim(''.join(content[1:]))
+        return {
+            'type': '',
+            'schema': {
+                '$ref': f'#/definitions/{obj_name}'
+            }
+        }
+
+    # Param / Property: object array enum format
+    type_ptn = re.compile(r'\((.+?)\)')
+    type_name = content.split('(')
+    if len(type_name) == 0:
+        return None
+    type_name = trim(type_name[0])
+    obj = {'type': type_name}
+    type_ops = type_ptn.findall(content)
+    if len(type_ops) == 0:
+        return obj
+
+    for op in type_ops:
+        op = trim(op)  # (xx)
+        if op[0] == '#':  # object / array
+            obj_name = trim(''.join(op[1:]))
+            if type_name == 'object':
+                obj['$ref'] = f'#/definitions/{obj_name}'
+            else:
+                obj['items'] = {
+                    '$ref': f'#/definitions/{obj_name}'
+                }
+            pass
+        else:  # enum / format
+            # op -> format:2000-01-01 00:00:00
+            ops = op.split(':')
+            if len(ops) >= 2:
+                op_name = trim(ops[0])
+                op_content = trim(':'.join(ops[1:]))
+                if op_name == 'enum':
+                    obj['enum'] = split_comma(op_content, type_name)
+                elif op_name == 'format':
+                    obj['format'] = op_content
+    return obj
 
 
 def parse_content(content) -> []:
@@ -161,17 +225,20 @@ def gen_main(file_path: str) -> {}:
             template[tmpl_type][tmpl_type_param] = []
         template[tmpl_type][tmpl_type_param].append(tmpl_content)
 
-    # @Tag "Authorization" "Auth-Controller"
+    # @Tag Authorization "Auth-Controller"
     tag_po = []
     tags = split_array(tokens, 'Tag')
     for tag in tags:
-        tag_sp = re.compile(r'"(.+?)"').findall(tag)
-        if len(tag_sp) < 2:
-            continue
-        tag_po.append({
-            'name': trim(tag_sp[0]),
-            'description': tag_sp[1]
-        })
+        tag_sp = split_bs(tag)
+        tag_name = trim(tag_sp[0])
+        tag_other = trim(' '.join(tag_sp[1:]))
+        tag_other = re.compile(r'"(.*)"').findall(tag_other)
+        if len(tag_other) != 0:
+            tag_desc = trim(tag_other[0])
+            tag_po.append({
+                'name': tag_name,
+                'description': tag_desc
+            })
 
     # @GlobalSecurity Jwt Authorization header
     securities_po = {}
@@ -325,19 +392,18 @@ def gen_ctrl(content: str, *, demo_model: {}, template: {}) -> (str, str, {}):
                 'description': pdesc,
                 'default': pdefault
             }
+            if pempty == '*':
+                del obj['allowEmptyValue']
+
             if pdefault != '':
                 if ptype == 'integer':
-                    obj['default'] = int(pdefault)
+                    obj['default'] = int(obj['default'])
 
-            obj_ptn = re.compile(r'#(.+)')
-            obj_name = obj_ptn.findall(ptype)
-            if len(obj_name) != 0:
-                obj_name = trim(obj_name[0])
-                del obj['type']
-                obj['schema'] = {
-                    '$ref': f'#/definitions/{obj_name}'
-                }
-
+            # enum -> string(enum:a,b,c)
+            # object -> #Result
+            ptype_op = split_type(ptype)
+            if ptype_op is not None:
+                obj.update(ptype_op)
             parameters.append(obj)
 
         # security
@@ -463,10 +529,7 @@ def gen_model(content: str) -> (str, {}):
         # @Property username string true true "name of user" example
 
         # meta
-        model = field(kv, 'Model')
-        model_sp = split_bs(model)
-        title = trim(model_sp[0])
-        description = trim(' '.join(model_sp[1:])).strip('"')
+        title = field(kv, 'Model')
 
         # prop
         prop_po = {}
@@ -474,43 +537,39 @@ def gen_model(content: str) -> (str, {}):
         props = split_array(tokens, 'Property')
         for prop in props:
             pname, ptype, preq, pempty, *pother = split_bs(prop)
-            pname, ptype, preq, pempty = trim(pname), trim(ptype), trim(preq) == "true", trim(pempty) == "true"
+            pname, ptype = trim(pname), trim(ptype)
+            preq, pempty = trim(preq.lower()), trim(pempty.lower())
             pother = trim(' '.join(pother))
             pother_sp = re.compile(r'"(.*)"(.*)').findall(pother)
             pdesc = trim(pother_sp[0][0])
             pexample = trim(pother_sp[0][1])
 
-            if preq:
+            if preq == 'true':
                 requires.append(pname)
             obj = {
                 'description': pdesc,
                 'type': ptype,
-                'allowEmptyValue': pempty,
+                'allowEmptyValue': pempty == 'true',
                 'example': pexample
             }
+            if pempty == '*':
+                del obj['allowEmptyValue']
+
             if pexample != '':
                 if ptype == 'integer':
-                    obj['example'] = int(pexample)
+                    obj['example'] = int(obj['example'])
 
-            obj_ptn = re.compile(r'(.+?)\(#(.+)\)')
-            obj_name = obj_ptn.findall(ptype)
-            if len(obj_name) != 0:
-                obj_type = trim(obj_name[0][0])
-                obj_name = trim(obj_name[0][1])
-                obj['type'] = obj_type
-                if obj_type == 'array':
-                    obj['items'] = {
-                        '$ref': f'#/definitions/{obj_name}'
-                    }
-                else:
-                    obj['$ref'] = f'#/definitions/{obj_name}'
-
+            # enum -> string(enum:a,b,c)
+            # nest -> object(#Result)
+            ptype_op = split_type(ptype)
+            if ptype_op is not None:
+                obj.update(ptype_op)
             prop_po[pname] = obj
 
         obj = {
             'title': title,
-            'description': description,
-            'type': 'object',
+            'description': field(kv, 'Description', required=False),
+            'type': 'object',  # default array
             'required': requires,
             'properties': prop_po
         }

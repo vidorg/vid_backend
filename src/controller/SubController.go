@@ -38,7 +38,7 @@ func NewSubController(dic *xdi.DiContainer) *SubController {
 // @Tag                 Subscribe
 // @Param               uid path integer true false "用户id"
 // @ResponseDesc 404    "user not found"
-// @ResponseModel 200   #UserDtoPageResult
+// @ResponseModel 200   #Result<Page<UserDto>>
 // @Response 200        ${resp_page_users}
 func (s *SubController) QuerySubscriberUsers(c *gin.Context) {
 	uid, ok := param.BindRouteId(c, "uid")
@@ -64,7 +64,7 @@ func (s *SubController) QuerySubscriberUsers(c *gin.Context) {
 // @Tag                 Subscribe
 // @Param               uid path integer true false "用户id"
 // @ResponseDesc 404    "user not found"
-// @ResponseModel 200   #UserDtoPageResult
+// @ResponseModel 200   #Result<Page<UserDto>>
 // @Response 200        ${resp_page_users}
 func (s *SubController) QuerySubscribingUsers(c *gin.Context) {
 	uid, ok := param.BindRouteId(c, "uid")

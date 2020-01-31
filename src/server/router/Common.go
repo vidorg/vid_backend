@@ -7,8 +7,9 @@ import (
 	"net/http"
 )
 
-// @Model      Ping "Ping"
-// @Property   ping string true false "pong" pong
+// @Model         Ping
+// @Description   Ping
+// @Property      ping string true * "pong" pong
 
 // @Router               /ping [GET]
 // @Summary              Ping

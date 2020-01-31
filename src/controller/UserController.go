@@ -44,7 +44,7 @@ func NewUserController(dic *xdi.DiContainer) *UserController {
 // @Description         管理员权限，此处可见用户手机号码
 // @Tag                 User
 // @Tag                 Administration
-// @ResponseModel 200   #UserDtoPageResult
+// @ResponseModel 200   #Result<Page<UserDto>>
 // @Response 200        ${resp_page_users}
 func (u *UserController) QueryAllUsers(c *gin.Context) {
 	page := param.BindQueryPage(c)
@@ -62,7 +62,7 @@ func (u *UserController) QueryAllUsers(c *gin.Context) {
 // @Tag                 User
 // @Param               uid path integer true false "用户id"
 // @ResponseDesc 404    "user not found"
-// @ResponseModel 200   #UserExtraDtoResult
+// @ResponseModel 200   #Result<UserExtraDto>
 // @Response 200        ${resp_user_info}
 func (u *UserController) QueryUser(c *gin.Context) {
 	uid, ok := param.BindRouteId(c, "uid")
@@ -99,7 +99,7 @@ func (u *UserController) QueryUser(c *gin.Context) {
 // @ResponseDesc 400    "username has been used"
 // @ResponseDesc 404    "user not found"
 // @ResponseDesc 500    "user update failed"
-// @ResponseModel 200   #UserDtoResult
+// @ResponseModel 200   #Result<UserDto>
 // @Response 200        ${resp_user}
 //
 // @Router              /v1/user/admin/{uid} [PUT]
@@ -114,7 +114,7 @@ func (u *UserController) QueryUser(c *gin.Context) {
 // @ResponseDesc 400    "username has been used"
 // @ResponseDesc 404    "user not found"
 // @ResponseDesc 500    "user update failed"
-// @ResponseModel 200   #UserDtoResult
+// @ResponseModel 200   #Result<UserDto>
 // @Response 200        ${resp_user}
 func (u *UserController) UpdateUser(isExact bool) func(c *gin.Context) {
 	return func(c *gin.Context) {
@@ -173,8 +173,8 @@ func (u *UserController) UpdateUser(isExact bool) func(c *gin.Context) {
 // @Template            Auth
 // @Summary             删除用户
 // @Tag                 User
-// @ResponseDesc 404    user not found
-// @ResponseDesc 500    user delete failed
+// @ResponseDesc 404    "user not found"
+// @ResponseDesc 500    "user delete failed"
 // @ResponseModel 200   #Result
 // @Response 200        ${resp_success}
 //

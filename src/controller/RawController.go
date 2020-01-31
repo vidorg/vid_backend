@@ -35,7 +35,7 @@ func NewRawController(dic *xdi.DiContainer) *RawController {
 // @ResponseDesc 400    "image type not supported"
 // @ResponseDesc 413    "request body too large"
 // @ResponseDesc 500    "image save failed"
-// @ResponseModel 200   #ImageDtoResult
+// @ResponseModel 200   #Result<ImageDto>
 // @Response 200        ${resp_upload_image}
 func (r *RawController) UploadImage(c *gin.Context) {
 	imageFile, imageHeader, err := c.Request.FormFile("image")
