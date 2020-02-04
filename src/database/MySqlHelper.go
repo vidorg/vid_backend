@@ -35,7 +35,7 @@ func SetupDBConn(cfg *config.MySqlConfig) *gorm.DB {
 	}
 
 	autoMigrateModel(db)
-	addFullTextIndex(db)
+	addFullTextIndex(db, cfg)
 
 	return db
 }
@@ -53,13 +53,14 @@ func autoMigrateModel(db *gorm.DB) {
 	autoMigrate(&po.Video{})
 }
 
-func addFullTextIndex(db *gorm.DB) {
+func addFullTextIndex(db *gorm.DB, cfg *config.MySqlConfig) {
 	checkExecIndex := func(tblName string, idxName string, param string) {
-		rdb := db.Exec("SHOW INDEX FROM "+tblName+" WHERE Key_name = ?", idxName)
+		cnt := 0
+		rdb := db.Table("INFORMATION_SCHEMA.STATISTICS").Where("TABLE_SCHEMA = ? AND TABLE_NAME = ? AND INDEX_NAME = ?", cfg.Name, tblName, idxName).Count(&cnt)
 		if rdb.Error != nil {
 			panic(rdb.Error)
 		}
-		if rdb.RecordNotFound() {
+		if cnt == 0 {
 			sql := fmt.Sprintf("CREATE FULLTEXT INDEX `%s` ON `%s` (%s) WITH PARSER `ngram`", idxName, tblName, param)
 			rdb := db.Exec(sql)
 			if rdb.Error != nil {
@@ -68,5 +69,6 @@ func addFullTextIndex(db *gorm.DB) {
 		}
 	}
 
-	checkExecIndex("tbl_user", "idx_username_profile_fulltext", "`username`(100), `profile`(5)")
+	checkExecIndex("tbl_user", "idx_username_profile_fulltext", "`username`(100), `profile`(20)")
+	checkExecIndex("tbl_video", "idx_title_description_fulltext", "`title`(100), `description`(40)")
 }

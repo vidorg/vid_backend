@@ -21,10 +21,10 @@ type Result struct {
 
 func Status(code int) *Result {
 	message := http.StatusText(code)
-	if message == "" {
-		message = "Unknown status"
-	} else if message == "ok" {
+	if code == 200 {
 		message = "success"
+	} else if message == "" {
+		message = "unknown"
 	}
 	return &Result{
 		Code:    code,

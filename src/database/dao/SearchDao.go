@@ -8,8 +8,9 @@ import (
 )
 
 type SearchDao struct {
-	Config *config.ServerConfig `di:"~"`
-	Db     *gorm.DB             `di:"~"`
+	Config   *config.ServerConfig `di:"~"`
+	Db       *gorm.DB             `di:"~"`
+	VideoDao *VideoDao            `di:"~"`
 
 	PageSize int32 `di:"-"`
 }
@@ -24,10 +25,16 @@ func NewSearchDao(dic *xdi.DiContainer) *SearchDao {
 }
 
 func (s *SearchDao) SearchUser(against string, page int32) ([]*po.User, int32) {
-	user := make([]*po.User, 0)
-	var total int32
-	rdb := s.Db.Model(&po.User{}).Where("match (username, profile) against (? in boolean mode)", against)
-	rdb.Limit(s.PageSize).Offset((page - 1) * s.PageSize).Find(&user)
-	rdb.Count(&total)
-	return user, total
+	users := make([]*po.User, 0)
+	total := SearchHelper(s.Db, &po.User{}, s.PageSize, page, "username, profile", against, &users)
+	return users, total
+}
+
+func (s *SearchDao) SearchVideo(against string, page int32) ([]*po.Video, int32) {
+	videos := make([]*po.Video, 0)
+	total := SearchHelper(s.Db, &po.Video{}, s.PageSize, page, "title, description", against, &videos)
+	for _, video := range videos {
+		s.VideoDao.WrapVideo(video)
+	}
+	return videos, total
 }

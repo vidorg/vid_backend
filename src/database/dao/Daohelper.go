@@ -1,6 +1,7 @@
 package dao
 
 import (
+	"fmt"
 	"github.com/Aoi-hosizora/ahlib-gin-gorm/xgorm"
 	"github.com/jinzhu/gorm"
 	"github.com/vidorg/vid_backend/src/database"
@@ -24,6 +25,14 @@ func PageHelper(db *gorm.DB, model interface{}, pageSize int32, currentPage int3
 	var total int32 = 0
 	db.Model(model).Count(&total)
 	db.Model(model).Limit(pageSize).Offset((currentPage - 1) * pageSize).Where(where).Find(out)
+	return total
+}
+
+func SearchHelper(db *gorm.DB, model interface{}, pageSize int32, currentPage int32, columns string, against string, out interface{}) int32 {
+	var total int32
+	rdb := db.Model(model).Where(fmt.Sprintf("MATCH (%s) AGAINST (? IN BOOLEAN MODE)", columns), against)
+	rdb.Count(&total)
+	rdb.Limit(pageSize).Offset((currentPage - 1) * pageSize).Find(out)
 	return total
 }
 

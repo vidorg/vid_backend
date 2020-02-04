@@ -74,6 +74,7 @@ func SetupV1Router(router *gin.Engine, config *config.ServerConfig, dic *xdi.DiC
 		searchGroup := v1.Group("/search")
 		{
 			searchGroup.GET("/user", searchCtrl.SearchUser)
+			searchGroup.GET("/video", searchCtrl.SearchVideo)
 		}
 	}
 }

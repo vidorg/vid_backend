@@ -25,7 +25,7 @@ func NewVideoDao(dic *xdi.DiContainer) *VideoDao {
 	return repo
 }
 
-func (v *VideoDao) wrap(video *po.Video) {
+func (v *VideoDao) WrapVideo(video *po.Video) {
 	out := QueryHelper(v.Db, &po.User{}, &po.User{Uid: video.AuthorUid})
 	if out != nil {
 		video.Author = out.(*po.User)
@@ -36,9 +36,9 @@ func (v *VideoDao) wrap(video *po.Video) {
 
 func (v *VideoDao) QueryAll(page int32) ([]*po.Video, int32) {
 	videos := make([]*po.Video, 0)
-	total := PageHelper(v.Db, &po.Video{}, v.PageSize, page, &po.Video{}, videos)
+	total := PageHelper(v.Db, &po.Video{}, v.PageSize, page, &po.Video{}, &videos)
 	for idx := range videos {
-		v.wrap(videos[idx])
+		v.WrapVideo(videos[idx])
 	}
 	return videos, total
 }
@@ -49,7 +49,7 @@ func (v *VideoDao) QueryByUid(uid int32, page int32) ([]*po.Video, int32, databa
 		return nil, 0, database.DbNotFound
 	}
 	videos := make([]*po.Video, 0)
-	total := PageHelper(v.Db, &po.Video{}, v.PageSize, page, &po.Video{AuthorUid: uid}, videos)
+	total := PageHelper(v.Db, &po.Video{}, v.PageSize, page, &po.Video{AuthorUid: uid}, &videos)
 	for idx := range videos {
 		videos[idx].Author = author
 	}
@@ -70,7 +70,7 @@ func (v *VideoDao) QueryByVid(vid int32) *po.Video {
 		return nil
 	}
 	video := out.(*po.Video)
-	v.wrap(video)
+	v.WrapVideo(video)
 	return video
 }
 

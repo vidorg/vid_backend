@@ -12,6 +12,7 @@ import (
 	"github.com/vidorg/vid_backend/src/database/dao"
 	"github.com/vidorg/vid_backend/src/model/dto"
 	"github.com/vidorg/vid_backend/src/model/param"
+	"strings"
 )
 
 type SearchController struct {
@@ -32,9 +33,8 @@ func NewSearchController(dic *xdi.DiContainer) *SearchController {
 // @Router              /v1/search/user?key&page [GET]
 // @Template            Page ParamA
 // @Summary             搜索用户
-// @Description         返回分页数据，total 字段固定为 -1
 // @Tag                 Search
-// @Param               key query string false true "搜索关键词"
+// @Param               key query string true false "搜索关键词"
 // @ResponseModel 200   #Result<Page<UserDto>>
 // @ResponseEx 200      ${resp_page_users}
 func (s *SearchController) SearchUser(c *gin.Context) {
@@ -49,6 +49,29 @@ func (s *SearchController) SearchUser(c *gin.Context) {
 	against := s.SegmentService.CatAgainst(keys)
 	users, total := s.SearchDao.SearchUser(against, page)
 
-	retDto := xcondition.First(s.Mapper.Map([]*dto.UserDto{}, users, dto.UserDtoAdminMapOption())).([]*dto.UserDto)
+	retDto := xcondition.First(s.Mapper.Map([]*dto.UserDto{}, users)).([]*dto.UserDto)
+	result.Ok().SetPage(total, page, retDto).JSON(c)
+}
+
+// @Router              /v1/search/video?key&page [GET]
+// @Template            Page ParamA
+// @Summary             搜索视频
+// @Tag                 Search
+// @Param               key query string true false "搜索关键词"
+// @ResponseModel 200   #Result<Page<VideoDto>>
+// @ResponseEx 200      ${resp_page_videos}
+func (s *SearchController) SearchVideo(c *gin.Context) {
+	key := strings.TrimSpace(c.DefaultQuery("key", ""))
+	if key == "" {
+		result.Error(exception.RequestParamError).JSON(c)
+		return
+	}
+	page := param.BindQueryPage(c)
+
+	keys := s.SegmentService.Seg(key)
+	against := s.SegmentService.CatAgainst(keys)
+	videos, total := s.SearchDao.SearchVideo(against, page)
+
+	retDto := xcondition.First(s.Mapper.Map([]*dto.VideoDto{}, videos)).([]*dto.VideoDto)
 	result.Ok().SetPage(total, page, retDto).JSON(c)
 }
