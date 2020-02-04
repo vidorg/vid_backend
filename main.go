@@ -44,6 +44,7 @@ func main() {
 // @Tag              Video          "Video-Controller"
 // @Tag              Raw            "Raw-Controller"
 // @Tag              Administration "*-Controller"
+// @Tag              Search         "*-Controller"
 // @GlobalSecurity   Jwt Authorization header
 // @DemoModel        ./docs/demo.json
 
@@ -65,7 +66,7 @@ func run() {
 	s := server.InitServer(cfg)
 
 	fmt.Println()
-	log.Printf("Server init on port :%d\n\n", cfg.HTTPConfig.Port)
+	log.Printf("Server init on port :%d\n\n", cfg.MetaConfig.Port)
 	if err := s.ListenAndServe(); err != nil {
 		log.Fatalln("Failed to listen and serve:", err)
 	}

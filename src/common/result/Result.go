@@ -23,6 +23,8 @@ func Status(code int) *Result {
 	message := http.StatusText(code)
 	if message == "" {
 		message = "Unknown status"
+	} else if message == "ok" {
+		message = "success"
 	}
 	return &Result{
 		Code:    code,
@@ -37,10 +39,6 @@ func Ok() *Result {
 func Error(se *exception.ServerError) *Result {
 	return Status(se.Code).SetMessage(se.Message)
 }
-
-// func Error() *Result {
-// 	return Status(http.StatusInternalServerError)
-// }
 
 func (r *Result) SetCode(code int) *Result {
 	r.Code = code
@@ -65,11 +63,11 @@ func (r *Result) PutData(field string, data interface{}) *Result {
 	return r
 }
 
-func (r *Result) SetPage(count int32, page int32, data interface{}) *Result {
+func (r *Result) SetPage(total int32, page int32, data interface{}) *Result {
 	if r.Data == nil {
 		r.Data = xlinkedhashmap.NewLinkedHashMap()
 	}
-	r.Data.Set("total", count)
+	r.Data.Set("total", total)
 	r.Data.Set("page", page)
 	r.Data.Set("data", data)
 	return r

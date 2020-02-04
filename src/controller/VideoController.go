@@ -103,7 +103,7 @@ func (v *VideoController) QueryVideoByVid(c *gin.Context) {
 	result.Ok().SetData(retDto).JSON(c)
 }
 
-// @Router              /v1/video/ [POST]
+// @Router              /v1/video [POST]
 // @Security            Jwt
 // @Template            Auth Param
 // @Summary             新建视频

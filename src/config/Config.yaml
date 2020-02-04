@@ -1,8 +1,8 @@
 run-mode: debug
 
-http:
-  current-loc: Asia/Shanghai
+meta:
   port: 3344
+  current-loc: Asia/Shanghai
 
 file:
   image-path: ./usr/image/
@@ -34,3 +34,6 @@ jwt:
   expire: 604800 # second
   issuer: vid.srv.auth
   redis-fmt: vid-token-%s-%s
+
+search:
+  dictionary-path: ./src/common/seg/dictionary.txt

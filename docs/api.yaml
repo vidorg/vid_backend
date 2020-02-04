@@ -16,6 +16,8 @@ tags:
   description: Raw-Controller
 - name: Administration
   description: '*-Controller'
+- name: Search
+  description: '*-Controller'
 info:
   title: vid backend
   description: Backend of repo https://github.com/vidorg/vid_vue
@@ -116,7 +118,7 @@ paths:
         '201':
           schema:
             $ref: '#/definitions/Result<UserDto>'
-  /v1/auth/:
+  /v1/auth:
     get:
       operationId: v1-auth-get
       summary: 当前登录用户
@@ -294,6 +296,62 @@ paths:
             Content-Type:
               type: string
               description: image/jpeg
+  /v1/search/user?key&page:
+    get:
+      operationId: v1-search-user-key&page-get
+      summary: 搜索用户
+      description: 返回分页数据，total 字段固定为 -1
+      tags:
+      - Search
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - name: page
+        in: query
+        type: integer
+        required: false
+        allowEmptyValue: false
+        description: 当前页
+        default: 1
+      - name: key
+        in: query
+        type: string
+        required: false
+        allowEmptyValue: true
+        description: 搜索关键词
+      security: []
+      responses:
+        '400':
+          description: |-
+            "request param error"
+        '200':
+          schema:
+            $ref: '#/definitions/Result<Page<UserDto>>'
+          examples:
+            application/json: |-
+              {
+                "code": 200,
+                "message": "success",
+                "data": {
+                  "count": 1,
+                  "page": 1,
+                  "data": [
+                    {
+                      "uid": 1,
+                      "username": "admin",
+                      "sex": "male",
+                      "profile": "Demo admin profile",
+                      "avatar_url": "http://localhost:3344/v1/raw/image/avatar.jpg",
+                      "birth_time": "2020-01-10",
+                      "authority": "admin",
+                      "phone_number": "13512345678",
+                      "register_time": "2020-01-10 00:30:49"
+                    }
+                  ]
+                }
+              }
   /v1/user/{uid}/subscriber?page:
     get:
       operationId: v1-user-uid-subscriber-page-get
@@ -598,7 +656,7 @@ paths:
                   }
                 }
               }
-  /v1/user/:
+  /v1/user:
     put:
       operationId: v1-user-put
       summary: 更新用户
@@ -1078,7 +1136,7 @@ paths:
                 "code": 200,
                 "message": "success"
               }
-  /v1/video/:
+  /v1/video:
     post:
       operationId: v1-video-post
       summary: 新建视频

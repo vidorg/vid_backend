@@ -6,8 +6,10 @@ import (
 	"time"
 )
 
-type HTTPConfig struct {
-	Port int32 `yaml:"port"`
+type MetaConfig struct {
+	Port             int32          `yaml:"port"`
+	CurrentLocString string         `yaml:"current-loc"`
+	CurrentLoc       *time.Location `yaml:"-"`
 }
 
 type FileConfig struct {
@@ -46,24 +48,26 @@ type JwtConfig struct {
 	RedisFmt string `yaml:"redis-fmt"`
 }
 
-type ServerConfig struct {
-	RunMode     string       `yaml:"run-mode"`
-	HTTPConfig  *HTTPConfig  `yaml:"http"`
-	FileConfig  *FileConfig  `yaml:"file"`
-	MySqlConfig *MySqlConfig `yaml:"mysql"`
-	RedisConfig *RedisConfig `yaml:"redis"`
-	JwtConfig   *JwtConfig   `yaml:"jwt"`
+type SearchConfig struct {
+	DictPath string `yaml:"dictionary-path"`
+}
 
-	CurrentLocString string         `yaml:"current-loc"`
-	CurrentLoc       *time.Location `yaml:"-"`
+type ServerConfig struct {
+	RunMode      string        `yaml:"run-mode"`
+	MetaConfig   *MetaConfig   `yaml:"meta"`
+	FileConfig   *FileConfig   `yaml:"file"`
+	MySqlConfig  *MySqlConfig  `yaml:"mysql"`
+	RedisConfig  *RedisConfig  `yaml:"redis"`
+	JwtConfig    *JwtConfig    `yaml:"jwt"`
+	SearchConfig *SearchConfig `yaml:"search"`
 }
 
 func preLoad(config *ServerConfig) {
-	loc, err := time.LoadLocation(config.CurrentLocString)
+	loc, err := time.LoadLocation(config.MetaConfig.CurrentLocString)
 	if err != nil {
 		panic(err)
 	}
-	config.CurrentLoc = loc
+	config.MetaConfig.CurrentLoc = loc
 }
 
 func Load(configPath string) (*ServerConfig, error) {

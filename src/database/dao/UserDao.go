@@ -31,7 +31,11 @@ func (u *UserDao) QueryAll(page int32) ([]*po.User, int32) {
 }
 
 func (u *UserDao) QueryByUid(uid int32) *po.User {
-	return QueryHelper(u.Db, &po.User{}, &po.User{Uid: uid}).(*po.User)
+	out := QueryHelper(u.Db, &po.User{}, &po.User{Uid: uid})
+	if out == nil {
+		return nil
+	}
+	return out.(*po.User)
 }
 
 func (u *UserDao) Exist(uid int32) bool {

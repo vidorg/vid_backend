@@ -28,25 +28,36 @@ func NewJwtService(dic *xdi.DiContainer) *JwtService {
 	return srv
 }
 
-func (j *JwtService) JwtMiddleware(needAdmin bool) gin.HandlerFunc {
+func (j *JwtService) JwtMiddleware(needAdmin bool, needRet bool) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		authHeader := c.Request.Header.Get("Authorization")
+		authHeader := j.GetAuthToken(c)
 		user, err := j.JwtCheck(authHeader)
 		if err != nil {
-			// UnAuthorizedError / TokenExpiredError
-			result.Error(err).JSON(c)
-			c.Abort()
+			if needRet { // UnAuthorizedError / TokenExpiredError / AuthorizedUserNotFoundError
+				result.Error(err).JSON(c)
+				c.Abort()
+			}
 			return
 		}
 		if needAdmin && user.Authority != enum.AuthAdmin {
-			result.Error(exception.NeedAdminError).JSON(c)
-			c.Abort()
+			if needAdmin {
+				result.Error(exception.NeedAdminError).JSON(c)
+				c.Abort()
+			}
 			return
 		}
 
 		c.Set(j.UserKey, user)
 		c.Next()
 	}
+}
+
+func (j *JwtService) GetAuthToken(c *gin.Context) string {
+	authHeader := c.Request.Header.Get("Authorization")
+	if authHeader == "" {
+		authHeader = c.DefaultQuery("Authorization", "")
+	}
+	return authHeader
 }
 
 func (j *JwtService) JwtCheck(token string) (*po.User, *exception.ServerError) {
@@ -86,17 +97,23 @@ func (j *JwtService) JwtCheck(token string) (*po.User, *exception.ServerError) {
 func (j *JwtService) GetAuthUser(c *gin.Context) *po.User {
 	_user, exist := c.Get(j.UserKey)
 	if !exist { // not jet check auth
-		j.JwtMiddleware(false)(c)
+		j.JwtMiddleware(false, false)(c)
 		_user, exist = c.Get(j.UserKey)
-		if !exist { // Non-Auth
+		if !exist {
 			return nil
 		}
+		user, ok := _user.(*po.User)
+		if !ok {
+			return nil
+		}
+		return user
+	} else { // need auth
+		user, ok := _user.(*po.User)
+		if !ok {
+			result.Error(exception.UnAuthorizedError).JSON(c)
+			c.Abort()
+			return nil
+		}
+		return user
 	}
-	user, ok := _user.(*po.User)
-	if !ok { // auth failed
-		result.Error(exception.UnAuthorizedError).JSON(c)
-		c.Abort()
-		return nil
-	}
-	return user
 }

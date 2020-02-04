@@ -25,7 +25,6 @@ func SetupDBConn(cfg *config.MySqlConfig) *gorm.DB {
 	if err != nil {
 		log.Fatalln("Failed to connect mysql:", err)
 	}
-
 	// Change default deletedAt field behavior
 	xgorm.HookDeleteAtField(db, DefaultDeleteAtTimeStamp)
 
@@ -35,15 +34,39 @@ func SetupDBConn(cfg *config.MySqlConfig) *gorm.DB {
 		return "tbl_" + defaultTableName
 	}
 
-	authMigrate := func(value interface{}) {
-		rdb := db.AutoMigrate(value)
-		if rdb.Error != nil {
-			log.Fatalln("Failed to auto migrate model:", rdb.Error)
-		}
-	}
-	authMigrate(&po.User{})
-	authMigrate(&po.Account{})
-	authMigrate(&po.Video{})
+	autoMigrateModel(db)
+	addFullTextIndex(db)
 
 	return db
+}
+
+func autoMigrateModel(db *gorm.DB) {
+	autoMigrate := func(value interface{}) {
+		rdb := db.AutoMigrate(value)
+		if rdb.Error != nil {
+			panic(rdb.Error)
+		}
+	}
+
+	autoMigrate(&po.User{})
+	autoMigrate(&po.Account{})
+	autoMigrate(&po.Video{})
+}
+
+func addFullTextIndex(db *gorm.DB) {
+	checkExecIndex := func(tblName string, idxName string, param string) {
+		rdb := db.Exec("SHOW INDEX FROM "+tblName+" WHERE Key_name = ?", idxName)
+		if rdb.Error != nil {
+			panic(rdb.Error)
+		}
+		if rdb.RecordNotFound() {
+			sql := fmt.Sprintf("CREATE FULLTEXT INDEX `%s` ON `%s` (%s) WITH PARSER `ngram`", idxName, tblName, param)
+			rdb := db.Exec(sql)
+			if rdb.Error != nil {
+				panic(rdb.Error)
+			}
+		}
+	}
+
+	checkExecIndex("tbl_user", "idx_username_profile_fulltext", "`username`(100), `profile`(5)")
 }

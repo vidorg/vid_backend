@@ -9,6 +9,7 @@ assets/docs/
 usr/image/*.*
 usr/video/*.*
 log/*
+dictionary.txt
 
 !.gitkeep
 !usr/image/avatar.jpg

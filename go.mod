@@ -4,12 +4,15 @@ require (
 	github.com/Aoi-hosizora/ahlib v0.0.0-20200204070028-56cdd0c3662f
 	github.com/Aoi-hosizora/ahlib-gin-gorm v0.0.0-20200129064644-7d937045c25c
 	github.com/DeanThompson/ginpprof v0.0.0-20190408063150-3be636683586
+	github.com/adamzy/cedar-go v0.0.0-20170805034717-80a9c64b256d // indirect
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/gin-contrib/cors v1.3.0
 	github.com/gin-gonic/gin v1.5.0
 	github.com/go-openapi/jsonreference v0.19.3 // indirect
 	github.com/go-openapi/spec v0.19.3 // indirect
 	github.com/gomodule/redigo v2.0.0+incompatible
+	github.com/huichen/sego v0.0.0-20180617034105-3f3c8a8cfacc
+	github.com/issue9/assert v1.3.4 // indirect
 	github.com/jinzhu/gorm v1.9.12
 	github.com/mailru/easyjson v0.7.0 // indirect
 	github.com/mattn/go-isatty v0.0.10 // indirect

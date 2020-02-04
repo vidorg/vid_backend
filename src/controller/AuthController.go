@@ -123,7 +123,7 @@ func (a *AuthController) Register(c *gin.Context) {
 	result.Status(http.StatusCreated).SetData(retDto).JSON(c)
 }
 
-// @Router              /v1/auth/ [GET]
+// @Router              /v1/auth [GET]
 // @Security            Jwt
 // @Template            Auth
 // @Summary             当前登录用户
@@ -145,7 +145,7 @@ func (a *AuthController) CurrentUser(c *gin.Context) {
 // @ResponseModel 200   #Result
 // @ResponseEx 200      ${resp_success}
 func (a *AuthController) Logout(c *gin.Context) {
-	authHeader := c.GetHeader("Authorization")
+	authHeader := a.JwtService.GetAuthToken(c)
 	ok := a.TokenDao.Delete(authHeader)
 	if !ok {
 		result.Error(exception.LogoutError).JSON(c)

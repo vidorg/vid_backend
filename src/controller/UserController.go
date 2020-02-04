@@ -25,6 +25,7 @@ type UserController struct {
 	UserDao    *dao.UserDao           `di:"~"`
 	VideoDao   *dao.VideoDao          `di:"~"`
 	SubDao     *dao.SubDao            `di:"~"`
+	SearchDao  *dao.SearchDao         `di:"~"`
 	Mapper     *xmapper.EntityMapper  `di:"~"`
 }
 
@@ -89,7 +90,7 @@ func (u *UserController) QueryUser(c *gin.Context) {
 		PutData("extra", extraInfo).JSON(c)
 }
 
-// @Router              /v1/user/ [PUT]
+// @Router              /v1/user [PUT]
 // @Security            Jwt
 // @Template            Auth Param
 // @Summary             更新用户
@@ -141,7 +142,7 @@ func (u *UserController) UpdateUser(isSpec bool) func(c *gin.Context) {
 		user.Username = userParam.Username
 		user.Sex = enum.ParseSexType(userParam.Sex)
 		user.Profile = *userParam.Profile
-		user.BirthTime, _ = xdatetime.JsonDate{}.Parse(userParam.BirthTime, u.Config.CurrentLoc)
+		user.BirthTime, _ = xdatetime.JsonDate{}.Parse(userParam.BirthTime, u.Config.MetaConfig.CurrentLoc)
 		user.PhoneNumber = userParam.PhoneNumber
 		url, ok := util.CommonUtil.GetFilenameFromUrl(userParam.AvatarUrl, u.Config.FileConfig.ImageUrlPrefix)
 		if !ok {
@@ -167,7 +168,7 @@ func (u *UserController) UpdateUser(isSpec bool) func(c *gin.Context) {
 	}
 }
 
-// @Router              /v1/user/ [DELETE]
+// @Router              /v1/user [DELETE]
 // @Security            Jwt
 // @Template            Auth
 // @Summary             删除用户

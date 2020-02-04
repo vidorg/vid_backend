@@ -20,14 +20,16 @@ func NewPassDao(dic *xdi.DiContainer) *AccountDao {
 }
 
 func (a *AccountDao) QueryByUsername(username string) *po.Account {
-	user := QueryHelper(a.Db, &po.User{}, &po.User{Username: username}).(*po.User)
-	if user == nil {
+	out := QueryHelper(a.Db, &po.User{}, &po.User{Username: username})
+	if out == nil {
 		return nil
 	}
-	account := QueryHelper(a.Db, &po.Account{}, &po.Account{Uid: user.Uid}).(*po.Account)
-	if account == nil {
+	user := out.(*po.User)
+	out = QueryHelper(a.Db, &po.Account{}, &po.Account{Uid: user.Uid})
+	if out == nil {
 		return nil
 	}
+	account := out.(*po.Account)
 	account.User = user
 	return account
 }

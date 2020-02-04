@@ -31,13 +31,13 @@ func InitServer(config *config.ServerConfig) *http.Server {
 	dic := ProvideService(config)
 
 	// Route
-	router.SetupCommonRouter(engine)
-	engine.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	router.SetupV1Router(engine, config, dic)
+	engine.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	router.SetupCommonRouter(engine)
 
 	// Server
 	return &http.Server{
-		Addr:    fmt.Sprintf(":%d", config.HTTPConfig.Port),
+		Addr:    fmt.Sprintf(":%d", config.MetaConfig.Port),
 		Handler: engine,
 	}
 }

@@ -4,6 +4,7 @@ import (
 	"github.com/Aoi-hosizora/ahlib/xdi"
 	"github.com/gomodule/redigo/redis"
 	"github.com/vidorg/vid_backend/src/common/profile"
+	"github.com/vidorg/vid_backend/src/common/seg"
 	"github.com/vidorg/vid_backend/src/config"
 	"github.com/vidorg/vid_backend/src/database"
 	"github.com/vidorg/vid_backend/src/database/dao"
@@ -16,6 +17,8 @@ func ProvideService(config *config.ServerConfig) *xdi.DiContainer {
 
 	mapper := profile.CreateMapperProfile(config)
 	dic.Provide(mapper)
+	segSrv := seg.NewSegmentService(dic)
+	dic.Provide(segSrv)
 
 	gormConn := database.SetupDBConn(config.MySqlConfig)
 	dic.Provide(gormConn) // after config
@@ -32,6 +35,8 @@ func ProvideService(config *config.ServerConfig) *xdi.DiContainer {
 	dic.Provide(subDao)
 	videoDao := dao.NewVideoDao(dic)
 	dic.Provide(videoDao)
+	searchDao := dao.NewSearchDao(dic)
+	dic.Provide(searchDao) // after segSrv
 
 	jwtSrv := middleware.NewJwtService(dic)
 	dic.Provide(jwtSrv) // after dao
