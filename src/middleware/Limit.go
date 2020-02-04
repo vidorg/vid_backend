@@ -17,7 +17,7 @@ func LimitMiddleware(maxSize int64) gin.HandlerFunc {
 		if err != nil {
 			// https://github.com/gin-gonic/gin/issues/1136
 			// conn, bufRw, err := c.Writer.Hijack()
-			result.Result{}.Result(http.StatusRequestEntityTooLarge).SetMessage(exception.RequestSizeError.Error()).JSON(c)
+			result.Status(http.StatusRequestEntityTooLarge).SetMessage(exception.RequestSizeError.Error()).JSON(c)
 			c.Abort()
 			return
 		}

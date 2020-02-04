@@ -35,12 +35,12 @@ func (j *JwtService) JwtMiddleware(needAdmin bool) gin.HandlerFunc {
 		user, err := j.JwtCheck(authHeader)
 		if err != nil {
 			// UnAuthorizedError / TokenExpiredError
-			result.Result{}.Result(http.StatusUnauthorized).SetMessage(err.Error()).JSON(c)
+			result.Status(http.StatusUnauthorized).SetMessage(err.Error()).JSON(c)
 			c.Abort()
 			return
 		}
 		if needAdmin && user.Authority != enum.AuthAdmin {
-			result.Result{}.Result(http.StatusUnauthorized).SetMessage(exception.NeedAdminError.Error()).JSON(c)
+			result.Status(http.StatusUnauthorized).SetMessage(exception.NeedAdminError.Error()).JSON(c)
 			c.Abort()
 			return
 		}
@@ -95,7 +95,7 @@ func (j *JwtService) GetAuthUser(c *gin.Context) *po.User {
 	}
 	user, ok := _user.(*po.User)
 	if !ok { // auth failed
-		result.Result{}.Result(http.StatusUnauthorized).SetMessage(exception.UnAuthorizedError.Error()).JSON(c)
+		result.Status(http.StatusUnauthorized).SetMessage(exception.UnAuthorizedError.Error()).JSON(c)
 		c.Abort()
 		return nil
 	}

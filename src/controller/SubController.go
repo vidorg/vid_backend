@@ -44,18 +44,18 @@ func (s *SubController) QuerySubscriberUsers(c *gin.Context) {
 	uid, ok := param.BindRouteId(c, "uid")
 	page := param.BindQueryPage(c)
 	if !ok {
-		result.Result{}.Result(http.StatusBadRequest).SetMessage(exception.RequestParamError.Error()).JSON(c)
+		result.Status(http.StatusBadRequest).SetMessage(exception.RequestParamError.Error()).JSON(c)
 		return
 	}
 
 	users, count, status := s.SubDao.QuerySubscriberUsers(uid, page)
 	if status == database.DbNotFound {
-		result.Result{}.Result(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()).JSON(c)
+		result.Status(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()).JSON(c)
 		return
 	}
 
 	retDto := xcondition.First(s.Mapper.Map([]*dto.UserDto{}, users)).([]*dto.UserDto)
-	result.Result{}.Ok().SetPage(count, page, retDto).JSON(c)
+	result.Ok().SetPage(count, page, retDto).JSON(c)
 }
 
 // @Router              /v1/user/{uid}/subscribing?page [GET]
@@ -70,18 +70,18 @@ func (s *SubController) QuerySubscribingUsers(c *gin.Context) {
 	uid, ok := param.BindRouteId(c, "uid")
 	page := param.BindQueryPage(c)
 	if !ok {
-		result.Result{}.Result(http.StatusBadRequest).SetMessage(exception.RequestParamError.Error()).JSON(c)
+		result.Status(http.StatusBadRequest).SetMessage(exception.RequestParamError.Error()).JSON(c)
 		return
 	}
 
 	users, count, status := s.SubDao.QuerySubscribingUsers(uid, page)
 	if status == database.DbNotFound {
-		result.Result{}.Result(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()).JSON(c)
+		result.Status(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()).JSON(c)
 		return
 	}
 
 	retDto := xcondition.First(s.Mapper.Map([]*dto.UserDto{}, users)).([]*dto.UserDto)
-	result.Result{}.Ok().SetPage(count, page, retDto).JSON(c)
+	result.Ok().SetPage(count, page, retDto).JSON(c)
 }
 
 // @Router              /v1/user/subscribing [PUT]
@@ -99,24 +99,24 @@ func (s *SubController) SubscribeUser(c *gin.Context) {
 	authUser := s.JwtService.GetAuthUser(c)
 	subParam := &param.SubParam{}
 	if err := c.ShouldBind(subParam); err != nil {
-		result.Result{}.Result(http.StatusBadRequest).SetMessage(exception.WrapValidationError(err).Error()).JSON(c)
+		result.Status(http.StatusBadRequest).SetMessage(exception.WrapValidationError(err).Error()).JSON(c)
 		return
 	}
 	if authUser.Uid == subParam.Uid {
-		result.Result{}.Result(http.StatusBadRequest).SetMessage(exception.SubscribeSelfError.Error()).JSON(c)
+		result.Status(http.StatusBadRequest).SetMessage(exception.SubscribeSelfError.Error()).JSON(c)
 		return
 	}
 
 	status := s.SubDao.SubscribeUser(authUser.Uid, subParam.Uid)
 	if status == database.DbNotFound {
-		result.Result{}.Result(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()).JSON(c)
+		result.Status(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()).JSON(c)
 		return
 	} else if status == database.DbFailed {
-		result.Result{}.Error().SetMessage(exception.SubscribeError.Error()).JSON(c)
+		result.Error().SetMessage(exception.SubscribeError.Error()).JSON(c)
 		return
 	}
 
-	result.Result{}.Ok().JSON(c)
+	result.Ok().JSON(c)
 }
 
 // @Router              /v1/user/subscribing [DELETE]
@@ -133,18 +133,18 @@ func (s *SubController) UnSubscribeUser(c *gin.Context) {
 	authUser := s.JwtService.GetAuthUser(c)
 	subParam := &param.SubParam{}
 	if err := c.ShouldBind(subParam); err != nil {
-		result.Result{}.Result(http.StatusBadRequest).SetMessage(exception.WrapValidationError(err).Error()).JSON(c)
+		result.Status(http.StatusBadRequest).SetMessage(exception.WrapValidationError(err).Error()).JSON(c)
 		return
 	}
 
 	status := s.SubDao.UnSubscribeUser(authUser.Uid, subParam.Uid)
 	if status == database.DbNotFound {
-		result.Result{}.Result(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()).JSON(c)
+		result.Status(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()).JSON(c)
 		return
 	} else if status == database.DbFailed {
-		result.Result{}.Error().SetMessage(exception.UnSubscribeError.Error()).JSON(c)
+		result.Error().SetMessage(exception.UnSubscribeError.Error()).JSON(c)
 		return
 	}
 
-	result.Result{}.Ok().JSON(c)
+	result.Ok().JSON(c)
 }

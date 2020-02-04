@@ -1,8 +1,7 @@
 module github.com/vidorg/vid_backend
 
 require (
-	cloud.google.com/go v0.46.3 // indirect
-	github.com/Aoi-hosizora/ahlib v0.0.0-20200128181747-318e0c2b28df
+	github.com/Aoi-hosizora/ahlib v0.0.0-20200204070028-56cdd0c3662f
 	github.com/Aoi-hosizora/ahlib-gin-gorm v0.0.0-20200129064644-7d937045c25c
 	github.com/DeanThompson/ginpprof v0.0.0-20190408063150-3be636683586
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
@@ -10,7 +9,6 @@ require (
 	github.com/gin-gonic/gin v1.5.0
 	github.com/go-openapi/jsonreference v0.19.3 // indirect
 	github.com/go-openapi/spec v0.19.3 // indirect
-	github.com/go-sql-driver/mysql v1.4.1
 	github.com/gomodule/redigo v2.0.0+incompatible
 	github.com/jinzhu/gorm v1.9.12
 	github.com/mailru/easyjson v0.7.0 // indirect
@@ -20,8 +18,9 @@ require (
 	golang.org/x/crypto v0.0.0-20191205180655-e7c4368fe9dd
 	golang.org/x/image v0.0.0-20190802002840-cff245a6509b
 	golang.org/x/net v0.0.0-20191011234655-491137f69257 // indirect
+	golang.org/x/tools v0.0.0-20191216173652-a0e659d51361 // indirect
+	google.golang.org/appengine v1.6.1 // indirect
 	gopkg.in/check.v1 v1.0.0-20190902080502-41f04d3bba15 // indirect
-	gopkg.in/go-playground/validator.v9 v9.29.1
 	gopkg.in/yaml.v2 v2.2.4
 )
 

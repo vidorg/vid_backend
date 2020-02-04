@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/Aoi-hosizora/ahlib/xhashmap"
+	"github.com/Aoi-hosizora/ahlib/xlinkedhashmap"
 	"github.com/gin-gonic/gin"
 )
 
@@ -13,12 +13,12 @@ import (
 // @Property      code    integer true false "响应码"
 // @Property      message string  true false "状态信息"
 type Result struct {
-	Code    int                     `json:"code"`
-	Message string                  `json:"message"`
-	Data    *xhashmap.LinkedHashMap `json:"data,omitempty"`
+	Code    int                           `json:"code"`
+	Message string                        `json:"message"`
+	Data    *xlinkedhashmap.LinkedHashMap `json:"data,omitempty"`
 }
 
-func (Result) Result(code int) *Result {
+func Status(code int) *Result {
 	message := http.StatusText(code)
 	if message == "" {
 		message = "Unknown status"
@@ -29,12 +29,12 @@ func (Result) Result(code int) *Result {
 	}
 }
 
-func (Result) Ok() *Result {
-	return Result{}.Result(http.StatusOK)
+func Ok() *Result {
+	return Status(http.StatusOK)
 }
 
-func (Result) Error() *Result {
-	return Result{}.Result(http.StatusInternalServerError)
+func Error() *Result {
+	return Status(http.StatusInternalServerError)
 }
 
 func (r *Result) SetCode(code int) *Result {
@@ -48,13 +48,13 @@ func (r *Result) SetMessage(message string) *Result {
 }
 
 func (r *Result) SetData(data interface{}) *Result {
-	r.Data = xhashmap.ObjectToLinkedHashMap(data)
+	r.Data = xlinkedhashmap.ObjectToLinkedHashMap(data)
 	return r
 }
 
 func (r *Result) PutData(field string, data interface{}) *Result {
 	if r.Data == nil {
-		r.Data = new(xhashmap.LinkedHashMap)
+		r.Data = xlinkedhashmap.NewLinkedHashMap()
 	}
 	r.Data.Set(field, data)
 	return r
@@ -62,7 +62,7 @@ func (r *Result) PutData(field string, data interface{}) *Result {
 
 func (r *Result) SetPage(count int32, page int32, data interface{}) *Result {
 	if r.Data == nil {
-		r.Data = new(xhashmap.LinkedHashMap)
+		r.Data = xlinkedhashmap.NewLinkedHashMap()
 	}
 	r.Data.Set("total", count)
 	r.Data.Set("page", page)
