@@ -38,16 +38,16 @@ func NewAuthController(dic *xdi.DiContainer) *AuthController {
 // @Template            ParamA
 // @Summary             登录
 // @Tag                 Authorization
-// @Param               param body #LoginParam true false "登录请求参数"
+// @Param               param body #LoginParam true false "请求参数"
 // @ResponseDesc 401    "password error"
 // @ResponseDesc 404    "user not found"
 // @ResponseDesc 500    "login failed"
 // @ResponseModel 200   #Result<LoginDto>
-// @Response 200        ${resp_login}
+// @ResponseEx 200      ${resp_login}
 func (a *AuthController) Login(c *gin.Context) {
 	loginParam := &param.LoginParam{}
 	if err := c.ShouldBind(loginParam); err != nil {
-		result.Status(http.StatusBadRequest).SetMessage(exception.RequestParamError.Error()).JSON(c) // Login only use param error
+		result.Error(exception.RequestParamError).JSON(c)
 		return
 	}
 	if loginParam.Expire <= 0 {
@@ -56,24 +56,22 @@ func (a *AuthController) Login(c *gin.Context) {
 
 	account := a.AccountDao.QueryByUsername(loginParam.Username)
 	if account == nil {
-		result.Status(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()).JSON(c)
+		result.Error(exception.UserNotFoundError).JSON(c)
 		return
 	}
-
 	if !util.AuthUtil.CheckPassword(loginParam.Password, account.EncryptedPass) {
-		result.Status(http.StatusUnauthorized).SetMessage(exception.PasswordError.Error()).JSON(c)
+		result.Error(exception.PasswordError).JSON(c)
 		return
 	}
 
 	token, err := util.AuthUtil.GenerateToken(account.User.Uid, loginParam.Expire, a.Config.JwtConfig)
 	if err != nil {
-		result.Error().SetMessage(exception.LoginError.Error()).JSON(c)
+		result.Error(exception.LoginError).JSON(c)
 		return
 	}
-
 	ok := a.TokenDao.Insert(token, account.Uid, loginParam.Expire)
 	if !ok {
-		result.Error().SetMessage(exception.LoginError.Error()).JSON(c)
+		result.Error(exception.LoginError).JSON(c)
 		return
 	}
 
@@ -88,21 +86,21 @@ func (a *AuthController) Login(c *gin.Context) {
 // @Template            Param
 // @Summary             注册
 // @Tag                 Authorization
-// @Param               param body #RegisterParam true false "注册请求参数"
-// @ResponseDesc 500    "username has been used"
+// @Param               param body #RegisterParam true false "请求参数"
+// @ResponseDesc 400    "username has been used"
 // @ResponseDesc 500    "register failed"
 // @ResponseModel 201   #Result<UserDto>
 // @Response 201        ${resp_register}
 func (a *AuthController) Register(c *gin.Context) {
 	registerParam := &param.RegisterParam{}
 	if err := c.ShouldBind(registerParam); err != nil {
-		result.Status(http.StatusBadRequest).SetMessage(exception.WrapValidationError(err).Error()).JSON(c) // Register use wrap error
+		result.Error(exception.WrapValidationError(err)).JSON(c)
 		return
 	}
 
 	encrypted, err := util.AuthUtil.EncryptPassword(registerParam.Password)
 	if err != nil {
-		result.Error().SetMessage(exception.RegisterError.Error()).JSON(c)
+		result.Error(exception.RegisterError).JSON(c)
 		return
 	}
 	passRecord := &po.Account{
@@ -114,10 +112,10 @@ func (a *AuthController) Register(c *gin.Context) {
 	}
 	status := a.AccountDao.Insert(passRecord)
 	if status == database.DbExisted {
-		result.Error().SetMessage(exception.UsernameUsedError.Error()).JSON(c)
+		result.Error(exception.UsernameUsedError).JSON(c)
 		return
 	} else if status == database.DbFailed {
-		result.Error().SetMessage(exception.RegisterError.Error()).JSON(c)
+		result.Error(exception.RegisterError).JSON(c)
 		return
 	}
 
@@ -131,7 +129,7 @@ func (a *AuthController) Register(c *gin.Context) {
 // @Summary             当前登录用户
 // @Tag                 Authorization
 // @ResponseModel 200   #Result<UserDto>
-// @Response 200        ${resp_user}
+// @ResponseEx 200      ${resp_user}
 func (a *AuthController) CurrentUser(c *gin.Context) {
 	authUser := a.JwtService.GetAuthUser(c)
 	retDto := xcondition.First(a.Mapper.Map(&dto.UserDto{}, authUser)).(*dto.UserDto)
@@ -145,14 +143,12 @@ func (a *AuthController) CurrentUser(c *gin.Context) {
 // @Tag                 Authorization
 // @ResponseDesc 500    "logout failed"
 // @ResponseModel 200   #Result
-// @Response 200        ${resp_success}
+// @ResponseEx 200      ${resp_success}
 func (a *AuthController) Logout(c *gin.Context) {
 	authHeader := c.GetHeader("Authorization")
-
-	// only delete current token
 	ok := a.TokenDao.Delete(authHeader)
 	if !ok {
-		result.Error().SetMessage(exception.LogoutError.Error()).JSON(c)
+		result.Error(exception.LogoutError).JSON(c)
 		return
 	}
 
@@ -164,22 +160,22 @@ func (a *AuthController) Logout(c *gin.Context) {
 // @Template            Auth Param
 // @Summary             修改密码
 // @Tag                 Authorization
-// @Param               param body #PassParam true false "修改密码请求参数"
+// @Param               param body #PassParam true false "请求参数"
 // @ResponseDesc 404    "user not found"
 // @ResponseDesc 500    "update password failed"
 // @ResponseModel 200   #Result
-// @Response 200        ${resp_success}
+// @ResponseEx 200      ${resp_success}
 func (a *AuthController) UpdatePassword(c *gin.Context) {
 	authUser := a.JwtService.GetAuthUser(c)
 	passParam := &param.PassParam{}
 	if err := c.ShouldBind(passParam); err != nil {
-		result.Status(http.StatusBadRequest).SetMessage(exception.WrapValidationError(err).Error()).JSON(c)
+		result.Error(exception.WrapValidationError(err)).JSON(c)
 		return
 	}
 
 	encrypted, err := util.AuthUtil.EncryptPassword(passParam.Password)
 	if err != nil {
-		result.Error().SetMessage(exception.UpdatePassError.Error()).JSON(c)
+		result.Error(exception.UpdatePassError).JSON(c)
 		return
 	}
 	passRecord := &po.Account{
@@ -188,13 +184,12 @@ func (a *AuthController) UpdatePassword(c *gin.Context) {
 	}
 	status := a.AccountDao.Update(passRecord)
 	if status == database.DbNotFound {
-		result.Status(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()).JSON(c)
+		result.Error(exception.UserNotFoundError).JSON(c)
 		return
 	} else if status == database.DbFailed {
-		result.Error().SetMessage(exception.UpdatePassError.Error()).JSON(c)
+		result.Error(exception.UpdatePassError).JSON(c)
 		return
 	}
-	// Delete all token but ignore result
 	_ = a.TokenDao.DeleteAll(authUser.Uid)
 
 	result.Ok().JSON(c)

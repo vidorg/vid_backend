@@ -1,7 +1,6 @@
 package dao
 
 import (
-	"github.com/Aoi-hosizora/ahlib-gin-gorm/xgorm"
 	"github.com/Aoi-hosizora/ahlib/xdi"
 	"github.com/jinzhu/gorm"
 	"github.com/vidorg/vid_backend/src/database"
@@ -21,14 +20,12 @@ func NewPassDao(dic *xdi.DiContainer) *AccountDao {
 }
 
 func (a *AccountDao) QueryByUsername(username string) *po.Account {
-	user := &po.User{Username: username}
-	rdb := a.Db.Model(&po.User{}).Where(user).First(user)
-	if rdb.RecordNotFound() {
+	user := QueryHelper(a.Db, &po.User{}, &po.User{Username: username}).(*po.User)
+	if user == nil {
 		return nil
 	}
-	account := &po.Account{Uid: user.Uid}
-	rdb = a.Db.Model(&po.Account{}).Where(account).First(account)
-	if rdb.RecordNotFound() {
+	account := QueryHelper(a.Db, &po.Account{}, &po.Account{Uid: user.Uid}).(*po.Account)
+	if account == nil {
 		return nil
 	}
 	account.User = user
@@ -36,21 +33,9 @@ func (a *AccountDao) QueryByUsername(username string) *po.Account {
 }
 
 func (a *AccountDao) Insert(pass *po.Account) database.DbStatus {
-	rdb := a.Db.Model(&po.Account{}).Create(pass) // cascade create
-	if xgorm.IsMySqlDuplicateError(rdb.Error) {
-		return database.DbExisted
-	} else if rdb.Error != nil || rdb.RowsAffected == 0 {
-		return database.DbFailed
-	}
-	return database.DbSuccess
+	return InsertHelper(a.Db, &po.Account{}, pass) // cascade create
 }
 
 func (a *AccountDao) Update(pass *po.Account) database.DbStatus {
-	rdb := a.Db.Model(&po.Account{}).Update(pass)
-	if rdb.Error != nil {
-		return database.DbFailed
-	} else if rdb.RowsAffected == 0 {
-		return database.DbNotFound
-	}
-	return database.DbSuccess
+	return UpdateHelper(a.Db, &po.Account{}, pass)
 }

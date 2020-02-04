@@ -46,7 +46,7 @@ paths:
         in: body
         required: true
         allowEmptyValue: false
-        description: 登录请求参数
+        description: 请求参数
         schema:
           $ref: '#/definitions/LoginParam'
       security: []
@@ -102,37 +102,20 @@ paths:
         in: body
         required: true
         allowEmptyValue: false
-        description: 注册请求参数
+        description: 请求参数
         schema:
           $ref: '#/definitions/RegisterParam'
       security: []
       responses:
         '400':
           description: |-
-            "request param error", "request format error"
+            "request param error", "request format error", "username has been used"
         '500':
           description: |-
-            "username has been used", "register failed"
+            "register failed"
         '201':
           schema:
             $ref: '#/definitions/Result<UserDto>'
-          examples:
-            application/json: |-
-              {
-                "code": 201,
-                "message": "created",
-                "data": {
-                  "uid": 1,
-                  "username": "admin",
-                  "sex": "male",
-                  "profile": "Demo admin profile",
-                  "avatar_url": "http://localhost:3344/v1/raw/image/avatar.jpg",
-                  "birth_time": "2020-01-10",
-                  "authority": "admin",
-                  "phone_number": "13512345678",
-                  "register_time": "2020-01-10 00:30:49"
-                }
-              }
   /v1/auth/:
     get:
       operationId: v1-auth-get
@@ -212,7 +195,7 @@ paths:
         in: body
         required: true
         allowEmptyValue: false
-        description: 修改密码请求参数
+        description: 请求参数
         schema:
           $ref: '#/definitions/PassParam'
       security:
@@ -442,7 +425,7 @@ paths:
         in: body
         required: true
         allowEmptyValue: false
-        description: 关注请求参数
+        description: 请求参数
         schema:
           $ref: '#/definitions/SubParam'
       security:
@@ -483,7 +466,7 @@ paths:
         in: body
         required: true
         allowEmptyValue: false
-        description: 关注请求参数
+        description: 请求参数
         schema:
           $ref: '#/definitions/SubParam'
       security:
@@ -566,7 +549,7 @@ paths:
     get:
       operationId: v1-user-uid-get
       summary: 查询用户
-      description: 此处可见用户手机号码
+      description: 此处用户本人可见手机号码，管理员不受限制
       tags:
       - User
       consumes:
@@ -630,7 +613,7 @@ paths:
         in: body
         required: true
         allowEmptyValue: false
-        description: 用户请求参数
+        description: 请求参数
         schema:
           $ref: '#/definitions/UserParam'
       security:
@@ -721,7 +704,7 @@ paths:
         in: body
         required: true
         allowEmptyValue: false
-        description: 用户请求参数
+        description: 请求参数
         schema:
           $ref: '#/definitions/UserParam'
       security:
@@ -865,7 +848,7 @@ paths:
   /v1/user/{uid}/video?page:
     get:
       operationId: v1-user-uid-video-page-get
-      summary: 查询用户发布的视频
+      summary: 查询用户发布的所有视频
       tags:
       - Video
       consumes:
@@ -933,7 +916,7 @@ paths:
     get:
       operationId: v1-video-vid-get
       summary: 查询视频
-      description: 作者id为-1表示已删除的用户
+      description: 作者为 null 表示用户已删除
       tags:
       - Video
       consumes:
@@ -1006,7 +989,7 @@ paths:
         in: body
         required: true
         allowEmptyValue: false
-        description: 视频请求参数
+        description: 请求参数
         schema:
           $ref: '#/definitions/VideoParam'
       security:
@@ -1014,10 +997,10 @@ paths:
       responses:
         '401':
           description: |-
-            "unauthorized user", "token has expired", "authorized user not found", "need admin authority"
+            "unauthorized user", "token has expired", "authorized user not found"
         '400':
           description: |-
-            "request param error", "request format error", "video has been uploaded"
+            "request param error", "request format error", "video url has been used"
         '404':
           description: |-
             "video not found"
@@ -1076,7 +1059,7 @@ paths:
       responses:
         '401':
           description: |-
-            "unauthorized user", "token has expired", "authorized user not found", "need admin authority"
+            "unauthorized user", "token has expired", "authorized user not found"
         '400':
           description: |-
             "request param error"
@@ -1110,7 +1093,7 @@ paths:
         in: body
         required: true
         allowEmptyValue: false
-        description: 视频请求参数
+        description: 请求参数
         schema:
           $ref: '#/definitions/VideoParam'
       security:
@@ -1121,39 +1104,13 @@ paths:
             "unauthorized user", "token has expired", "authorized user not found"
         '400':
           description: |-
-            "request param error", "request format error", "video has been uploaded"
+            "request param error", "request format error", "video url has been used"
         '500':
           description: |-
             "video insert failed"
         '201':
           schema:
             $ref: '#/definitions/Result<VideoDto>'
-          examples:
-            application/json: |-
-              {
-                "code": 201,
-                "message": "created",
-                "data": {
-                  "vid": 1,
-                  "title": "The First Video",
-                  "description": "This is the first video uploaded",
-                  "video_url": "123",
-                  "cover_url": "http://localhost:3344/v1/raw/image/avatar.jpg",
-                  "upload_time": "2020-01-10 00:55:36",
-                  "update_time": "2020-01-10 14:31:00",
-                  "author": {
-                    "uid": 1,
-                    "username": "admin",
-                    "sex": "male",
-                    "profile": "Demo admin profile",
-                    "avatar_url": "http://localhost:3344/v1/raw/image/avatar.jpg",
-                    "birth_time": "2020-01-10",
-                    "authority": "admin",
-                    "phone_number": "13512345678",
-                    "register_time": "2020-01-10 00:30:49"
-                  }
-                }
-              }
   /ping:
     get:
       operationId: ping-get

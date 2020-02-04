@@ -1,6 +1,7 @@
 package result
 
 import (
+	"github.com/vidorg/vid_backend/src/common/exception"
 	"net/http"
 	"strings"
 
@@ -33,9 +34,13 @@ func Ok() *Result {
 	return Status(http.StatusOK)
 }
 
-func Error() *Result {
-	return Status(http.StatusInternalServerError)
+func Error(se *exception.ServerError) *Result {
+	return Status(se.Code).SetMessage(se.Message)
 }
+
+// func Error() *Result {
+// 	return Status(http.StatusInternalServerError)
+// }
 
 func (r *Result) SetCode(code int) *Result {
 	r.Code = code

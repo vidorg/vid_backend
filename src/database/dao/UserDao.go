@@ -1,7 +1,6 @@
 package dao
 
 import (
-	"github.com/Aoi-hosizora/ahlib-gin-gorm/xgorm"
 	"github.com/Aoi-hosizora/ahlib/xdi"
 	"github.com/jinzhu/gorm"
 	"github.com/vidorg/vid_backend/src/config"
@@ -25,49 +24,26 @@ func NewUserDao(dic *xdi.DiContainer) *UserDao {
 	return repo
 }
 
-func (u *UserDao) QueryAll(page int32) (users []*po.User, count int32) {
-	u.Db.Model(&po.User{}).Count(&count)
-	u.Db.Model(&po.User{}).Limit(u.PageSize).Offset((page - 1) * u.PageSize).Find(&users)
-	return users, count
+func (u *UserDao) QueryAll(page int32) ([]*po.User, int32) {
+	users := make([]*po.User, 0)
+	total := PageHelper(u.Db, &po.User{}, u.PageSize, page, &po.User{}, &users)
+	return users, total
 }
 
 func (u *UserDao) QueryByUid(uid int32) *po.User {
-	user := &po.User{Uid: uid}
-	rdb := u.Db.Model(&po.User{}).Where(user).First(user)
-	if rdb.RecordNotFound() {
-		return nil
-	}
-	return user
+	return QueryHelper(u.Db, &po.User{}, &po.User{Uid: uid}).(*po.User)
 }
 
 func (u *UserDao) Exist(uid int32) bool {
-	user := &po.User{Uid: uid}
-	cnt := 0
-	u.Db.Model(&po.User{}).Where(user).Count(&cnt)
-	return cnt > 0
+	return ExistHelper(u.Db, &po.User{}, &po.User{Uid: uid})
 }
 
 func (u *UserDao) Update(user *po.User) database.DbStatus {
-	rdb := u.Db.Model(&po.User{}).Update(user)
-	if rdb.Error != nil {
-		if xgorm.IsMySqlDuplicateError(rdb.Error) {
-			return database.DbExisted
-		} else {
-			return database.DbFailed
-		}
-	} else if rdb.RowsAffected == 0 {
-		return database.DbNotFound
-	}
-	return database.DbSuccess
+	return UpdateHelper(u.Db, &po.User{}, user)
 }
 
 func (u *UserDao) Delete(uid int32) database.DbStatus {
-	rdb := u.Db.Model(&po.User{}).Delete(&po.User{Uid: uid})
-	if rdb.Error != nil {
-		return database.DbFailed
-	} else if rdb.RowsAffected == 0 {
-		return database.DbNotFound
-	}
-	u.Db.Delete(&po.Account{Uid: uid})
-	return database.DbSuccess
+	ret := DeleteHelper(u.Db, &po.User{}, &po.User{Uid: uid})
+	DeleteHelper(u.Db, &po.Account{}, &po.Account{Uid: uid})
+	return ret
 }

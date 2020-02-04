@@ -10,7 +10,6 @@ import (
 	"github.com/vidorg/vid_backend/src/common/result"
 	"github.com/vidorg/vid_backend/src/config"
 	"github.com/vidorg/vid_backend/src/util"
-	"net/http"
 )
 
 type RawController struct {
@@ -36,23 +35,23 @@ func NewRawController(dic *xdi.DiContainer) *RawController {
 // @ResponseDesc 413    "request body too large"
 // @ResponseDesc 500    "image save failed"
 // @ResponseModel 200   #Result<ImageDto>
-// @Response 200        ${resp_upload_image}
+// @ResponseEx 200      ${resp_upload_image}
 func (r *RawController) UploadImage(c *gin.Context) {
 	imageFile, imageHeader, err := c.Request.FormFile("image")
 	if err != nil || imageFile == nil {
-		result.Status(http.StatusBadRequest).SetMessage(exception.RequestParamError.Error()).JSON(c)
+		result.Error(exception.RequestParamError).JSON(c)
 		return
 	}
 	supported, ext := util.ImageUtil.CheckImageExt(imageHeader.Filename)
 	if !supported {
-		result.Status(http.StatusBadRequest).SetMessage(exception.ImageNotSupportedError.Error()).JSON(c)
+		result.Error(exception.ImageNotSupportedError).JSON(c)
 		return
 	}
 
 	filename := fmt.Sprintf("%s.jpg", xstring.CurrentTimeUuid(20))
 	savePath := fmt.Sprintf("%s%s", r.Config.FileConfig.ImagePath, filename)
 	if err := util.ImageUtil.SaveAsJpg(imageFile, ext, savePath); err != nil {
-		result.Error().SetMessage(exception.ImageSaveError.Error()).JSON(c)
+		result.Error(exception.ImageSaveError).JSON(c)
 		return
 	}
 
@@ -70,7 +69,7 @@ func (r *RawController) RawImage(c *gin.Context) {
 	filename := c.Param("filename")
 	filePath := fmt.Sprintf("%s%s", r.Config.FileConfig.ImagePath, filename)
 	if !util.CommonUtil.IsDirOrFileExist(filePath) {
-		result.Status(http.StatusNotFound).SetMessage(exception.ImageNotFoundError.Error()).JSON(c)
+		result.Error(exception.ImageNotFoundError).JSON(c)
 		return
 	}
 

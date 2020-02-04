@@ -48,7 +48,7 @@ func UserDtoAdminMapOption() *xmapper.DisposableMapOption {
 
 // show info dependent on authUser
 // Only used in QueryUser()
-func UserDtoExtraMapOption(authUser *po.User) *xmapper.DisposableMapOption {
+func UserDtoUserMapOption(authUser *po.User) *xmapper.DisposableMapOption {
 	return xmapper.NewMapOption(&po.User{}, &UserDto{}, func(i interface{}, j interface{}) interface{} {
 		if authUser == nil { // not login, nothing (default)
 			return j

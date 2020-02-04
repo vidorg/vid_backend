@@ -1,61 +1,59 @@
 package exception
 
 import (
-	"errors"
 	"github.com/Aoi-hosizora/ahlib-gin-gorm/xgin"
 )
 
 // Request
 var (
-	RequestParamError  = errors.New("request param error")
-	RequestFormatError = errors.New("request format error")
-	RequestSizeError   = errors.New("request body too large")
+	RequestParamError  = NewError(400, "request param error")
+	RequestFormatError = NewError(400, "request format error")
+	RequestLargeError  = NewError(413, "request body too large")
 )
 
 // Authorization
 var (
-	UnAuthorizedError   = errors.New("unauthorized user")
-	TokenExpiredError   = errors.New("token has expired")
-	AuthorizedUserError = errors.New("authorized user not found")
+	UnAuthorizedError           = NewError(401, "unauthorized user")
+	TokenExpiredError           = NewError(401, "token has expired")
+	AuthorizedUserNotFoundError = NewError(401, "authorized user not found")
+	NeedAdminError              = NewError(403, "need admin authority")
 
-	PasswordError   = errors.New("password error")
-	LoginError      = errors.New("login failed")
-	RegisterError   = errors.New("register failed") // C
-	LogoutError     = errors.New("logout failed")
-	UpdatePassError = errors.New("update password failed")
-
-	NeedAdminError = errors.New("need admin authority")
+	PasswordError   = NewError(401, "password error")
+	LoginError      = NewError(500, "login failed")           // R
+	RegisterError   = NewError(500, "register failed")        // C
+	UpdatePassError = NewError(500, "update password failed") // U
+	LogoutError     = NewError(500, "logout failed")
 )
 
 // Model
 var (
 	// user
-	UserUpdateError   = errors.New("user update failed") // U
-	UserDeleteError   = errors.New("user delete failed") // D
-	UserNotFoundError = errors.New("user not found")     // R
+	UserNotFoundError = NewError(404, "user not found")     // R
+	UserUpdateError   = NewError(500, "user update failed") // U
+	UserDeleteError   = NewError(500, "user delete failed") // D
 
-	UsernameUsedError  = errors.New("username has been used")
-	SubscribeSelfError = errors.New("subscribe oneself invalid")
-	SubscribeError     = errors.New("subscribe failed")
-	UnSubscribeError   = errors.New("unsubscribe failed")
+	UsernameUsedError  = NewError(400, "username has been used")
+	SubscribeSelfError = NewError(400, "subscribe oneself invalid")
+	SubscribeError     = NewError(500, "subscribe failed")
+	UnSubscribeError   = NewError(500, "unsubscribe failed")
 
 	// video
-	VideoNotFoundError = errors.New("video not found")     // R
-	VideoInsertError   = errors.New("video insert failed") // C
-	VideoUpdateError   = errors.New("video update failed") // U
-	VideoDeleteError   = errors.New("video delete failed") // D
+	VideoNotFoundError = NewError(404, "video not found")     // R
+	VideoInsertError   = NewError(500, "video insert failed") // C
+	VideoUpdateError   = NewError(500, "video update failed") // U
+	VideoDeleteError   = NewError(500, "video delete failed") // D
 
-	VideoExistError = errors.New("video has been uploaded")
+	VideoUrlExistError = NewError(400, "video url has been used")
 )
 
 // File
 var (
-	ImageNotFoundError     = errors.New("image not found")
-	ImageNotSupportedError = errors.New("image type not supported")
-	ImageSaveError         = errors.New("image save failed")
+	ImageNotFoundError     = NewError(404, "image not found")
+	ImageNotSupportedError = NewError(400, "image type not supported")
+	ImageSaveError         = NewError(500, "image save failed")
 )
 
-func WrapValidationError(err error) error {
+func WrapValidationError(err error) *ServerError {
 	isf := xgin.IsValidationFormatError(err)
 	if isf {
 		return RequestFormatError

@@ -17,7 +17,6 @@ import (
 	"github.com/vidorg/vid_backend/src/model/param"
 	"github.com/vidorg/vid_backend/src/model/po"
 	"github.com/vidorg/vid_backend/src/util"
-	"net/http"
 )
 
 type UserController struct {
@@ -45,12 +44,11 @@ func NewUserController(dic *xdi.DiContainer) *UserController {
 // @Tag                 User
 // @Tag                 Administration
 // @ResponseModel 200   #Result<Page<UserDto>>
-// @Response 200        ${resp_page_users}
+// @ResponseEx 200      ${resp_page_users}
 func (u *UserController) QueryAllUsers(c *gin.Context) {
 	page := param.BindQueryPage(c)
 	users, count := u.UserDao.QueryAll(page)
 
-	// show all user's info
 	retDto := xcondition.First(u.Mapper.Map([]*dto.UserDto{}, users, dto.UserDtoAdminMapOption())).([]*dto.UserDto)
 	result.Ok().SetPage(count, page, retDto).JSON(c)
 }
@@ -58,36 +56,37 @@ func (u *UserController) QueryAllUsers(c *gin.Context) {
 // @Router              /v1/user/{uid} [GET]
 // @Template            ParamA
 // @Summary             查询用户
-// @Description         此处可见用户手机号码
+// @Description         此处用户本人可见手机号码，管理员不受限制
 // @Tag                 User
 // @Param               uid path integer true false "用户id"
 // @ResponseDesc 404    "user not found"
 // @ResponseModel 200   #Result<UserExtraDto>
-// @Response 200        ${resp_user_info}
+// @ResponseEx 200      ${resp_user_info}
 func (u *UserController) QueryUser(c *gin.Context) {
 	uid, ok := param.BindRouteId(c, "uid")
 	if !ok {
-		result.Status(http.StatusBadRequest).SetMessage(exception.RequestParamError.Error()).JSON(c)
+		result.Error(exception.RequestParamError).JSON(c)
 		return
 	}
 
 	user := u.UserDao.QueryByUid(uid)
 	if user == nil {
-		result.Status(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()).JSON(c)
+		result.Error(exception.UserNotFoundError).JSON(c)
 		return
 	}
-	subscribingCnt, subscriberCnt, _ := u.SubDao.QuerySubCnt(user.Uid)
-	videoCnt, _ := u.VideoDao.QueryCount(user.Uid)
+	subscribingCnt, subscriberCnt, _ := u.SubDao.QueryCountByUid(user.Uid)
+	videoCnt, _ := u.VideoDao.QueryCountByUid(user.Uid)
 	extraInfo := &dto.UserExtraDto{
 		SubscribingCount: subscribingCnt,
 		SubscriberCount:  subscriberCnt,
 		VideoCount:       videoCnt,
 	}
 
-	// need to squeeze out whether you can see the admin info
 	authUser := u.JwtService.GetAuthUser(c)
-	retDto := xcondition.First(u.Mapper.Map(&dto.UserDto{}, user, dto.UserDtoExtraMapOption(authUser))).(*dto.UserDto)
-	result.Ok().PutData("user", retDto).PutData("extra", extraInfo).JSON(c)
+	retDto := xcondition.First(u.Mapper.Map(&dto.UserDto{}, user, dto.UserDtoUserMapOption(authUser))).(*dto.UserDto)
+	result.Ok().
+		PutData("user", retDto).
+		PutData("extra", extraInfo).JSON(c)
 }
 
 // @Router              /v1/user/ [PUT]
@@ -95,12 +94,12 @@ func (u *UserController) QueryUser(c *gin.Context) {
 // @Template            Auth Param
 // @Summary             更新用户
 // @Tag                 User
-// @Param               param body #UserParam true false "用户请求参数"
+// @Param               param body #UserParam true false "请求参数"
 // @ResponseDesc 400    "username has been used"
 // @ResponseDesc 404    "user not found"
 // @ResponseDesc 500    "user update failed"
 // @ResponseModel 200   #Result<UserDto>
-// @Response 200        ${resp_user}
+// @ResponseEx 200      ${resp_user}
 //
 // @Router              /v1/user/admin/{uid} [PUT]
 // @Security            Jwt
@@ -110,56 +109,56 @@ func (u *UserController) QueryUser(c *gin.Context) {
 // @Tag                 User
 // @Tag                 Administration
 // @Param               uid   path integer    true false "用户id"
-// @Param               param body #UserParam true false "用户请求参数"
+// @Param               param body #UserParam true false "请求参数"
 // @ResponseDesc 400    "username has been used"
 // @ResponseDesc 404    "user not found"
 // @ResponseDesc 500    "user update failed"
 // @ResponseModel 200   #Result<UserDto>
-// @Response 200        ${resp_user}
-func (u *UserController) UpdateUser(isExact bool) func(c *gin.Context) {
+// @ResponseEx 200      ${resp_user}
+func (u *UserController) UpdateUser(isSpec bool) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		user := &po.User{}
-		if !isExact {
+		if !isSpec {
 			user = u.JwtService.GetAuthUser(c)
 		} else {
 			uid, ok := param.BindRouteId(c, "uid")
 			if !ok {
-				result.Status(http.StatusBadRequest).SetMessage(exception.RequestParamError.Error()).JSON(c)
+				result.Error(exception.RequestParamError).JSON(c)
 				return
 			}
 			user = u.UserDao.QueryByUid(uid)
 			if user == nil {
-				result.Status(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()).JSON(c)
+				result.Error(exception.UserNotFoundError).JSON(c)
 				return
 			}
 		}
 		// Update
 		userParam := &param.UserParam{}
 		if err := c.ShouldBind(userParam); err != nil {
-			result.Status(http.StatusBadRequest).SetMessage(exception.WrapValidationError(err).Error()).JSON(c)
+			result.Error(exception.WrapValidationError(err)).JSON(c)
 			return
 		}
 		user.Username = userParam.Username
-		user.Sex = enum.StringToSexType(userParam.Sex)
+		user.Sex = enum.ParseSexType(userParam.Sex)
 		user.Profile = *userParam.Profile
 		user.BirthTime, _ = xdatetime.JsonDate{}.Parse(userParam.BirthTime, u.Config.CurrentLoc)
 		user.PhoneNumber = userParam.PhoneNumber
 		url, ok := util.CommonUtil.GetFilenameFromUrl(userParam.AvatarUrl, u.Config.FileConfig.ImageUrlPrefix)
 		if !ok {
-			result.Status(http.StatusBadRequest).SetMessage(exception.RequestParamError.Error()).JSON(c)
+			result.Error(exception.RequestParamError).JSON(c)
 			return
 		}
 		user.AvatarUrl = url
 
 		status := u.UserDao.Update(user)
 		if status == database.DbNotFound {
-			result.Status(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()).JSON(c)
+			result.Error(exception.UserNotFoundError).JSON(c)
 			return
 		} else if status == database.DbExisted {
-			result.Status(http.StatusBadRequest).SetMessage(exception.UsernameUsedError.Error()).JSON(c)
+			result.Error(exception.UsernameUsedError).JSON(c)
 			return
 		} else if status == database.DbFailed {
-			result.Error().SetMessage(exception.UserUpdateError.Error()).JSON(c)
+			result.Error(exception.UserUpdateError).JSON(c)
 			return
 		}
 
@@ -176,7 +175,7 @@ func (u *UserController) UpdateUser(isExact bool) func(c *gin.Context) {
 // @ResponseDesc 404    "user not found"
 // @ResponseDesc 500    "user delete failed"
 // @ResponseModel 200   #Result
-// @Response 200        ${resp_success}
+// @ResponseEx 200      ${resp_success}
 //
 // @Router              /v1/user/admin/{uid} [DELETE]
 // @Security            Jwt
@@ -189,27 +188,27 @@ func (u *UserController) UpdateUser(isExact bool) func(c *gin.Context) {
 // @ResponseDesc 404    "user not found"
 // @ResponseDesc 500    "user delete failed"
 // @ResponseModel 200   #Result
-// @Response 200        ${resp_success}
-func (u *UserController) DeleteUser(isExact bool) func(c *gin.Context) {
+// @ResponseEx 200      ${resp_success}
+func (u *UserController) DeleteUser(isSpec bool) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		var uid int32
-		if !isExact {
+		if !isSpec {
 			uid = u.JwtService.GetAuthUser(c).Uid
 		} else {
-			_uid, ok := param.BindRouteId(c, "uid")
+			var ok bool
+			uid, ok = param.BindRouteId(c, "uid")
 			if !ok {
-				result.Status(http.StatusBadRequest).SetMessage(exception.RequestParamError.Error()).JSON(c)
+				result.Error(exception.RequestParamError).JSON(c)
 				return
 			}
-			uid = _uid
 		}
 		// Delete
 		status := u.UserDao.Delete(uid)
 		if status == database.DbNotFound {
-			result.Status(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()).JSON(c)
+			result.Error(exception.UserNotFoundError).JSON(c)
 			return
 		} else if status == database.DbFailed {
-			result.Error().SetMessage(exception.UserDeleteError.Error()).JSON(c)
+			result.Error(exception.UserDeleteError).JSON(c)
 			return
 		}
 		result.Ok().JSON(c)

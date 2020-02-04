@@ -42,7 +42,7 @@ func NewVideoController(dic *xdi.DiContainer) *VideoController {
 // @Tag                 Video
 // @Tag                 Administration
 // @ResponseModel 200   #Result<Page<VideoDto>>
-// @Response 200        ${resp_page_videos}
+// @ResponseEx 200      ${resp_page_videos}
 func (v *VideoController) QueryAllVideos(c *gin.Context) {
 	page := param.BindQueryPage(c)
 	videos, count := v.VideoDao.QueryAll(page)
@@ -53,23 +53,23 @@ func (v *VideoController) QueryAllVideos(c *gin.Context) {
 
 // @Router              /v1/user/{uid}/video?page [GET]
 // @Template            ParamA Page
-// @Summary             查询用户发布的视频
+// @Summary             查询用户发布的所有视频
 // @Tag                 Video
 // @Param               uid path integer true false "用户id"
 // @ResponseDesc 404    "user not found"
 // @ResponseModel 200   #Result<Page<VideoDto>>
-// @Response 200        ${resp_page_videos}
+// @ResponseEx 200      ${resp_page_videos}
 func (v *VideoController) QueryVideosByUid(c *gin.Context) {
 	uid, ok := param.BindRouteId(c, "uid")
 	page := param.BindQueryPage(c)
 	if !ok {
-		result.Status(http.StatusBadRequest).SetMessage(exception.RequestParamError.Error()).JSON(c)
+		result.Error(exception.RequestParamError).JSON(c)
 		return
 	}
 
 	videos, count, status := v.VideoDao.QueryByUid(uid, page)
 	if status == database.DbNotFound {
-		result.Status(http.StatusNotFound).SetMessage(exception.UserNotFoundError.Error()).JSON(c)
+		result.Error(exception.UserNotFoundError).JSON(c)
 		return
 	}
 
@@ -80,22 +80,22 @@ func (v *VideoController) QueryVideosByUid(c *gin.Context) {
 // @Router              /v1/video/{vid} [GET]
 // @Template            ParamA
 // @Summary             查询视频
-// @Description         作者id为-1表示已删除的用户
+// @Description         作者为 null 表示用户已删除
 // @Tag                 Video
 // @Param               vid path integer true false "视频id"
 // @ResponseDesc 404    "video not found"
 // @ResponseModel 200   #Result<VideoDto>
-// @Response 200        ${resp_video}
+// @ResponseEx 200      ${resp_video}
 func (v *VideoController) QueryVideoByVid(c *gin.Context) {
 	vid, ok := param.BindRouteId(c, "vid")
 	if !ok {
-		result.Status(http.StatusBadRequest).SetMessage(exception.RequestParamError.Error()).JSON(c)
+		result.Error(exception.RequestParamError).JSON(c)
 		return
 	}
 
 	video := v.VideoDao.QueryByVid(vid)
 	if video == nil {
-		result.Status(http.StatusNotFound).SetMessage(exception.VideoNotFoundError.Error()).JSON(c)
+		result.Error(exception.VideoNotFoundError).JSON(c)
 		return
 	}
 
@@ -108,8 +108,8 @@ func (v *VideoController) QueryVideoByVid(c *gin.Context) {
 // @Template            Auth Param
 // @Summary             新建视频
 // @Tag                 Video
-// @Param               param body #VideoParam true false "视频请求参数"
-// @ResponseDesc 400    "video has been uploaded"
+// @Param               param body #VideoParam true false "请求参数"
+// @ResponseDesc 400    "video url has been used"
 // @ResponseDesc 500    "video insert failed"
 // @ResponseModel 201   #Result<VideoDto>
 // @Response 201        ${resp_new_video}
@@ -117,12 +117,12 @@ func (v *VideoController) InsertVideo(c *gin.Context) {
 	authUser := v.JwtService.GetAuthUser(c)
 	videoParam := &param.VideoParam{}
 	if err := c.ShouldBind(videoParam); err != nil {
-		result.Status(http.StatusBadRequest).SetMessage(exception.WrapValidationError(err).Error()).JSON(c)
+		result.Error(exception.WrapValidationError(err)).JSON(c)
 		return
 	}
 	coverUrl, ok := util.CommonUtil.GetFilenameFromUrl(videoParam.CoverUrl, v.Config.FileConfig.ImageUrlPrefix)
 	if !ok {
-		result.Status(http.StatusBadRequest).SetMessage(exception.RequestParamError.Error()).JSON(c)
+		result.Error(exception.RequestParamError).JSON(c)
 		return
 	}
 
@@ -130,16 +130,16 @@ func (v *VideoController) InsertVideo(c *gin.Context) {
 		Title:       videoParam.Title,
 		Description: *videoParam.Description,
 		CoverUrl:    coverUrl,
-		VideoUrl:    videoParam.VideoUrl, // TODO
+		VideoUrl:    videoParam.VideoUrl,
 		AuthorUid:   authUser.Uid,
 		Author:      authUser,
 	}
 	status := v.VideoDao.Insert(video)
 	if status == database.DbExisted {
-		result.Status(http.StatusBadRequest).SetMessage(exception.VideoExistError.Error()).JSON(c)
+		result.Error(exception.VideoUrlExistError).JSON(c)
 		return
 	} else if status == database.DbFailed {
-		result.Error().SetMessage(exception.VideoInsertError.Error()).JSON(c)
+		result.Error(exception.VideoInsertError).JSON(c)
 		return
 	}
 
@@ -149,60 +149,59 @@ func (v *VideoController) InsertVideo(c *gin.Context) {
 
 // @Router              /v1/video/{vid} [POST]
 // @Security            Jwt
-// @Template            Auth Admin Param
+// @Template            Auth Param
 // @Summary             更新视频
 // @Description         管理员或者作者本人权限
 // @Tag                 Video
 // @Tag                 Administration
 // @Param               vid   path string      true false "视频id"
-// @Param               param body #VideoParam true false "视频请求参数"
-// @ResponseDesc 400    "video has been uploaded"
+// @Param               param body #VideoParam true false "请求参数"
+// @ResponseDesc 400    "video url has been used"
 // @ResponseDesc 404    "video not found"
 // @ResponseDesc 500    "video update failed"
 // @ResponseModel 200   #Result<VideoDto>
-// @Response 200        ${resp_video}
+// @ResponseEx 200      ${resp_video}
 func (v *VideoController) UpdateVideo(c *gin.Context) {
 	authUser := v.JwtService.GetAuthUser(c)
 	vid, ok := param.BindRouteId(c, "vid")
 	if !ok {
-		result.Status(http.StatusBadRequest).SetMessage(exception.RequestParamError.Error()).JSON(c)
+		result.Error(exception.RequestParamError).JSON(c)
 		return
 	}
 	videoParam := &param.VideoParam{}
 	if err := c.ShouldBind(videoParam); err != nil {
-		result.Status(http.StatusBadRequest).SetMessage(exception.WrapValidationError(err).Error()).JSON(c)
+		result.Error(exception.WrapValidationError(err)).JSON(c)
 		return
 	}
 
 	video := v.VideoDao.QueryByVid(vid)
 	if video == nil {
-		result.Status(http.StatusNotFound).SetMessage(exception.VideoNotFoundError.Error()).JSON(c)
+		result.Error(exception.VideoNotFoundError).JSON(c)
 		return
-	}
-	if authUser.Authority != enum.AuthAdmin && authUser.Uid != video.AuthorUid {
-		result.Status(http.StatusUnauthorized).SetMessage(exception.NeedAdminError.Error()).JSON(c)
+	} else if authUser.Authority != enum.AuthAdmin && authUser.Uid != video.AuthorUid {
+		result.Error(exception.VideoNotFoundError).JSON(c)
 		return
 	}
 	// Update
 	video.Title = videoParam.Title
 	video.Description = *videoParam.Description
-	video.VideoUrl = videoParam.VideoUrl // TODO
+	video.VideoUrl = videoParam.VideoUrl
 	coverUrl, ok := util.CommonUtil.GetFilenameFromUrl(videoParam.CoverUrl, v.Config.FileConfig.ImageUrlPrefix)
 	if !ok {
-		result.Status(http.StatusBadRequest).SetMessage(exception.RequestParamError.Error()).JSON(c)
+		result.Error(exception.RequestParamError).JSON(c)
 		return
 	}
 	video.CoverUrl = coverUrl
 
 	status := v.VideoDao.Update(video)
 	if status == database.DbExisted {
-		result.Status(http.StatusBadRequest).SetMessage(exception.VideoExistError.Error()).JSON(c)
+		result.Error(exception.VideoUrlExistError).JSON(c)
 		return
 	} else if status == database.DbNotFound {
-		result.Status(http.StatusNotFound).SetMessage(exception.VideoNotFoundError.Error()).JSON(c)
+		result.Error(exception.VideoNotFoundError).JSON(c)
 		return
 	} else if status == database.DbFailed {
-		result.Error().SetMessage(exception.VideoUpdateError.Error()).JSON(c)
+		result.Error(exception.VideoUpdateError).JSON(c)
 		return
 	}
 
@@ -212,7 +211,7 @@ func (v *VideoController) UpdateVideo(c *gin.Context) {
 
 // @Router              /v1/video/{vid} [DELETE]
 // @Security            Jwt
-// @Template            Auth Admin ParamA
+// @Template            Auth ParamA
 // @Summary             删除视频
 // @Description         管理员或者作者本人权限
 // @Tag                 Video
@@ -221,31 +220,26 @@ func (v *VideoController) UpdateVideo(c *gin.Context) {
 // @ResponseDesc 404    "video not found"
 // @ResponseDesc 500    "video delete failed"
 // @ResponseModel 200   #Result
-// @Response 200        ${resp_success}
+// @ResponseEx 200      ${resp_success}
 func (v *VideoController) DeleteVideo(c *gin.Context) {
 	authUser := v.JwtService.GetAuthUser(c)
 	vid, ok := param.BindRouteId(c, "vid")
 	if !ok {
-		result.Status(http.StatusBadRequest).SetMessage(exception.RequestParamError.Error()).JSON(c)
+		result.Error(exception.RequestParamError).JSON(c)
 		return
 	}
-	// Check author and authorization
-	video := v.VideoDao.QueryByVid(vid)
-	if video == nil {
-		result.Status(http.StatusNotFound).SetMessage(exception.VideoNotFoundError.Error()).JSON(c)
-		return
+
+	var status database.DbStatus
+	if authUser.Authority == enum.AuthAdmin {
+		status = v.VideoDao.Delete(vid)
+	} else {
+		status = v.VideoDao.DeleteBy2Id(vid, authUser.Uid)
 	}
-	if authUser.Authority != enum.AuthAdmin && authUser.Uid != video.AuthorUid {
-		result.Status(http.StatusUnauthorized).SetMessage(exception.NeedAdminError.Error()).JSON(c)
-		return
-	}
-	// Delete
-	status := v.VideoDao.Delete(vid)
 	if status == database.DbNotFound {
-		result.Status(http.StatusNotFound).SetMessage(exception.VideoNotFoundError.Error()).JSON(c)
+		result.Error(exception.VideoNotFoundError).JSON(c)
 		return
 	} else if status == database.DbFailed {
-		result.Error().SetMessage(exception.VideoDeleteError.Error()).JSON(c)
+		result.Error(exception.VideoDeleteError).JSON(c)
 		return
 	}
 

@@ -36,7 +36,7 @@ func (s *SubDao) QuerySubscriberUsers(uid int32, page int32) (users []*po.User, 
 	if !s.UserDao.Exist(uid) {
 		return nil, 0, database.DbNotFound
 	}
-	count = int32(s.Db.Model(user).Association(s.ColSubscribers).Count()) // 开始关联模式
+	count = int32(s.Db.Model(user).Association(s.ColSubscribers).Count()) // association pattern
 	s.Db.Limit(s.PageSize).Offset((page-1)*s.PageSize).Model(user).Related(&users, s.ColSubscribers)
 	return users, count, database.DbSuccess
 }
@@ -51,7 +51,7 @@ func (s *SubDao) QuerySubscribingUsers(uid int32, page int32) (users []*po.User,
 	return users, count, database.DbSuccess
 }
 
-func (s *SubDao) QuerySubCnt(uid int32) (subscribingCnt int32, subscriberCnt int32, status database.DbStatus) {
+func (s *SubDao) QueryCountByUid(uid int32) (subscribingCnt int32, subscriberCnt int32, status database.DbStatus) {
 	if !s.UserDao.Exist(uid) {
 		return 0, 0, database.DbNotFound
 	}

@@ -18,7 +18,7 @@ import (
 // @ResponseDesc 200     "OK"
 // @ResponseHeader 200   { "Content-Type": "application/json; charset=utf-8" }
 // @ResponseModel 200    #Ping
-// @Response 200         { "ping": "pong" }
+// @ResponseEx 200       { "ping": "pong" }
 func SetupCommonRouter(router *gin.Engine) {
 	router.HandleMethodNotAllowed = true
 

@@ -12,7 +12,7 @@ func (s SexType) String() string {
 	return string(s)
 }
 
-func StringToSexType(sexString string) SexType {
+func ParseSexType(sexString string) SexType {
 	switch sexString {
 	case SexMale.String():
 		return SexMale

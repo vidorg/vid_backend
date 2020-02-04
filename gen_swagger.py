@@ -483,8 +483,8 @@ def gen_ctrl(content: str, *, demo_model: {}, template: {}) -> (str, str, {}):
 
             # Body
             resp_example_arr = []
-            read_tmpl(resp_example_arr, 'Response')
-            resp_example_arr.extend(split_array(tokens, 'Response'))
+            read_tmpl(resp_example_arr, 'ResponseEx')
+            resp_example_arr.extend(split_array(tokens, 'ResponseEx'))
             for resp in resp_example_arr:
                 rcode, *rjson = split_bs(resp)
                 rjson = trim(' '.join(rjson))

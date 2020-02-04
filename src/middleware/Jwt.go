@@ -10,7 +10,6 @@ import (
 	"github.com/vidorg/vid_backend/src/database/dao"
 	"github.com/vidorg/vid_backend/src/model/po"
 	"github.com/vidorg/vid_backend/src/util"
-	"net/http"
 )
 
 type JwtService struct {
@@ -35,12 +34,12 @@ func (j *JwtService) JwtMiddleware(needAdmin bool) gin.HandlerFunc {
 		user, err := j.JwtCheck(authHeader)
 		if err != nil {
 			// UnAuthorizedError / TokenExpiredError
-			result.Status(http.StatusUnauthorized).SetMessage(err.Error()).JSON(c)
+			result.Error(err).JSON(c)
 			c.Abort()
 			return
 		}
 		if needAdmin && user.Authority != enum.AuthAdmin {
-			result.Status(http.StatusUnauthorized).SetMessage(exception.NeedAdminError.Error()).JSON(c)
+			result.Error(exception.NeedAdminError).JSON(c)
 			c.Abort()
 			return
 		}
@@ -50,7 +49,7 @@ func (j *JwtService) JwtMiddleware(needAdmin bool) gin.HandlerFunc {
 	}
 }
 
-func (j *JwtService) JwtCheck(token string) (*po.User, error) {
+func (j *JwtService) JwtCheck(token string) (*po.User, *exception.ServerError) {
 	if token == "" {
 		return nil, exception.UnAuthorizedError
 	}
@@ -78,7 +77,7 @@ func (j *JwtService) JwtCheck(token string) (*po.User, error) {
 	// check dao & admin
 	user := j.UserDao.QueryByUid(claims.UserId)
 	if user == nil {
-		return nil, exception.AuthorizedUserError
+		return nil, exception.AuthorizedUserNotFoundError
 	}
 
 	return user, nil
@@ -95,7 +94,7 @@ func (j *JwtService) GetAuthUser(c *gin.Context) *po.User {
 	}
 	user, ok := _user.(*po.User)
 	if !ok { // auth failed
-		result.Status(http.StatusUnauthorized).SetMessage(exception.UnAuthorizedError.Error()).JSON(c)
+		result.Error(exception.UnAuthorizedError).JSON(c)
 		c.Abort()
 		return nil
 	}
