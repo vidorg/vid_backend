@@ -20,8 +20,8 @@ func ProvideService(config *config.ServerConfig) *xdi.DiContainer {
 	segSrv := seg.NewSegmentService(dic)
 	dic.Provide(segSrv)
 
-	gormConn := database.SetupDBConn(config.MySqlConfig)
-	dic.Provide(gormConn) // after config
+	gormHelper := database.SetupDBConn(config.MySqlConfig)
+	dic.Provide(gormHelper) // after config
 	redisConn := database.SetupRedisConn(config.RedisConfig)
 	dic.ProvideImpl((*redis.Conn)(nil), redisConn) // interface
 

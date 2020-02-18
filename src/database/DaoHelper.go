@@ -6,7 +6,15 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
-func QueryHelper(db *gorm.DB, model interface{}, where interface{}) interface{} {
+type DbHelper struct {
+	*gorm.DB
+}
+
+func NewDbHelper(db *gorm.DB) *DbHelper {
+	return &DbHelper {db}
+}
+
+func (db *DbHelper) QueryHelper(model interface{}, where interface{}) interface{} {
 	rdb := db.Model(model).Where(where).First(where)
 	if rdb.RecordNotFound() {
 		return nil
@@ -14,20 +22,20 @@ func QueryHelper(db *gorm.DB, model interface{}, where interface{}) interface{} 
 	return where
 }
 
-func CountHelper(db *gorm.DB, model interface{}, where interface{}) int32 {
+func (db *DbHelper) CountHelper(model interface{}, where interface{}) int32 {
 	cnt := 0
 	db.Model(model).Where(where).Count(&cnt)
 	return int32(cnt)
 }
 
-func PageHelper(db *gorm.DB, model interface{}, pageSize int32, currentPage int32, where interface{}, out interface{}) int32 {
+func (db *DbHelper) PageHelper(model interface{}, pageSize int32, currentPage int32, where interface{}, out interface{}) int32 {
 	var total int32 = 0
 	db.Model(model).Count(&total)
 	db.Model(model).Limit(pageSize).Offset((currentPage - 1) * pageSize).Where(where).Find(out)
 	return total
 }
 
-func SearchHelper(db *gorm.DB, model interface{}, pageSize int32, currentPage int32, columns string, against string, out interface{}) int32 {
+func (db *DbHelper) SearchHelper(model interface{}, pageSize int32, currentPage int32, columns string, against string, out interface{}) int32 {
 	var total int32
 	rdb := db.Model(model).Where(fmt.Sprintf("MATCH (%s) AGAINST (? IN BOOLEAN MODE)", columns), against)
 	rdb.Count(&total)
@@ -35,13 +43,13 @@ func SearchHelper(db *gorm.DB, model interface{}, pageSize int32, currentPage in
 	return total
 }
 
-func ExistHelper(db *gorm.DB, model interface{}, where interface{}) bool {
+func (db *DbHelper) ExistHelper(model interface{}, where interface{}) bool {
 	cnt := 0
 	db.Model(model).Where(where).Count(&cnt)
 	return cnt > 0
 }
 
-func InsertHelper(db *gorm.DB, model interface{}, object interface{}) DbStatus {
+func (db *DbHelper) InsertHelper(model interface{}, object interface{}) DbStatus {
 	rdb := db.Model(model).Create(object)
 	if xgorm.IsMySqlDuplicateError(rdb.Error) {
 		return DbExisted
@@ -51,7 +59,7 @@ func InsertHelper(db *gorm.DB, model interface{}, object interface{}) DbStatus {
 	return DbSuccess
 }
 
-func UpdateHelper(db *gorm.DB, model interface{}, object interface{}) DbStatus {
+func (db *DbHelper) UpdateHelper(model interface{}, object interface{}) DbStatus {
 	rdb := db.Model(model).Update(object)
 	if rdb.Error != nil {
 		if xgorm.IsMySqlDuplicateError(rdb.Error) {
@@ -65,7 +73,7 @@ func UpdateHelper(db *gorm.DB, model interface{}, object interface{}) DbStatus {
 	return DbSuccess
 }
 
-func DeleteHelper(db *gorm.DB, model interface{}, object interface{}) DbStatus {
+func (db *DbHelper) DeleteHelper(model interface{}, object interface{}) DbStatus {
 	rdb := db.Model(model).Delete(object)
 	if rdb.Error != nil {
 		return DbFailed

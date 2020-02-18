@@ -2,7 +2,6 @@ package dao
 
 import (
 	"github.com/Aoi-hosizora/ahlib/xdi"
-	"github.com/jinzhu/gorm"
 	"github.com/vidorg/vid_backend/src/config"
 	"github.com/vidorg/vid_backend/src/database"
 	"github.com/vidorg/vid_backend/src/model/po"
@@ -11,7 +10,7 @@ import (
 
 type VideoDao struct {
 	Config  *config.ServerConfig `di:"~"`
-	Db      *gorm.DB             `di:"~"`
+	Db      *database.DbHelper   `di:"~"`
 	UserDao *UserDao             `di:"~"`
 
 	PageSize int32 `di:"-"`
@@ -27,7 +26,7 @@ func NewVideoDao(dic *xdi.DiContainer) *VideoDao {
 }
 
 func (v *VideoDao) WrapVideo(video *po.Video) {
-	out := database.QueryHelper(v.Db, &po.User{}, &po.User{Uid: video.AuthorUid})
+	out := v.Db.QueryHelper(&po.User{}, &po.User{Uid: video.AuthorUid})
 	if out != nil {
 		video.Author = out.(*po.User)
 	} else {
@@ -37,7 +36,7 @@ func (v *VideoDao) WrapVideo(video *po.Video) {
 
 func (v *VideoDao) QueryAll(page int32) ([]*po.Video, int32) {
 	videos := make([]*po.Video, 0)
-	total := database.PageHelper(v.Db, &po.Video{}, v.PageSize, page, &po.Video{}, &videos)
+	total := v.Db.PageHelper(&po.Video{}, v.PageSize, page, &po.Video{}, &videos)
 	for idx := range videos {
 		v.WrapVideo(videos[idx])
 	}
@@ -50,7 +49,7 @@ func (v *VideoDao) QueryByUid(uid int32, page int32) ([]*po.Video, int32, databa
 		return nil, 0, database.DbNotFound
 	}
 	videos := make([]*po.Video, 0)
-	total := database.PageHelper(v.Db, &po.Video{}, v.PageSize, page, &po.Video{AuthorUid: uid}, &videos)
+	total := v.Db.PageHelper(&po.Video{}, v.PageSize, page, &po.Video{AuthorUid: uid}, &videos)
 	for idx := range videos {
 		videos[idx].Author = author
 	}
@@ -61,12 +60,12 @@ func (v *VideoDao) QueryCountByUid(uid int32) (int32, database.DbStatus) {
 	if !v.UserDao.Exist(uid) {
 		return 0, database.DbNotFound
 	}
-	cnt := database.CountHelper(v.Db, &po.Video{}, &po.Video{AuthorUid: uid})
+	cnt := v.Db.CountHelper(&po.Video{}, &po.Video{AuthorUid: uid})
 	return cnt, database.DbSuccess
 }
 
 func (v *VideoDao) QueryByVid(vid int32) *po.Video {
-	out := database.QueryHelper(v.Db, &po.Video{}, &po.Video{Vid: vid})
+	out := v.Db.QueryHelper(&po.Video{}, &po.Video{Vid: vid})
 	if out == nil {
 		return nil
 	}
@@ -76,21 +75,21 @@ func (v *VideoDao) QueryByVid(vid int32) *po.Video {
 }
 
 func (v *VideoDao) Exist(vid int32) bool {
-	return database.ExistHelper(v.Db, &po.Video{}, &po.Video{Vid: vid})
+	return v.Db.ExistHelper(&po.Video{}, &po.Video{Vid: vid})
 }
 
 func (v *VideoDao) Insert(video *po.Video) database.DbStatus {
-	return database.InsertHelper(v.Db, &po.Video{}, video)
+	return v.Db.InsertHelper(&po.Video{}, video)
 }
 
 func (v *VideoDao) Update(video *po.Video) database.DbStatus {
-	return database.UpdateHelper(v.Db, &po.Video{}, video)
+	return v.Db.UpdateHelper(&po.Video{}, video)
 }
 
 func (v *VideoDao) Delete(vid int32) database.DbStatus {
-	return database.DeleteHelper(v.Db, &po.Video{}, &po.Video{Vid: vid})
+	return v.Db.DeleteHelper(&po.Video{}, &po.Video{Vid: vid})
 }
 
 func (v *VideoDao) DeleteBy2Id(vid int32, uid int32) database.DbStatus {
-	return database.DeleteHelper(v.Db, &po.Video{}, &po.Video{Vid: vid, AuthorUid: uid})
+	return v.Db.DeleteHelper(&po.Video{}, &po.Video{Vid: vid, AuthorUid: uid})
 }

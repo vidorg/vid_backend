@@ -2,7 +2,6 @@ package dao
 
 import (
 	"github.com/Aoi-hosizora/ahlib/xdi"
-	"github.com/jinzhu/gorm"
 	"github.com/vidorg/vid_backend/src/config"
 	"github.com/vidorg/vid_backend/src/database"
 	"github.com/vidorg/vid_backend/src/model/po"
@@ -11,7 +10,7 @@ import (
 
 type SearchDao struct {
 	Config   *config.ServerConfig `di:"~"`
-	Db       *gorm.DB             `di:"~"`
+	Db       *database.DbHelper   `di:"~"`
 	VideoDao *VideoDao            `di:"~"`
 
 	PageSize int32 `di:"-"`
@@ -28,13 +27,13 @@ func NewSearchDao(dic *xdi.DiContainer) *SearchDao {
 
 func (s *SearchDao) SearchUser(against string, page int32) ([]*po.User, int32) {
 	users := make([]*po.User, 0)
-	total := database.SearchHelper(s.Db, &po.User{}, s.PageSize, page, "username, profile", against, &users)
+	total := s.Db.SearchHelper(&po.User{}, s.PageSize, page, "username, profile", against, &users)
 	return users, total
 }
 
 func (s *SearchDao) SearchVideo(against string, page int32) ([]*po.Video, int32) {
 	videos := make([]*po.Video, 0)
-	total := database.SearchHelper(s.Db, &po.Video{}, s.PageSize, page, "title, description", against, &videos)
+	total := s.Db.SearchHelper(&po.Video{}, s.PageSize, page, "title, description", against, &videos)
 	for _, video := range videos {
 		s.VideoDao.WrapVideo(video)
 	}

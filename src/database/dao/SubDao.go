@@ -2,7 +2,6 @@ package dao
 
 import (
 	"github.com/Aoi-hosizora/ahlib/xdi"
-	"github.com/jinzhu/gorm"
 	"github.com/vidorg/vid_backend/src/config"
 	"github.com/vidorg/vid_backend/src/database"
 	"github.com/vidorg/vid_backend/src/model/po"
@@ -11,7 +10,7 @@ import (
 
 type SubDao struct {
 	Config  *config.ServerConfig `di:"~"`
-	Db      *gorm.DB             `di:"~"`
+	Db      *database.DbHelper   `di:"~"`
 	UserDao *UserDao             `di:"~"`
 
 	PageSize        int32  `di:"-"`

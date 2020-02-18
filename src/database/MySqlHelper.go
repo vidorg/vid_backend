@@ -15,7 +15,7 @@ const (
 	DefaultDeleteAtTimeStamp = "2000-01-01 00:00:00"
 )
 
-func SetupDBConn(cfg *config.MySqlConfig) *gorm.DB {
+func SetupDBConn(cfg *config.MySqlConfig) *DbHelper {
 	dbParams := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=%s&parseTime=True&loc=Local",
 		cfg.User, cfg.Password,
 		cfg.Host, cfg.Port,
@@ -37,7 +37,7 @@ func SetupDBConn(cfg *config.MySqlConfig) *gorm.DB {
 	autoMigrateModel(db)
 	addFullTextIndex(db, cfg)
 
-	return db
+	return NewDbHelper(db)
 }
 
 func autoMigrateModel(db *gorm.DB) {
