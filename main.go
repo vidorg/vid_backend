@@ -2,7 +2,6 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"log"
 
 	"github.com/vidorg/vid_backend/src/config"
@@ -63,11 +62,6 @@ func run() {
 		log.Fatalln("Failed to load yaml config file:", err)
 	}
 
-	s := server.InitServer(cfg)
-
-	fmt.Println()
-	log.Printf("Server init on port :%d\n\n", cfg.MetaConfig.Port)
-	if err := s.ListenAndServe(); err != nil {
-		log.Fatalln("Failed to listen and serve:", err)
-	}
+	s := server.NewServer(cfg)
+	s.Serve() // with log
 }

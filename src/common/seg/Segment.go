@@ -4,6 +4,7 @@ import (
 	"github.com/Aoi-hosizora/ahlib/xdi"
 	"github.com/huichen/sego"
 	"github.com/vidorg/vid_backend/src/config"
+	"log"
 	"strings"
 )
 
@@ -16,7 +17,7 @@ type SegmentService struct {
 func NewSegmentService(dic *xdi.DiContainer) *SegmentService {
 	srv := &SegmentService{}
 	if !dic.Inject(srv) {
-		panic("Inject failed")
+		log.Fatalln("Inject failed")
 	}
 
 	var segmenter sego.Segmenter

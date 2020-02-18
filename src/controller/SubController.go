@@ -13,6 +13,7 @@ import (
 	"github.com/vidorg/vid_backend/src/middleware"
 	"github.com/vidorg/vid_backend/src/model/dto"
 	"github.com/vidorg/vid_backend/src/model/param"
+	"log"
 )
 
 type SubController struct {
@@ -26,7 +27,7 @@ type SubController struct {
 func NewSubController(dic *xdi.DiContainer) *SubController {
 	ctrl := &SubController{}
 	if !dic.Inject(ctrl) {
-		panic("Inject failed")
+		log.Fatalln("Inject failed")
 	}
 	return ctrl
 }
@@ -95,7 +96,7 @@ func (s *SubController) QuerySubscribingUsers(c *gin.Context) {
 // @ResponseModel 200   #Result
 // @ResponseEx 200      ${resp_success}
 func (s *SubController) SubscribeUser(c *gin.Context) {
-	authUser := s.JwtService.GetAuthUser(c)
+	authUser := s.JwtService.GetContextUser(c)
 	subParam := &param.SubParam{}
 	if err := c.ShouldBind(subParam); err != nil {
 		result.Error(exception.WrapValidationError(err)).JSON(c)
@@ -129,7 +130,7 @@ func (s *SubController) SubscribeUser(c *gin.Context) {
 // @ResponseModel 200   #Result
 // @ResponseEx 200      ${resp_success}
 func (s *SubController) UnSubscribeUser(c *gin.Context) {
-	authUser := s.JwtService.GetAuthUser(c)
+	authUser := s.JwtService.GetContextUser(c)
 	subParam := &param.SubParam{}
 	if err := c.ShouldBind(subParam); err != nil {
 		result.Error(exception.WrapValidationError(err)).JSON(c)

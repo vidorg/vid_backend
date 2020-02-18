@@ -17,6 +17,7 @@ import (
 	"github.com/vidorg/vid_backend/src/model/param"
 	"github.com/vidorg/vid_backend/src/model/po"
 	"github.com/vidorg/vid_backend/src/util"
+	"log"
 )
 
 type UserController struct {
@@ -32,7 +33,7 @@ type UserController struct {
 func NewUserController(dic *xdi.DiContainer) *UserController {
 	ctrl := &UserController{}
 	if !dic.Inject(ctrl) {
-		panic("Inject failed")
+		log.Fatalln("Inject failed")
 	}
 	return ctrl
 }
@@ -83,7 +84,7 @@ func (u *UserController) QueryUser(c *gin.Context) {
 		VideoCount:       videoCnt,
 	}
 
-	authUser := u.JwtService.GetAuthUser(c)
+	authUser := u.JwtService.GetContextUser(c)
 	retDto := xcondition.First(u.Mapper.Map(&dto.UserDto{}, user, dto.UserDtoUserMapOption(authUser))).(*dto.UserDto)
 	result.Ok().
 		PutData("user", retDto).
@@ -120,7 +121,7 @@ func (u *UserController) UpdateUser(isSpec bool) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		user := &po.User{}
 		if !isSpec {
-			user = u.JwtService.GetAuthUser(c)
+			user = u.JwtService.GetContextUser(c)
 		} else {
 			uid, ok := param.BindRouteId(c, "uid")
 			if !ok {
@@ -194,7 +195,7 @@ func (u *UserController) DeleteUser(isSpec bool) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		var uid int32
 		if !isSpec {
-			uid = u.JwtService.GetAuthUser(c).Uid
+			uid = u.JwtService.GetContextUser(c).Uid
 		} else {
 			var ok bool
 			uid, ok = param.BindRouteId(c, "uid")

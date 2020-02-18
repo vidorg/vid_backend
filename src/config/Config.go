@@ -3,6 +3,7 @@ package config
 import (
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
+	"log"
 	"time"
 )
 
@@ -65,7 +66,7 @@ type ServerConfig struct {
 func preLoad(config *ServerConfig) {
 	loc, err := time.LoadLocation(config.MetaConfig.CurrentLocString)
 	if err != nil {
-		panic(err)
+		log.Fatalln(err)
 	}
 	config.MetaConfig.CurrentLoc = loc
 }

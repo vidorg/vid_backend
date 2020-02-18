@@ -2,7 +2,7 @@ package server
 
 import (
 	"fmt"
-	"github.com/Aoi-hosizora/ahlib/xstring"
+	"github.com/Aoi-hosizora/ahlib/xdi"
 	"github.com/DeanThompson/ginpprof"
 	"github.com/gin-gonic/gin"
 	ginSwagger "github.com/swaggo/gin-swagger"
@@ -10,16 +10,20 @@ import (
 	_ "github.com/vidorg/vid_backend/docs"
 	"github.com/vidorg/vid_backend/src/config"
 	"github.com/vidorg/vid_backend/src/server/router"
-	"io"
 	"log"
 	"net/http"
-	"os"
 )
 
-func InitServer(config *config.ServerConfig) *http.Server {
+type Server struct {
+	Server *http.Server
+	Config *config.ServerConfig
+	Dic    *xdi.DiContainer
+}
+
+func NewServer(config *config.ServerConfig) *Server {
 	// Gin Server
 	engine := gin.Default()
-	initLogger()
+	SetupLogger()
 
 	gin.SetMode(config.RunMode)
 	if config.RunMode == "debug" {
@@ -27,7 +31,7 @@ func InitServer(config *config.ServerConfig) *http.Server {
 	}
 
 	// Binding & DI
-	SetupDefinedValidation()
+	BindValidation()
 	dic := ProvideService(config)
 
 	// Route
@@ -36,17 +40,20 @@ func InitServer(config *config.ServerConfig) *http.Server {
 	router.SetupCommonRouter(engine)
 
 	// Server
-	return &http.Server{
+	server := &http.Server{
 		Addr:    fmt.Sprintf(":%d", config.MetaConfig.Port),
 		Handler: engine,
 	}
+	return &Server{
+		Server: server,
+		Config: config,
+		Dic:    dic,
+	}
 }
 
-func initLogger() {
-	logFile, err := os.Create(fmt.Sprintf("./log/log-%s.log", xstring.CurrentTimeUuid(14)))
-	if err != nil {
-		log.Fatalln("Failed to create log file:", err)
+func (s *Server) Serve() {
+	log.Printf("\nServer init on port %s\n\n", s.Server.Addr)
+	if err := s.Server.ListenAndServe(); err != nil {
+		log.Fatalln("Failed to listen and serve:", err)
 	}
-
-	gin.DefaultWriter = io.MultiWriter(logFile, os.Stdout)
 }

@@ -10,6 +10,7 @@ import (
 	"github.com/vidorg/vid_backend/src/common/result"
 	"github.com/vidorg/vid_backend/src/config"
 	"github.com/vidorg/vid_backend/src/util"
+	"log"
 )
 
 type RawController struct {
@@ -20,7 +21,7 @@ type RawController struct {
 func NewRawController(dic *xdi.DiContainer) *RawController {
 	ctrl := &RawController{}
 	if !dic.Inject(ctrl) {
-		panic("Inject failed")
+		log.Fatalln("Inject failed")
 	}
 	return ctrl
 }

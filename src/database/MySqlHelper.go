@@ -44,7 +44,7 @@ func autoMigrateModel(db *gorm.DB) {
 	autoMigrate := func(value interface{}) {
 		rdb := db.AutoMigrate(value)
 		if rdb.Error != nil {
-			panic(rdb.Error)
+			log.Fatalln(rdb.Error)
 		}
 	}
 
@@ -58,13 +58,13 @@ func addFullTextIndex(db *gorm.DB, cfg *config.MySqlConfig) {
 		cnt := 0
 		rdb := db.Table("INFORMATION_SCHEMA.STATISTICS").Where("TABLE_SCHEMA = ? AND TABLE_NAME = ? AND INDEX_NAME = ?", cfg.Name, tblName, idxName).Count(&cnt)
 		if rdb.Error != nil {
-			panic(rdb.Error)
+			log.Fatalln(rdb.Error)
 		}
 		if cnt == 0 {
 			sql := fmt.Sprintf("CREATE FULLTEXT INDEX `%s` ON `%s` (%s) WITH PARSER `ngram`", idxName, tblName, param)
 			rdb := db.Exec(sql)
 			if rdb.Error != nil {
-				panic(rdb.Error)
+				log.Fatalln(rdb.Error)
 			}
 		}
 	}

@@ -1,10 +1,9 @@
-package dao
+package database
 
 import (
 	"fmt"
 	"github.com/Aoi-hosizora/ahlib-gin-gorm/xgorm"
 	"github.com/jinzhu/gorm"
-	"github.com/vidorg/vid_backend/src/database"
 )
 
 func QueryHelper(db *gorm.DB, model interface{}, where interface{}) interface{} {
@@ -42,36 +41,36 @@ func ExistHelper(db *gorm.DB, model interface{}, where interface{}) bool {
 	return cnt > 0
 }
 
-func InsertHelper(db *gorm.DB, model interface{}, object interface{}) database.DbStatus {
+func InsertHelper(db *gorm.DB, model interface{}, object interface{}) DbStatus {
 	rdb := db.Model(model).Create(object)
 	if xgorm.IsMySqlDuplicateError(rdb.Error) {
-		return database.DbExisted
+		return DbExisted
 	} else if rdb.Error != nil || rdb.RowsAffected == 0 {
-		return database.DbFailed
+		return DbFailed
 	}
-	return database.DbSuccess
+	return DbSuccess
 }
 
-func UpdateHelper(db *gorm.DB, model interface{}, object interface{}) database.DbStatus {
+func UpdateHelper(db *gorm.DB, model interface{}, object interface{}) DbStatus {
 	rdb := db.Model(model).Update(object)
 	if rdb.Error != nil {
 		if xgorm.IsMySqlDuplicateError(rdb.Error) {
-			return database.DbExisted
+			return DbExisted
 		} else {
-			return database.DbFailed
+			return DbFailed
 		}
 	} else if rdb.RowsAffected == 0 {
-		return database.DbNotFound
+		return DbNotFound
 	}
-	return database.DbSuccess
+	return DbSuccess
 }
 
-func DeleteHelper(db *gorm.DB, model interface{}, object interface{}) database.DbStatus {
+func DeleteHelper(db *gorm.DB, model interface{}, object interface{}) DbStatus {
 	rdb := db.Model(model).Delete(object)
 	if rdb.Error != nil {
-		return database.DbFailed
+		return DbFailed
 	} else if rdb.RowsAffected == 0 {
-		return database.DbNotFound
+		return DbNotFound
 	}
-	return database.DbSuccess
+	return DbSuccess
 }

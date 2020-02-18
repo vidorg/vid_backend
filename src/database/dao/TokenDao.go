@@ -6,6 +6,7 @@ import (
 	"github.com/Aoi-hosizora/ahlib/xdi"
 	"github.com/gomodule/redigo/redis"
 	"github.com/vidorg/vid_backend/src/config"
+	"log"
 	"strconv"
 )
 
@@ -19,7 +20,7 @@ type TokenDao struct {
 func NewTokenDao(dic *xdi.DiContainer) *TokenDao {
 	repo := &TokenDao{}
 	if !dic.Inject(repo) {
-		panic("Inject failed")
+		log.Fatalln("Inject failed")
 	}
 	repo.JwtFmt = repo.Config.JwtConfig.RedisFmt
 	return repo

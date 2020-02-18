@@ -10,6 +10,7 @@ import (
 	"github.com/vidorg/vid_backend/src/database/dao"
 	"github.com/vidorg/vid_backend/src/model/po"
 	"github.com/vidorg/vid_backend/src/util"
+	"log"
 )
 
 type JwtService struct {
@@ -23,33 +24,13 @@ type JwtService struct {
 func NewJwtService(dic *xdi.DiContainer) *JwtService {
 	srv := &JwtService{UserKey: "user"}
 	if !dic.Inject(srv) {
-		panic("Inject failed")
+		log.Fatalln("Inject failed")
 	}
 	return srv
 }
 
-func (j *JwtService) JwtMiddleware(needAdmin bool, needRet bool) gin.HandlerFunc {
-	return func(c *gin.Context) {
-		authHeader := j.GetAuthToken(c)
-		user, err := j.JwtCheck(authHeader)
-		if err != nil {
-			if needRet { // UnAuthorizedError / TokenExpiredError / AuthorizedUserNotFoundError
-				result.Error(err).JSON(c)
-				c.Abort()
-			}
-			return
-		}
-		if needAdmin && user.Authority != enum.AuthAdmin {
-			if needAdmin {
-				result.Error(exception.NeedAdminError).JSON(c)
-				c.Abort()
-			}
-			return
-		}
-
-		c.Set(j.UserKey, user)
-		c.Next()
-	}
+func (j *JwtService) JwtMiddleware(needAdmin bool) gin.HandlerFunc {
+	return j.processJwt(needAdmin, true)
 }
 
 func (j *JwtService) GetAuthToken(c *gin.Context) string {
@@ -60,7 +41,34 @@ func (j *JwtService) GetAuthToken(c *gin.Context) string {
 	return authHeader
 }
 
-func (j *JwtService) JwtCheck(token string) (*po.User, *exception.ServerError) {
+func (j *JwtService) processJwt(needAdmin bool, forMw bool) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		authHeader := j.GetAuthToken(c)
+
+		// check token
+		user, err := j.jwtCheck(authHeader)
+		if err != nil {
+			if forMw { // UnAuthorizedError / TokenExpiredError / AuthorizedUserNotFoundError
+				result.Error(err).JSON(c)
+				c.Abort()
+			}
+			return
+		}
+
+		// check admin
+		if needAdmin && user.Authority != enum.AuthAdmin {
+			result.Error(exception.NeedAdminError).JSON(c)
+			c.Abort()
+			return
+		}
+
+		// Success
+		c.Set(j.UserKey, user)
+		c.Next()
+	}
+}
+
+func (j *JwtService) jwtCheck(token string) (*po.User, *exception.ServerError) {
 	if token == "" {
 		return nil, exception.UnAuthorizedError
 	}
@@ -85,7 +93,7 @@ func (j *JwtService) JwtCheck(token string) (*po.User, *exception.ServerError) {
 		return nil, exception.UnAuthorizedError
 	}
 
-	// check dao & admin
+	// check dao
 	user := j.UserDao.QueryByUid(claims.UserId)
 	if user == nil {
 		return nil, exception.AuthorizedUserNotFoundError
@@ -94,13 +102,14 @@ func (j *JwtService) JwtCheck(token string) (*po.User, *exception.ServerError) {
 	return user, nil
 }
 
-func (j *JwtService) GetAuthUser(c *gin.Context) *po.User {
+func (j *JwtService) GetContextUser(c *gin.Context) *po.User {
 	_user, exist := c.Get(j.UserKey)
-	if !exist { // not jet check auth
-		j.JwtMiddleware(false, false)(c)
+	if !exist { // not check token yet
+		j.processJwt(false, false)(c)
+		// after check token
 		_user, exist = c.Get(j.UserKey)
 		if !exist {
-			return nil
+			return nil // nil directly
 		}
 		user, ok := _user.(*po.User)
 		if !ok {
@@ -111,7 +120,7 @@ func (j *JwtService) GetAuthUser(c *gin.Context) *po.User {
 		user, ok := _user.(*po.User)
 		if !ok {
 			result.Error(exception.UnAuthorizedError).JSON(c)
-			c.Abort()
+			c.Abort() // need abort
 			return nil
 		}
 		return user

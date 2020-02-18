@@ -16,6 +16,7 @@ import (
 	"github.com/vidorg/vid_backend/src/model/param"
 	"github.com/vidorg/vid_backend/src/model/po"
 	"github.com/vidorg/vid_backend/src/util"
+	"log"
 	"net/http"
 )
 
@@ -29,7 +30,7 @@ type VideoController struct {
 func NewVideoController(dic *xdi.DiContainer) *VideoController {
 	ctrl := &VideoController{}
 	if !dic.Inject(ctrl) {
-		panic("Inject failed")
+		log.Fatalln("Inject failed")
 	}
 	return ctrl
 }
@@ -114,7 +115,7 @@ func (v *VideoController) QueryVideoByVid(c *gin.Context) {
 // @ResponseModel 201   #Result<VideoDto>
 // @Response 201        ${resp_new_video}
 func (v *VideoController) InsertVideo(c *gin.Context) {
-	authUser := v.JwtService.GetAuthUser(c)
+	authUser := v.JwtService.GetContextUser(c)
 	videoParam := &param.VideoParam{}
 	if err := c.ShouldBind(videoParam); err != nil {
 		result.Error(exception.WrapValidationError(err)).JSON(c)
@@ -162,7 +163,7 @@ func (v *VideoController) InsertVideo(c *gin.Context) {
 // @ResponseModel 200   #Result<VideoDto>
 // @ResponseEx 200      ${resp_video}
 func (v *VideoController) UpdateVideo(c *gin.Context) {
-	authUser := v.JwtService.GetAuthUser(c)
+	authUser := v.JwtService.GetContextUser(c)
 	vid, ok := param.BindRouteId(c, "vid")
 	if !ok {
 		result.Error(exception.RequestParamError).JSON(c)
@@ -222,7 +223,7 @@ func (v *VideoController) UpdateVideo(c *gin.Context) {
 // @ResponseModel 200   #Result
 // @ResponseEx 200      ${resp_success}
 func (v *VideoController) DeleteVideo(c *gin.Context) {
-	authUser := v.JwtService.GetAuthUser(c)
+	authUser := v.JwtService.GetContextUser(c)
 	vid, ok := param.BindRouteId(c, "vid")
 	if !ok {
 		result.Error(exception.RequestParamError).JSON(c)

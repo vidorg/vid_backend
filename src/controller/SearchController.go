@@ -12,6 +12,7 @@ import (
 	"github.com/vidorg/vid_backend/src/database/dao"
 	"github.com/vidorg/vid_backend/src/model/dto"
 	"github.com/vidorg/vid_backend/src/model/param"
+	"log"
 	"strings"
 )
 
@@ -25,7 +26,7 @@ type SearchController struct {
 func NewSearchController(dic *xdi.DiContainer) *SearchController {
 	ctrl := &SearchController{}
 	if !dic.Inject(ctrl) {
-		panic("Inject failed")
+		log.Fatalln("Inject failed")
 	}
 	return ctrl
 }

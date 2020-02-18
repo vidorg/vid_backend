@@ -15,6 +15,7 @@ import (
 	"github.com/vidorg/vid_backend/src/model/param"
 	"github.com/vidorg/vid_backend/src/model/po"
 	"github.com/vidorg/vid_backend/src/util"
+	"log"
 	"net/http"
 )
 
@@ -29,7 +30,7 @@ type AuthController struct {
 func NewAuthController(dic *xdi.DiContainer) *AuthController {
 	ctrl := &AuthController{}
 	if !dic.Inject(ctrl) {
-		panic("Inject failed")
+		log.Fatalln("Inject failed")
 	}
 	return ctrl
 }
@@ -131,7 +132,7 @@ func (a *AuthController) Register(c *gin.Context) {
 // @ResponseModel 200   #Result<UserDto>
 // @ResponseEx 200      ${resp_user}
 func (a *AuthController) CurrentUser(c *gin.Context) {
-	authUser := a.JwtService.GetAuthUser(c)
+	authUser := a.JwtService.GetContextUser(c)
 	retDto := xcondition.First(a.Mapper.Map(&dto.UserDto{}, authUser)).(*dto.UserDto)
 	result.Ok().SetData(retDto).JSON(c)
 }
@@ -166,7 +167,7 @@ func (a *AuthController) Logout(c *gin.Context) {
 // @ResponseModel 200   #Result
 // @ResponseEx 200      ${resp_success}
 func (a *AuthController) UpdatePassword(c *gin.Context) {
-	authUser := a.JwtService.GetAuthUser(c)
+	authUser := a.JwtService.GetContextUser(c)
 	passParam := &param.PassParam{}
 	if err := c.ShouldBind(passParam); err != nil {
 		result.Error(exception.WrapValidationError(err)).JSON(c)

@@ -6,6 +6,7 @@ import (
 	"github.com/vidorg/vid_backend/src/config"
 	"github.com/vidorg/vid_backend/src/database"
 	"github.com/vidorg/vid_backend/src/model/po"
+	"log"
 )
 
 type SubDao struct {
@@ -24,7 +25,7 @@ func NewSubDao(dic *xdi.DiContainer) *SubDao {
 		ColSubscribings: "Subscribings",
 	}
 	if !dic.Inject(repo) {
-		panic("Inject failed")
+		log.Fatalln("Inject failed")
 	}
 	repo.PageSize = repo.Config.MySqlConfig.PageSize
 	return repo

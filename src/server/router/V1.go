@@ -19,8 +19,8 @@ func SetupV1Router(router *gin.Engine, config *config.ServerConfig, dic *xdi.DiC
 
 	cors := middleware.CorsMiddleware()
 	jwtSrv := xcondition.First(dic.GetProvide(&middleware.JwtService{})).(*middleware.JwtService)
-	jwt := jwtSrv.JwtMiddleware(false, true)
-	jwtAdmin := jwtSrv.JwtMiddleware(true, true)
+	jwt := jwtSrv.JwtMiddleware(false)
+	jwtAdmin := jwtSrv.JwtMiddleware(true)
 	limit2M := middleware.LimitMiddleware(int64(config.FileConfig.ImageMaxSize << 20)) // MB
 
 	router.Use(gin.Recovery())
