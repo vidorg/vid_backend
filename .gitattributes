@@ -1,4 +1,4 @@
 * text=auto
 
-./docs/* linguist-documentation
+./docs/script/* linguist-documentation
 ./usr/* -linguist-detectable

@@ -1,7 +1,6 @@
 import argparse
 import json
 import yaml
-#
 
 TEMPLATE = """
 <!DOCTYPE html>
@@ -21,8 +20,8 @@ TEMPLATE = """
         box-sizing: inherit;
     }
     body {
-      margin:0;
-      background: #fafafa;
+        margin:0;
+        background: #fafafa;
     }
     div#swagger-ui .markdown pre code.language-json, /* markdown json block */
     div#swagger-ui div.highlight-code pre.microlight, /* swagger example */

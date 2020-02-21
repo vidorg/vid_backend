@@ -36,7 +36,7 @@ func NewSubController(dic *xdi.DiContainer) *SubController {
 // @Template            Page ParamA
 // @Summary             查询用户粉丝
 // @Tag                 Subscribe
-// @Param               uid path integer true false "用户id"
+// @Param               uid path integer true "用户id"
 // @ResponseDesc 404    "user not found"
 // @ResponseModel 200   #Result<Page<UserDto>>
 // @ResponseEx 200      ${resp_page_users}
@@ -62,7 +62,7 @@ func (s *SubController) QuerySubscriberUsers(c *gin.Context) {
 // @Template            Page ParamA
 // @Summary             查询用户关注
 // @Tag                 Subscribe
-// @Param               uid path integer true false "用户id"
+// @Param               uid path integer true "用户id"
 // @ResponseDesc 404    "user not found"
 // @ResponseModel 200   #Result<Page<UserDto>>
 // @ResponseEx 200      ${resp_page_users}
@@ -89,7 +89,7 @@ func (s *SubController) QuerySubscribingUsers(c *gin.Context) {
 // @Template            Auth Param
 // @Summary             关注用户
 // @Tag                 Subscribe
-// @Param               param body #SubParam true false "请求参数"
+// @Param               param body #SubParam true "请求参数"
 // @ResponseDesc 400    "subscribe oneself invalid"
 // @ResponseDesc 404    "user not found"
 // @ResponseDesc 500    "subscribe failed"
@@ -124,7 +124,7 @@ func (s *SubController) SubscribeUser(c *gin.Context) {
 // @Template            Auth Param
 // @Summary             取消关注用户
 // @Tag                 Subscribe
-// @Param               param body #SubParam true false "请求参数"
+// @Param               param body #SubParam true "请求参数"
 // @ResponseDesc 404    "user not found"
 // @ResponseDesc 500    "unsubscribe failed"
 // @ResponseModel 200   #Result

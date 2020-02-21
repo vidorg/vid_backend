@@ -11,16 +11,16 @@ import (
 
 // @Model         Result
 // @Description   返回统一响应结果
-// @Property      code    integer true false "响应码"
-// @Property      message string  true false "状态信息"
+// @Property      code    integer true "响应码"
+// @Property      message string  true "状态信息"
 type Result struct {
-	Code    int                           `json:"code"`
+	Code    int32                         `json:"code"`
 	Message string                        `json:"message"`
 	Data    *xlinkedhashmap.LinkedHashMap `json:"data,omitempty"`
 }
 
-func Status(code int) *Result {
-	message := http.StatusText(code)
+func Status(code int32) *Result {
+	message := http.StatusText(int(code))
 	if code == 200 {
 		message = "success"
 	} else if message == "" {
@@ -40,7 +40,7 @@ func Error(se *exception.ServerError) *Result {
 	return Status(se.Code).SetMessage(se.Message)
 }
 
-func (r *Result) SetCode(code int) *Result {
+func (r *Result) SetCode(code int32) *Result {
 	r.Code = code
 	return r
 }
@@ -74,9 +74,9 @@ func (r *Result) SetPage(total int32, page int32, data interface{}) *Result {
 }
 
 func (r *Result) JSON(c *gin.Context) {
-	c.JSON(r.Code, r)
+	c.JSON(int(r.Code), r)
 }
 
 func (r *Result) XML(c *gin.Context) {
-	c.XML(r.Code, r)
+	c.XML(int(r.Code), r)
 }

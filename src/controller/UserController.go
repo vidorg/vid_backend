@@ -60,7 +60,7 @@ func (u *UserController) QueryAllUsers(c *gin.Context) {
 // @Summary             查询用户
 // @Description         此处用户本人可见手机号码，管理员不受限制
 // @Tag                 User
-// @Param               uid path integer true false "用户id"
+// @Param               uid path integer true "用户id"
 // @ResponseDesc 404    "user not found"
 // @ResponseModel 200   #Result<UserExtraDto>
 // @ResponseEx 200      ${resp_user_info}
@@ -96,7 +96,7 @@ func (u *UserController) QueryUser(c *gin.Context) {
 // @Template            Auth Param
 // @Summary             更新用户
 // @Tag                 User
-// @Param               param body #UserParam true false "请求参数"
+// @Param               param body #UserParam true "请求参数"
 // @ResponseDesc 400    "username has been used"
 // @ResponseDesc 404    "user not found"
 // @ResponseDesc 500    "user update failed"
@@ -110,8 +110,8 @@ func (u *UserController) QueryUser(c *gin.Context) {
 // @Description         管理员权限
 // @Tag                 User
 // @Tag                 Administration
-// @Param               uid   path integer    true false "用户id"
-// @Param               param body #UserParam true false "请求参数"
+// @Param               uid   path integer    true "用户id"
+// @Param               param body #UserParam true "请求参数"
 // @ResponseDesc 400    "username has been used"
 // @ResponseDesc 404    "user not found"
 // @ResponseDesc 500    "user update failed"
@@ -186,7 +186,7 @@ func (u *UserController) UpdateUser(isSpec bool) func(c *gin.Context) {
 // @Description         管理员权限
 // @Tag                 User
 // @Tag                 Administration
-// @Param               uid path integer true false "用户id"
+// @Param               uid path integer true "用户id"
 // @ResponseDesc 404    "user not found"
 // @ResponseDesc 500    "user delete failed"
 // @ResponseModel 200   #Result

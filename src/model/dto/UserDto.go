@@ -8,21 +8,21 @@ import (
 
 // @Model         _LoginDto
 // @Description   登录信息
-// @Property      user   object(#_UserDto) true * "用户信息"
-// @Property      token  string            true * "登录令牌"
-// @Property      expire integer           true * "登录有效期，单位为秒"
+// @Property      user   object(#_UserDto) true "用户信息"
+// @Property      token  string            true "登录令牌"
+// @Property      expire integer           true "登录有效期，单位为秒"
 
 // @Model         _UserDto
 // @Description   用户信息
-// @Property      uid           integer                            true * "用户id"
-// @Property      username      string                             true * "用户名"
-// @Property      sex           string(enum:male,female,unknown)   true * "用户性别"
-// @Property      profile       string                             true * "用户简介"
-// @Property      avatar_url    string                             true * "用户头像"
-// @Property      birth_time    string(format:2000-01-01)          true * "用户生日"
-// @Property      authority     string(enum:normal,admin)          true * "用户权限"
-// @Property      phone_number  string                             true * "用户手机号码，部分接口可见"
-// @Property      register_time string(format:2000-01-01 00:00:00) true * "用户注册时间"
+// @Property      uid           integer                            true "用户id"
+// @Property      username      string                             true "用户名"
+// @Property      sex           string(enum:male,female,unknown)   true "用户性别"
+// @Property      profile       string                             true "用户简介"
+// @Property      avatar_url    string                             true "用户头像"
+// @Property      birth_time    string(format:2000-01-01)          true "用户生日"
+// @Property      authority     string(enum:normal,admin)          true "用户权限"
+// @Property      phone_number  string                             true "用户手机号码，部分接口可见"
+// @Property      register_time string(format:2000-01-01 00:00:00) true "用户注册时间"
 type UserDto struct {
 	Uid          int32  `json:"uid"`
 	Username     string `json:"username"`

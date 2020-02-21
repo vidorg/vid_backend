@@ -39,7 +39,7 @@ func NewAuthController(dic *xdi.DiContainer) *AuthController {
 // @Template            ParamA
 // @Summary             登录
 // @Tag                 Authorization
-// @Param               param body #LoginParam true false "请求参数"
+// @Param               param body #LoginParam true "请求参数"
 // @ResponseDesc 401    "password error"
 // @ResponseDesc 404    "user not found"
 // @ResponseDesc 500    "login failed"
@@ -87,7 +87,7 @@ func (a *AuthController) Login(c *gin.Context) {
 // @Template            Param
 // @Summary             注册
 // @Tag                 Authorization
-// @Param               param body #RegisterParam true false "请求参数"
+// @Param               param body #RegisterParam true "请求参数"
 // @ResponseDesc 400    "username has been used"
 // @ResponseDesc 500    "register failed"
 // @ResponseModel 201   #Result<UserDto>
@@ -161,7 +161,7 @@ func (a *AuthController) Logout(c *gin.Context) {
 // @Template            Auth Param
 // @Summary             修改密码
 // @Tag                 Authorization
-// @Param               param body #PassParam true false "请求参数"
+// @Param               param body #PassParam true "请求参数"
 // @ResponseDesc 404    "user not found"
 // @ResponseDesc 500    "update password failed"
 // @ResponseModel 200   #Result

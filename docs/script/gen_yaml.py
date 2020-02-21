@@ -14,20 +14,39 @@ def trim(content: str) -> str:
 
 
 def split_bs(content: str) -> []:
+    """
+    split string through blackspace and tab (except in brackets)
+    """
     bl_ptn = re.compile(r'\((.+?)\)')
     bls = bl_ptn.findall(content)
     for bl in bls:
         content = content.replace(bl, bl.replace(' ', ',,'))
+    # replace blankspace to ,, in brackets first
     ret = list(filter(None, re.split(r'[ \t]', content)))
-    return [cnt.replace(',,', ' ') for cnt in ret]
+    return [trim(cnt.replace(',,', ' ')) for cnt in ret]
 
 
-def split_comma(content: str, t: str) -> []:
+def split_bs_item(content: str) -> {}:
+    """
+    split (a:b)(c:d)(e) -> {'a': 'b', 'c': 'd', 'e': ''}
+    """
+    bl_ptn = re.compile(r'\((.+?)\)')
+    arr = bl_ptn.findall(content)
+    obj = {}
+    for item in arr:
+        sp = item.split(':')
+        v = ''.join(sp[1:]) if len(sp) > 1 else ''
+        obj[trim(sp[0])] = trim(v)
+    return obj
+
+
+def split_comma(content: str) -> []:
+    """
+    split string through , (except \,)
+    """
+    # replace \, to ,, in first
     ctns = content.replace(',', ',,').replace('\\,,', ',').split(',,')
-    if trim(t) == 'integer':
-        return [int(trim(ctn)) for ctn in ctns]
-    else:
-        return [trim(ctn) for ctn in ctns]
+    return [trim(ctn) for ctn in ctns]
 
 
 def stripper(dict_data, ex_key: []):
@@ -64,6 +83,15 @@ def stripper(dict_data, ex_key: []):
         return new_set
     else:
         return dict_data
+
+
+class Setting:
+    """
+    Parser's setting
+    """
+
+    def __init__(self, need_content_type):
+        self.need_content_type: bool = need_content_type
 
 
 class Literal(str):
@@ -123,7 +151,9 @@ def split_type(content: str) -> {}:
                 op_name = trim(ops[0])
                 op_content = trim(':'.join(ops[1:]))
                 if op_name == 'enum':
-                    obj['enum'] = split_comma(op_content, type_name)
+                    obj['enum'] = split_comma(op_content)
+                    if type_name == 'integer':
+                        obj['enum'] = [int(item) for item in obj['enum']]
                 elif op_name == 'format':
                     obj['format'] = op_content
     return obj
@@ -140,8 +170,9 @@ def parse_content(content) -> []:
     return tokens
 
 
-def split_kv(tokens: []) -> ([], []):
+def split_kv_helper(tokens: []) -> ([], []):
     """
+    helper function: split kv strings to keys and values
     ['x', 'y z', 'a b', 'a c'] -> ['x', 'y', 'a', 'a'], ['', 'z', 'b', 'c']
     """
     ks, vs = [], []
@@ -155,9 +186,10 @@ def split_kv(tokens: []) -> ([], []):
 
 def split_dict(tokens: []) -> {}:
     """
+    parse kv strings to dict
     ['x', 'y z', 'a b', 'a c'] -> {'x': '', 'y': 'z'}
     """
-    ks, vs = split_kv(tokens)
+    ks, vs = split_kv_helper(tokens)
     kv = {}
     for idx in range(len(ks)):
         k, v = ks[idx], vs[idx]
@@ -168,9 +200,10 @@ def split_dict(tokens: []) -> {}:
 
 def split_array(tokens: [], array_field: str) -> []:
     """
+    parse kv strings to specific array
     ['a b', 'a c'] -> ['b', 'c']
     """
-    ks, vs = split_kv(tokens)
+    ks, vs = split_kv_helper(tokens)
     arr = []
     for idx in range(len(ks)):
         k, v = ks[idx], vs[idx]
@@ -181,7 +214,7 @@ def split_array(tokens: [], array_field: str) -> []:
 
 def field(src: {}, src_field: str, *, required=True) -> str:
     """
-    Get field in object dict
+    check and get field in dict
     """
     if src_field in src:
         return src[src_field]
@@ -191,10 +224,15 @@ def field(src: {}, src_field: str, *, required=True) -> str:
         print(f'Error: don\'t contain required field: {src_field}')
         exit(1)
 
+###
+
 
 def gen_main(file_path: str) -> {}:
     """
     Generate swagger config from main file
+    @Host @BasePath @Title @Description @Version @TermOfService
+    @License.Name @License.Url @Contact.Name @Contact.Url @Contact.Email
+    @DemoModel @Template @Tag @GlobalSecurity
     """
     try:
         content = open(file_path, 'r', encoding='utf-8').read()
@@ -282,7 +320,7 @@ def gen_main(file_path: str) -> {}:
     return out
 
 
-def gen_files(all_file_paths: [], *, demo_model: {}, template: {}) -> ({}, {}):
+def gen_files(all_file_paths: [], *, demo_model: {}, template: {}, setting: Setting) -> ({}, {}):
     """
     Generate apis and models from all files
     :return: paths, defs
@@ -297,47 +335,42 @@ def gen_files(all_file_paths: [], *, demo_model: {}, template: {}) -> ({}, {}):
             exit(1)
             return
 
-        flag = '// @Router'
-        content_sp = file_content.split(flag)
-        if len(content_sp) > 1:
+        flags = ['// @Router', '// @Model']
+        for flag in flags:
+            content_sp = file_content.split(flag)
+            if len(content_sp) <= 1:
+                continue
             for content in content_sp:
                 en = file_content.index(content)
                 st = en - len(flag)
-                if st < 0:
+                if st < 0:  # first split block in file
                     continue
                 if file_content[st:en] != flag:
                     continue
                 content = '\n' + flag + content
-                router, method, obj = gen_ctrl(content, demo_model=demo_model, template=template)
-                if obj is not None:
-                    if router not in paths:
-                        paths[router] = {}
-                    paths[router][method] = obj
-
-        flag = '// @Model'
-        content_sp = file_content.split(flag)
-        if len(content_sp) > 1:
-            for content in content_sp:
-                en = file_content.index(content)
-                st = en - len(flag)
-                if st < 0:
-                    continue
-                if file_content[st:en] != flag:
-                    continue
-                content = '\n' + flag + content
-                model_name, model_po = gen_model(content)
-                if model_po is not None:
-                    defs[model_name] = model_po
+                # ctrl & model
+                if flag == '// @Router':
+                    router, method, router_po = gen_ctrl(content, demo_model=demo_model, template=template, setting=setting)
+                    if router_po is not None:
+                        if router not in paths:
+                            paths[router] = {}
+                        paths[router][method] = router_po
+                elif flag == '// @Model':
+                    model_name, model_po = gen_model(content)
+                    if model_po is not None:
+                        defs[model_name] = model_po
 
     return paths, defs
 
 
-def gen_ctrl(content: str, *, demo_model: {}, template: {}) -> (str, str, {}):
+def gen_ctrl(content: str, *, demo_model: {}, template: {}, setting: Setting) -> (str, str, {}):
     """
     Generate api doc from a route
+    @Router @Tag @Accept @Produce @Param
+    @ResponseDesc @ResponseHeader @ResponseModel @ResponseEx
+    @Template @Security
     :return: route, method, obj
     """
-
     try:
         tokens = parse_content(content)
         kv = split_dict(tokens)
@@ -372,33 +405,37 @@ def gen_ctrl(content: str, *, demo_model: {}, template: {}) -> (str, str, {}):
         param_arr = []
         read_tmpl(param_arr, 'Param')
         param_arr.extend(split_array(tokens, 'Param'))
-
         for param in param_arr:
-            pname, pin, ptype, preq, pempty, *pother = split_bs(param)
-            pname, pin, ptype = trim(pname), trim(pin), trim(ptype)
-            preq, pempty = trim(preq.lower()), trim(pempty.lower())
+            pname, pin, ptype, preq, *pother = split_bs(param)
+            pname, pin, ptype, preq = trim(pname), trim(pin), trim(ptype), trim(preq.lower())
 
             pother = trim(' '.join(pother))
             pother_sp = re.compile(r'"(.*)"(.*)').findall(pother)
             pdesc = trim(pother_sp[0][0])
-            pdefault = trim(pother_sp[0][1])
+            pother = trim(pother_sp[0][1])
 
+            # meta
             obj = {
                 'name': pname,
                 'in': pin,
                 'type': ptype,
                 'required': preq == 'true',
-                'allowEmptyValue': pempty == 'true',
                 'description': pdesc,
-                'default': pdefault
             }
-            if pempty == '*':
-                del obj['allowEmptyValue']
 
-            if pdefault != '':
-                if ptype == 'integer':
-                    obj['default'] = int(obj['default'])
+            # other
+            psetting = split_bs_item(pother)
+            for k, v in psetting.items():
+                if k == 'example' or k == 'default':
+                    v = int(v) if ptype == 'integer' or ptype == 'number' else float(v) if ptype == 'float' or ptype == 'double' else v
+                elif k == 'empty':
+                    k = 'allowEmptyValue'
+                    v = v.lower() == 'true'
+                else:
+                    continue
+                obj[k] = v
 
+            # type
             # enum -> string(enum:a,b,c)
             # object -> #Result
             ptype_op = split_type(ptype)
@@ -414,11 +451,13 @@ def gen_ctrl(content: str, *, demo_model: {}, template: {}) -> (str, str, {}):
                 sec: []
             })
 
-        # response
-        responses = {}
-
+        # req & resp
         def replace_demo_model(dm_content: str, in_demo_model: {}) -> str:
+            """
+            replace demoModel through ${} (except \$)
+            """
             if in_demo_model is not None:
+                dm_content = dm_content.replace('\\$', '$,')
                 for dm in re.compile(r'\${(.+?)}').findall(dm_content):
                     if dm not in in_demo_model:
                         continue
@@ -427,77 +466,100 @@ def gen_ctrl(content: str, *, demo_model: {}, template: {}) -> (str, str, {}):
                         dm_content = dm_content.replace('${%s}' % dm, new_dm)
                     except:
                         pass
+                dm_content = dm_content.replace('$,', '$')
             return dm_content
 
-        # Desc
-        resp_desc_arr = []
-        read_tmpl(resp_desc_arr, 'ResponseDesc')
-        resp_desc_arr.extend(split_array(tokens, 'ResponseDesc'))
-        for desc in resp_desc_arr:
-            rcode, *rmsg = split_bs(desc)
-            rmsg = ' '.join(rmsg)
-            rmsg = replace_demo_model(rmsg, demo_model)
-            if rcode in responses and 'description' in responses[rcode]:
-                rmsg = responses[rcode]['description'] + ', ' + rmsg
-            if rcode not in responses:
-                responses[rcode] = {}
-            responses[rcode]['description'] = Literal(rmsg)
+        def parse_req_resp(desc_anno: str, header_anno: str, model_anno: str, ex_anno: str) -> {}:
+            obj = {}
+            # Desc
+            if desc_anno != '':
+                desc_arr = []
+                read_tmpl(desc_arr, desc_anno)  # @ResponseDesc
+                desc_arr.extend(split_array(tokens, desc_anno))
+                for desc in desc_arr:
+                    rcode, *rmsg = split_bs(desc)
+                    rmsg = ' '.join(rmsg)
+                    rmsg = replace_demo_model(rmsg, demo_model)
+                    if rcode in obj and 'description' in obj[rcode]:
+                        rmsg = obj[rcode]['description'] + ', ' + rmsg
+                    if rcode not in obj:
+                        obj[rcode] = {}
+                    obj[rcode]['description'] = Literal(rmsg)
 
-        # Header
-        resp_header_arr = []
-        read_tmpl(resp_header_arr, 'ResponseHeader')
-        resp_header_arr.extend(split_array(tokens, 'ResponseHeader'))
-        for hdr in resp_header_arr:
-            rcode, *rheader = split_bs(hdr)
-            rheader = ' '.join(rheader)
-            rheader = replace_demo_model(rheader, demo_model)
-            rheader = json.loads(rheader)
+            # Header
+            if header_anno != '':
+                header_arr = []
+                read_tmpl(header_arr, header_anno)  # @ResponseHeader
+                header_arr.extend(split_array(tokens, header_anno))
+                for hdr in header_arr:
+                    rcode, *rheader = split_bs(hdr)
+                    rheader = ' '.join(rheader)
+                    rheader = replace_demo_model(rheader, demo_model)
+                    rheader = json.loads(rheader)
 
-            if rcode not in responses:
-                responses[rcode] = {}
-            if 'headers' not in responses[rcode]:
-                responses[rcode]['headers'] = {}
-            for k, v in rheader.items():
-                responses[rcode]['headers'][k] = {
-                    'type': 'string',
-                    'description': v
-                }
+                    if rcode not in obj:
+                        obj[rcode] = {}
+                    if 'headers' not in obj[rcode]:
+                        obj[rcode]['headers'] = {}
+                    for k, v in rheader.items():
+                        obj[rcode]['headers'][k] = {
+                            'type': 'string',
+                            'description': v
+                        }
 
-        # Model
-        try:
-            resp_model_arr = []
-            read_tmpl(resp_model_arr, 'ResponseModel')
-            resp_model_arr.extend(split_array(tokens, 'ResponseModel'))
-            for rm in resp_model_arr:
-                rcode, *rmodel = split_bs(rm)
-                rmodel = trim(' '.join(rmodel))
-                obj_ptn = re.compile(r'#(.+)')
-                obj_name = obj_ptn.findall(rmodel)
-                if len(rmodel) != 0:
-                    obj_name = trim(obj_name[0])
-                    if rcode not in responses:
-                        responses[rcode] = {}
-                    responses[rcode]['schema'] = {
-                        "$ref": f"#/definitions/{obj_name}"
-                    }
+            # Model
+            if model_anno != '':
+                model_arr = []
+                read_tmpl(model_arr, model_anno)  # @ResponseModel
+                model_arr.extend(split_array(tokens, model_anno))
+                for rm in model_arr:
+                    rcode, *rmodel = split_bs(rm)
+                    rmodel = trim(' '.join(rmodel))
+                    obj_ptn = re.compile(r'#(.+)')
+                    obj_name = obj_ptn.findall(rmodel)
+                    if len(rmodel) != 0:
+                        obj_name = trim(obj_name[0])
+                        if rcode not in obj:
+                            obj[rcode] = {}
+                        obj[rcode]['schema'] = {
+                            "$ref": f"#/definitions/{obj_name}"
+                        }
 
             # Body
-            resp_example_arr = []
-            read_tmpl(resp_example_arr, 'ResponseEx')
-            resp_example_arr.extend(split_array(tokens, 'ResponseEx'))
-            for resp in resp_example_arr:
-                rcode, *rjson = split_bs(resp)
-                rjson = trim(' '.join(rjson))
-                rjson = replace_demo_model(rjson, demo_model)
-                rjson = json.loads(rjson)
-                rjson = json.dumps(rjson, indent=2, ensure_ascii=False)
-                if rcode not in responses:
-                    responses[rcode] = {}
-                responses[rcode]['examples'] = {
-                    'application/json': Literal(rjson)
-                }
-        except:
-            traceback.print_exc()
+            if ex_anno != '':
+                example_arr = []
+                read_tmpl(example_arr, ex_anno)  # @ResponseEx
+                example_arr.extend(split_array(tokens, ex_anno))
+                for resp in example_arr:
+                    rcode, *rjson = split_bs(resp)
+                    rjson = trim(' '.join(rjson))
+                    rjson = replace_demo_model(rjson, demo_model)
+                    rjson = json.loads(rjson)
+                    rjson = json.dumps(rjson, indent=2, ensure_ascii=False)
+                    if rcode not in obj:
+                        obj[rcode] = {}
+                    obj[rcode]['examples'] = {
+                        'application/json': Literal(rjson)
+                    }
+
+            return obj
+
+        requests = parse_req_resp('', 'RequestHeader', '', 'RequestEx')
+        responses = parse_req_resp('ResponseDesc', 'ResponseHeader', 'ResponseModel', 'ResponseEx')
+
+        if setting.need_content_type:
+            for idx, req_resp in enumerate([requests, responses]):
+                for r in req_resp.values():
+                    if 'headers' not in r:
+                        r['headers'] = {}
+                    if 'Content-Type' not in r['headers']:
+                        r['headers']['Content-Type'] = {'type': 'string', 'description': ''}
+                    ct = r['headers']['Content-Type']
+                    if ct['description'] == '':
+                        if idx == 0:
+                            ct['description'] = 'application/json'
+                        else:
+                            ct['description'] = 'application/json; charset=utf-8'
 
         obj = {
             'operationId': oid,
@@ -508,57 +570,63 @@ def gen_ctrl(content: str, *, demo_model: {}, template: {}) -> (str, str, {}):
             'produces': produces,
             'parameters': parameters,
             'security': securities,
+            'requests': requests,
             'responses': responses
         }
         return router, method, obj
     except:
-        # traceback.print_exc()
+        traceback.print_exc()
         return '', '', None
 
 
 def gen_model(content: str) -> (str, {}):
     """
     Generate definition doc from a model
+    @Model @Description @Property
     :return: name, obj
     """
     try:
         tokens = parse_content(content)
         kv = split_dict(tokens)
 
-        # @Model LoginParam "parameter of login"
-        # @Property username string true true "name of user" example
-
         # meta
         title = field(kv, 'Model')
 
+        # @Property username string true true "name of user" example
         # prop
         prop_po = {}
         requires = []
         props = split_array(tokens, 'Property')
         for prop in props:
-            pname, ptype, preq, pempty, *pother = split_bs(prop)
-            pname, ptype = trim(pname), trim(ptype)
-            preq, pempty = trim(preq.lower()), trim(pempty.lower())
+            pname, ptype, preq, *pother = split_bs(prop)
+            pname, ptype, preq = trim(pname), trim(ptype), trim(preq.lower())
+
             pother = trim(' '.join(pother))
             pother_sp = re.compile(r'"(.*)"(.*)').findall(pother)
             pdesc = trim(pother_sp[0][0])
-            pexample = trim(pother_sp[0][1])
+            psetting = trim(pother_sp[0][1])
 
+            # meta
             if preq == 'true':
                 requires.append(pname)
             obj = {
                 'description': pdesc,
                 'type': ptype,
-                'allowEmptyValue': pempty == 'true',
-                'example': pexample
             }
-            if pempty == '*':
-                del obj['allowEmptyValue']
 
-            if pexample != '':
-                if ptype == 'integer':
-                    obj['example'] = int(obj['example'])
+            # setting
+            psetting = split_bs_item(pother)
+            for k, v in psetting.items():
+                if k == 'example' or k == 'default':
+                    v = int(v) if ptype == 'integer' or ptype == 'number' else float(v) if ptype == 'float' or ptype == 'double' else v
+                elif k == 'empty':
+                    k = 'allowEmptyValue'
+                    v = v.lower() == 'true'
+                else:
+                    continue
+                obj[k] = v
 
+            # type
             # enum -> string(enum:a,b,c)
             # nest -> object(#Result)
             ptype_op = split_type(ptype)
@@ -568,21 +636,27 @@ def gen_model(content: str) -> (str, {}):
 
         obj = {
             'title': title,
-            'description': field(kv, 'Description', required=False),
+            'description': field(kv, 'Description'),
             'type': 'object',  # default array
             'required': requires,
             'properties': prop_po
         }
         return title, obj
     except:
-        # traceback.print_exc()
+        traceback.print_exc()
         return '', None
+
+###
 
 
 def parse():
     parser = argparse.ArgumentParser()
     parser.add_argument('-m', '--main', type=str,
                         required=True, help='path of main file containing swagger config')
+    parser.add_argument('-s', '--source', type=str,
+                        default='.', required=True, help='path of source file')
+    parser.add_argument('-n', '--need_content_type', type=bool,
+                        default=False, required=False, help='need Content-Type header or not')
     parser.add_argument('-o', '--output', type=str,
                         required=True, help='path of output yaml')
     parser.add_argument('-e', '--ext', type=str, nargs='*',
@@ -593,9 +667,13 @@ def parse():
 
 def main():
     args = parse()
+
+    # setting & files
+    setting = Setting(args.need_content_type)
+
     main_file = args.main
     all_files = [main_file]
-    for root, _, files in os.walk('.'):
+    for root, _, files in os.walk(args.source):
         for f in files:
             if len(args.ext) == 0 or f.split('.')[-1] in args.ext:
                 all_files.append(os.path.join(root, f))
@@ -613,7 +691,7 @@ def main():
             demo_model = str(jsonref.loads(demo_model))
             demo_model = ast.literal_eval(demo_model)
         except:
-            # traceback.print_exc()
+            traceback.print_exc()
             demo_model = None
         out['demoModel'] = ''
     else:
@@ -625,7 +703,7 @@ def main():
 
     # ctrl
     print(f'> Parsing {main_file}...')
-    paths, defs = gen_files(all_files, demo_model=demo_model, template=template)
+    paths, defs = gen_files(all_files, demo_model=demo_model, template=template, setting=setting)
     out['paths'] = paths
     out['definitions'] = defs
 

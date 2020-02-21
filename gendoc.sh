@@ -1,5 +1,13 @@
 echo Generating swagger yaml...
-python ./gen_swagger.py -m main.go -o ./docs/api.yaml -e go x
+python3 ./docs/script/gen_yaml.py \
+    -m ./main.go \
+    -s . \
+    -n true \
+    -o ./docs/api.yaml \
+    -e go
+
 echo
 echo Generating swagger html...
-python ./gen_swagger_html.py -i ./docs/api.yaml -o ./docs/api.html
+python3 ./docs/script/gen_swagger.py \
+    -i ./docs/api.yaml \
+    -o ./docs/api.html

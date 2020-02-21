@@ -9,11 +9,10 @@ import (
 
 // @Model         Ping
 // @Description   Ping
-// @Property      ping string true * "pong" pong
+// @Property      ping string true "pong" (default:pong)
 
 // @Router               /ping [GET]
 // @Summary              Ping
-// @Description          Ping
 // @Tag                  Ping
 // @ResponseDesc 200     "OK"
 // @ResponseHeader 200   { "Content-Type": "application/json; charset=utf-8" }
