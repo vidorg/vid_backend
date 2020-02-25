@@ -35,24 +35,24 @@ func NewSubDao(dic *xdi.DiContainer) *SubDao {
 	return repo
 }
 
-func (s *SubDao) QuerySubscriberUsers(uid int32, page int32) (users []*po.User, count int32, status database.DbStatus) {
+func (s *SubDao) QuerySubscriberUsers(uid int32, page int32, orderBy string) (users []*po.User, count int32, status database.DbStatus) {
 	// https://gorm.io/docs/many_to_many.html
 	user := &po.User{Uid: uid}
 	if !s.UserDao.Exist(uid) {
 		return nil, 0, database.DbNotFound
 	}
 	count = int32(s.Db.Model(user).Association(s.ColSubscribers).Count()) // association pattern
-	s.Db.Limit(s.PageSize).Offset((page-1)*s.PageSize).Model(user).Related(&users, s.ColSubscribers)
+	s.Db.Limit(s.PageSize).Offset((page-1)*s.PageSize).Model(user).Order(s.OrderByFunc(orderBy)).Related(&users, s.ColSubscribers)
 	return users, count, database.DbSuccess
 }
 
-func (s *SubDao) QuerySubscribingUsers(uid int32, page int32) (users []*po.User, count int32, status database.DbStatus) {
+func (s *SubDao) QuerySubscribingUsers(uid int32, page int32, orderBy string) (users []*po.User, count int32, status database.DbStatus) {
 	user := &po.User{Uid: uid}
 	if !s.UserDao.Exist(uid) {
 		return nil, 0, database.DbNotFound
 	}
 	count = int32(s.Db.Model(user).Association(s.ColSubscribings).Count())
-	s.Db.Limit(s.PageSize).Offset((page-1)*s.PageSize).Model(user).Related(&users, s.ColSubscribings)
+	s.Db.Limit(s.PageSize).Offset((page-1)*s.PageSize).Model(user).Order(s.OrderByFunc(orderBy)).Related(&users, s.ColSubscribings)
 	return users, count, database.DbSuccess
 }
 

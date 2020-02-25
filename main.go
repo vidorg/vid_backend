@@ -49,7 +49,8 @@ func main() {
 // @GlobalSecurity   Jwt Authorization header
 // @DemoModel        ./docs/demo.json
 
-// @Template Page.Param            page query integer false "当前页" 1
+// @Template Page.Param            page  query integer false "当前页" (default:1)
+// @Template Order.Param           order query string  false "排序字符串"
 // @Template Auth.ResponseDesc     401 "unauthorized user"
 // @Template Auth.ResponseDesc     401 "token has expired"
 // @Template Auth.ResponseDesc     401 "authorized user not found"

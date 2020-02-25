@@ -26,7 +26,7 @@ func NewVideoDao(dic *xdi.DiContainer) *VideoDao {
 		log.Fatalln("Inject failed")
 	}
 	repo.PageSize = repo.Config.MySqlConfig.PageSize
-	repo.OrderByFunc = repo.MappingProfile.GetPropertyMapping(&dto.UserDto{}, &po.User{}).ApplyOrderBy
+	repo.OrderByFunc = repo.MappingProfile.GetPropertyMapping(&dto.VideoDto{}, &po.Video{}).ApplyOrderBy
 	return repo
 }
 
@@ -39,22 +39,22 @@ func (v *VideoDao) WrapVideo(video *po.Video) {
 	}
 }
 
-func (v *VideoDao) QueryAll(page int32) ([]*po.Video, int32) {
+func (v *VideoDao) QueryAll(page int32, orderBy string) ([]*po.Video, int32) {
 	videos := make([]*po.Video, 0)
-	total := v.Db.QueryMultiHelper(&po.Video{}, v.PageSize, page, &po.Video{}, "vid DESC", &videos)
+	total := v.Db.QueryMultiHelper(&po.Video{}, v.PageSize, page, &po.Video{}, v.OrderByFunc(orderBy), &videos)
 	for idx := range videos {
 		v.WrapVideo(videos[idx])
 	}
 	return videos, total
 }
 
-func (v *VideoDao) QueryByUid(uid int32, page int32) ([]*po.Video, int32, database.DbStatus) {
+func (v *VideoDao) QueryByUid(uid int32, page int32, orderBy string) ([]*po.Video, int32, database.DbStatus) {
 	author := v.UserDao.QueryByUid(uid)
 	if author == nil {
 		return nil, 0, database.DbNotFound
 	}
 	videos := make([]*po.Video, 0)
-	total := v.Db.QueryMultiHelper(&po.Video{}, v.PageSize, page, &po.Video{AuthorUid: uid}, "vid DESC", &videos)
+	total := v.Db.QueryMultiHelper(&po.Video{}, v.PageSize, page, &po.Video{AuthorUid: uid}, v.OrderByFunc(orderBy), &videos)
 	for idx := range videos {
 		videos[idx].Author = author
 	}

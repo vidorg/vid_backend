@@ -31,7 +31,7 @@ func NewSearchController(dic *xdi.DiContainer) *SearchController {
 	return ctrl
 }
 
-// @Router              /v1/search/user?key&page [GET]
+// @Router              /v1/search/user [GET]
 // @Template            Page ParamA
 // @Summary             搜索用户
 // @Tag                 Search
@@ -54,7 +54,7 @@ func (s *SearchController) SearchUser(c *gin.Context) {
 	result.Ok().SetPage(total, page, retDto).JSON(c)
 }
 
-// @Router              /v1/search/video?key&page [GET]
+// @Router              /v1/search/video [GET]
 // @Template            Page ParamA
 // @Summary             搜索视频
 // @Tag                 Search

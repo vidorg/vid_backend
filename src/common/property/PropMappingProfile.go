@@ -3,6 +3,7 @@ package property
 import (
 	"github.com/vidorg/vid_backend/src/model/dto"
 	"github.com/vidorg/vid_backend/src/model/po"
+	"reflect"
 )
 
 type PropMappingProfile struct {
@@ -20,7 +21,7 @@ func CreatePropMappingProfile() *PropMappingProfile {
 		"RegisterTime": NewPropMappingValue([]string{"CreateAt"}, false),
 	}))
 
-	mappings = append(mappings, NewPropMapping(&dto.UserDto{}, &po.User{}, map[string]*PropMappingValue{
+	mappings = append(mappings, NewPropMapping(&dto.VideoDto{}, &po.Video{}, map[string]*PropMappingValue{
 		"Vid":         NewPropMappingValue([]string{"Vid"}, false),
 		"Title":       NewPropMappingValue([]string{"Title"}, false),
 		"Description": NewPropMappingValue([]string{"Description"}, false),
@@ -30,16 +31,14 @@ func CreatePropMappingProfile() *PropMappingProfile {
 		"Uid":         NewPropMappingValue([]string{"AuthorUid"}, false),
 	}))
 
-	return &PropMappingProfile{
-		Mappings: mappings,
-	}
+	return &PropMappingProfile{Mappings: mappings}
 }
 
 func (p *PropMappingProfile) GetPropertyMapping(dtoModel interface{}, poModel interface{}) *PropMapping {
 	for _, m := range p.Mappings {
-		if m.DtoModel == dtoModel && m.PoModel == poModel {
+		if reflect.TypeOf(m.DtoModel) == reflect.TypeOf(dtoModel) && reflect.TypeOf(m.PoModel) == reflect.TypeOf(poModel) {
 			return m
 		}
 	}
-	return nil
+	return NewPropMapping(dtoModel, poModel, map[string]*PropMappingValue{})
 }

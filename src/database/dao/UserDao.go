@@ -29,9 +29,10 @@ func NewUserDao(dic *xdi.DiContainer) *UserDao {
 	return repo
 }
 
-func (u *UserDao) QueryAll(page int32) ([]*po.User, int32) {
+func (u *UserDao) QueryAll(page int32, orderBy string) ([]*po.User, int32) {
 	users := make([]*po.User, 0)
-	total := u.Db.QueryMultiHelper(&po.User{}, u.PageSize, page, &po.User{}, "uid DESC", &users)
+	log.Println(u.OrderByFunc(orderBy))
+	total := u.Db.QueryMultiHelper(&po.User{}, u.PageSize, page, &po.User{}, u.OrderByFunc(orderBy), &users)
 	return users, total
 }
 

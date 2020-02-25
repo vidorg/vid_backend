@@ -32,8 +32,8 @@ func NewSubController(dic *xdi.DiContainer) *SubController {
 	return ctrl
 }
 
-// @Router              /v1/user/{uid}/subscriber?page [GET]
-// @Template            Page ParamA
+// @Router              /v1/user/{uid}/subscriber [GET]
+// @Template            Page ParamA Order Page
 // @Summary             查询用户粉丝
 // @Tag                 Subscribe
 // @Param               uid path integer true "用户id"
@@ -43,12 +43,13 @@ func NewSubController(dic *xdi.DiContainer) *SubController {
 func (s *SubController) QuerySubscriberUsers(c *gin.Context) {
 	uid, ok := param.BindRouteId(c, "uid")
 	page := param.BindQueryPage(c)
+	order := param.BindQueryOrder(c)
 	if !ok {
 		result.Error(exception.RequestParamError).JSON(c)
 		return
 	}
 
-	users, count, status := s.SubDao.QuerySubscriberUsers(uid, page)
+	users, count, status := s.SubDao.QuerySubscriberUsers(uid, page, order)
 	if status == database.DbNotFound {
 		result.Error(exception.UserNotFoundError).JSON(c)
 		return
@@ -58,8 +59,8 @@ func (s *SubController) QuerySubscriberUsers(c *gin.Context) {
 	result.Ok().SetPage(count, page, retDto).JSON(c)
 }
 
-// @Router              /v1/user/{uid}/subscribing?page [GET]
-// @Template            Page ParamA
+// @Router              /v1/user/{uid}/subscribing [GET]
+// @Template            Page ParamA Order Page
 // @Summary             查询用户关注
 // @Tag                 Subscribe
 // @Param               uid path integer true "用户id"
@@ -69,12 +70,13 @@ func (s *SubController) QuerySubscriberUsers(c *gin.Context) {
 func (s *SubController) QuerySubscribingUsers(c *gin.Context) {
 	uid, ok := param.BindRouteId(c, "uid")
 	page := param.BindQueryPage(c)
+	order := param.BindQueryOrder(c)
 	if !ok {
 		result.Error(exception.RequestParamError).JSON(c)
 		return
 	}
 
-	users, count, status := s.SubDao.QuerySubscribingUsers(uid, page)
+	users, count, status := s.SubDao.QuerySubscribingUsers(uid, page, order)
 	if status == database.DbNotFound {
 		result.Error(exception.UserNotFoundError).JSON(c)
 		return

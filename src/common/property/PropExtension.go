@@ -2,10 +2,12 @@ package property
 
 import (
 	"github.com/Aoi-hosizora/ahlib/xcondition"
+	"log"
 	"strings"
 )
 
 func (m *PropMapping) ApplyOrderBy(source string) string {
+	log.Println(source)
 	if source == "" {
 		return ""
 	}
@@ -36,5 +38,7 @@ func (m *PropMapping) ApplyOrderBy(source string) string {
 			result = append(result, prop)
 		}
 	}
+
+	log.Println(result)
 	return strings.Join(result, ",")
 }

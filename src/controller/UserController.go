@@ -35,9 +35,9 @@ func NewUserController(dic *xdi.DiContainer) *UserController {
 	return ctrl
 }
 
-// @Router              /v1/user?page [GET]
+// @Router              /v1/user [GET]
 // @Security            Jwt
-// @Template            Admin Auth Page
+// @Template            Admin Auth Order Page
 // @Summary             查询所有用户
 // @Description         管理员权限，此处可见用户手机号码
 // @Tag                 User
@@ -46,7 +46,8 @@ func NewUserController(dic *xdi.DiContainer) *UserController {
 // @ResponseEx 200      ${resp_page_users}
 func (u *UserController) QueryAllUsers(c *gin.Context) {
 	page := param.BindQueryPage(c)
-	users, count := u.UserDao.QueryAll(page)
+	order := param.BindQueryOrder(c)
+	users, count := u.UserDao.QueryAll(page, order)
 
 	retDto := xcondition.First(u.Mapper.Map([]*dto.UserDto{}, users, dto.UserDtoAdminMapOption())).([]*dto.UserDto)
 	result.Ok().SetPage(count, page, retDto).JSON(c)

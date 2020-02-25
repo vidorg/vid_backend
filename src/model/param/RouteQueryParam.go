@@ -26,3 +26,8 @@ func BindQueryPage(c *gin.Context) int32 {
 	}
 	return int32(page)
 }
+
+// parse order
+func BindQueryOrder(c *gin.Context) string {
+	return c.DefaultQuery("order", "")
+}

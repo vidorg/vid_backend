@@ -34,9 +34,9 @@ func NewVideoController(dic *xdi.DiContainer) *VideoController {
 	return ctrl
 }
 
-// @Router              /v1/video?page [GET]
+// @Router              /v1/video [GET]
 // @Security            Jwt
-// @Template            Admin Auth Page
+// @Template            Admin Auth Order Page
 // @Summary             查询所有视频
 // @Description         管理员权限
 // @Tag                 Video
@@ -45,14 +45,15 @@ func NewVideoController(dic *xdi.DiContainer) *VideoController {
 // @ResponseEx 200      ${resp_page_videos}
 func (v *VideoController) QueryAllVideos(c *gin.Context) {
 	page := param.BindQueryPage(c)
-	videos, count := v.VideoDao.QueryAll(page)
+	order := param.BindQueryOrder(c)
+	videos, count := v.VideoDao.QueryAll(page, order)
 
 	retDto := xcondition.First(v.Mapper.Map([]*dto.VideoDto{}, videos)).([]*dto.VideoDto)
 	result.Ok().SetPage(count, page, retDto).JSON(c)
 }
 
-// @Router              /v1/user/{uid}/video?page [GET]
-// @Template            ParamA Page
+// @Router              /v1/user/{uid}/video [GET]
+// @Template            ParamA Order Page
 // @Summary             查询用户发布的所有视频
 // @Tag                 Video
 // @Param               uid path integer true "用户id"
@@ -62,12 +63,13 @@ func (v *VideoController) QueryAllVideos(c *gin.Context) {
 func (v *VideoController) QueryVideosByUid(c *gin.Context) {
 	uid, ok := param.BindRouteId(c, "uid")
 	page := param.BindQueryPage(c)
+	order := param.BindQueryOrder(c)
 	if !ok {
 		result.Error(exception.RequestParamError).JSON(c)
 		return
 	}
 
-	videos, count, status := v.VideoDao.QueryByUid(uid, page)
+	videos, count, status := v.VideoDao.QueryByUid(uid, page, order)
 	if status == database.DbNotFound {
 		result.Error(exception.UserNotFoundError).JSON(c)
 		return
