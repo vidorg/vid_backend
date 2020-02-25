@@ -11,22 +11,25 @@ import (
 )
 
 func loadDtoProfile(config *config.ServerConfig, mapper *xmapper.EntityMapper) *xmapper.EntityMapper {
+	user := func(i interface{}) po.User { return i.(po.User) }
+	video := func(i interface{}) po.Video { return i.(po.Video) }
+
 	mapper = mapper.
 		CreateMapper(&po.User{}, &dto.UserDto{}).
 		ForMember("Sex", func(i interface{}) interface{} {
-			return i.(po.User).Sex.String() // SexType
+			return user(i).Sex.String() // SexType
 		}).
 		ForMember("BirthTime", func(i interface{}) interface{} {
-			return i.(po.User).BirthTime.String() // JsonDate
+			return user(i).BirthTime.String() // JsonDate
 		}).
 		ForMember("Authority", func(i interface{}) interface{} {
-			return i.(po.User).Authority.String() // AuthType
+			return user(i).Authority.String() // AuthType
 		}).
 		ForMember("RegisterTime", func(i interface{}) interface{} {
-			return xdatetime.NewJsonDateTime(i.(po.User).CreatedAt).String() // time.Time
+			return xdatetime.NewJsonDateTime(user(i).CreatedAt).String() // time.Time
 		}).
 		ForMember("AvatarUrl", func(i interface{}) interface{} {
-			avatar := i.(po.User).AvatarUrl
+			avatar := user(i).AvatarUrl
 			if !strings.HasPrefix(avatar, "http") {
 				if avatar == "" {
 					avatar = "avatar.jpg"
@@ -43,13 +46,13 @@ func loadDtoProfile(config *config.ServerConfig, mapper *xmapper.EntityMapper) *
 	mapper = mapper.
 		CreateMapper(&po.Video{}, &dto.VideoDto{}).
 		ForMember("UploadTime", func(i interface{}) interface{} {
-			return xdatetime.NewJsonDateTime(i.(po.Video).CreatedAt).String() // time.Time
+			return xdatetime.NewJsonDateTime(video(i).CreatedAt).String() // time.Time
 		}).
 		ForMember("UpdateTime", func(i interface{}) interface{} {
-			return xdatetime.NewJsonDateTime(i.(po.Video).UpdatedAt).String() // time.Time
+			return xdatetime.NewJsonDateTime(video(i).UpdatedAt).String() // time.Time
 		}).
 		ForMember("CoverUrl", func(i interface{}) interface{} {
-			cover := i.(po.Video).CoverUrl
+			cover := video(i).CoverUrl
 			if !strings.HasPrefix(cover, "http") {
 				if cover == "" {
 					cover = "cover.jpg"

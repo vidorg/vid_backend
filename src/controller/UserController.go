@@ -14,7 +14,6 @@ import (
 	"github.com/vidorg/vid_backend/src/model/dto"
 	"github.com/vidorg/vid_backend/src/model/param"
 	"github.com/vidorg/vid_backend/src/model/po"
-	"github.com/vidorg/vid_backend/src/util"
 	"log"
 )
 
@@ -140,13 +139,6 @@ func (u *UserController) UpdateUser(isSpec bool) func(c *gin.Context) {
 		}
 
 		_ = u.Mapper.MapProp(userParam, user)
-		url, ok := util.CommonUtil.GetFilenameFromUrl(userParam.AvatarUrl, u.Config.FileConfig.ImageUrlPrefix)
-		if !ok {
-			result.Error(exception.RequestParamError).JSON(c)
-			return
-		}
-		user.AvatarUrl = url
-
 		status := u.UserDao.Update(user)
 		if status == database.DbNotFound {
 			result.Error(exception.UserNotFoundError).JSON(c)

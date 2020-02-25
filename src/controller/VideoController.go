@@ -126,14 +126,8 @@ func (v *VideoController) InsertVideo(c *gin.Context) {
 		AuthorUid:   authUser.Uid,
 		Author:      authUser,
 	}
-	_ = v.Mapper.MapProp(videoParam, video)
-	coverUrl, ok := util.CommonUtil.GetFilenameFromUrl(videoParam.CoverUrl, v.Config.FileConfig.ImageUrlPrefix)
-	if !ok {
-		result.Error(exception.RequestParamError).JSON(c)
-		return
-	}
-	video.CoverUrl = coverUrl
 
+	_ = v.Mapper.MapProp(videoParam, video)
 	status := v.VideoDao.Insert(video)
 	if status == database.DbExisted {
 		result.Error(exception.VideoUrlExistError).JSON(c)
@@ -184,13 +178,6 @@ func (v *VideoController) UpdateVideo(c *gin.Context) {
 	}
 	// Update
 	_ = v.Mapper.MapProp(videoParam, video)
-	coverUrl, ok := util.CommonUtil.GetFilenameFromUrl(videoParam.CoverUrl, v.Config.FileConfig.ImageUrlPrefix)
-	if !ok {
-		result.Error(exception.RequestParamError).JSON(c)
-		return
-	}
-	video.CoverUrl = coverUrl
-
 	status := v.VideoDao.Update(video)
 	if status == database.DbExisted {
 		result.Error(exception.VideoUrlExistError).JSON(c)
