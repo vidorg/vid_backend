@@ -1,12 +1,10 @@
 package controller
 
 import (
-	"github.com/Aoi-hosizora/ahlib-gin-gorm/xdatetime"
 	"github.com/Aoi-hosizora/ahlib/xcondition"
 	"github.com/Aoi-hosizora/ahlib/xdi"
 	"github.com/Aoi-hosizora/ahlib/xmapper"
 	"github.com/gin-gonic/gin"
-	"github.com/vidorg/vid_backend/src/common/enum"
 	"github.com/vidorg/vid_backend/src/common/exception"
 	"github.com/vidorg/vid_backend/src/common/result"
 	"github.com/vidorg/vid_backend/src/config"
@@ -140,11 +138,8 @@ func (u *UserController) UpdateUser(isSpec bool) func(c *gin.Context) {
 			result.Error(exception.WrapValidationError(err)).JSON(c)
 			return
 		}
-		user.Username = userParam.Username
-		user.Sex = enum.ParseSexType(userParam.Sex)
-		user.Profile = *userParam.Profile
-		user.BirthTime, _ = xdatetime.JsonDate{}.Parse(userParam.BirthTime, u.Config.MetaConfig.CurrentLoc)
-		user.PhoneNumber = userParam.PhoneNumber
+
+		_ = u.Mapper.MapProp(userParam, user)
 		url, ok := util.CommonUtil.GetFilenameFromUrl(userParam.AvatarUrl, u.Config.FileConfig.ImageUrlPrefix)
 		if !ok {
 			result.Error(exception.RequestParamError).JSON(c)
@@ -164,7 +159,7 @@ func (u *UserController) UpdateUser(isSpec bool) func(c *gin.Context) {
 			return
 		}
 
-		retDto := xcondition.First(u.Mapper.Map(&dto.UserDto{}, user)).(*dto.UserDto)
+		retDto := xcondition.First(u.Mapper.Map(&dto.UserDto{}, user, dto.UserDtoAdminMapOption())).(*dto.UserDto)
 		result.Ok().SetData(retDto).JSON(c)
 	}
 }

@@ -9,7 +9,7 @@ func CreateMapperProfile(config *config.ServerConfig) *xmapper.EntityMapper {
 	mapper := xmapper.NewEntityMapper()
 
 	mapper = loadDtoProfile(config, mapper)
-	mapper = loadParamProfile(mapper)
+	mapper = loadParamProfile(config, mapper)
 
 	return mapper
 }
