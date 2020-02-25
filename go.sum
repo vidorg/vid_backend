@@ -1,5 +1,5 @@
-github.com/Aoi-hosizora/ahlib v0.0.0-20200204070028-56cdd0c3662f h1:iI2wdb9aXB8+N6HfhHCfCLawEzZYPGPZHcgSszA04yQ=
-github.com/Aoi-hosizora/ahlib v0.0.0-20200204070028-56cdd0c3662f/go.mod h1:oa2f9jtUDzZ5zklB+pZKOUV7SBpdINmGdjlsKMa77pY=
+github.com/Aoi-hosizora/ahlib v0.0.0-20200225065819-c320749a4dfe h1:tXVe0YY3xlTTBrlHvsIgF0WvcD5IThKElJZVglOh/J8=
+github.com/Aoi-hosizora/ahlib v0.0.0-20200225065819-c320749a4dfe/go.mod h1:oa2f9jtUDzZ5zklB+pZKOUV7SBpdINmGdjlsKMa77pY=
 github.com/Aoi-hosizora/ahlib-gin-gorm v0.0.0-20200129064644-7d937045c25c h1:3qDUgcrg5gQdUA4jONaQIpnUcABsk/XmjUTOnfQg5Oc=
 github.com/Aoi-hosizora/ahlib-gin-gorm v0.0.0-20200129064644-7d937045c25c/go.mod h1:GMkxZxfrUEFfRbYFjT6Rp1yB8sByE6XBj/9IoadF8es=
 github.com/DeanThompson/ginpprof v0.0.0-20190408063150-3be636683586 h1:vDSj8WQZoe+dhK9JVwkSEBwtmcJw5rJ7l1L0Yik8Ku0=

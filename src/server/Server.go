@@ -52,7 +52,8 @@ func NewServer(config *config.ServerConfig) *Server {
 }
 
 func (s *Server) Serve() {
-	log.Printf("\nServer init on port %s\n\n", s.Server.Addr)
+	fmt.Println()
+	log.Printf("Server init on port %s\n\n", s.Server.Addr)
 	if err := s.Server.ListenAndServe(); err != nil {
 		log.Fatalln("Failed to listen and serve:", err)
 	}

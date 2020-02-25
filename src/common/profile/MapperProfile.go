@@ -1,67 +1,15 @@
 package profile
 
 import (
-	"fmt"
-	"github.com/Aoi-hosizora/ahlib-gin-gorm/xdatetime"
 	"github.com/Aoi-hosizora/ahlib/xmapper"
 	"github.com/vidorg/vid_backend/src/config"
-	"github.com/vidorg/vid_backend/src/model/dto"
-	"github.com/vidorg/vid_backend/src/model/po"
-	"strings"
 )
 
 func CreateMapperProfile(config *config.ServerConfig) *xmapper.EntityMapper {
 	mapper := xmapper.NewEntityMapper()
 
-	mapper = mapper.
-		CreateMapper(&po.User{}, &dto.UserDto{}).
-		ForMember("Sex", func(i interface{}) interface{} {
-			return i.(po.User).Sex.String() // SexType
-		}).
-		ForMember("BirthTime", func(i interface{}) interface{} {
-			return i.(po.User).BirthTime.String() // JsonDate
-		}).
-		ForMember("Authority", func(i interface{}) interface{} {
-			return i.(po.User).Authority.String() // AuthType
-		}).
-		ForMember("RegisterTime", func(i interface{}) interface{} {
-			return xdatetime.NewJsonDateTime(i.(po.User).CreatedAt).String() // time.Time
-		}).
-		ForMember("AvatarUrl", func(i interface{}) interface{} {
-			avatar := i.(po.User).AvatarUrl
-			if !strings.HasPrefix(avatar, "http") {
-				if avatar == "" {
-					avatar = "avatar.jpg"
-				}
-				avatar = fmt.Sprintf("%s%s", config.FileConfig.ImageUrlPrefix, avatar)
-			}
-			return avatar
-		}).
-		ForMember("PhoneNumber", func(i interface{}) interface{} {
-			return ""
-		}).
-		Build()
-
-	mapper = mapper.
-		CreateMapper(&po.Video{}, &dto.VideoDto{}).
-		ForMember("UploadTime", func(i interface{}) interface{} {
-			return xdatetime.NewJsonDateTime(i.(po.Video).CreatedAt).String() // time.Time
-		}).
-		ForMember("UpdateTime", func(i interface{}) interface{} {
-			return xdatetime.NewJsonDateTime(i.(po.Video).UpdatedAt).String() // time.Time
-		}).
-		ForMember("CoverUrl", func(i interface{}) interface{} {
-			cover := i.(po.Video).CoverUrl
-			if !strings.HasPrefix(cover, "http") {
-				if cover == "" {
-					cover = "cover.jpg"
-				}
-				cover = fmt.Sprintf("%s%s", config.FileConfig.ImageUrlPrefix, cover)
-			}
-			return cover
-		}).
-		ForNest("Author", "Author").
-		Build()
+	mapper = loadDtoProfile(config, mapper)
+	mapper = loadParamProfile(mapper)
 
 	return mapper
 }

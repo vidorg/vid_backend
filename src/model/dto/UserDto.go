@@ -37,7 +37,7 @@ type UserDto struct {
 
 // show all info
 // Only used in QueryAllUsers()
-func UserDtoAdminMapOption() *xmapper.DisposableMapOption {
+func UserDtoAdminMapOption() *xmapper.MapOption {
 	return xmapper.NewMapOption(&po.User{}, &UserDto{}, func(i interface{}, j interface{}) interface{} {
 		user := i.(po.User)
 		userDto := j.(UserDto)
@@ -48,7 +48,7 @@ func UserDtoAdminMapOption() *xmapper.DisposableMapOption {
 
 // show info dependent on authUser
 // Only used in QueryUser()
-func UserDtoUserMapOption(authUser *po.User) *xmapper.DisposableMapOption {
+func UserDtoUserMapOption(authUser *po.User) *xmapper.MapOption {
 	return xmapper.NewMapOption(&po.User{}, &UserDto{}, func(i interface{}, j interface{}) interface{} {
 		if authUser == nil { // not login, nothing (default)
 			return j
