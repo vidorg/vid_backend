@@ -7,11 +7,10 @@ import (
 )
 
 func (m *PropMapping) ApplyOrderBy(source string) string {
-	log.Println(source)
+	result := make([]string, 0)
 	if source == "" {
 		return ""
 	}
-	result := make([]string, 0)
 
 	sources := strings.Split(source, ",")
 	for _, src := range sources {

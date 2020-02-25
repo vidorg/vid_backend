@@ -14,21 +14,26 @@ func CreatePropMappingProfile() *PropMappingProfile {
 	mappings := make([]*PropMapping, 0)
 
 	mappings = append(mappings, NewPropMapping(&dto.UserDto{}, &po.User{}, map[string]*PropMappingValue{
-		"Uid":          NewPropMappingValue([]string{"Uid"}, false),
-		"Username":     NewPropMappingValue([]string{"Username"}, false),
-		"Sex":          NewPropMappingValue([]string{"Sex"}, false),
-		"BirthTime":    NewPropMappingValue([]string{"BirthTime"}, false),
-		"RegisterTime": NewPropMappingValue([]string{"CreateAt"}, false),
+		"uid":           NewPropMappingValue([]string{"uid"}, false),
+		"username":      NewPropMappingValue([]string{"username"}, false),
+		"sex":           NewPropMappingValue([]string{"sex"}, false),
+		"profile":       NewPropMappingValue([]string{"profile"}, false),
+		"avatar_url":    NewPropMappingValue([]string{"avatar_url"}, false),
+		"birth_time":    NewPropMappingValue([]string{"birth_time"}, false),
+		"authority":     NewPropMappingValue([]string{"authority"}, false),
+		"phone_number":  NewPropMappingValue([]string{"phone_number"}, false),
+		"register_time": NewPropMappingValue([]string{"register_time"}, false),
 	}))
 
 	mappings = append(mappings, NewPropMapping(&dto.VideoDto{}, &po.Video{}, map[string]*PropMappingValue{
-		"Vid":         NewPropMappingValue([]string{"Vid"}, false),
-		"Title":       NewPropMappingValue([]string{"Title"}, false),
-		"Description": NewPropMappingValue([]string{"Description"}, false),
-		"BirthTime":   NewPropMappingValue([]string{"BirthTime"}, false),
-		"UploadTime":  NewPropMappingValue([]string{"CreateAt"}, false),
-		"UpdateTime":  NewPropMappingValue([]string{"UpdateAt"}, false),
-		"Uid":         NewPropMappingValue([]string{"AuthorUid"}, false),
+		"vid":         NewPropMappingValue([]string{"vid"}, false),
+		"title":       NewPropMappingValue([]string{"title"}, false),
+		"description": NewPropMappingValue([]string{"description"}, false),
+		"video_url":   NewPropMappingValue([]string{"video_url"}, false),
+		"cover_url":   NewPropMappingValue([]string{"cover_url"}, false),
+		"upload_time": NewPropMappingValue([]string{"create_at"}, false),
+		"update_time": NewPropMappingValue([]string{"update_at"}, false),
+		"author_uid":  NewPropMappingValue([]string{"author_uid"}, false),
 	}))
 
 	return &PropMappingProfile{Mappings: mappings}
