@@ -5,7 +5,7 @@ import (
 	"github.com/vidorg/vid_backend/src/config"
 )
 
-func CreateMapperProfile(config *config.ServerConfig) *xmapper.EntityMapper {
+func CreateEntityMapper(config *config.ServerConfig) *xmapper.EntityMapper {
 	mapper := xmapper.NewEntityMapper()
 
 	mapper = loadDtoProfile(config, mapper)

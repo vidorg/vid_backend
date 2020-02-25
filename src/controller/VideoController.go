@@ -15,7 +15,6 @@ import (
 	"github.com/vidorg/vid_backend/src/model/dto"
 	"github.com/vidorg/vid_backend/src/model/param"
 	"github.com/vidorg/vid_backend/src/model/po"
-	"github.com/vidorg/vid_backend/src/util"
 	"log"
 	"net/http"
 )

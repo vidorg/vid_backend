@@ -16,7 +16,7 @@ func loadParamProfile(config *config.ServerConfig, mapper *xmapper.EntityMapper)
 	videoParam := func(i interface{}) param.VideoParam { return i.(param.VideoParam) }
 
 	mapper = mapper.
-		CreateMapper(&param.UserParam{}, &po.User{}).
+		CreateMapper(&param.UserParam{}, &po.User{}). // update user
 		ForMember("Sex", func(i interface{}) interface{} {
 			return enum.ParseSexType(userParam(i).Sex) // SexType
 		}).
@@ -32,7 +32,7 @@ func loadParamProfile(config *config.ServerConfig, mapper *xmapper.EntityMapper)
 		Build()
 
 	mapper = mapper.
-		CreateMapper(&param.VideoParam{}, &po.Video{}).
+		CreateMapper(&param.VideoParam{}, &po.Video{}). // create / update video
 		ForMember("Description", func(i interface{}) interface{} {
 			return *videoParam(i).Description // string
 		}).

@@ -26,7 +26,7 @@ func NewUserDao(dic *xdi.DiContainer) *UserDao {
 
 func (u *UserDao) QueryAll(page int32) ([]*po.User, int32) {
 	users := make([]*po.User, 0)
-	total := u.Db.PageHelper(&po.User{}, u.PageSize, page, &po.User{}, &users)
+	total := u.Db.QueryMultiHelper(&po.User{}, u.PageSize, page, &po.User{}, "uid DESC", &users)
 	return users, total
 }
 

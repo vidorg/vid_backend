@@ -38,5 +38,9 @@ func (c *commonUtil) GetFilenameFromUrl(url string, prefix string) string {
 	if idx != -1 {
 		filename = filename[:idx]
 	}
+	idx = strings.Index(filename, "#")
+	if idx != -1 {
+		filename = filename[:idx]
+	}
 	return filename
 }

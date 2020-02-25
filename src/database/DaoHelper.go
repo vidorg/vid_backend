@@ -28,10 +28,10 @@ func (db *DbHelper) CountHelper(model interface{}, where interface{}) int32 {
 	return int32(cnt)
 }
 
-func (db *DbHelper) PageHelper(model interface{}, pageSize int32, currentPage int32, where interface{}, out interface{}) int32 {
+func (db *DbHelper) QueryMultiHelper(model interface{}, pageSize int32, currentPage int32, where interface{}, order string, out interface{}) int32 {
 	var total int32 = 0
 	db.Model(model).Count(&total)
-	db.Model(model).Limit(pageSize).Offset((currentPage - 1) * pageSize).Where(where).Find(out)
+	db.Model(model).Limit(pageSize).Offset((currentPage - 1) * pageSize).Where(where).Order(order).Find(out)
 	return total
 }
 

@@ -36,7 +36,7 @@ func (v *VideoDao) WrapVideo(video *po.Video) {
 
 func (v *VideoDao) QueryAll(page int32) ([]*po.Video, int32) {
 	videos := make([]*po.Video, 0)
-	total := v.Db.PageHelper(&po.Video{}, v.PageSize, page, &po.Video{}, &videos)
+	total := v.Db.QueryMultiHelper(&po.Video{}, v.PageSize, page, &po.Video{}, "vid DESC", &videos)
 	for idx := range videos {
 		v.WrapVideo(videos[idx])
 	}
@@ -49,7 +49,7 @@ func (v *VideoDao) QueryByUid(uid int32, page int32) ([]*po.Video, int32, databa
 		return nil, 0, database.DbNotFound
 	}
 	videos := make([]*po.Video, 0)
-	total := v.Db.PageHelper(&po.Video{}, v.PageSize, page, &po.Video{AuthorUid: uid}, &videos)
+	total := v.Db.QueryMultiHelper(&po.Video{}, v.PageSize, page, &po.Video{AuthorUid: uid}, "vid DESC", &videos)
 	for idx := range videos {
 		videos[idx].Author = author
 	}
