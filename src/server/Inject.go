@@ -4,6 +4,7 @@ import (
 	"github.com/Aoi-hosizora/ahlib/xdi"
 	"github.com/gomodule/redigo/redis"
 	"github.com/vidorg/vid_backend/src/common/profile"
+	"github.com/vidorg/vid_backend/src/common/property"
 	"github.com/vidorg/vid_backend/src/common/seg"
 	"github.com/vidorg/vid_backend/src/config"
 	"github.com/vidorg/vid_backend/src/database"
@@ -17,6 +18,9 @@ func ProvideService(config *config.ServerConfig) *xdi.DiContainer {
 
 	mapper := profile.CreateEntityMapper(config)
 	dic.Provide(mapper)
+	propMapping := property.CreatePropMappingProfile()
+	dic.Provide(propMapping)
+
 	segSrv := seg.NewSegmentService(dic)
 	dic.Provide(segSrv)
 
