@@ -2,6 +2,7 @@ package property
 
 import (
 	"github.com/Aoi-hosizora/ahlib/xcondition"
+	"github.com/Aoi-hosizora/ahlib/xslice"
 	"log"
 	"strings"
 )
@@ -26,11 +27,8 @@ func (m *PropMapping) ApplyOrderBy(source string) string {
 		if dest.Revert {
 			reverse = !reverse
 		}
-
 		props := dest.DestProps
-		for i, j := 0, len(props)-1; i < j; i, j = i+1, j-1 {
-			props[i], props[j] = props[j], props[i] // reverse
-		}
+		props = xslice.ItsOfString(xslice.Reverse(xslice.Sti(props)))
 
 		for _, prop := range props {
 			prop += xcondition.IfThenElse(reverse, " DESC", " ASC").(string)

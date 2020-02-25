@@ -41,7 +41,8 @@ func CreatePropMappingProfile() *PropMappingProfile {
 
 func (p *PropMappingProfile) GetPropertyMapping(dtoModel interface{}, poModel interface{}) *PropMapping {
 	for _, m := range p.Mappings {
-		if reflect.TypeOf(m.DtoModel) == reflect.TypeOf(dtoModel) && reflect.TypeOf(m.PoModel) == reflect.TypeOf(poModel) {
+		if reflect.TypeOf(m.DtoModel) == reflect.TypeOf(dtoModel) &&
+			reflect.TypeOf(m.PoModel) == reflect.TypeOf(poModel) {
 			return m
 		}
 	}

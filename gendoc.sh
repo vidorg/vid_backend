@@ -2,7 +2,6 @@ echo Generating swagger yaml...
 python3 ./docs/script/gen_yaml.py \
     -m ./main.go \
     -s . \
-    -n true \
     -o ./docs/api.yaml \
     -e go
 

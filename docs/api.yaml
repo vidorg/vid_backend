@@ -57,31 +57,15 @@ paths:
         '400':
           description: |-
             "request param error"
-          headers:
-            Content-Type:
-              type: string
-              description: application/json; charset=utf-8
         '401':
           description: |-
             "password error"
-          headers:
-            Content-Type:
-              type: string
-              description: application/json; charset=utf-8
         '404':
           description: |-
             "user not found"
-          headers:
-            Content-Type:
-              type: string
-              description: application/json; charset=utf-8
         '500':
           description: |-
             "login failed"
-          headers:
-            Content-Type:
-              type: string
-              description: application/json; charset=utf-8
         '200':
           schema:
             $ref: '#/definitions/Result<LoginDto>'
@@ -106,10 +90,6 @@ paths:
                   "expire": 604800
                 }
               }
-          headers:
-            Content-Type:
-              type: string
-              description: application/json; charset=utf-8
   /v1/auth/register:
     post:
       operationId: v1-auth-register-post
@@ -132,24 +112,12 @@ paths:
         '400':
           description: |-
             "request param error", "request format error", "username has been used"
-          headers:
-            Content-Type:
-              type: string
-              description: application/json; charset=utf-8
         '500':
           description: |-
             "register failed"
-          headers:
-            Content-Type:
-              type: string
-              description: application/json; charset=utf-8
         '201':
           schema:
             $ref: '#/definitions/Result<UserDto>'
-          headers:
-            Content-Type:
-              type: string
-              description: application/json; charset=utf-8
   /v1/auth:
     get:
       operationId: v1-auth-get
@@ -166,10 +134,6 @@ paths:
         '401':
           description: |-
             "unauthorized user", "token has expired", "authorized user not found"
-          headers:
-            Content-Type:
-              type: string
-              description: application/json; charset=utf-8
         '200':
           schema:
             $ref: '#/definitions/Result<UserDto>'
@@ -190,10 +154,6 @@ paths:
                   "register_time": "2020-01-10 00:30:49"
                 }
               }
-          headers:
-            Content-Type:
-              type: string
-              description: application/json; charset=utf-8
   /v1/auth/logout:
     post:
       operationId: v1-auth-logout-post
@@ -210,17 +170,9 @@ paths:
         '401':
           description: |-
             "unauthorized user", "token has expired", "authorized user not found"
-          headers:
-            Content-Type:
-              type: string
-              description: application/json; charset=utf-8
         '500':
           description: |-
             "logout failed"
-          headers:
-            Content-Type:
-              type: string
-              description: application/json; charset=utf-8
         '200':
           schema:
             $ref: '#/definitions/Result'
@@ -230,10 +182,6 @@ paths:
                 "code": 200,
                 "message": "success"
               }
-          headers:
-            Content-Type:
-              type: string
-              description: application/json; charset=utf-8
   /v1/auth/password:
     put:
       operationId: v1-auth-password-put
@@ -257,31 +205,15 @@ paths:
         '401':
           description: |-
             "unauthorized user", "token has expired", "authorized user not found"
-          headers:
-            Content-Type:
-              type: string
-              description: application/json; charset=utf-8
         '400':
           description: |-
             "request param error", "request format error"
-          headers:
-            Content-Type:
-              type: string
-              description: application/json; charset=utf-8
         '404':
           description: |-
             "user not found"
-          headers:
-            Content-Type:
-              type: string
-              description: application/json; charset=utf-8
         '500':
           description: |-
             "update password failed"
-          headers:
-            Content-Type:
-              type: string
-              description: application/json; charset=utf-8
         '200':
           schema:
             $ref: '#/definitions/Result'
@@ -291,10 +223,6 @@ paths:
                 "code": 200,
                 "message": "success"
               }
-          headers:
-            Content-Type:
-              type: string
-              description: application/json; charset=utf-8
   /v1/raw/image:
     post:
       operationId: v1-raw-image-post
@@ -317,31 +245,15 @@ paths:
         '401':
           description: |-
             "unauthorized user", "token has expired", "authorized user not found"
-          headers:
-            Content-Type:
-              type: string
-              description: application/json; charset=utf-8
         '400':
           description: |-
             "request param error", "image type not supported"
-          headers:
-            Content-Type:
-              type: string
-              description: application/json; charset=utf-8
         '413':
           description: |-
             "request body too large"
-          headers:
-            Content-Type:
-              type: string
-              description: application/json; charset=utf-8
         '500':
           description: |-
             "image save failed"
-          headers:
-            Content-Type:
-              type: string
-              description: application/json; charset=utf-8
         '200':
           schema:
             $ref: '#/definitions/Result<ImageDto>'
@@ -355,10 +267,6 @@ paths:
                   "size": 381952
                 }
               }
-          headers:
-            Content-Type:
-              type: string
-              description: application/json; charset=utf-8
   /v1/raw/image/{filename}:
     get:
       operationId: v1-raw-image-filename-get
@@ -380,10 +288,6 @@ paths:
         '404':
           description: |-
             "image not found"
-          headers:
-            Content-Type:
-              type: string
-              description: application/json; charset=utf-8
         '200':
           headers:
             Content-Type:
@@ -416,10 +320,6 @@ paths:
         '400':
           description: |-
             "request param error"
-          headers:
-            Content-Type:
-              type: string
-              description: application/json; charset=utf-8
         '200':
           schema:
             $ref: '#/definitions/Result<Page<UserDto>>'
@@ -446,10 +346,6 @@ paths:
                   ]
                 }
               }
-          headers:
-            Content-Type:
-              type: string
-              description: application/json; charset=utf-8
   /v1/search/video:
     get:
       operationId: v1-search-video-get
@@ -477,10 +373,6 @@ paths:
         '400':
           description: |-
             "request param error"
-          headers:
-            Content-Type:
-              type: string
-              description: application/json; charset=utf-8
         '200':
           schema:
             $ref: '#/definitions/Result<Page<VideoDto>>'
@@ -516,10 +408,6 @@ paths:
                   ]
                 }
               }
-          headers:
-            Content-Type:
-              type: string
-              description: application/json; charset=utf-8
   /v1/user/{uid}/subscriber:
     get:
       operationId: v1-user-uid-subscriber-get
@@ -552,17 +440,9 @@ paths:
         '400':
           description: |-
             "request param error"
-          headers:
-            Content-Type:
-              type: string
-              description: application/json; charset=utf-8
         '404':
           description: |-
             "user not found"
-          headers:
-            Content-Type:
-              type: string
-              description: application/json; charset=utf-8
         '200':
           schema:
             $ref: '#/definitions/Result<Page<UserDto>>'
@@ -589,10 +469,6 @@ paths:
                   ]
                 }
               }
-          headers:
-            Content-Type:
-              type: string
-              description: application/json; charset=utf-8
   /v1/user/{uid}/subscribing:
     get:
       operationId: v1-user-uid-subscribing-get
@@ -625,17 +501,9 @@ paths:
         '400':
           description: |-
             "request param error"
-          headers:
-            Content-Type:
-              type: string
-              description: application/json; charset=utf-8
         '404':
           description: |-
             "user not found"
-          headers:
-            Content-Type:
-              type: string
-              description: application/json; charset=utf-8
         '200':
           schema:
             $ref: '#/definitions/Result<Page<UserDto>>'
@@ -662,10 +530,6 @@ paths:
                   ]
                 }
               }
-          headers:
-            Content-Type:
-              type: string
-              description: application/json; charset=utf-8
   /v1/user/subscribing:
     put:
       operationId: v1-user-subscribing-put
@@ -689,31 +553,15 @@ paths:
         '401':
           description: |-
             "unauthorized user", "token has expired", "authorized user not found"
-          headers:
-            Content-Type:
-              type: string
-              description: application/json; charset=utf-8
         '400':
           description: |-
             "request param error", "request format error", "subscribe oneself invalid"
-          headers:
-            Content-Type:
-              type: string
-              description: application/json; charset=utf-8
         '404':
           description: |-
             "user not found"
-          headers:
-            Content-Type:
-              type: string
-              description: application/json; charset=utf-8
         '500':
           description: |-
             "subscribe failed"
-          headers:
-            Content-Type:
-              type: string
-              description: application/json; charset=utf-8
         '200':
           schema:
             $ref: '#/definitions/Result'
@@ -723,10 +571,6 @@ paths:
                 "code": 200,
                 "message": "success"
               }
-          headers:
-            Content-Type:
-              type: string
-              description: application/json; charset=utf-8
     delete:
       operationId: v1-user-subscribing-delete
       summary: 取消关注用户
@@ -749,31 +593,15 @@ paths:
         '401':
           description: |-
             "unauthorized user", "token has expired", "authorized user not found"
-          headers:
-            Content-Type:
-              type: string
-              description: application/json; charset=utf-8
         '400':
           description: |-
             "request param error", "request format error"
-          headers:
-            Content-Type:
-              type: string
-              description: application/json; charset=utf-8
         '404':
           description: |-
             "user not found"
-          headers:
-            Content-Type:
-              type: string
-              description: application/json; charset=utf-8
         '500':
           description: |-
             "unsubscribe failed"
-          headers:
-            Content-Type:
-              type: string
-              description: application/json; charset=utf-8
         '200':
           schema:
             $ref: '#/definitions/Result'
@@ -783,10 +611,6 @@ paths:
                 "code": 200,
                 "message": "success"
               }
-          headers:
-            Content-Type:
-              type: string
-              description: application/json; charset=utf-8
   /v1/user:
     get:
       operationId: v1-user-get
@@ -817,10 +641,6 @@ paths:
         '401':
           description: |-
             "unauthorized user", "token has expired", "authorized user not found", "need admin authority"
-          headers:
-            Content-Type:
-              type: string
-              description: application/json; charset=utf-8
         '200':
           schema:
             $ref: '#/definitions/Result<Page<UserDto>>'
@@ -847,10 +667,6 @@ paths:
                   ]
                 }
               }
-          headers:
-            Content-Type:
-              type: string
-              description: application/json; charset=utf-8
     put:
       operationId: v1-user-put
       summary: 更新用户
@@ -873,31 +689,15 @@ paths:
         '401':
           description: |-
             "unauthorized user", "token has expired", "authorized user not found"
-          headers:
-            Content-Type:
-              type: string
-              description: application/json; charset=utf-8
         '400':
           description: |-
             "request param error", "request format error", "username has been used"
-          headers:
-            Content-Type:
-              type: string
-              description: application/json; charset=utf-8
         '404':
           description: |-
             "user not found"
-          headers:
-            Content-Type:
-              type: string
-              description: application/json; charset=utf-8
         '500':
           description: |-
             "user update failed"
-          headers:
-            Content-Type:
-              type: string
-              description: application/json; charset=utf-8
         '200':
           schema:
             $ref: '#/definitions/Result<UserDto>'
@@ -918,10 +718,6 @@ paths:
                   "register_time": "2020-01-10 00:30:49"
                 }
               }
-          headers:
-            Content-Type:
-              type: string
-              description: application/json; charset=utf-8
     delete:
       operationId: v1-user-delete
       summary: 删除用户
@@ -937,24 +733,12 @@ paths:
         '401':
           description: |-
             "unauthorized user", "token has expired", "authorized user not found"
-          headers:
-            Content-Type:
-              type: string
-              description: application/json; charset=utf-8
         '404':
           description: |-
             "user not found"
-          headers:
-            Content-Type:
-              type: string
-              description: application/json; charset=utf-8
         '500':
           description: |-
             "user delete failed"
-          headers:
-            Content-Type:
-              type: string
-              description: application/json; charset=utf-8
         '200':
           schema:
             $ref: '#/definitions/Result'
@@ -964,10 +748,6 @@ paths:
                 "code": 200,
                 "message": "success"
               }
-          headers:
-            Content-Type:
-              type: string
-              description: application/json; charset=utf-8
   /v1/user/{uid}:
     get:
       operationId: v1-user-uid-get
@@ -990,17 +770,9 @@ paths:
         '400':
           description: |-
             "request param error"
-          headers:
-            Content-Type:
-              type: string
-              description: application/json; charset=utf-8
         '404':
           description: |-
             "user not found"
-          headers:
-            Content-Type:
-              type: string
-              description: application/json; charset=utf-8
         '200':
           schema:
             $ref: '#/definitions/Result<UserExtraDto>'
@@ -1028,10 +800,6 @@ paths:
                   }
                 }
               }
-          headers:
-            Content-Type:
-              type: string
-              description: application/json; charset=utf-8
   /v1/user/admin/{uid}:
     put:
       operationId: v1-user-admin-uid-put
@@ -1062,31 +830,15 @@ paths:
         '401':
           description: |-
             "unauthorized user", "token has expired", "authorized user not found", "need admin authority"
-          headers:
-            Content-Type:
-              type: string
-              description: application/json; charset=utf-8
         '400':
           description: |-
             "request param error", "request format error", "username has been used"
-          headers:
-            Content-Type:
-              type: string
-              description: application/json; charset=utf-8
         '404':
           description: |-
             "user not found"
-          headers:
-            Content-Type:
-              type: string
-              description: application/json; charset=utf-8
         '500':
           description: |-
             "user update failed"
-          headers:
-            Content-Type:
-              type: string
-              description: application/json; charset=utf-8
         '200':
           schema:
             $ref: '#/definitions/Result<UserDto>'
@@ -1107,10 +859,6 @@ paths:
                   "register_time": "2020-01-10 00:30:49"
                 }
               }
-          headers:
-            Content-Type:
-              type: string
-              description: application/json; charset=utf-8
     delete:
       operationId: v1-user-admin-uid-delete
       summary: 删除用户
@@ -1134,31 +882,15 @@ paths:
         '401':
           description: |-
             "unauthorized user", "token has expired", "authorized user not found", "need admin authority"
-          headers:
-            Content-Type:
-              type: string
-              description: application/json; charset=utf-8
         '400':
           description: |-
             "request param error"
-          headers:
-            Content-Type:
-              type: string
-              description: application/json; charset=utf-8
         '404':
           description: |-
             "user not found"
-          headers:
-            Content-Type:
-              type: string
-              description: application/json; charset=utf-8
         '500':
           description: |-
             "user delete failed"
-          headers:
-            Content-Type:
-              type: string
-              description: application/json; charset=utf-8
         '200':
           schema:
             $ref: '#/definitions/Result'
@@ -1168,10 +900,6 @@ paths:
                 "code": 200,
                 "message": "success"
               }
-          headers:
-            Content-Type:
-              type: string
-              description: application/json; charset=utf-8
   /v1/video:
     get:
       operationId: v1-video-get
@@ -1202,10 +930,6 @@ paths:
         '401':
           description: |-
             "unauthorized user", "token has expired", "authorized user not found", "need admin authority"
-          headers:
-            Content-Type:
-              type: string
-              description: application/json; charset=utf-8
         '200':
           schema:
             $ref: '#/definitions/Result<Page<VideoDto>>'
@@ -1241,10 +965,6 @@ paths:
                   ]
                 }
               }
-          headers:
-            Content-Type:
-              type: string
-              description: application/json; charset=utf-8
     post:
       operationId: v1-video-post
       summary: 新建视频
@@ -1267,31 +987,15 @@ paths:
         '401':
           description: |-
             "unauthorized user", "token has expired", "authorized user not found"
-          headers:
-            Content-Type:
-              type: string
-              description: application/json; charset=utf-8
         '400':
           description: |-
             "request param error", "request format error", "video url has been used"
-          headers:
-            Content-Type:
-              type: string
-              description: application/json; charset=utf-8
         '500':
           description: |-
             "video insert failed"
-          headers:
-            Content-Type:
-              type: string
-              description: application/json; charset=utf-8
         '201':
           schema:
             $ref: '#/definitions/Result<VideoDto>'
-          headers:
-            Content-Type:
-              type: string
-              description: application/json; charset=utf-8
   /v1/user/{uid}/video:
     get:
       operationId: v1-user-uid-video-get
@@ -1324,17 +1028,9 @@ paths:
         '400':
           description: |-
             "request param error"
-          headers:
-            Content-Type:
-              type: string
-              description: application/json; charset=utf-8
         '404':
           description: |-
             "user not found"
-          headers:
-            Content-Type:
-              type: string
-              description: application/json; charset=utf-8
         '200':
           schema:
             $ref: '#/definitions/Result<Page<VideoDto>>'
@@ -1370,10 +1066,6 @@ paths:
                   ]
                 }
               }
-          headers:
-            Content-Type:
-              type: string
-              description: application/json; charset=utf-8
   /v1/video/{vid}:
     get:
       operationId: v1-video-vid-get
@@ -1396,17 +1088,9 @@ paths:
         '400':
           description: |-
             "request param error"
-          headers:
-            Content-Type:
-              type: string
-              description: application/json; charset=utf-8
         '404':
           description: |-
             "video not found"
-          headers:
-            Content-Type:
-              type: string
-              description: application/json; charset=utf-8
         '200':
           schema:
             $ref: '#/definitions/Result<VideoDto>'
@@ -1436,10 +1120,6 @@ paths:
                   }
                 }
               }
-          headers:
-            Content-Type:
-              type: string
-              description: application/json; charset=utf-8
     post:
       operationId: v1-video-vid-post
       summary: 更新视频
@@ -1469,31 +1149,15 @@ paths:
         '401':
           description: |-
             "unauthorized user", "token has expired", "authorized user not found"
-          headers:
-            Content-Type:
-              type: string
-              description: application/json; charset=utf-8
         '400':
           description: |-
             "request param error", "request format error", "video url has been used"
-          headers:
-            Content-Type:
-              type: string
-              description: application/json; charset=utf-8
         '404':
           description: |-
             "video not found"
-          headers:
-            Content-Type:
-              type: string
-              description: application/json; charset=utf-8
         '500':
           description: |-
             "video update failed"
-          headers:
-            Content-Type:
-              type: string
-              description: application/json; charset=utf-8
         '200':
           schema:
             $ref: '#/definitions/Result<VideoDto>'
@@ -1523,10 +1187,6 @@ paths:
                   }
                 }
               }
-          headers:
-            Content-Type:
-              type: string
-              description: application/json; charset=utf-8
     delete:
       operationId: v1-video-vid-delete
       summary: 删除视频
@@ -1550,31 +1210,15 @@ paths:
         '401':
           description: |-
             "unauthorized user", "token has expired", "authorized user not found"
-          headers:
-            Content-Type:
-              type: string
-              description: application/json; charset=utf-8
         '400':
           description: |-
             "request param error"
-          headers:
-            Content-Type:
-              type: string
-              description: application/json; charset=utf-8
         '404':
           description: |-
             "video not found"
-          headers:
-            Content-Type:
-              type: string
-              description: application/json; charset=utf-8
         '500':
           description: |-
             "video delete failed"
-          headers:
-            Content-Type:
-              type: string
-              description: application/json; charset=utf-8
         '200':
           schema:
             $ref: '#/definitions/Result'
@@ -1584,10 +1228,6 @@ paths:
                 "code": 200,
                 "message": "success"
               }
-          headers:
-            Content-Type:
-              type: string
-              description: application/json; charset=utf-8
   /ping:
     get:
       operationId: ping-get
