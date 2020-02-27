@@ -19,10 +19,10 @@ import (
 // @Property      sex           string(enum:male,female,unknown) true "用户性别"
 // @Property      profile       string                           true "用户简介"
 // @Property      avatar_url    string                           true "用户头像"
-// @Property      birthday      date                             true "用户生日"
+// @Property      birthday      string(format:date)              true "用户生日"
 // @Property      authority     string(enum:normal,admin)        true "用户权限"
 // @Property      phone_number  string                           true "用户手机号码，部分接口可见"
-// @Property      register_time datetime                         true "用户注册时间"
+// @Property      register_time string(format:datetime)          true "用户注册时间"
 type UserDto struct {
 	Uid          int32  `json:"uid"`
 	Username     string `json:"username"`

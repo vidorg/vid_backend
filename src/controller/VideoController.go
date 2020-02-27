@@ -114,7 +114,7 @@ func (v *VideoController) QueryVideoByVid(c *gin.Context) {
 // @ResponseDesc 400    "video url has been used"
 // @ResponseDesc 500    "video insert failed"
 // @ResponseModel 201   #Result<VideoDto>
-// @Response 201        ${resp_new_video}
+// @ResponseEx 201      ${resp_new_video}
 func (v *VideoController) InsertVideo(c *gin.Context) {
 	authUser := v.JwtService.GetContextUser(c)
 	videoParam := &param.VideoParam{}

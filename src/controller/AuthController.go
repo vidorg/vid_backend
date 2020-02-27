@@ -91,7 +91,7 @@ func (a *AuthController) Login(c *gin.Context) {
 // @ResponseDesc 400    "username has been used"
 // @ResponseDesc 500    "register failed"
 // @ResponseModel 201   #Result<UserDto>
-// @Response 201        ${resp_register}
+// @ResponseEx 201      ${resp_register}
 func (a *AuthController) Register(c *gin.Context) {
 	registerParam := &param.RegisterParam{}
 	if err := c.ShouldBind(registerParam); err != nil {

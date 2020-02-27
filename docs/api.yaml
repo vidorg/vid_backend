@@ -118,6 +118,23 @@ paths:
         '201':
           schema:
             $ref: '#/definitions/Result<UserDto>'
+          examples:
+            application/json: |-
+              {
+                "code": 201,
+                "message": "created",
+                "data": {
+                  "uid": 1,
+                  "username": "admin",
+                  "sex": "male",
+                  "profile": "Demo admin profile",
+                  "avatar_url": "http://localhost:3344/v1/raw/image/avatar.jpg",
+                  "birthday": "2020-01-10",
+                  "authority": "admin",
+                  "phone_number": "13512345678",
+                  "register_time": "2020-01-10T00:30:49+08:00"
+                }
+              }
   /v1/auth:
     get:
       operationId: v1-auth-get
@@ -996,6 +1013,32 @@ paths:
         '201':
           schema:
             $ref: '#/definitions/Result<VideoDto>'
+          examples:
+            application/json: |-
+              {
+                "code": 201,
+                "message": "created",
+                "data": {
+                  "vid": 1,
+                  "title": "The First Video",
+                  "description": "This is the first video uploaded",
+                  "video_url": "123",
+                  "cover_url": "http://localhost:3344/v1/raw/image/avatar.jpg",
+                  "upload_time": "2020-01-10T00:55:36+08:00",
+                  "update_time": "2020-01-10T14:31:00+08:00",
+                  "author": {
+                    "uid": 1,
+                    "username": "admin",
+                    "sex": "male",
+                    "profile": "Demo admin profile",
+                    "avatar_url": "http://localhost:3344/v1/raw/image/avatar.jpg",
+                    "birthday": "2020-01-10",
+                    "authority": "admin",
+                    "phone_number": "13512345678",
+                    "register_time": "2020-01-10T00:30:49+08:00"
+                  }
+                }
+              }
   /v1/user/{uid}/video:
     get:
       operationId: v1-user-uid-video-get
@@ -1324,7 +1367,8 @@ definitions:
         type: string
       birthday:
         description: 用户生日
-        type: date
+        type: string
+        format: date
       authority:
         description: 用户权限
         type: string
@@ -1336,7 +1380,8 @@ definitions:
         type: string
       register_time:
         description: 用户注册时间
-        type: datetime
+        type: string
+        format: datetime
   _UserAndExtraDto:
     title: _UserAndExtraDto
     description: 用户与数量信息
@@ -1403,9 +1448,11 @@ definitions:
       upload_time:
         description: 视频上传时间
         type: string
+        format: datetime
       update_time:
         description: 视频修改时间
         type: string
+        format: datetime
       author:
         description: 视频作者，用户id为-1表示用户已删除
         type: object
@@ -1676,7 +1723,8 @@ definitions:
         - unknown
       birthday:
         description: 用户生日
-        type: date
+        type: string
+        format: date
       phone_number:
         description: 用户手机号码，长度为 11，仅限中国大陆手机号码
         type: string
