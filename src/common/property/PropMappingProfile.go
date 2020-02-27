@@ -19,7 +19,7 @@ func CreatePropMappingProfile() *PropMappingProfile {
 		"sex":           NewPropMappingValue([]string{"sex"}, false),
 		"profile":       NewPropMappingValue([]string{"profile"}, false),
 		"avatar_url":    NewPropMappingValue([]string{"avatar_url"}, false),
-		"birth_time":    NewPropMappingValue([]string{"birth_time"}, false),
+		"birthday":      NewPropMappingValue([]string{"birthday"}, false),
 		"authority":     NewPropMappingValue([]string{"authority"}, false),
 		"phone_number":  NewPropMappingValue([]string{"phone_number"}, false),
 		"register_time": NewPropMappingValue([]string{"register_time"}, false),

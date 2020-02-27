@@ -135,7 +135,7 @@ func (u *UserController) UpdateUser(isSpec bool) func(c *gin.Context) {
 		// Update
 		userParam := &param.UserParam{}
 		if err := c.ShouldBind(userParam); err != nil {
-			result.Error(exception.WrapValidationError(err)).JSON(c)
+			result.Error(exception.WrapValidationError(err)).PutData("error", err.Error()).JSON(c)
 			return
 		}
 

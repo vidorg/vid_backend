@@ -25,7 +25,7 @@ CREATE TABLE `tbl_user`
     `sex`          enum ('unknown','male','female') DEFAULT 'unknown',
     `profile`      varchar(255)                     DEFAULT NULL,
     `avatar_url`   varchar(255)                     DEFAULT NULL,
-    `birth_time`   datetime                         DEFAULT '2000-01-01 00:00:00',
+    `birthday`     date                             DEFAULT '2000-01-01',
     `authority`    enum ('admin','normal')          DEFAULT 'normal',
     `register_ip`  varchar(15)                      DEFAULT NULL,
     `phone_number` varchar(11)                      DEFAULT NULL,

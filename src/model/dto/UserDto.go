@@ -14,22 +14,22 @@ import (
 
 // @Model         _UserDto
 // @Description   用户信息
-// @Property      uid           integer                            true "用户id"
-// @Property      username      string                             true "用户名"
-// @Property      sex           string(enum:male,female,unknown)   true "用户性别"
-// @Property      profile       string                             true "用户简介"
-// @Property      avatar_url    string                             true "用户头像"
-// @Property      birth_time    string(format:2000-01-01)          true "用户生日"
-// @Property      authority     string(enum:normal,admin)          true "用户权限"
-// @Property      phone_number  string                             true "用户手机号码，部分接口可见"
-// @Property      register_time string(format:2000-01-01 00:00:00) true "用户注册时间"
+// @Property      uid           integer                          true "用户id"
+// @Property      username      string                           true "用户名"
+// @Property      sex           string(enum:male,female,unknown) true "用户性别"
+// @Property      profile       string                           true "用户简介"
+// @Property      avatar_url    string                           true "用户头像"
+// @Property      birthday      date                             true "用户生日"
+// @Property      authority     string(enum:normal,admin)        true "用户权限"
+// @Property      phone_number  string                           true "用户手机号码，部分接口可见"
+// @Property      register_time datetime                         true "用户注册时间"
 type UserDto struct {
 	Uid          int32  `json:"uid"`
 	Username     string `json:"username"`
 	Sex          string `json:"sex"`
 	Profile      string `json:"profile"`
 	AvatarUrl    string `json:"avatar_url"`
-	BirthTime    string `json:"birth_time"`
+	Birthday     string `json:"birthday"`
 	Authority    string `json:"authority"`
 	PhoneNumber  string `json:"phone_number,omitempty"`
 	RegisterTime string `json:"register_time"`

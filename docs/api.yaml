@@ -81,10 +81,10 @@ paths:
                     "sex": "male",
                     "profile": "Demo admin profile",
                     "avatar_url": "http://localhost:3344/v1/raw/image/avatar.jpg",
-                    "birth_time": "2020-01-10",
+                    "birthday": "2020-01-10",
                     "authority": "admin",
                     "phone_number": "13512345678",
-                    "register_time": "2020-01-10 00:30:49"
+                    "register_time": "2020-01-10T00:30:49+08:00"
                   },
                   "token": "Bearer xxx",
                   "expire": 604800
@@ -148,10 +148,10 @@ paths:
                   "sex": "male",
                   "profile": "Demo admin profile",
                   "avatar_url": "http://localhost:3344/v1/raw/image/avatar.jpg",
-                  "birth_time": "2020-01-10",
+                  "birthday": "2020-01-10",
                   "authority": "admin",
                   "phone_number": "13512345678",
-                  "register_time": "2020-01-10 00:30:49"
+                  "register_time": "2020-01-10T00:30:49+08:00"
                 }
               }
   /v1/auth/logout:
@@ -338,10 +338,10 @@ paths:
                       "sex": "male",
                       "profile": "Demo admin profile",
                       "avatar_url": "http://localhost:3344/v1/raw/image/avatar.jpg",
-                      "birth_time": "2020-01-10",
+                      "birthday": "2020-01-10",
                       "authority": "admin",
                       "phone_number": "13512345678",
-                      "register_time": "2020-01-10 00:30:49"
+                      "register_time": "2020-01-10T00:30:49+08:00"
                     }
                   ]
                 }
@@ -391,18 +391,18 @@ paths:
                       "description": "This is the first video uploaded",
                       "video_url": "123",
                       "cover_url": "http://localhost:3344/v1/raw/image/avatar.jpg",
-                      "upload_time": "2020-01-10 00:55:36",
-                      "update_time": "2020-01-10 14:31:00",
+                      "upload_time": "2020-01-10T00:55:36+08:00",
+                      "update_time": "2020-01-10T14:31:00+08:00",
                       "author": {
                         "uid": 1,
                         "username": "admin",
                         "sex": "male",
                         "profile": "Demo admin profile",
                         "avatar_url": "http://localhost:3344/v1/raw/image/avatar.jpg",
-                        "birth_time": "2020-01-10",
+                        "birthday": "2020-01-10",
                         "authority": "admin",
                         "phone_number": "13512345678",
-                        "register_time": "2020-01-10 00:30:49"
+                        "register_time": "2020-01-10T00:30:49+08:00"
                       }
                     }
                   ]
@@ -461,10 +461,10 @@ paths:
                       "sex": "male",
                       "profile": "Demo admin profile",
                       "avatar_url": "http://localhost:3344/v1/raw/image/avatar.jpg",
-                      "birth_time": "2020-01-10",
+                      "birthday": "2020-01-10",
                       "authority": "admin",
                       "phone_number": "13512345678",
-                      "register_time": "2020-01-10 00:30:49"
+                      "register_time": "2020-01-10T00:30:49+08:00"
                     }
                   ]
                 }
@@ -522,10 +522,10 @@ paths:
                       "sex": "male",
                       "profile": "Demo admin profile",
                       "avatar_url": "http://localhost:3344/v1/raw/image/avatar.jpg",
-                      "birth_time": "2020-01-10",
+                      "birthday": "2020-01-10",
                       "authority": "admin",
                       "phone_number": "13512345678",
-                      "register_time": "2020-01-10 00:30:49"
+                      "register_time": "2020-01-10T00:30:49+08:00"
                     }
                   ]
                 }
@@ -659,10 +659,10 @@ paths:
                       "sex": "male",
                       "profile": "Demo admin profile",
                       "avatar_url": "http://localhost:3344/v1/raw/image/avatar.jpg",
-                      "birth_time": "2020-01-10",
+                      "birthday": "2020-01-10",
                       "authority": "admin",
                       "phone_number": "13512345678",
-                      "register_time": "2020-01-10 00:30:49"
+                      "register_time": "2020-01-10T00:30:49+08:00"
                     }
                   ]
                 }
@@ -712,10 +712,10 @@ paths:
                   "sex": "male",
                   "profile": "Demo admin profile",
                   "avatar_url": "http://localhost:3344/v1/raw/image/avatar.jpg",
-                  "birth_time": "2020-01-10",
+                  "birthday": "2020-01-10",
                   "authority": "admin",
                   "phone_number": "13512345678",
-                  "register_time": "2020-01-10 00:30:49"
+                  "register_time": "2020-01-10T00:30:49+08:00"
                 }
               }
     delete:
@@ -788,10 +788,10 @@ paths:
                     "sex": "male",
                     "profile": "Demo admin profile",
                     "avatar_url": "http://localhost:3344/v1/raw/image/avatar.jpg",
-                    "birth_time": "2020-01-10",
+                    "birthday": "2020-01-10",
                     "authority": "admin",
                     "phone_number": "13512345678",
-                    "register_time": "2020-01-10 00:30:49"
+                    "register_time": "2020-01-10T00:30:49+08:00"
                   },
                   "extra": {
                     "subscribing_cnt": 3,
@@ -853,10 +853,10 @@ paths:
                   "sex": "male",
                   "profile": "Demo admin profile",
                   "avatar_url": "http://localhost:3344/v1/raw/image/avatar.jpg",
-                  "birth_time": "2020-01-10",
+                  "birthday": "2020-01-10",
                   "authority": "admin",
                   "phone_number": "13512345678",
-                  "register_time": "2020-01-10 00:30:49"
+                  "register_time": "2020-01-10T00:30:49+08:00"
                 }
               }
     delete:
@@ -948,18 +948,18 @@ paths:
                       "description": "This is the first video uploaded",
                       "video_url": "123",
                       "cover_url": "http://localhost:3344/v1/raw/image/avatar.jpg",
-                      "upload_time": "2020-01-10 00:55:36",
-                      "update_time": "2020-01-10 14:31:00",
+                      "upload_time": "2020-01-10T00:55:36+08:00",
+                      "update_time": "2020-01-10T14:31:00+08:00",
                       "author": {
                         "uid": 1,
                         "username": "admin",
                         "sex": "male",
                         "profile": "Demo admin profile",
                         "avatar_url": "http://localhost:3344/v1/raw/image/avatar.jpg",
-                        "birth_time": "2020-01-10",
+                        "birthday": "2020-01-10",
                         "authority": "admin",
                         "phone_number": "13512345678",
-                        "register_time": "2020-01-10 00:30:49"
+                        "register_time": "2020-01-10T00:30:49+08:00"
                       }
                     }
                   ]
@@ -1049,18 +1049,18 @@ paths:
                       "description": "This is the first video uploaded",
                       "video_url": "123",
                       "cover_url": "http://localhost:3344/v1/raw/image/avatar.jpg",
-                      "upload_time": "2020-01-10 00:55:36",
-                      "update_time": "2020-01-10 14:31:00",
+                      "upload_time": "2020-01-10T00:55:36+08:00",
+                      "update_time": "2020-01-10T14:31:00+08:00",
                       "author": {
                         "uid": 1,
                         "username": "admin",
                         "sex": "male",
                         "profile": "Demo admin profile",
                         "avatar_url": "http://localhost:3344/v1/raw/image/avatar.jpg",
-                        "birth_time": "2020-01-10",
+                        "birthday": "2020-01-10",
                         "authority": "admin",
                         "phone_number": "13512345678",
-                        "register_time": "2020-01-10 00:30:49"
+                        "register_time": "2020-01-10T00:30:49+08:00"
                       }
                     }
                   ]
@@ -1105,18 +1105,18 @@ paths:
                   "description": "This is the first video uploaded",
                   "video_url": "123",
                   "cover_url": "http://localhost:3344/v1/raw/image/avatar.jpg",
-                  "upload_time": "2020-01-10 00:55:36",
-                  "update_time": "2020-01-10 14:31:00",
+                  "upload_time": "2020-01-10T00:55:36+08:00",
+                  "update_time": "2020-01-10T14:31:00+08:00",
                   "author": {
                     "uid": 1,
                     "username": "admin",
                     "sex": "male",
                     "profile": "Demo admin profile",
                     "avatar_url": "http://localhost:3344/v1/raw/image/avatar.jpg",
-                    "birth_time": "2020-01-10",
+                    "birthday": "2020-01-10",
                     "authority": "admin",
                     "phone_number": "13512345678",
-                    "register_time": "2020-01-10 00:30:49"
+                    "register_time": "2020-01-10T00:30:49+08:00"
                   }
                 }
               }
@@ -1172,18 +1172,18 @@ paths:
                   "description": "This is the first video uploaded",
                   "video_url": "123",
                   "cover_url": "http://localhost:3344/v1/raw/image/avatar.jpg",
-                  "upload_time": "2020-01-10 00:55:36",
-                  "update_time": "2020-01-10 14:31:00",
+                  "upload_time": "2020-01-10T00:55:36+08:00",
+                  "update_time": "2020-01-10T14:31:00+08:00",
                   "author": {
                     "uid": 1,
                     "username": "admin",
                     "sex": "male",
                     "profile": "Demo admin profile",
                     "avatar_url": "http://localhost:3344/v1/raw/image/avatar.jpg",
-                    "birth_time": "2020-01-10",
+                    "birthday": "2020-01-10",
                     "authority": "admin",
                     "phone_number": "13512345678",
-                    "register_time": "2020-01-10 00:30:49"
+                    "register_time": "2020-01-10T00:30:49+08:00"
                   }
                 }
               }
@@ -1298,7 +1298,7 @@ definitions:
     - sex
     - profile
     - avatar_url
-    - birth_time
+    - birthday
     - authority
     - phone_number
     - register_time
@@ -1322,10 +1322,9 @@ definitions:
       avatar_url:
         description: 用户头像
         type: string
-      birth_time:
+      birthday:
         description: 用户生日
-        type: string
-        format: '2000-01-01'
+        type: date
       authority:
         description: 用户权限
         type: string
@@ -1337,8 +1336,7 @@ definitions:
         type: string
       register_time:
         description: 用户注册时间
-        type: string
-        format: '2000-01-01 00:00:00'
+        type: datetime
   _UserAndExtraDto:
     title: _UserAndExtraDto
     description: 用户与数量信息
@@ -1405,11 +1403,9 @@ definitions:
       upload_time:
         description: 视频上传时间
         type: string
-        format: '2000-01-01 00:00:00'
       update_time:
         description: 视频修改时间
         type: string
-        format: '2000-01-01 00:00:00'
       author:
         description: 视频作者，用户id为-1表示用户已删除
         type: object
@@ -1660,7 +1656,7 @@ definitions:
     - username
     - profile
     - sex
-    - birth_time
+    - birthday
     - phone_number
     - avatar_url
     properties:
@@ -1678,10 +1674,9 @@ definitions:
         - male
         - female
         - unknown
-      birth_time:
+      birthday:
         description: 用户生日
-        type: string
-        format: '2000-01-01'
+        type: date
       phone_number:
         description: 用户手机号码，长度为 11，仅限中国大陆手机号码
         type: string

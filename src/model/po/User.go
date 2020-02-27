@@ -13,7 +13,7 @@ type User struct {
 	Sex         enum.SexType       `gorm:"not_null;type:enum('unknown','male','female');default:'unknown'"`
 	Profile     string             `gorm:"type:varchar(255)"`          // 255
 	AvatarUrl   string             `gorm:"not_null;type:varchar(255)"` // 255
-	BirthTime   xdatetime.JsonDate `gorm:"not_null;type:datetime;default:'2000-01-01 00:00:00'"`
+	Birthday    xdatetime.JsonDate `gorm:"not_null;type:date;default:'2000-01-01'"`
 	Authority   enum.AuthType      `gorm:"not_null;type:enum('admin', 'normal');default:'normal'"`
 	RegisterIP  string             `gorm:"type:varchar(15)"` // 15
 	PhoneNumber string             `gorm:"type:varchar(11)"` // 11

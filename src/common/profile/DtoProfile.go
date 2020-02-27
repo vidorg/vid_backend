@@ -19,8 +19,8 @@ func loadDtoProfile(config *config.ServerConfig, mapper *xmapper.EntityMapper) *
 		ForMember("Sex", func(i interface{}) interface{} {
 			return user(i).Sex.String() // SexType
 		}).
-		ForMember("BirthTime", func(i interface{}) interface{} {
-			return user(i).BirthTime.String() // JsonDate
+		ForMember("Birthday", func(i interface{}) interface{} {
+			return user(i).Birthday.String() // JsonDate
 		}).
 		ForMember("Authority", func(i interface{}) interface{} {
 			return user(i).Authority.String() // AuthType

@@ -23,8 +23,8 @@ func loadParamProfile(config *config.ServerConfig, mapper *xmapper.EntityMapper)
 		ForMember("Profile", func(i interface{}) interface{} {
 			return *userParam(i).Profile // string
 		}).
-		ForMember("BirthTime", func(i interface{}) interface{} {
-			return xcondition.First(xdatetime.JsonDate{}.Parse(userParam(i).BirthTime, config.MetaConfig.CurrentLoc)) // JsonDate
+		ForMember("Birthday", func(i interface{}) interface{} {
+			return xcondition.First(xdatetime.ParseISO8601Date(userParam(i).Birthday)) // JsonDate
 		}).
 		ForMember("AvatarUrl", func(i interface{}) interface{} {
 			return util.CommonUtil.GetFilenameFromUrl(userParam(i).AvatarUrl, config.FileConfig.ImageUrlPrefix) // string

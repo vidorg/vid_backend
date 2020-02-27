@@ -3,20 +3,13 @@ package server
 import (
 	"github.com/Aoi-hosizora/ahlib-gin-gorm/xdatetime"
 	"github.com/Aoi-hosizora/ahlib-gin-gorm/xgin"
-	"log"
-	"time"
 )
 
 func BindValidation() {
 	xgin.SetupRegexBinding()
 
-	shanghaiLoc, err := time.LoadLocation("Asia/Shanghai")
-	if err != nil {
-		log.Fatalln("Failed to load location:", err)
-	}
-	xgin.SetupDateTimeBinding("date", xdatetime.DateFormat, shanghaiLoc)
-	xgin.SetupDateTimeBinding("time", xdatetime.TimeFormat, shanghaiLoc)
-	xgin.SetupDateTimeBinding("datetime", xdatetime.DateTimeFormat, shanghaiLoc)
+	xgin.SetupDateTimeBinding("date", xdatetime.ISO8601DateFormat)
+	xgin.SetupDateTimeBinding("datetime", xdatetime.ISO8601DateTimeFormat)
 
 	xgin.SetupSpecificRegexpBinding("name", "^[a-zA-Z0-9\u4E00-\u9FBF\u3040-\u30FF\\-_]+$")              // alphabet number character kana - _
 	xgin.SetupSpecificRegexpBinding("pwd", "^.+$")                                                       // all

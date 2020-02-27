@@ -27,19 +27,19 @@ VALUES (1, '$2a$10$iq6j.QEU0Nvj5EmZtj2fsu4WTJGNdM5rJBSn0.qbafxc8ZYXviq/y', '2020
 
 -- tbl: tbl_user
 
-INSERT INTO `tbl_user` (`uid`, `username`, `sex`, `profile`, `avatar_url`, `birth_time`, `authority`, `register_ip`,
+INSERT INTO `tbl_user` (`uid`, `username`, `sex`, `profile`, `avatar_url`, `birthday`, `authority`, `register_ip`,
                         `phone_number`, `created_at`, `updated_at`, `deleted_at`)
-VALUES (1, 'admin', 'male', 'Demo admin profile', '', '2020-01-10 00:00:00', 'admin', '::1', '13512345678',
+VALUES (1, 'admin', 'male', 'Demo admin profile', '', '2020-01-10', 'admin', '::1', '13512345678',
         '2020-01-10 00:30:49', '2020-01-10 01:16:52', '2000-01-01 00:00:00'),
-       (2, 'testuser1', 'unknown', 'Demo profile', '', '2000-01-01 00:00:00', 'normal', '::1', '13312345678',
+       (2, 'testuser1', 'unknown', 'Demo profile', '', '2000-01-01', 'normal', '::1', '13312345678',
         '2020-01-10 00:31:04', '2020-01-10 00:31:04', '2000-01-01 00:00:00'),
-       (3, 'testuser2', 'male', '', '', '2000-01-01 00:00:00', 'normal', '::1', '', '2020-01-10 00:31:08',
+       (3, 'testuser2', 'male', '', '', '2000-01-01', 'normal', '::1', '', '2020-01-10 00:31:08',
         '2020-01-10 00:31:08', '2000-01-01 00:00:00'),
-       (4, 'testuser3', 'female', '', '', '2000-01-01 00:00:00', 'normal', '::1', '', '2020-01-10 00:31:11',
+       (4, 'testuser3', 'female', '', '', '2000-01-01', 'normal', '::1', '', '2020-01-10 00:31:11',
         '2020-01-10 00:31:11', '2000-01-01 00:00:00'),
-       (5, 'testuser4', 'unknown', '', '', '2000-01-01 00:00:00', 'normal', '::1', '', '2020-01-10 00:31:15',
+       (5, 'testuser4', 'unknown', '', '', '2000-01-01', 'normal', '::1', '', '2020-01-10 00:31:15',
         '2020-01-10 00:31:15', '2000-01-01 00:00:00'),
-       (6, 'testuser_del', 'male', 'Demo deleted user', '', '1999-01-31 00:00:00', 'normal', '::1', '15912345678',
+       (6, 'testuser_del', 'male', 'Demo deleted user', '', '1999-01-31', 'normal', '::1', '15912345678',
         '2020-01-10 00:31:18', '2020-01-10 00:39:09', '2020-01-10 00:41:48');
 
 
