@@ -24,7 +24,7 @@ type AuthController struct {
 	JwtService *middleware.JwtService `di:"~"`
 	AccountDao *dao.AccountDao        `di:"~"`
 	TokenDao   *dao.TokenDao          `di:"~"`
-	Mapper     *xmapper.EntityMapper  `di:"~"`
+	Mappers    *xmapper.EntityMappers `di:"~"`
 }
 
 func NewAuthController(dic *xdi.DiContainer) *AuthController {
@@ -76,7 +76,7 @@ func (a *AuthController) Login(c *gin.Context) {
 		return
 	}
 
-	retDto := xcondition.First(a.Mapper.Map(account.User, &dto.UserDto{})).(*dto.UserDto)
+	retDto := xcondition.First(a.Mappers.Map(account.User, &dto.UserDto{})).(*dto.UserDto)
 	result.Ok().
 		PutData("user", retDto).
 		PutData("token", token).
@@ -120,7 +120,7 @@ func (a *AuthController) Register(c *gin.Context) {
 		return
 	}
 
-	retDto := xcondition.First(a.Mapper.Map(passRecord.User, &dto.UserDto{})).(*dto.UserDto)
+	retDto := xcondition.First(a.Mappers.Map(passRecord.User, &dto.UserDto{})).(*dto.UserDto)
 	result.Status(http.StatusCreated).SetData(retDto).JSON(c)
 }
 
@@ -133,7 +133,7 @@ func (a *AuthController) Register(c *gin.Context) {
 // @ResponseEx 200      ${resp_user}
 func (a *AuthController) CurrentUser(c *gin.Context) {
 	authUser := a.JwtService.GetContextUser(c)
-	retDto := xcondition.First(a.Mapper.Map(authUser, &dto.UserDto{})).(*dto.UserDto)
+	retDto := xcondition.First(a.Mappers.Map(authUser, &dto.UserDto{})).(*dto.UserDto)
 	result.Ok().SetData(retDto).JSON(c)
 }
 

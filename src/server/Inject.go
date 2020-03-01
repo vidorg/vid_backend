@@ -16,8 +16,8 @@ func ProvideService(config *config.ServerConfig) *xdi.DiContainer {
 	dic := xdi.NewDiContainer()
 	dic.Provide(config)
 
-	mapper := profile.CreateEntityMapper(config)
-	dic.Provide(mapper)
+	mappers := profile.CreateEntityMappers(config)
+	dic.Provide(mappers)
 	propMapping := property.CreatePropMappingProfile()
 	dic.Provide(propMapping)
 

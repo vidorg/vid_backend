@@ -24,7 +24,7 @@ type VideoController struct {
 	Config     *config.ServerConfig   `di:"~"`
 	JwtService *middleware.JwtService `di:"~"`
 	VideoDao   *dao.VideoDao          `di:"~"`
-	Mapper     *xmapper.EntityMapper  `di:"~"`
+	Mappers    *xmapper.EntityMappers `di:"~"`
 }
 
 func NewVideoController(dic *xdi.DiContainer) *VideoController {
@@ -49,7 +49,7 @@ func (v *VideoController) QueryAllVideos(c *gin.Context) {
 	order := param.BindQueryOrder(c)
 	videos, count := v.VideoDao.QueryAll(page, order)
 
-	retDto := xcondition.First(v.Mapper.MapSlice(xslice.Sti(videos), &dto.VideoDto{})).([]*dto.VideoDto)
+	retDto := xcondition.First(v.Mappers.MapSlice(xslice.Sti(videos), &dto.VideoDto{})).([]*dto.VideoDto)
 	result.Ok().SetPage(count, page, retDto).JSON(c)
 }
 
@@ -76,7 +76,7 @@ func (v *VideoController) QueryVideosByUid(c *gin.Context) {
 		return
 	}
 
-	retDto := xcondition.First(v.Mapper.MapSlice(xslice.Sti(videos), &dto.VideoDto{})).([]*dto.VideoDto)
+	retDto := xcondition.First(v.Mappers.MapSlice(xslice.Sti(videos), &dto.VideoDto{})).([]*dto.VideoDto)
 	result.Ok().SetPage(count, page, retDto).JSON(c)
 }
 
@@ -102,7 +102,7 @@ func (v *VideoController) QueryVideoByVid(c *gin.Context) {
 		return
 	}
 
-	retDto := xcondition.First(v.Mapper.Map(video, &dto.VideoDto{})).(*dto.VideoDto)
+	retDto := xcondition.First(v.Mappers.Map(video, &dto.VideoDto{})).(*dto.VideoDto)
 	result.Ok().SetData(retDto).JSON(c)
 }
 
@@ -129,7 +129,7 @@ func (v *VideoController) InsertVideo(c *gin.Context) {
 		Author:    authUser,
 	}
 
-	_ = v.Mapper.MapProp(videoParam, video)
+	_ = v.Mappers.MapProp(videoParam, video)
 	status := v.VideoDao.Insert(video)
 	if status == database.DbExisted {
 		result.Error(exception.VideoUrlExistError).JSON(c)
@@ -139,7 +139,7 @@ func (v *VideoController) InsertVideo(c *gin.Context) {
 		return
 	}
 
-	retDto := xcondition.First(v.Mapper.Map(video, &dto.VideoDto{})).(*dto.VideoDto)
+	retDto := xcondition.First(v.Mappers.Map(video, &dto.VideoDto{})).(*dto.VideoDto)
 	result.Status(http.StatusCreated).SetData(retDto).JSON(c)
 }
 
@@ -179,7 +179,7 @@ func (v *VideoController) UpdateVideo(c *gin.Context) {
 		return
 	}
 	// Update
-	_ = v.Mapper.MapProp(videoParam, video)
+	_ = v.Mappers.MapProp(videoParam, video)
 	status := v.VideoDao.Update(video)
 	if status == database.DbExisted {
 		result.Error(exception.VideoUrlExistError).JSON(c)
@@ -192,7 +192,7 @@ func (v *VideoController) UpdateVideo(c *gin.Context) {
 		return
 	}
 
-	retDto := xcondition.First(v.Mapper.Map(video, &dto.VideoDto{})).(*dto.VideoDto)
+	retDto := xcondition.First(v.Mappers.Map(video, &dto.VideoDto{})).(*dto.VideoDto)
 	result.Ok().SetData(retDto).JSON(c)
 }
 

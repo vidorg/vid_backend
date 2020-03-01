@@ -11,8 +11,8 @@ import (
 	"github.com/vidorg/vid_backend/src/util"
 )
 
-func loadParamProfile(config *config.ServerConfig, mapper *xmapper.EntityMapper) *xmapper.EntityMapper {
-	mapper.AddMapper(xmapper.NewMapper(&param.UserParam{}, &po.User{}, func(from interface{}, to interface{}) error {
+func loadParamProfile(config *config.ServerConfig, mappers *xmapper.EntityMappers) *xmapper.EntityMappers {
+	mappers.AddMapper(xmapper.NewEntityMapper(&param.UserParam{}, &po.User{}, func(from interface{}, to interface{}) error {
 		userParam := from.(*param.UserParam)
 		user := to.(*po.User)
 
@@ -25,7 +25,7 @@ func loadParamProfile(config *config.ServerConfig, mapper *xmapper.EntityMapper)
 		return nil
 	}))
 
-	mapper.AddMapper(xmapper.NewMapper(&param.VideoParam{}, &po.Video{}, func(from interface{}, to interface{}) error {
+	mappers.AddMapper(xmapper.NewEntityMapper(&param.VideoParam{}, &po.Video{}, func(from interface{}, to interface{}) error {
 		videoParam := from.(*param.VideoParam)
 		video := to.(*po.Video)
 
@@ -36,5 +36,5 @@ func loadParamProfile(config *config.ServerConfig, mapper *xmapper.EntityMapper)
 		return nil
 	}))
 
-	return mapper
+	return mappers
 }

@@ -25,7 +25,7 @@ type UserController struct {
 	VideoDao   *dao.VideoDao          `di:"~"`
 	SubDao     *dao.SubDao            `di:"~"`
 	SearchDao  *dao.SearchDao         `di:"~"`
-	Mapper     *xmapper.EntityMapper  `di:"~"`
+	Mappers    *xmapper.EntityMappers `di:"~"`
 }
 
 func NewUserController(dic *xdi.DiContainer) *UserController {
@@ -50,7 +50,7 @@ func (u *UserController) QueryAllUsers(c *gin.Context) {
 	order := param.BindQueryOrder(c)
 	users, count := u.UserDao.QueryAll(page, order)
 
-	retDto := xcondition.First(u.Mapper.MapSlice(xslice.Sti(users), &dto.UserDto{}, dto.UserDtoAdminMapOption())).([]*dto.UserDto)
+	retDto := xcondition.First(u.Mappers.MapSlice(xslice.Sti(users), &dto.UserDto{}, dto.UserDtoAdminMapOption())).([]*dto.UserDto)
 	result.Ok().SetPage(count, page, retDto).JSON(c)
 }
 
@@ -84,7 +84,7 @@ func (u *UserController) QueryUser(c *gin.Context) {
 	}
 
 	authUser := u.JwtService.GetContextUser(c)
-	retDto := xcondition.First(u.Mapper.Map(user, &dto.UserDto{}, dto.UserDtoUserMapOption(authUser))).(*dto.UserDto)
+	retDto := xcondition.First(u.Mappers.Map(user, &dto.UserDto{}, dto.UserDtoUserMapOption(authUser))).(*dto.UserDto)
 	result.Ok().
 		PutData("user", retDto).
 		PutData("extra", extraInfo).JSON(c)
@@ -140,7 +140,7 @@ func (u *UserController) UpdateUser(isSpec bool) func(c *gin.Context) {
 			return
 		}
 
-		_ = u.Mapper.MapProp(userParam, user)
+		_ = u.Mappers.MapProp(userParam, user)
 		status := u.UserDao.Update(user)
 		if status == database.DbNotFound {
 			result.Error(exception.UserNotFoundError).JSON(c)
@@ -153,7 +153,7 @@ func (u *UserController) UpdateUser(isSpec bool) func(c *gin.Context) {
 			return
 		}
 
-		retDto := xcondition.First(u.Mapper.Map(user, &dto.UserDto{}, dto.UserDtoAdminMapOption())).(*dto.UserDto)
+		retDto := xcondition.First(u.Mappers.Map(user, &dto.UserDto{}, dto.UserDtoAdminMapOption())).(*dto.UserDto)
 		result.Ok().SetData(retDto).JSON(c)
 	}
 }

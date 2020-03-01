@@ -10,8 +10,8 @@ import (
 	"github.com/vidorg/vid_backend/src/util"
 )
 
-func loadDtoProfile(config *config.ServerConfig, mapper *xmapper.EntityMapper) *xmapper.EntityMapper {
-	mapper.AddMapper(xmapper.NewMapper(&po.User{}, &dto.UserDto{}, func(from interface{}, to interface{}) error {
+func loadDtoProfile(config *config.ServerConfig, mappers *xmapper.EntityMappers) *xmapper.EntityMappers {
+	mappers.AddMapper(xmapper.NewEntityMapper(&po.User{}, &dto.UserDto{}, func(from interface{}, to interface{}) error {
 		user := from.(*po.User)
 		userDto := to.(*dto.UserDto)
 
@@ -27,7 +27,7 @@ func loadDtoProfile(config *config.ServerConfig, mapper *xmapper.EntityMapper) *
 		return nil
 	}))
 
-	mapper.AddMapper(xmapper.NewMapper(&po.Video{}, &dto.VideoDto{}, func(from interface{}, to interface{}) error {
+	mappers.AddMapper(xmapper.NewEntityMapper(&po.Video{}, &dto.VideoDto{}, func(from interface{}, to interface{}) error {
 		video := from.(*po.Video)
 		videoDto := to.(*dto.VideoDto)
 
@@ -38,9 +38,9 @@ func loadDtoProfile(config *config.ServerConfig, mapper *xmapper.EntityMapper) *
 		videoDto.CoverUrl = util.CommonUtil.GetServerUrl(video.CoverUrl, config.FileConfig.ImageUrlPrefix)
 		videoDto.UploadTime = xdatetime.NewJsonDateTime(video.CreatedAt).String()
 		videoDto.UpdateTime = xdatetime.NewJsonDateTime(video.UpdatedAt).String()
-		videoDto.Author = xcondition.First(mapper.Map(video.Author, &dto.UserDto{})).(*dto.UserDto)
+		videoDto.Author = xcondition.First(mappers.Map(video.Author, &dto.UserDto{})).(*dto.UserDto)
 		return nil
 	}))
 
-	return mapper
+	return mappers
 }

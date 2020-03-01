@@ -18,10 +18,10 @@ import (
 )
 
 type SearchController struct {
-	Config         *config.ServerConfig  `di:"~"`
-	SearchDao      *dao.SearchDao        `di:"~"`
-	Mapper         *xmapper.EntityMapper `di:"~"`
-	SegmentService *seg.SegmentService   `di:"~"`
+	Config         *config.ServerConfig   `di:"~"`
+	SearchDao      *dao.SearchDao         `di:"~"`
+	Mappers        *xmapper.EntityMappers `di:"~"`
+	SegmentService *seg.SegmentService    `di:"~"`
 }
 
 func NewSearchController(dic *xdi.DiContainer) *SearchController {
@@ -51,7 +51,7 @@ func (s *SearchController) SearchUser(c *gin.Context) {
 	against := s.SegmentService.CatAgainst(keys)
 	users, total := s.SearchDao.SearchUser(against, page)
 
-	retDto := xcondition.First(s.Mapper.MapSlice(xslice.Sti(users), &dto.UserDto{})).([]*dto.UserDto)
+	retDto := xcondition.First(s.Mappers.MapSlice(xslice.Sti(users), &dto.UserDto{})).([]*dto.UserDto)
 	result.Ok().SetPage(total, page, retDto).JSON(c)
 }
 
@@ -74,6 +74,6 @@ func (s *SearchController) SearchVideo(c *gin.Context) {
 	against := s.SegmentService.CatAgainst(keys)
 	videos, total := s.SearchDao.SearchVideo(against, page)
 
-	retDto := xcondition.First(s.Mapper.MapSlice(xslice.Sti(videos), &dto.VideoDto{})).([]*dto.VideoDto)
+	retDto := xcondition.First(s.Mappers.MapSlice(xslice.Sti(videos), &dto.VideoDto{})).([]*dto.VideoDto)
 	result.Ok().SetPage(total, page, retDto).JSON(c)
 }

@@ -1,7 +1,7 @@
 module github.com/vidorg/vid_backend
 
 require (
-	github.com/Aoi-hosizora/ahlib v0.0.0-20200301142125-b2475ad195cc
+	github.com/Aoi-hosizora/ahlib v0.0.0-20200301154023-997a9a04425e
 	github.com/Aoi-hosizora/ahlib-gin-gorm v0.0.0-20200227043052-1d9e28f9af56
 	github.com/DeanThompson/ginpprof v0.0.0-20190408063150-3be636683586
 	github.com/adamzy/cedar-go v0.0.0-20170805034717-80a9c64b256d // indirect

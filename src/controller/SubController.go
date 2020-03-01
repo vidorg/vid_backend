@@ -22,7 +22,7 @@ type SubController struct {
 	JwtService *middleware.JwtService `di:"~"`
 	UserDao    *dao.UserDao           `di:"~"`
 	SubDao     *dao.SubDao            `di:"~"`
-	Mapper     *xmapper.EntityMapper  `di:"~"`
+	Mappers    *xmapper.EntityMappers `di:"~"`
 }
 
 func NewSubController(dic *xdi.DiContainer) *SubController {
@@ -56,7 +56,7 @@ func (s *SubController) QuerySubscriberUsers(c *gin.Context) {
 		return
 	}
 
-	retDto := xcondition.First(s.Mapper.MapSlice(xslice.Sti(users), &dto.UserDto{})).([]*dto.UserDto)
+	retDto := xcondition.First(s.Mappers.MapSlice(xslice.Sti(users), &dto.UserDto{})).([]*dto.UserDto)
 	result.Ok().SetPage(count, page, retDto).JSON(c)
 }
 
@@ -83,7 +83,7 @@ func (s *SubController) QuerySubscribingUsers(c *gin.Context) {
 		return
 	}
 
-	retDto := xcondition.First(s.Mapper.MapSlice(xslice.Sti(users), &dto.UserDto{})).([]*dto.UserDto)
+	retDto := xcondition.First(s.Mappers.MapSlice(xslice.Sti(users), &dto.UserDto{})).([]*dto.UserDto)
 	result.Ok().SetPage(count, page, retDto).JSON(c)
 }
 
