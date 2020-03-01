@@ -1,4 +1,4 @@
-package profile
+package entity
 
 import (
 	"github.com/Aoi-hosizora/ahlib-gin-gorm/xdatetime"
@@ -11,7 +11,7 @@ import (
 	"github.com/vidorg/vid_backend/src/util"
 )
 
-func loadParamProfile(config *config.ServerConfig, mappers *xmapper.EntityMappers) *xmapper.EntityMappers {
+func addParamMappers(config *config.ServerConfig, mappers *xmapper.EntityMappers) {
 	mappers.AddMapper(xmapper.NewEntityMapper(&param.UserParam{}, &po.User{}, func(from interface{}, to interface{}) error {
 		userParam := from.(*param.UserParam)
 		user := to.(*po.User)
@@ -35,6 +35,4 @@ func loadParamProfile(config *config.ServerConfig, mappers *xmapper.EntityMapper
 		video.VideoUrl = videoParam.VideoUrl
 		return nil
 	}))
-
-	return mappers
 }

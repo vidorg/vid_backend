@@ -1,4 +1,4 @@
-package profile
+package entity
 
 import (
 	"github.com/Aoi-hosizora/ahlib-gin-gorm/xdatetime"
@@ -10,7 +10,7 @@ import (
 	"github.com/vidorg/vid_backend/src/util"
 )
 
-func loadDtoProfile(config *config.ServerConfig, mappers *xmapper.EntityMappers) *xmapper.EntityMappers {
+func addDtoMappers(config *config.ServerConfig, mappers *xmapper.EntityMappers) {
 	mappers.AddMapper(xmapper.NewEntityMapper(&po.User{}, &dto.UserDto{}, func(from interface{}, to interface{}) error {
 		user := from.(*po.User)
 		userDto := to.(*dto.UserDto)
@@ -41,6 +41,4 @@ func loadDtoProfile(config *config.ServerConfig, mappers *xmapper.EntityMappers)
 		videoDto.Author = xcondition.First(mappers.Map(video.Author, &dto.UserDto{})).(*dto.UserDto)
 		return nil
 	}))
-
-	return mappers
 }

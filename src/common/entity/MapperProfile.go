@@ -1,4 +1,4 @@
-package profile
+package entity
 
 import (
 	"github.com/Aoi-hosizora/ahlib/xmapper"
@@ -8,8 +8,8 @@ import (
 func CreateEntityMappers(config *config.ServerConfig) *xmapper.EntityMappers {
 	mappers := xmapper.NewEntityMappers()
 
-	mappers = loadDtoProfile(config, mappers)
-	mappers = loadParamProfile(config, mappers)
+	addDtoMappers(config, mappers)
+	addParamMappers(config, mappers)
 
 	return mappers
 }
