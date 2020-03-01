@@ -1,6 +1,7 @@
 package util
 
 import (
+	"fmt"
 	"github.com/Aoi-hosizora/ahlib/xcondition"
 	"os"
 	"path"
@@ -43,4 +44,15 @@ func (c *commonUtil) GetFilenameFromUrl(url string, prefix string) string {
 		filename = filename[:idx]
 	}
 	return filename
+}
+
+func (c *commonUtil) GetServerUrl(url string, prefix string) string {
+	out := ""
+	if !strings.HasPrefix(url, "http") {
+		if url == "" {
+			out = "avatar.jpg"
+		}
+		out = fmt.Sprintf("%s%s", prefix, url)
+	}
+	return out
 }

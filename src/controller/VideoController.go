@@ -4,6 +4,7 @@ import (
 	"github.com/Aoi-hosizora/ahlib/xcondition"
 	"github.com/Aoi-hosizora/ahlib/xdi"
 	"github.com/Aoi-hosizora/ahlib/xmapper"
+	"github.com/Aoi-hosizora/ahlib/xslice"
 	"github.com/gin-gonic/gin"
 	"github.com/vidorg/vid_backend/src/common/enum"
 	"github.com/vidorg/vid_backend/src/common/exception"
@@ -48,7 +49,7 @@ func (v *VideoController) QueryAllVideos(c *gin.Context) {
 	order := param.BindQueryOrder(c)
 	videos, count := v.VideoDao.QueryAll(page, order)
 
-	retDto := xcondition.First(v.Mapper.Map([]*dto.VideoDto{}, videos)).([]*dto.VideoDto)
+	retDto := xcondition.First(v.Mapper.MapSlice(xslice.Sti(videos), &dto.VideoDto{})).([]*dto.VideoDto)
 	result.Ok().SetPage(count, page, retDto).JSON(c)
 }
 
@@ -75,7 +76,7 @@ func (v *VideoController) QueryVideosByUid(c *gin.Context) {
 		return
 	}
 
-	retDto := xcondition.First(v.Mapper.Map([]*dto.VideoDto{}, videos)).([]*dto.VideoDto)
+	retDto := xcondition.First(v.Mapper.MapSlice(xslice.Sti(videos), &dto.VideoDto{})).([]*dto.VideoDto)
 	result.Ok().SetPage(count, page, retDto).JSON(c)
 }
 
@@ -101,7 +102,7 @@ func (v *VideoController) QueryVideoByVid(c *gin.Context) {
 		return
 	}
 
-	retDto := xcondition.First(v.Mapper.Map(&dto.VideoDto{}, video)).(*dto.VideoDto)
+	retDto := xcondition.First(v.Mapper.Map(video, &dto.VideoDto{})).(*dto.VideoDto)
 	result.Ok().SetData(retDto).JSON(c)
 }
 
@@ -124,8 +125,8 @@ func (v *VideoController) InsertVideo(c *gin.Context) {
 	}
 
 	video := &po.Video{
-		AuthorUid:   authUser.Uid,
-		Author:      authUser,
+		AuthorUid: authUser.Uid,
+		Author:    authUser,
 	}
 
 	_ = v.Mapper.MapProp(videoParam, video)
@@ -138,7 +139,7 @@ func (v *VideoController) InsertVideo(c *gin.Context) {
 		return
 	}
 
-	retDto := xcondition.First(v.Mapper.Map(&dto.VideoDto{}, video)).(*dto.VideoDto)
+	retDto := xcondition.First(v.Mapper.Map(video, &dto.VideoDto{})).(*dto.VideoDto)
 	result.Status(http.StatusCreated).SetData(retDto).JSON(c)
 }
 
@@ -191,7 +192,7 @@ func (v *VideoController) UpdateVideo(c *gin.Context) {
 		return
 	}
 
-	retDto := xcondition.First(v.Mapper.Map(&dto.VideoDto{}, video)).(*dto.VideoDto)
+	retDto := xcondition.First(v.Mapper.Map(video, &dto.VideoDto{})).(*dto.VideoDto)
 	result.Ok().SetData(retDto).JSON(c)
 }
 

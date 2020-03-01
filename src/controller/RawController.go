@@ -3,7 +3,6 @@ package controller
 import (
 	"fmt"
 	"github.com/Aoi-hosizora/ahlib/xdi"
-	"github.com/Aoi-hosizora/ahlib/xmapper"
 	"github.com/Aoi-hosizora/ahlib/xstring"
 	"github.com/gin-gonic/gin"
 	"github.com/vidorg/vid_backend/src/common/exception"
@@ -14,8 +13,7 @@ import (
 )
 
 type RawController struct {
-	Config *config.ServerConfig  `di:"~"`
-	Mapper *xmapper.EntityMapper `di:"~"`
+	Config *config.ServerConfig `di:"~"`
 }
 
 func NewRawController(dic *xdi.DiContainer) *RawController {

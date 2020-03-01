@@ -37,32 +37,31 @@ type UserDto struct {
 
 // show all info
 // Only used in QueryAllUsers()
-func UserDtoAdminMapOption() *xmapper.MapOption {
-	return xmapper.NewMapOption(&po.User{}, &UserDto{}, func(i interface{}, j interface{}) interface{} {
-		user := i.(po.User)
-		userDto := j.(UserDto)
+func UserDtoAdminMapOption() xmapper.MapFunc {
+	return func(from interface{}, to interface{}) error {
+		user := from.(*po.User)
+		userDto := to.(*UserDto)
 		userDto.PhoneNumber = user.PhoneNumber
-		return userDto
-	})
+		return nil
+	}
 }
 
 // show info dependent on authUser
 // Only used in QueryUser()
-func UserDtoUserMapOption(authUser *po.User) *xmapper.MapOption {
-	return xmapper.NewMapOption(&po.User{}, &UserDto{}, func(i interface{}, j interface{}) interface{} {
+func UserDtoUserMapOption(authUser *po.User) xmapper.MapFunc {
+	return func(from interface{}, to interface{}) error {
 		if authUser == nil { // not login, nothing (default)
-			return j
+			return nil
 		}
-		user := i.(po.User)
-		userDto := j.(UserDto)
+		user := from.(*po.User)
+		userDto := to.(*UserDto)
 		if authUser.Authority == enum.AuthAdmin { // admin, all info
-			userDto.PhoneNumber = user.PhoneNumber // add phone number
-			return userDto
+			userDto.PhoneNumber = user.PhoneNumber
 		} else { // normal, only me
 			if user.Uid == authUser.Uid {
 				userDto.PhoneNumber = user.PhoneNumber
 			}
-			return userDto
 		}
-	})
+		return nil
+	}
 }

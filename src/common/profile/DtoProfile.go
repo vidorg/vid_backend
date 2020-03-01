@@ -1,68 +1,46 @@
 package profile
 
 import (
-	"fmt"
 	"github.com/Aoi-hosizora/ahlib-gin-gorm/xdatetime"
+	"github.com/Aoi-hosizora/ahlib/xcondition"
 	"github.com/Aoi-hosizora/ahlib/xmapper"
 	"github.com/vidorg/vid_backend/src/config"
 	"github.com/vidorg/vid_backend/src/model/dto"
 	"github.com/vidorg/vid_backend/src/model/po"
-	"strings"
+	"github.com/vidorg/vid_backend/src/util"
 )
 
 func loadDtoProfile(config *config.ServerConfig, mapper *xmapper.EntityMapper) *xmapper.EntityMapper {
-	user := func(i interface{}) po.User { return i.(po.User) }
-	video := func(i interface{}) po.Video { return i.(po.Video) }
+	mapper.AddMapper(xmapper.NewMapper(&po.User{}, &dto.UserDto{}, func(from interface{}, to interface{}) error {
+		user := from.(*po.User)
+		userDto := to.(*dto.UserDto)
 
-	mapper = mapper.
-		CreateMapper(&po.User{}, &dto.UserDto{}).
-		ForMember("Sex", func(i interface{}) interface{} {
-			return user(i).Sex.String() // SexType
-		}).
-		ForMember("Birthday", func(i interface{}) interface{} {
-			return user(i).Birthday.String() // JsonDate
-		}).
-		ForMember("Authority", func(i interface{}) interface{} {
-			return user(i).Authority.String() // AuthType
-		}).
-		ForMember("RegisterTime", func(i interface{}) interface{} {
-			return xdatetime.NewJsonDateTime(user(i).CreatedAt).String() // time.Time
-		}).
-		ForMember("AvatarUrl", func(i interface{}) interface{} {
-			avatar := user(i).AvatarUrl
-			if !strings.HasPrefix(avatar, "http") {
-				if avatar == "" {
-					avatar = "avatar.jpg"
-				}
-				avatar = fmt.Sprintf("%s%s", config.FileConfig.ImageUrlPrefix, avatar)
-			}
-			return avatar
-		}).
-		ForMember("PhoneNumber", func(i interface{}) interface{} {
-			return ""
-		}).
-		Build()
+		userDto.Uid = user.Uid
+		userDto.Username = user.Username
+		userDto.Sex = user.Sex.String()
+		userDto.Profile = user.Profile
+		userDto.AvatarUrl = util.CommonUtil.GetServerUrl(user.AvatarUrl, config.FileConfig.ImageUrlPrefix)
+		userDto.Birthday = user.Birthday.String()
+		userDto.Authority = user.Authority.String()
+		userDto.RegisterTime = xdatetime.NewJsonDateTime(user.CreatedAt).String()
+		userDto.PhoneNumber = ""
+		return nil
+	}))
 
-	mapper = mapper.
-		CreateMapper(&po.Video{}, &dto.VideoDto{}).
-		ForMember("UploadTime", func(i interface{}) interface{} {
-			return xdatetime.NewJsonDateTime(video(i).CreatedAt).String() // time.Time
-		}).
-		ForMember("UpdateTime", func(i interface{}) interface{} {
-			return xdatetime.NewJsonDateTime(video(i).UpdatedAt).String() // time.Time
-		}).
-		ForMember("CoverUrl", func(i interface{}) interface{} {
-			cover := video(i).CoverUrl
-			if !strings.HasPrefix(cover, "http") {
-				if cover == "" {
-					cover = "cover.jpg"
-				}
-				cover = fmt.Sprintf("%s%s", config.FileConfig.ImageUrlPrefix, cover)
-			}
-			return cover
-		}).
-		ForNest("Author", "Author").
-		Build()
+	mapper.AddMapper(xmapper.NewMapper(&po.Video{}, &dto.VideoDto{}, func(from interface{}, to interface{}) error {
+		video := from.(*po.Video)
+		videoDto := to.(*dto.VideoDto)
+
+		videoDto.Vid = video.Vid
+		videoDto.Title = video.Title
+		videoDto.Description = video.Description
+		videoDto.VideoUrl = video.VideoUrl
+		videoDto.CoverUrl = util.CommonUtil.GetServerUrl(video.CoverUrl, config.FileConfig.ImageUrlPrefix)
+		videoDto.UploadTime = xdatetime.NewJsonDateTime(video.CreatedAt).String()
+		videoDto.UpdateTime = xdatetime.NewJsonDateTime(video.UpdatedAt).String()
+		videoDto.Author = xcondition.First(mapper.Map(video.Author, &dto.UserDto{})).(*dto.UserDto)
+		return nil
+	}))
 
 	return mapper
 }

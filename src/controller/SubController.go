@@ -4,6 +4,7 @@ import (
 	"github.com/Aoi-hosizora/ahlib/xcondition"
 	"github.com/Aoi-hosizora/ahlib/xdi"
 	"github.com/Aoi-hosizora/ahlib/xmapper"
+	"github.com/Aoi-hosizora/ahlib/xslice"
 	"github.com/gin-gonic/gin"
 	"github.com/vidorg/vid_backend/src/common/exception"
 	"github.com/vidorg/vid_backend/src/common/result"
@@ -55,7 +56,7 @@ func (s *SubController) QuerySubscriberUsers(c *gin.Context) {
 		return
 	}
 
-	retDto := xcondition.First(s.Mapper.Map([]*dto.UserDto{}, users)).([]*dto.UserDto)
+	retDto := xcondition.First(s.Mapper.MapSlice(xslice.Sti(users), &dto.UserDto{})).([]*dto.UserDto)
 	result.Ok().SetPage(count, page, retDto).JSON(c)
 }
 
@@ -82,7 +83,7 @@ func (s *SubController) QuerySubscribingUsers(c *gin.Context) {
 		return
 	}
 
-	retDto := xcondition.First(s.Mapper.Map([]*dto.UserDto{}, users)).([]*dto.UserDto)
+	retDto := xcondition.First(s.Mapper.MapSlice(xslice.Sti(users), &dto.UserDto{})).([]*dto.UserDto)
 	result.Ok().SetPage(count, page, retDto).JSON(c)
 }
 

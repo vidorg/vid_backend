@@ -4,6 +4,7 @@ import (
 	"github.com/Aoi-hosizora/ahlib/xcondition"
 	"github.com/Aoi-hosizora/ahlib/xdi"
 	"github.com/Aoi-hosizora/ahlib/xmapper"
+	"github.com/Aoi-hosizora/ahlib/xslice"
 	"github.com/gin-gonic/gin"
 	"github.com/vidorg/vid_backend/src/common/exception"
 	"github.com/vidorg/vid_backend/src/common/result"
@@ -50,7 +51,7 @@ func (s *SearchController) SearchUser(c *gin.Context) {
 	against := s.SegmentService.CatAgainst(keys)
 	users, total := s.SearchDao.SearchUser(against, page)
 
-	retDto := xcondition.First(s.Mapper.Map([]*dto.UserDto{}, users)).([]*dto.UserDto)
+	retDto := xcondition.First(s.Mapper.MapSlice(xslice.Sti(users), &dto.UserDto{})).([]*dto.UserDto)
 	result.Ok().SetPage(total, page, retDto).JSON(c)
 }
 
@@ -73,6 +74,6 @@ func (s *SearchController) SearchVideo(c *gin.Context) {
 	against := s.SegmentService.CatAgainst(keys)
 	videos, total := s.SearchDao.SearchVideo(against, page)
 
-	retDto := xcondition.First(s.Mapper.Map([]*dto.VideoDto{}, videos)).([]*dto.VideoDto)
+	retDto := xcondition.First(s.Mapper.MapSlice(xslice.Sti(videos), &dto.VideoDto{})).([]*dto.VideoDto)
 	result.Ok().SetPage(total, page, retDto).JSON(c)
 }

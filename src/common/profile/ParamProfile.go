@@ -12,34 +12,29 @@ import (
 )
 
 func loadParamProfile(config *config.ServerConfig, mapper *xmapper.EntityMapper) *xmapper.EntityMapper {
-	userParam := func(i interface{}) param.UserParam { return i.(param.UserParam) }
-	videoParam := func(i interface{}) param.VideoParam { return i.(param.VideoParam) }
+	mapper.AddMapper(xmapper.NewMapper(&param.UserParam{}, &po.User{}, func(from interface{}, to interface{}) error {
+		userParam := from.(*param.UserParam)
+		user := to.(*po.User)
 
-	mapper = mapper.
-		CreateMapper(&param.UserParam{}, &po.User{}). // update user
-		ForMember("Sex", func(i interface{}) interface{} {
-			return enum.ParseSexType(userParam(i).Sex) // SexType
-		}).
-		ForMember("Profile", func(i interface{}) interface{} {
-			return *userParam(i).Profile // string
-		}).
-		ForMember("Birthday", func(i interface{}) interface{} {
-			return xcondition.First(xdatetime.ParseISO8601Date(userParam(i).Birthday)) // JsonDate
-		}).
-		ForMember("AvatarUrl", func(i interface{}) interface{} {
-			return util.CommonUtil.GetFilenameFromUrl(userParam(i).AvatarUrl, config.FileConfig.ImageUrlPrefix) // string
-		}).
-		Build()
+		user.Username = userParam.Username
+		user.Profile = *userParam.Profile
+		user.Sex = enum.ParseSexType(userParam.Sex)
+		user.Birthday = xcondition.First(xdatetime.ParseISO8601Date(userParam.Birthday)).(xdatetime.JsonDate)
+		user.PhoneNumber = userParam.PhoneNumber
+		user.AvatarUrl = util.CommonUtil.GetFilenameFromUrl(userParam.AvatarUrl, config.FileConfig.ImageUrlPrefix)
+		return nil
+	}))
 
-	mapper = mapper.
-		CreateMapper(&param.VideoParam{}, &po.Video{}). // create / update video
-		ForMember("Description", func(i interface{}) interface{} {
-			return *videoParam(i).Description // string
-		}).
-		ForMember("CoverUrl", func(i interface{}) interface{} {
-			return util.CommonUtil.GetFilenameFromUrl(videoParam(i).CoverUrl, config.FileConfig.ImageUrlPrefix) // string
-		}).
-		Build()
+	mapper.AddMapper(xmapper.NewMapper(&param.VideoParam{}, &po.Video{}, func(from interface{}, to interface{}) error {
+		videoParam := from.(*param.VideoParam)
+		video := to.(*po.Video)
+
+		video.Title = videoParam.Title
+		video.Description = *videoParam.Description
+		video.CoverUrl = util.CommonUtil.GetFilenameFromUrl(videoParam.CoverUrl, config.FileConfig.ImageUrlPrefix)
+		video.VideoUrl = videoParam.VideoUrl
+		return nil
+	}))
 
 	return mapper
 }

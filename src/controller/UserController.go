@@ -4,6 +4,7 @@ import (
 	"github.com/Aoi-hosizora/ahlib/xcondition"
 	"github.com/Aoi-hosizora/ahlib/xdi"
 	"github.com/Aoi-hosizora/ahlib/xmapper"
+	"github.com/Aoi-hosizora/ahlib/xslice"
 	"github.com/gin-gonic/gin"
 	"github.com/vidorg/vid_backend/src/common/exception"
 	"github.com/vidorg/vid_backend/src/common/result"
@@ -49,7 +50,7 @@ func (u *UserController) QueryAllUsers(c *gin.Context) {
 	order := param.BindQueryOrder(c)
 	users, count := u.UserDao.QueryAll(page, order)
 
-	retDto := xcondition.First(u.Mapper.Map([]*dto.UserDto{}, users, dto.UserDtoAdminMapOption())).([]*dto.UserDto)
+	retDto := xcondition.First(u.Mapper.MapSlice(xslice.Sti(users), &dto.UserDto{}, dto.UserDtoAdminMapOption())).([]*dto.UserDto)
 	result.Ok().SetPage(count, page, retDto).JSON(c)
 }
 
@@ -83,7 +84,7 @@ func (u *UserController) QueryUser(c *gin.Context) {
 	}
 
 	authUser := u.JwtService.GetContextUser(c)
-	retDto := xcondition.First(u.Mapper.Map(&dto.UserDto{}, user, dto.UserDtoUserMapOption(authUser))).(*dto.UserDto)
+	retDto := xcondition.First(u.Mapper.Map(user, &dto.UserDto{}, dto.UserDtoUserMapOption(authUser))).(*dto.UserDto)
 	result.Ok().
 		PutData("user", retDto).
 		PutData("extra", extraInfo).JSON(c)
@@ -152,7 +153,7 @@ func (u *UserController) UpdateUser(isSpec bool) func(c *gin.Context) {
 			return
 		}
 
-		retDto := xcondition.First(u.Mapper.Map(&dto.UserDto{}, user, dto.UserDtoAdminMapOption())).(*dto.UserDto)
+		retDto := xcondition.First(u.Mapper.Map(user, &dto.UserDto{}, dto.UserDtoAdminMapOption())).(*dto.UserDto)
 		result.Ok().SetData(retDto).JSON(c)
 	}
 }
