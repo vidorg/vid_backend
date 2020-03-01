@@ -2,7 +2,7 @@ package dao
 
 import (
 	"github.com/Aoi-hosizora/ahlib/xdi"
-	"github.com/vidorg/vid_backend/src/common/property"
+	"github.com/Aoi-hosizora/ahlib/xproperty"
 	"github.com/vidorg/vid_backend/src/config"
 	"github.com/vidorg/vid_backend/src/database"
 	"github.com/vidorg/vid_backend/src/model/dto"
@@ -11,9 +11,9 @@ import (
 )
 
 type UserDao struct {
-	Config         *config.ServerConfig         `di:"~"`
-	Db             *database.DbHelper           `di:"~"`
-	MappingProfile *property.PropMappingProfile `di:"~"`
+	Config          *config.ServerConfig       `di:"~"`
+	Db              *database.DbHelper         `di:"~"`
+	PropertyMappers *xproperty.PropertyMappers `di:"~"`
 
 	PageSize    int32               `di:"-"`
 	OrderByFunc func(string) string `di:"-"`
@@ -25,7 +25,7 @@ func NewUserDao(dic *xdi.DiContainer) *UserDao {
 		log.Fatalln("Inject failed")
 	}
 	repo.PageSize = repo.Config.MySqlConfig.PageSize
-	repo.OrderByFunc = repo.MappingProfile.GetPropertyMapping(&dto.UserDto{}, &po.User{}).ApplyOrderBy
+	repo.OrderByFunc = repo.PropertyMappers.GetPropertyMapping(&dto.UserDto{}, &po.User{}).ApplyOrderBy
 	return repo
 }
 

@@ -2,7 +2,7 @@ package dao
 
 import (
 	"github.com/Aoi-hosizora/ahlib/xdi"
-	"github.com/vidorg/vid_backend/src/common/property"
+	"github.com/Aoi-hosizora/ahlib/xproperty"
 	"github.com/vidorg/vid_backend/src/config"
 	"github.com/vidorg/vid_backend/src/database"
 	"github.com/vidorg/vid_backend/src/model/dto"
@@ -11,10 +11,10 @@ import (
 )
 
 type VideoDao struct {
-	Config         *config.ServerConfig         `di:"~"`
-	Db             *database.DbHelper           `di:"~"`
-	MappingProfile *property.PropMappingProfile `di:"~"`
-	UserDao        *UserDao                     `di:"~"`
+	Config          *config.ServerConfig       `di:"~"`
+	Db              *database.DbHelper         `di:"~"`
+	PropertyMappers *xproperty.PropertyMappers `di:"~"`
+	UserDao         *UserDao                   `di:"~"`
 
 	PageSize    int32               `di:"-"`
 	OrderByFunc func(string) string `di:"-"`
@@ -26,7 +26,7 @@ func NewVideoDao(dic *xdi.DiContainer) *VideoDao {
 		log.Fatalln("Inject failed")
 	}
 	repo.PageSize = repo.Config.MySqlConfig.PageSize
-	repo.OrderByFunc = repo.MappingProfile.GetPropertyMapping(&dto.VideoDto{}, &po.Video{}).ApplyOrderBy
+	repo.OrderByFunc = repo.PropertyMappers.GetPropertyMapping(&dto.VideoDto{}, &po.Video{}).ApplyOrderBy
 	return repo
 }
 

@@ -16,10 +16,10 @@ func ProvideService(config *config.ServerConfig) *xdi.DiContainer {
 	dic := xdi.NewDiContainer()
 	dic.Provide(config)
 
-	mappers := profile.CreateEntityMappers(config)
-	dic.Provide(mappers)
-	propMapping := property.CreatePropMappingProfile()
-	dic.Provide(propMapping)
+	entityMappers := profile.CreateEntityMappers(config)
+	dic.Provide(entityMappers)
+	propertyMappers := property.CreatePropertyMappers()
+	dic.Provide(propertyMappers)
 
 	segSrv := seg.NewSegmentService(dic)
 	dic.Provide(segSrv)
