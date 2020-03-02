@@ -8,9 +8,7 @@ import (
 )
 
 type MetaConfig struct {
-	Port             int32          `yaml:"port"`
-	CurrentLocString string         `yaml:"current-loc"`
-	CurrentLoc       *time.Location `yaml:"-"`
+	Port int32 `yaml:"port"`
 }
 
 type FileConfig struct {
@@ -63,14 +61,6 @@ type ServerConfig struct {
 	SearchConfig *SearchConfig `yaml:"search"`
 }
 
-func preLoad(config *ServerConfig) {
-	loc, err := time.LoadLocation(config.MetaConfig.CurrentLocString)
-	if err != nil {
-		log.Fatalln(err)
-	}
-	config.MetaConfig.CurrentLoc = loc
-}
-
 func Load(configPath string) (*ServerConfig, error) {
 	f, err := ioutil.ReadFile(configPath)
 	if err != nil {
@@ -82,6 +72,5 @@ func Load(configPath string) (*ServerConfig, error) {
 	if err != nil {
 		return nil, err
 	}
-	preLoad(config)
 	return config, nil
 }

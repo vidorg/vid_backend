@@ -2,7 +2,6 @@ run-mode: debug
 
 meta:
   port: 3344
-  current-loc: Asia/Shanghai
 
 file:
   image-path: ./usr/image/

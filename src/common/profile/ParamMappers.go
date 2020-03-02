@@ -1,4 +1,4 @@
-package entity
+package profile
 
 import (
 	"github.com/Aoi-hosizora/ahlib-gin-gorm/xdatetime"
