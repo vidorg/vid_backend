@@ -11,9 +11,9 @@ import (
 )
 
 type UserDao struct {
-	Config          *config.ServerConfig       `di:"~"`
-	Db              *database.DbHelper         `di:"~"`
-	PropertyMappers *xproperty.PropertyMappers `di:"~"`
+	Config  *config.ServerConfig       `di:"~"`
+	Db      *database.DbHelper         `di:"~"`
+	Mappers *xproperty.PropertyMappers `di:"~"`
 
 	PageSize    int32               `di:"-"`
 	OrderByFunc func(string) string `di:"-"`
@@ -25,7 +25,7 @@ func NewUserDao(dic *xdi.DiContainer) *UserDao {
 		log.Fatalln("Inject failed")
 	}
 	repo.PageSize = repo.Config.MySqlConfig.PageSize
-	repo.OrderByFunc = repo.PropertyMappers.GetPropertyMapping(&dto.UserDto{}, &po.User{}).ApplyOrderBy
+	repo.OrderByFunc = repo.Mappers.GetPropertyMapping(&dto.UserDto{}, &po.User{}).ApplyOrderBy
 	return repo
 }
 

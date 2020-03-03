@@ -3,7 +3,7 @@ package controller
 import (
 	"github.com/Aoi-hosizora/ahlib/xcondition"
 	"github.com/Aoi-hosizora/ahlib/xdi"
-	"github.com/Aoi-hosizora/ahlib/xmapper"
+	"github.com/Aoi-hosizora/ahlib/xentity"
 	"github.com/Aoi-hosizora/ahlib/xslice"
 	"github.com/gin-gonic/gin"
 	"github.com/vidorg/vid_backend/src/common/exception"
@@ -25,7 +25,7 @@ type UserController struct {
 	VideoDao   *dao.VideoDao          `di:"~"`
 	SubDao     *dao.SubDao            `di:"~"`
 	SearchDao  *dao.SearchDao         `di:"~"`
-	Mappers    *xmapper.EntityMappers `di:"~"`
+	Mappers    *xentity.EntityMappers `di:"~"`
 }
 
 func NewUserController(dic *xdi.DiContainer) *UserController {

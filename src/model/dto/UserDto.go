@@ -1,7 +1,7 @@
 package dto
 
 import (
-	"github.com/Aoi-hosizora/ahlib/xmapper"
+	"github.com/Aoi-hosizora/ahlib/xentity"
 	"github.com/vidorg/vid_backend/src/common/enum"
 	"github.com/vidorg/vid_backend/src/model/po"
 )
@@ -37,7 +37,7 @@ type UserDto struct {
 
 // show all info
 // Only used in QueryAllUsers()
-func UserDtoAdminMapOption() xmapper.MapFunc {
+func UserDtoAdminMapOption() xentity.MapFunc {
 	return func(from interface{}, to interface{}) error {
 		user := from.(*po.User)
 		userDto := to.(*UserDto)
@@ -48,7 +48,7 @@ func UserDtoAdminMapOption() xmapper.MapFunc {
 
 // show info dependent on authUser
 // Only used in QueryUser()
-func UserDtoUserMapOption(authUser *po.User) xmapper.MapFunc {
+func UserDtoUserMapOption(authUser *po.User) xentity.MapFunc {
 	return func(from interface{}, to interface{}) error {
 		if authUser == nil { // not login, nothing (default)
 			return nil

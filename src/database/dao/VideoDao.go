@@ -11,10 +11,10 @@ import (
 )
 
 type VideoDao struct {
-	Config          *config.ServerConfig       `di:"~"`
-	Db              *database.DbHelper         `di:"~"`
-	PropertyMappers *xproperty.PropertyMappers `di:"~"`
-	UserDao         *UserDao                   `di:"~"`
+	Config  *config.ServerConfig       `di:"~"`
+	Db      *database.DbHelper         `di:"~"`
+	Mappers *xproperty.PropertyMappers `di:"~"`
+	UserDao *UserDao                   `di:"~"`
 
 	PageSize    int32               `di:"-"`
 	OrderByFunc func(string) string `di:"-"`
@@ -26,7 +26,7 @@ func NewVideoDao(dic *xdi.DiContainer) *VideoDao {
 		log.Fatalln("Inject failed")
 	}
 	repo.PageSize = repo.Config.MySqlConfig.PageSize
-	repo.OrderByFunc = repo.PropertyMappers.GetPropertyMapping(&dto.VideoDto{}, &po.Video{}).ApplyOrderBy
+	repo.OrderByFunc = repo.Mappers.GetPropertyMapping(&dto.VideoDto{}, &po.Video{}).ApplyOrderBy
 	return repo
 }
 

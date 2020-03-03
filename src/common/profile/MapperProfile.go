@@ -1,13 +1,13 @@
 package profile
 
 import (
-	"github.com/Aoi-hosizora/ahlib/xmapper"
+	"github.com/Aoi-hosizora/ahlib/xentity"
 	"github.com/Aoi-hosizora/ahlib/xproperty"
 	"github.com/vidorg/vid_backend/src/config"
 )
 
-func CreateEntityMappers(config *config.ServerConfig) *xmapper.EntityMappers {
-	mappers := xmapper.NewEntityMappers()
+func CreateEntityMappers(config *config.ServerConfig) *xentity.EntityMappers {
+	mappers := xentity.NewEntityMappers()
 
 	addDtoMappers(config, mappers)
 	addParamMappers(config, mappers)
@@ -18,7 +18,7 @@ func CreateEntityMappers(config *config.ServerConfig) *xmapper.EntityMappers {
 func CreatePropertyMappers() *xproperty.PropertyMappers {
 	mappers := xproperty.NewPropertyMappers()
 
-	addPropMappers(mappers)
+	addPropertyMappers(mappers)
 
 	return mappers
 }

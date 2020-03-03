@@ -6,8 +6,8 @@ import (
 	"github.com/vidorg/vid_backend/src/model/po"
 )
 
-func addPropMappers(mappers *xproperty.PropertyMappers) {
-	mappers.AddMapping(xproperty.NewPropertyMapper(&dto.UserDto{}, &po.User{}, map[string]*xproperty.PropertyMapperValue{
+func addPropertyMappers(mappers *xproperty.PropertyMappers) {
+	mappers.AddMapper(xproperty.NewPropertyMapper(&dto.UserDto{}, &po.User{}, map[string]*xproperty.PropertyMapperValue{
 		"uid":           xproperty.NewPropertyMapperValue([]string{"uid"}, false),
 		"username":      xproperty.NewPropertyMapperValue([]string{"username"}, false),
 		"sex":           xproperty.NewPropertyMapperValue([]string{"sex"}, false),
@@ -19,7 +19,7 @@ func addPropMappers(mappers *xproperty.PropertyMappers) {
 		"register_time": xproperty.NewPropertyMapperValue([]string{"register_time"}, false),
 	}))
 
-	mappers.AddMapping(xproperty.NewPropertyMapper(&dto.VideoDto{}, &po.Video{}, map[string]*xproperty.PropertyMapperValue{
+	mappers.AddMapper(xproperty.NewPropertyMapper(&dto.VideoDto{}, &po.Video{}, map[string]*xproperty.PropertyMapperValue{
 		"vid":         xproperty.NewPropertyMapperValue([]string{"vid"}, false),
 		"title":       xproperty.NewPropertyMapperValue([]string{"title"}, false),
 		"description": xproperty.NewPropertyMapperValue([]string{"description"}, false),

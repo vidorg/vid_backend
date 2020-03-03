@@ -3,7 +3,7 @@ package controller
 import (
 	"github.com/Aoi-hosizora/ahlib/xcondition"
 	"github.com/Aoi-hosizora/ahlib/xdi"
-	"github.com/Aoi-hosizora/ahlib/xmapper"
+	"github.com/Aoi-hosizora/ahlib/xentity"
 	"github.com/gin-gonic/gin"
 	"github.com/vidorg/vid_backend/src/common/exception"
 	"github.com/vidorg/vid_backend/src/common/result"
@@ -24,7 +24,7 @@ type AuthController struct {
 	JwtService *middleware.JwtService `di:"~"`
 	AccountDao *dao.AccountDao        `di:"~"`
 	TokenDao   *dao.TokenDao          `di:"~"`
-	Mappers    *xmapper.EntityMappers `di:"~"`
+	Mappers    *xentity.EntityMappers `di:"~"`
 }
 
 func NewAuthController(dic *xdi.DiContainer) *AuthController {

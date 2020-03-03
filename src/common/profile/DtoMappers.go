@@ -3,15 +3,15 @@ package profile
 import (
 	"github.com/Aoi-hosizora/ahlib-gin-gorm/xdatetime"
 	"github.com/Aoi-hosizora/ahlib/xcondition"
-	"github.com/Aoi-hosizora/ahlib/xmapper"
+	"github.com/Aoi-hosizora/ahlib/xentity"
 	"github.com/vidorg/vid_backend/src/config"
 	"github.com/vidorg/vid_backend/src/model/dto"
 	"github.com/vidorg/vid_backend/src/model/po"
 	"github.com/vidorg/vid_backend/src/util"
 )
 
-func addDtoMappers(config *config.ServerConfig, mappers *xmapper.EntityMappers) {
-	mappers.AddMapper(xmapper.NewEntityMapper(&po.User{}, &dto.UserDto{}, func(from interface{}, to interface{}) error {
+func addDtoMappers(config *config.ServerConfig, mappers *xentity.EntityMappers) {
+	mappers.AddMapper(xentity.NewEntityMapper(&po.User{}, &dto.UserDto{}, func(from interface{}, to interface{}) error {
 		user := from.(*po.User)
 		userDto := to.(*dto.UserDto)
 
@@ -27,7 +27,7 @@ func addDtoMappers(config *config.ServerConfig, mappers *xmapper.EntityMappers) 
 		return nil
 	}))
 
-	mappers.AddMapper(xmapper.NewEntityMapper(&po.Video{}, &dto.VideoDto{}, func(from interface{}, to interface{}) error {
+	mappers.AddMapper(xentity.NewEntityMapper(&po.Video{}, &dto.VideoDto{}, func(from interface{}, to interface{}) error {
 		video := from.(*po.Video)
 		videoDto := to.(*dto.VideoDto)
 
