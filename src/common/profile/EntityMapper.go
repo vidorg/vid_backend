@@ -13,7 +13,7 @@ import (
 )
 
 func addDtoMappers(config *config.ServerConfig, mappers *xentity.EntityMappers) {
-	mappers.AddMapper(xentity.NewEntityMapper(&po.User{}, &dto.UserDto{}, func(from interface{}, to interface{}) error {
+	mappers.AddMapper(xentity.NewEntityMapper(&po.User{}, &dto.UserDto{}, func() interface{} { return &dto.UserDto{} }, func(from interface{}, to interface{}) error {
 		user := from.(*po.User)
 		userDto := to.(*dto.UserDto)
 
@@ -29,7 +29,7 @@ func addDtoMappers(config *config.ServerConfig, mappers *xentity.EntityMappers) 
 		return nil
 	}))
 
-	mappers.AddMapper(xentity.NewEntityMapper(&po.Video{}, &dto.VideoDto{}, func(from interface{}, to interface{}) error {
+	mappers.AddMapper(xentity.NewEntityMapper(&po.Video{}, &dto.VideoDto{}, func() interface{} { return &dto.VideoDto{} }, func(from interface{}, to interface{}) error {
 		video := from.(*po.Video)
 		videoDto := to.(*dto.VideoDto)
 
@@ -46,7 +46,7 @@ func addDtoMappers(config *config.ServerConfig, mappers *xentity.EntityMappers) 
 }
 
 func addParamMappers(config *config.ServerConfig, mappers *xentity.EntityMappers) {
-	mappers.AddMapper(xentity.NewEntityMapper(&param.UserParam{}, &po.User{}, func(from interface{}, to interface{}) error {
+	mappers.AddMapper(xentity.NewEntityMapper(&param.UserParam{}, &po.User{}, func() interface{} { return &po.User{} }, func(from interface{}, to interface{}) error {
 		userParam := from.(*param.UserParam)
 		user := to.(*po.User)
 
@@ -59,7 +59,7 @@ func addParamMappers(config *config.ServerConfig, mappers *xentity.EntityMappers
 		return nil
 	}))
 
-	mappers.AddMapper(xentity.NewEntityMapper(&param.VideoParam{}, &po.Video{}, func(from interface{}, to interface{}) error {
+	mappers.AddMapper(xentity.NewEntityMapper(&param.VideoParam{}, &po.Video{}, func() interface{} { return &po.Video{} }, func(from interface{}, to interface{}) error {
 		videoParam := from.(*param.VideoParam)
 		video := to.(*po.Video)
 

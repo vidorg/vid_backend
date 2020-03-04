@@ -5,7 +5,7 @@ import (
 	"github.com/vidorg/vid_backend/src/common/profile"
 	"github.com/vidorg/vid_backend/src/common/seg"
 	"github.com/vidorg/vid_backend/src/config"
-	"github.com/vidorg/vid_backend/src/database"
+	"github.com/vidorg/vid_backend/src/database/conn"
 	"github.com/vidorg/vid_backend/src/database/dao"
 	"github.com/vidorg/vid_backend/src/middleware"
 )
@@ -22,9 +22,9 @@ func ProvideService(config *config.ServerConfig) *xdi.DiContainer {
 	segSrv := seg.NewSegmentService(dic)
 	dic.Provide(segSrv)
 
-	gormHelper := database.SetupMySqlConn(config.MySqlConfig)
+	gormHelper := conn.SetupMySqlConn(config.MySqlConfig)
 	dic.Provide(gormHelper) // after config
-	redisHelper := database.SetupRedisConn(config.RedisConfig)
+	redisHelper := conn.SetupRedisConn(config.RedisConfig)
 	dic.Provide(redisHelper) // after config
 
 	passDao := dao.NewPassDao(dic)
