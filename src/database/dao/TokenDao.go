@@ -2,17 +2,17 @@ package dao
 
 import (
 	"fmt"
-	"github.com/Aoi-hosizora/ahlib/xcondition"
 	"github.com/Aoi-hosizora/ahlib/xdi"
 	"github.com/gomodule/redigo/redis"
 	"github.com/vidorg/vid_backend/src/config"
+	"github.com/vidorg/vid_backend/src/database/helper"
 	"log"
 	"strconv"
 )
 
 type TokenDao struct {
 	Config *config.ServerConfig `di:"~"`
-	Conn   redis.Conn           `di:"~"`
+	Conn   *helper.RedisHelper  `di:"~"`
 
 	JwtFmt string `di:"-"`
 }
@@ -45,28 +45,12 @@ func (t *TokenDao) Insert(token string, uid int32, ex int64) bool {
 	return err == nil
 }
 
-func (t *TokenDao) _deleteAll(pattern string) bool {
-	keys, err := redis.Strings(t.Conn.Do("KEYS", pattern))
-	if err != nil {
-		return false
-	}
-	if len(keys) == 0 {
-		return true
-	}
-	
-	cnt := 0
-	for _, key := range keys {
-		cnt += xcondition.First(redis.Int(t.Conn.Do("DEL", key))).(int)
-	}
-	return cnt >= 1
-}
-
 func (t *TokenDao) Delete(token string) bool {
 	pattern := t.concat("*", token)
-	return t._deleteAll(pattern)
+	return t.Conn.DeleteAll(pattern)
 }
 
 func (t *TokenDao) DeleteAll(uid int32) bool {
 	pattern := t.concat(strconv.Itoa(int(uid)), "*")
-	return t._deleteAll(pattern)
+	return t.Conn.DeleteAll(pattern)
 }

@@ -3,12 +3,13 @@ package dao
 import (
 	"github.com/Aoi-hosizora/ahlib/xdi"
 	"github.com/vidorg/vid_backend/src/database"
+	"github.com/vidorg/vid_backend/src/database/helper"
 	"github.com/vidorg/vid_backend/src/model/po"
 	"log"
 )
 
 type AccountDao struct {
-	Db *database.DbHelper `di:"~"`
+	Db *helper.GormHelper `di:"~"`
 }
 
 func NewPassDao(dic *xdi.DiContainer) *AccountDao {
@@ -20,12 +21,12 @@ func NewPassDao(dic *xdi.DiContainer) *AccountDao {
 }
 
 func (a *AccountDao) QueryByUsername(username string) *po.Account {
-	out := a.Db.QueryHelper(&po.User{}, &po.User{Username: username})
+	out := a.Db.QueryFirstHelper(&po.User{}, &po.User{Username: username})
 	if out == nil {
 		return nil
 	}
 	user := out.(*po.User)
-	out = a.Db.QueryHelper(&po.Account{}, &po.Account{Uid: user.Uid})
+	out = a.Db.QueryFirstHelper(&po.Account{}, &po.Account{Uid: user.Uid})
 	if out == nil {
 		return nil
 	}

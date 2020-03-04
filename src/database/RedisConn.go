@@ -4,11 +4,12 @@ import (
 	"fmt"
 	"github.com/gomodule/redigo/redis"
 	"github.com/vidorg/vid_backend/src/config"
+	"github.com/vidorg/vid_backend/src/database/helper"
 	"log"
 	"time"
 )
 
-func SetupRedisConn(config *config.RedisConfig) redis.Conn {
+func SetupRedisConn(config *config.RedisConfig) *helper.RedisHelper {
 	conn, err := redis.Dial(
 		config.ConnType,
 		fmt.Sprintf("%s:%d", config.Host, config.Port),
@@ -22,5 +23,5 @@ func SetupRedisConn(config *config.RedisConfig) redis.Conn {
 		log.Fatalln("Failed to connect redis:", err)
 	}
 
-	return conn
+	return helper.NewRedisHelper(conn)
 }

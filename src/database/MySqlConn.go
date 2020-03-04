@@ -6,16 +6,16 @@ import (
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 	"github.com/vidorg/vid_backend/src/config"
+	"github.com/vidorg/vid_backend/src/database/helper"
 	"github.com/vidorg/vid_backend/src/model/po"
 	"log"
 )
 
 const (
-	// pay attention to use xgorm.GormTimeWithoutDeletedAt
 	DefaultDeleteAtTimeStamp = "2000-01-01 00:00:00"
 )
 
-func SetupDBConn(cfg *config.MySqlConfig) *DbHelper {
+func SetupMySqlConn(cfg *config.MySqlConfig) *helper.GormHelper {
 	dbParams := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=%s&parseTime=True&loc=Local",
 		cfg.User, cfg.Password,
 		cfg.Host, cfg.Port,
@@ -37,7 +37,7 @@ func SetupDBConn(cfg *config.MySqlConfig) *DbHelper {
 	autoMigrateModel(db)
 	addFullTextIndex(db, cfg)
 
-	return NewDbHelper(db)
+	return helper.NewGormHelper(db)
 }
 
 func autoMigrateModel(db *gorm.DB) {

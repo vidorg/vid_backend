@@ -2,7 +2,6 @@ package server
 
 import (
 	"github.com/Aoi-hosizora/ahlib/xdi"
-	"github.com/gomodule/redigo/redis"
 	"github.com/vidorg/vid_backend/src/common/profile"
 	"github.com/vidorg/vid_backend/src/common/seg"
 	"github.com/vidorg/vid_backend/src/config"
@@ -23,10 +22,10 @@ func ProvideService(config *config.ServerConfig) *xdi.DiContainer {
 	segSrv := seg.NewSegmentService(dic)
 	dic.Provide(segSrv)
 
-	gormHelper := database.SetupDBConn(config.MySqlConfig)
+	gormHelper := database.SetupMySqlConn(config.MySqlConfig)
 	dic.Provide(gormHelper) // after config
-	redisConn := database.SetupRedisConn(config.RedisConfig)
-	dic.ProvideImpl((*redis.Conn)(nil), redisConn) // interface
+	redisHelper := database.SetupRedisConn(config.RedisConfig)
+	dic.Provide(redisHelper) // after config
 
 	passDao := dao.NewPassDao(dic)
 	dic.Provide(passDao) // after gorm

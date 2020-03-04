@@ -5,6 +5,7 @@ import (
 	"github.com/Aoi-hosizora/ahlib/xproperty"
 	"github.com/vidorg/vid_backend/src/config"
 	"github.com/vidorg/vid_backend/src/database"
+	"github.com/vidorg/vid_backend/src/database/helper"
 	"github.com/vidorg/vid_backend/src/model/dto"
 	"github.com/vidorg/vid_backend/src/model/po"
 	"log"
@@ -12,7 +13,7 @@ import (
 
 type SubDao struct {
 	Config          *config.ServerConfig       `di:"~"`
-	Db              *database.DbHelper         `di:"~"`
+	Db              *helper.GormHelper         `di:"~"`
 	PropertyMappers *xproperty.PropertyMappers `di:"~"`
 	UserDao         *UserDao                   `di:"~"`
 

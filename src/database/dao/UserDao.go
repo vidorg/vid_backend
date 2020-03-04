@@ -5,6 +5,7 @@ import (
 	"github.com/Aoi-hosizora/ahlib/xproperty"
 	"github.com/vidorg/vid_backend/src/config"
 	"github.com/vidorg/vid_backend/src/database"
+	"github.com/vidorg/vid_backend/src/database/helper"
 	"github.com/vidorg/vid_backend/src/model/dto"
 	"github.com/vidorg/vid_backend/src/model/po"
 	"log"
@@ -12,7 +13,7 @@ import (
 
 type UserDao struct {
 	Config  *config.ServerConfig       `di:"~"`
-	Db      *database.DbHelper         `di:"~"`
+	Db      *helper.GormHelper         `di:"~"`
 	Mappers *xproperty.PropertyMappers `di:"~"`
 
 	PageSize    int32               `di:"-"`
@@ -37,7 +38,7 @@ func (u *UserDao) QueryAll(page int32, orderBy string) ([]*po.User, int32) {
 }
 
 func (u *UserDao) QueryByUid(uid int32) *po.User {
-	out := u.Db.QueryHelper(&po.User{}, &po.User{Uid: uid})
+	out := u.Db.QueryFirstHelper(&po.User{}, &po.User{Uid: uid})
 	if out == nil {
 		return nil
 	}

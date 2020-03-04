@@ -8,17 +8,13 @@ import (
 
 func CreateEntityMappers(config *config.ServerConfig) *xentity.EntityMappers {
 	mappers := xentity.NewEntityMappers()
-
 	addDtoMappers(config, mappers)
 	addParamMappers(config, mappers)
-
 	return mappers
 }
 
 func CreatePropertyMappers() *xproperty.PropertyMappers {
 	mappers := xproperty.NewPropertyMappers()
-
 	addPropertyMappers(mappers)
-
 	return mappers
 }

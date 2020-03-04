@@ -5,6 +5,7 @@ import (
 	"github.com/Aoi-hosizora/ahlib/xproperty"
 	"github.com/vidorg/vid_backend/src/config"
 	"github.com/vidorg/vid_backend/src/database"
+	"github.com/vidorg/vid_backend/src/database/helper"
 	"github.com/vidorg/vid_backend/src/model/dto"
 	"github.com/vidorg/vid_backend/src/model/po"
 	"log"
@@ -12,7 +13,7 @@ import (
 
 type VideoDao struct {
 	Config  *config.ServerConfig       `di:"~"`
-	Db      *database.DbHelper         `di:"~"`
+	Db      *helper.GormHelper         `di:"~"`
 	Mappers *xproperty.PropertyMappers `di:"~"`
 	UserDao *UserDao                   `di:"~"`
 
@@ -31,7 +32,7 @@ func NewVideoDao(dic *xdi.DiContainer) *VideoDao {
 }
 
 func (v *VideoDao) WrapVideo(video *po.Video) {
-	out := v.Db.QueryHelper(&po.User{}, &po.User{Uid: video.AuthorUid})
+	out := v.Db.QueryFirstHelper(&po.User{}, &po.User{Uid: video.AuthorUid})
 	if out != nil {
 		video.Author = out.(*po.User)
 	} else {
@@ -70,7 +71,7 @@ func (v *VideoDao) QueryCountByUid(uid int32) (int32, database.DbStatus) {
 }
 
 func (v *VideoDao) QueryByVid(vid int32) *po.Video {
-	out := v.Db.QueryHelper(&po.Video{}, &po.Video{Vid: vid})
+	out := v.Db.QueryFirstHelper(&po.Video{}, &po.Video{Vid: vid})
 	if out == nil {
 		return nil
 	}
