@@ -63,12 +63,13 @@ func (r *Result) PutData(field string, data interface{}) *Result {
 	return r
 }
 
-func (r *Result) SetPage(total int32, page int32, data interface{}) *Result {
+func (r *Result) SetPage(total int32, page int32, limit int32, data interface{}) *Result {
 	if r.Data == nil {
 		r.Data = xlinkedhashmap.NewLinkedHashMap()
 	}
 	r.Data.Set("total", total)
 	r.Data.Set("page", page)
+	r.Data.Set("limit", limit)
 	r.Data.Set("data", data)
 	return r
 }

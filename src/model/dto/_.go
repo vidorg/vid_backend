@@ -46,15 +46,17 @@ package dto
 
 // @Model         Page<UserDto>
 // @Description   用户分页信息
-// @Property      total   integer          true "数据总量"
-// @Property      message string           true "当前页"
-// @Property      data    array(#_UserDto) true "返回数据"
+// @Property      total  integer          true "数据总量"
+// @Property      page   int              true "当前页"
+// @Property      limit  int              true "页大小"
+// @Property      data   array(#_UserDto) true "返回数据"
 
 // @Model         Page<VideoDto>
 // @Description   视频分页信息
-// @Property      total   integer           true "数据总量"
-// @Property      message string            true "当前页"
-// @Property      data    array(#_VideoDto) true "返回数据"
+// @Property      total  integer           true "数据总量"
+// @Property      page   int               true "当前页"
+// @Property      limit  int               true "页大小"
+// @Property      data   array(#_VideoDto) true "返回数据"
 
 //////////////////////////////////////////////////////////////////////////////////////
 // PageResult

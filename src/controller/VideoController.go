@@ -45,12 +45,11 @@ func NewVideoController(dic *xdi.DiContainer) *VideoController {
 // @ResponseModel 200   #Result<Page<VideoDto>>
 // @ResponseEx 200      ${resp_page_videos}
 func (v *VideoController) QueryAllVideos(c *gin.Context) {
-	page := param.BindQueryPage(c)
-	order := param.BindQueryOrder(c)
-	videos, count := v.VideoDao.QueryAll(page, order)
+	pageOrder := param.BindPageOrder(c, v.Config)
+	videos, count := v.VideoDao.QueryAll(pageOrder.Page, pageOrder.Limit, pageOrder.Order)
 
 	retDto := xcondition.First(v.Mappers.MapSlice(xslice.Sti(videos), &dto.VideoDto{})).([]*dto.VideoDto)
-	result.Ok().SetPage(count, page, retDto).JSON(c)
+	result.Ok().SetPage(count, pageOrder.Page, pageOrder.Limit, retDto).JSON(c)
 }
 
 // @Router              /v1/user/{uid}/video [GET]
@@ -63,21 +62,20 @@ func (v *VideoController) QueryAllVideos(c *gin.Context) {
 // @ResponseEx 200      ${resp_page_videos}
 func (v *VideoController) QueryVideosByUid(c *gin.Context) {
 	uid, ok := param.BindRouteId(c, "uid")
-	page := param.BindQueryPage(c)
-	order := param.BindQueryOrder(c)
 	if !ok {
 		result.Error(exception.RequestParamError).JSON(c)
 		return
 	}
+	pageOrder := param.BindPageOrder(c, v.Config)
 
-	videos, count, status := v.VideoDao.QueryByUid(uid, page, order)
+	videos, count, status := v.VideoDao.QueryByUid(uid, pageOrder.Page, pageOrder.Limit, pageOrder.Order)
 	if status == database.DbNotFound {
 		result.Error(exception.UserNotFoundError).JSON(c)
 		return
 	}
 
 	retDto := xcondition.First(v.Mappers.MapSlice(xslice.Sti(videos), &dto.VideoDto{})).([]*dto.VideoDto)
-	result.Ok().SetPage(count, page, retDto).JSON(c)
+	result.Ok().SetPage(count, pageOrder.Page, pageOrder.Limit, retDto).JSON(c)
 }
 
 // @Router              /v1/video/{vid} [GET]

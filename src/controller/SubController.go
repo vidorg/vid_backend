@@ -43,21 +43,20 @@ func NewSubController(dic *xdi.DiContainer) *SubController {
 // @ResponseEx 200      ${resp_page_users}
 func (s *SubController) QuerySubscriberUsers(c *gin.Context) {
 	uid, ok := param.BindRouteId(c, "uid")
-	page := param.BindQueryPage(c)
-	order := param.BindQueryOrder(c)
 	if !ok {
 		result.Error(exception.RequestParamError).JSON(c)
 		return
 	}
+	pageOrder := param.BindPageOrder(c, s.Config)
 
-	users, count, status := s.SubDao.QuerySubscriberUsers(uid, page, order)
+	users, count, status := s.SubDao.QuerySubscriberUsers(uid, pageOrder.Page, pageOrder.Limit, pageOrder.Order)
 	if status == database.DbNotFound {
 		result.Error(exception.UserNotFoundError).JSON(c)
 		return
 	}
 
 	retDto := xcondition.First(s.Mappers.MapSlice(xslice.Sti(users), &dto.UserDto{})).([]*dto.UserDto)
-	result.Ok().SetPage(count, page, retDto).JSON(c)
+	result.Ok().SetPage(count, pageOrder.Page, pageOrder.Limit, retDto).JSON(c)
 }
 
 // @Router              /v1/user/{uid}/subscribing [GET]
@@ -70,21 +69,20 @@ func (s *SubController) QuerySubscriberUsers(c *gin.Context) {
 // @ResponseEx 200      ${resp_page_users}
 func (s *SubController) QuerySubscribingUsers(c *gin.Context) {
 	uid, ok := param.BindRouteId(c, "uid")
-	page := param.BindQueryPage(c)
-	order := param.BindQueryOrder(c)
 	if !ok {
 		result.Error(exception.RequestParamError).JSON(c)
 		return
 	}
+	pageOrder := param.BindPageOrder(c, s.Config)
 
-	users, count, status := s.SubDao.QuerySubscribingUsers(uid, page, order)
+	users, count, status := s.SubDao.QuerySubscribingUsers(uid, pageOrder.Page, pageOrder.Limit, pageOrder.Order)
 	if status == database.DbNotFound {
 		result.Error(exception.UserNotFoundError).JSON(c)
 		return
 	}
 
 	retDto := xcondition.First(s.Mappers.MapSlice(xslice.Sti(users), &dto.UserDto{})).([]*dto.UserDto)
-	result.Ok().SetPage(count, page, retDto).JSON(c)
+	result.Ok().SetPage(count, pageOrder.Page, pageOrder.Limit, retDto).JSON(c)
 }
 
 // @Router              /v1/user/subscribing [PUT]

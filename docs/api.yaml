@@ -327,6 +327,12 @@ paths:
         required: false
         description: 当前页
         default: 1
+      - name: limit
+        in: query
+        type: integer
+        required: false
+        description: 页大小
+        default: 10
       - name: key
         in: query
         type: string
@@ -346,8 +352,9 @@ paths:
                 "code": 200,
                 "message": "success",
                 "data": {
-                  "count": 1,
+                  "total": 1,
                   "page": 1,
+                  "limit": 10,
                   "data": [
                     {
                       "uid": 1,
@@ -380,6 +387,12 @@ paths:
         required: false
         description: 当前页
         default: 1
+      - name: limit
+        in: query
+        type: integer
+        required: false
+        description: 页大小
+        default: 10
       - name: key
         in: query
         type: string
@@ -399,8 +412,9 @@ paths:
                 "code": 200,
                 "message": "success",
                 "data": {
-                  "count": 1,
+                  "total": 1,
                   "page": 1,
+                  "limit": 10,
                   "data": [
                     {
                       "vid": 1,
@@ -442,6 +456,12 @@ paths:
         required: false
         description: 当前页
         default: 1
+      - name: limit
+        in: query
+        type: integer
+        required: false
+        description: 页大小
+        default: 10
       - name: order
         in: query
         type: string
@@ -469,8 +489,9 @@ paths:
                 "code": 200,
                 "message": "success",
                 "data": {
-                  "count": 1,
+                  "total": 1,
                   "page": 1,
+                  "limit": 10,
                   "data": [
                     {
                       "uid": 1,
@@ -503,6 +524,12 @@ paths:
         required: false
         description: 当前页
         default: 1
+      - name: limit
+        in: query
+        type: integer
+        required: false
+        description: 页大小
+        default: 10
       - name: order
         in: query
         type: string
@@ -530,8 +557,9 @@ paths:
                 "code": 200,
                 "message": "success",
                 "data": {
-                  "count": 1,
+                  "total": 1,
                   "page": 1,
+                  "limit": 10,
                   "data": [
                     {
                       "uid": 1,
@@ -647,6 +675,12 @@ paths:
         required: false
         description: 当前页
         default: 1
+      - name: limit
+        in: query
+        type: integer
+        required: false
+        description: 页大小
+        default: 10
       - name: order
         in: query
         type: string
@@ -667,8 +701,9 @@ paths:
                 "code": 200,
                 "message": "success",
                 "data": {
-                  "count": 1,
+                  "total": 1,
                   "page": 1,
+                  "limit": 10,
                   "data": [
                     {
                       "uid": 1,
@@ -936,6 +971,12 @@ paths:
         required: false
         description: 当前页
         default: 1
+      - name: limit
+        in: query
+        type: integer
+        required: false
+        description: 页大小
+        default: 10
       - name: order
         in: query
         type: string
@@ -956,8 +997,9 @@ paths:
                 "code": 200,
                 "message": "success",
                 "data": {
-                  "count": 1,
+                  "total": 1,
                   "page": 1,
+                  "limit": 10,
                   "data": [
                     {
                       "vid": 1,
@@ -1056,6 +1098,12 @@ paths:
         required: false
         description: 当前页
         default: 1
+      - name: limit
+        in: query
+        type: integer
+        required: false
+        description: 页大小
+        default: 10
       - name: order
         in: query
         type: string
@@ -1083,8 +1131,9 @@ paths:
                 "code": 200,
                 "message": "success",
                 "data": {
-                  "count": 1,
+                  "total": 1,
                   "page": 1,
+                  "limit": 10,
                   "data": [
                     {
                       "vid": 1,
@@ -1572,15 +1621,19 @@ definitions:
     type: object
     required:
     - total
-    - message
+    - page
+    - limit
     - data
     properties:
       total:
         description: 数据总量
         type: integer
-      message:
+      page:
         description: 当前页
-        type: string
+        type: int
+      limit:
+        description: 页大小
+        type: int
       data:
         description: 返回数据
         type: array
@@ -1592,15 +1645,19 @@ definitions:
     type: object
     required:
     - total
-    - message
+    - page
+    - limit
     - data
     properties:
       total:
         description: 数据总量
         type: integer
-      message:
+      page:
         description: 当前页
-        type: string
+        type: int
+      limit:
+        description: 页大小
+        type: int
       data:
         description: 返回数据
         type: array

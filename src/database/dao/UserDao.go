@@ -3,7 +3,6 @@ package dao
 import (
 	"github.com/Aoi-hosizora/ahlib/xdi"
 	"github.com/Aoi-hosizora/ahlib/xproperty"
-	"github.com/vidorg/vid_backend/src/config"
 	"github.com/vidorg/vid_backend/src/database"
 	"github.com/vidorg/vid_backend/src/database/helper"
 	"github.com/vidorg/vid_backend/src/model/dto"
@@ -12,11 +11,9 @@ import (
 )
 
 type UserDao struct {
-	Config  *config.ServerConfig       `di:"~"`
 	Db      *helper.GormHelper         `di:"~"`
 	Mappers *xproperty.PropertyMappers `di:"~"`
 
-	PageSize    int32               `di:"-"`
 	OrderByFunc func(string) string `di:"-"`
 }
 
@@ -25,15 +22,14 @@ func NewUserDao(dic *xdi.DiContainer) *UserDao {
 	if !dic.Inject(repo) {
 		log.Fatalln("Inject failed")
 	}
-	repo.PageSize = repo.Config.MySqlConfig.PageSize
 	repo.OrderByFunc = repo.Mappers.GetPropertyMapping(&dto.UserDto{}, &po.User{}).ApplyOrderBy
 	return repo
 }
 
-func (u *UserDao) QueryAll(page int32, orderBy string) ([]*po.User, int32) {
+func (u *UserDao) QueryAll(page int32, limit int32, orderBy string) ([]*po.User, int32) {
 	users := make([]*po.User, 0)
 	log.Println(u.OrderByFunc(orderBy))
-	total := u.Db.QueryMultiHelper(&po.User{}, u.PageSize, page, &po.User{}, u.OrderByFunc(orderBy), &users)
+	total := u.Db.QueryMultiHelper(&po.User{}, limit, page, &po.User{}, u.OrderByFunc(orderBy), &users)
 	return users, total
 }
 

@@ -32,7 +32,7 @@ func (s *SegmentService) Seg(str string) []string {
 	return sego.SegmentsToSlice(segments, true)
 }
 
-func (s *SegmentService) CatAgainst(tokens []string) string {
+func (s *SegmentService) Cat(tokens []string) string {
 	sign := "，。、？！；："
 	ret := ""
 	for _, token := range tokens {

@@ -13,8 +13,6 @@ import (
 type TokenDao struct {
 	Config *config.ServerConfig `di:"~"`
 	Conn   *helper.RedisHelper  `di:"~"`
-
-	JwtFmt string `di:"-"`
 }
 
 func NewTokenDao(dic *xdi.DiContainer) *TokenDao {
@@ -22,12 +20,11 @@ func NewTokenDao(dic *xdi.DiContainer) *TokenDao {
 	if !dic.Inject(repo) {
 		log.Fatalln("Inject failed")
 	}
-	repo.JwtFmt = repo.Config.JwtConfig.RedisFmt
 	return repo
 }
 
 func (t *TokenDao) concat(uid string, token string) string {
-	return fmt.Sprintf(t.JwtFmt, uid, token)
+	return fmt.Sprintf(t.Config.JwtConfig.RedisFmt, uid, token)
 }
 
 func (t *TokenDao) Query(token string) bool {

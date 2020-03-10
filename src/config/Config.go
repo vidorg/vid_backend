@@ -6,7 +6,9 @@ import (
 )
 
 type MetaConfig struct {
-	Port int32 `yaml:"port"`
+	Port        int32 `yaml:"port"`
+	DefPageSize int32 `yaml:"def-page-size"`
+	MaxPageSize int32 `yaml:"max-page-size"`
 }
 
 type FileConfig struct {
@@ -23,7 +25,6 @@ type MySqlConfig struct {
 	User     string `yaml:"user"`
 	Password string `yaml:"password"`
 	IsLog    bool   `yaml:"log"`
-	PageSize int32  `yaml:"page-size"`
 }
 
 type RedisConfig struct {

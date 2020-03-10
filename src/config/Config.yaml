@@ -2,6 +2,8 @@ run-mode: debug
 
 meta:
   port: 3344
+  def-page-size: 10
+  max-page-size: 30
 
 file:
   image-path: ./usr/image/
@@ -16,7 +18,6 @@ mysql:
   user: root
   password: 123
   log: true
-  page-size: 10
 
 redis:
   conn-type: tcp

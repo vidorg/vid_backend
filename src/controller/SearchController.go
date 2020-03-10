@@ -45,14 +45,14 @@ func (s *SearchController) SearchUser(c *gin.Context) {
 		result.Error(exception.RequestParamError).JSON(c)
 		return
 	}
-	page := param.BindQueryPage(c)
+	page := param.BindPage(c, s.Config)
 
 	keys := s.SegmentService.Seg(key)
-	against := s.SegmentService.CatAgainst(keys)
-	users, total := s.SearchDao.SearchUser(against, page)
+	against := s.SegmentService.Cat(keys)
+	users, total := s.SearchDao.SearchUser(against, page.Page, page.Limit)
 
 	retDto := xcondition.First(s.Mappers.MapSlice(xslice.Sti(users), &dto.UserDto{})).([]*dto.UserDto)
-	result.Ok().SetPage(total, page, retDto).JSON(c)
+	result.Ok().SetPage(total, page.Page, page.Limit, retDto).JSON(c)
 }
 
 // @Router              /v1/search/video [GET]
@@ -68,12 +68,12 @@ func (s *SearchController) SearchVideo(c *gin.Context) {
 		result.Error(exception.RequestParamError).JSON(c)
 		return
 	}
-	page := param.BindQueryPage(c)
+	page := param.BindPage(c, s.Config)
 
 	keys := s.SegmentService.Seg(key)
-	against := s.SegmentService.CatAgainst(keys)
-	videos, total := s.SearchDao.SearchVideo(against, page)
+	against := s.SegmentService.Cat(keys)
+	videos, total := s.SearchDao.SearchVideo(against, page.Page, page.Limit)
 
 	retDto := xcondition.First(s.Mappers.MapSlice(xslice.Sti(videos), &dto.VideoDto{})).([]*dto.VideoDto)
-	result.Ok().SetPage(total, page, retDto).JSON(c)
+	result.Ok().SetPage(total, page.Page, page.Limit, retDto).JSON(c)
 }

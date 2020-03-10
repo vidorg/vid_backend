@@ -3,7 +3,6 @@ package dao
 import (
 	"github.com/Aoi-hosizora/ahlib/xdi"
 	"github.com/Aoi-hosizora/ahlib/xproperty"
-	"github.com/vidorg/vid_backend/src/config"
 	"github.com/vidorg/vid_backend/src/database"
 	"github.com/vidorg/vid_backend/src/database/helper"
 	"github.com/vidorg/vid_backend/src/model/dto"
@@ -12,12 +11,10 @@ import (
 )
 
 type VideoDao struct {
-	Config  *config.ServerConfig       `di:"~"`
 	Db      *helper.GormHelper         `di:"~"`
 	Mappers *xproperty.PropertyMappers `di:"~"`
 	UserDao *UserDao                   `di:"~"`
 
-	PageSize    int32               `di:"-"`
 	OrderByFunc func(string) string `di:"-"`
 }
 
@@ -26,7 +23,6 @@ func NewVideoDao(dic *xdi.DiContainer) *VideoDao {
 	if !dic.Inject(repo) {
 		log.Fatalln("Inject failed")
 	}
-	repo.PageSize = repo.Config.MySqlConfig.PageSize
 	repo.OrderByFunc = repo.Mappers.GetPropertyMapping(&dto.VideoDto{}, &po.Video{}).ApplyOrderBy
 	return repo
 }
@@ -40,22 +36,22 @@ func (v *VideoDao) WrapVideo(video *po.Video) {
 	}
 }
 
-func (v *VideoDao) QueryAll(page int32, orderBy string) ([]*po.Video, int32) {
+func (v *VideoDao) QueryAll(page int32, limit int32, orderBy string) ([]*po.Video, int32) {
 	videos := make([]*po.Video, 0)
-	total := v.Db.QueryMultiHelper(&po.Video{}, v.PageSize, page, &po.Video{}, v.OrderByFunc(orderBy), &videos)
+	total := v.Db.QueryMultiHelper(&po.Video{}, limit, page, &po.Video{}, v.OrderByFunc(orderBy), &videos)
 	for idx := range videos {
 		v.WrapVideo(videos[idx])
 	}
 	return videos, total
 }
 
-func (v *VideoDao) QueryByUid(uid int32, page int32, orderBy string) ([]*po.Video, int32, database.DbStatus) {
+func (v *VideoDao) QueryByUid(uid int32, page int32, limit int32, orderBy string) ([]*po.Video, int32, database.DbStatus) {
 	author := v.UserDao.QueryByUid(uid)
 	if author == nil {
 		return nil, 0, database.DbNotFound
 	}
 	videos := make([]*po.Video, 0)
-	total := v.Db.QueryMultiHelper(&po.Video{}, v.PageSize, page, &po.Video{AuthorUid: uid}, v.OrderByFunc(orderBy), &videos)
+	total := v.Db.QueryMultiHelper(&po.Video{}, limit, page, &po.Video{AuthorUid: uid}, v.OrderByFunc(orderBy), &videos)
 	for idx := range videos {
 		videos[idx].Author = author
 	}

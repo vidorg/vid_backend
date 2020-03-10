@@ -50,6 +50,7 @@ func main() {
 // @DemoModel        ./docs/demo.json
 
 // @Template Page.Param            page  query integer false "当前页" (default:1)
+// @Template Page.Param            limit query integer false "页大小" (default:10)
 // @Template Order.Param           order query string  false "排序字符串"
 // @Template Auth.ResponseDesc     401 "unauthorized user"
 // @Template Auth.ResponseDesc     401 "token has expired"

@@ -32,8 +32,9 @@
     "code": 200,
     "message": "success",
     "data": {
-      "count": 1,
+      "total": 1,
       "page": 1,
+      "limit": 10,
       "data": [
         {
           "$ref": "#/$models/user"
@@ -59,8 +60,9 @@
     "code": 200,
     "message": "success",
     "data": {
-      "count": 1,
+      "total": 1,
       "page": 1,
+      "limit": 10,
       "data": [
         {
           "$ref": "#/$models/video"
