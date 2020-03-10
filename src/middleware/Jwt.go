@@ -18,11 +18,11 @@ type JwtService struct {
 	TokenDao *dao.TokenDao        `di:"~"`
 	UserDao  *dao.UserDao         `di:"~"`
 
-	UserKey string `di:"-"`
+	_key string `di:"-"`
 }
 
 func NewJwtService(dic *xdi.DiContainer) *JwtService {
-	srv := &JwtService{UserKey: "user"}
+	srv := &JwtService{_key: "user"}
 	if !dic.Inject(srv) {
 		log.Fatalln("Inject failed")
 	}
@@ -57,13 +57,15 @@ func (j *JwtService) processJwt(needAdmin bool, forMw bool) gin.HandlerFunc {
 
 		// check admin
 		if needAdmin && user.Authority != enum.AuthAdmin {
-			result.Error(exception.NeedAdminError).JSON(c)
-			c.Abort()
+			if forMw {
+				result.Error(exception.NeedAdminError).JSON(c)
+				c.Abort()
+			}
 			return
 		}
 
 		// Success
-		c.Set(j.UserKey, user)
+		c.Set(j._key, user)
 		c.Next()
 	}
 }
@@ -103,20 +105,8 @@ func (j *JwtService) jwtCheck(token string) (*po.User, *exception.ServerError) {
 }
 
 func (j *JwtService) GetContextUser(c *gin.Context) *po.User {
-	_user, exist := c.Get(j.UserKey)
-	if !exist { // not check token yet
-		j.processJwt(false, false)(c)
-		// after check token
-		_user, exist = c.Get(j.UserKey)
-		if !exist {
-			return nil // nil directly
-		}
-		user, ok := _user.(*po.User)
-		if !ok {
-			return nil
-		}
-		return user
-	} else { // need auth
+	_user, exist := c.Get(j._key)
+	if exist { // already check jwt
 		user, ok := _user.(*po.User)
 		if !ok {
 			result.Error(exception.UnAuthorizedError).JSON(c)
@@ -125,4 +115,17 @@ func (j *JwtService) GetContextUser(c *gin.Context) *po.User {
 		}
 		return user
 	}
+
+	// check jwt
+	j.processJwt(false, false)(c)
+
+	_user, exist = c.Get(j._key)
+	if !exist {
+		return nil // nil directly
+	}
+	user, ok := _user.(*po.User)
+	if !ok {
+		return nil
+	}
+	return user
 }

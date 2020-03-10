@@ -52,7 +52,7 @@ func (s *SearchController) SearchUser(c *gin.Context) {
 	users, total := s.SearchDao.SearchUser(against, page)
 
 	retDto := xcondition.First(s.Mappers.MapSlice(xslice.Sti(users), &dto.UserDto{})).([]*dto.UserDto)
-	result.Ok().SetPage(total, page, retDto).JSON(c)
+	result.Ok().SetPage(total, page.Page, page.Limit, retDto).JSON(c)
 }
 
 // @Router              /v1/search/video [GET]
@@ -75,5 +75,5 @@ func (s *SearchController) SearchVideo(c *gin.Context) {
 	videos, total := s.SearchDao.SearchVideo(against, page)
 
 	retDto := xcondition.First(s.Mappers.MapSlice(xslice.Sti(videos), &dto.VideoDto{})).([]*dto.VideoDto)
-	result.Ok().SetPage(total, page, retDto).JSON(c)
+	result.Ok().SetPage(total, page.Page, page.Limit, retDto).JSON(c)
 }

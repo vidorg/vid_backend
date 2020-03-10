@@ -37,7 +37,7 @@ type UserDto struct {
 
 // show all info
 // Only used in QueryAllUsers()
-func UserDtoAdminMapOption() xentity.MapFunc {
+func UserDtoShowAllOption() xentity.MapFunc {
 	return func(from interface{}, to interface{}) error {
 		user := from.(*po.User)
 		userDto := to.(*UserDto)
@@ -48,7 +48,7 @@ func UserDtoAdminMapOption() xentity.MapFunc {
 
 // show info dependent on authUser
 // Only used in QueryUser()
-func UserDtoUserMapOption(authUser *po.User) xentity.MapFunc {
+func UserDtoCheckUserOption(authUser *po.User) xentity.MapFunc {
 	return func(from interface{}, to interface{}) error {
 		if authUser == nil { // not login, nothing (default)
 			return nil

@@ -49,8 +49,8 @@ func (u *UserController) QueryAllUsers(c *gin.Context) {
 	pageOrder := param.BindPageOrder(c, u.Config)
 	users, count := u.UserDao.QueryAll(pageOrder)
 
-	retDto := xcondition.First(u.Mappers.MapSlice(xslice.Sti(users), &dto.UserDto{}, dto.UserDtoAdminMapOption())).([]*dto.UserDto)
-	result.Ok().SetPage(count, pageOrder.PageParam, retDto).JSON(c)
+	retDto := xcondition.First(u.Mappers.MapSlice(xslice.Sti(users), &dto.UserDto{}, dto.UserDtoShowAllOption())).([]*dto.UserDto)
+	result.Ok().SetPage(count, pageOrder.Page, pageOrder.Limit, retDto).JSON(c)
 }
 
 // @Router              /v1/user/{uid} [GET]
@@ -83,7 +83,7 @@ func (u *UserController) QueryUser(c *gin.Context) {
 	}
 
 	authUser := u.JwtService.GetContextUser(c)
-	retDto := xcondition.First(u.Mappers.Map(user, &dto.UserDto{}, dto.UserDtoUserMapOption(authUser))).(*dto.UserDto)
+	retDto := xcondition.First(u.Mappers.Map(user, &dto.UserDto{}, dto.UserDtoCheckUserOption(authUser))).(*dto.UserDto)
 	result.Ok().
 		PutData("user", retDto).
 		PutData("extra", extraInfo).JSON(c)
@@ -152,7 +152,7 @@ func (u *UserController) UpdateUser(isSpec bool) func(c *gin.Context) {
 			return
 		}
 
-		retDto := xcondition.First(u.Mappers.Map(user, &dto.UserDto{}, dto.UserDtoAdminMapOption())).(*dto.UserDto)
+		retDto := xcondition.First(u.Mappers.Map(user, &dto.UserDto{}, dto.UserDtoShowAllOption())).(*dto.UserDto)
 		result.Ok().SetData(retDto).JSON(c)
 	}
 }

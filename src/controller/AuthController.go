@@ -76,7 +76,7 @@ func (a *AuthController) Login(c *gin.Context) {
 		return
 	}
 
-	retDto := xcondition.First(a.Mappers.Map(account.User, &dto.UserDto{})).(*dto.UserDto)
+	retDto := xcondition.First(a.Mappers.Map(account.User, &dto.UserDto{}, dto.UserDtoShowAllOption())).(*dto.UserDto)
 	result.Ok().
 		PutData("user", retDto).
 		PutData("token", token).
@@ -120,7 +120,7 @@ func (a *AuthController) Register(c *gin.Context) {
 		return
 	}
 
-	retDto := xcondition.First(a.Mappers.Map(passRecord.User, &dto.UserDto{})).(*dto.UserDto)
+	retDto := xcondition.First(a.Mappers.Map(passRecord.User, &dto.UserDto{}, dto.UserDtoShowAllOption())).(*dto.UserDto)
 	result.Status(http.StatusCreated).SetData(retDto).JSON(c)
 }
 
@@ -133,7 +133,7 @@ func (a *AuthController) Register(c *gin.Context) {
 // @ResponseEx 200      ${resp_user}
 func (a *AuthController) CurrentUser(c *gin.Context) {
 	authUser := a.JwtService.GetContextUser(c)
-	retDto := xcondition.First(a.Mappers.Map(authUser, &dto.UserDto{})).(*dto.UserDto)
+	retDto := xcondition.First(a.Mappers.Map(authUser, &dto.UserDto{}, dto.UserDtoShowAllOption())).(*dto.UserDto)
 	result.Ok().SetData(retDto).JSON(c)
 }
 

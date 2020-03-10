@@ -49,7 +49,7 @@ func (v *VideoController) QueryAllVideos(c *gin.Context) {
 	videos, count := v.VideoDao.QueryAll(pageOrder)
 
 	retDto := xcondition.First(v.Mappers.MapSlice(xslice.Sti(videos), &dto.VideoDto{})).([]*dto.VideoDto)
-	result.Ok().SetPage(count, pageOrder.PageParam, retDto).JSON(c)
+	result.Ok().SetPage(count, pageOrder.Page, pageOrder.Limit, retDto).JSON(c)
 }
 
 // @Router              /v1/user/{uid}/video [GET]
@@ -75,7 +75,7 @@ func (v *VideoController) QueryVideosByUid(c *gin.Context) {
 	}
 
 	retDto := xcondition.First(v.Mappers.MapSlice(xslice.Sti(videos), &dto.VideoDto{})).([]*dto.VideoDto)
-	result.Ok().SetPage(count, pageOrder.PageParam, retDto).JSON(c)
+	result.Ok().SetPage(count, pageOrder.Page, pageOrder.Limit, retDto).JSON(c)
 }
 
 // @Router              /v1/video/{vid} [GET]

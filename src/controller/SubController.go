@@ -56,7 +56,7 @@ func (s *SubController) QuerySubscriberUsers(c *gin.Context) {
 	}
 
 	retDto := xcondition.First(s.Mappers.MapSlice(xslice.Sti(users), &dto.UserDto{})).([]*dto.UserDto)
-	result.Ok().SetPage(count, pageOrder.PageParam, retDto).JSON(c)
+	result.Ok().SetPage(count, pageOrder.Page, pageOrder.Limit, retDto).JSON(c)
 }
 
 // @Router              /v1/user/{uid}/subscribing [GET]
@@ -82,7 +82,7 @@ func (s *SubController) QuerySubscribingUsers(c *gin.Context) {
 	}
 
 	retDto := xcondition.First(s.Mappers.MapSlice(xslice.Sti(users), &dto.UserDto{})).([]*dto.UserDto)
-	result.Ok().SetPage(count, pageOrder.PageParam, retDto).JSON(c)
+	result.Ok().SetPage(count, pageOrder.Page, pageOrder.Limit, retDto).JSON(c)
 }
 
 // @Router              /v1/user/subscribing [PUT]
