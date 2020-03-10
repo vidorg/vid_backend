@@ -47,10 +47,10 @@ func NewUserController(dic *xdi.DiContainer) *UserController {
 // @ResponseEx 200      ${resp_page_users}
 func (u *UserController) QueryAllUsers(c *gin.Context) {
 	pageOrder := param.BindPageOrder(c, u.Config)
-	users, count := u.UserDao.QueryAll(pageOrder.Page, pageOrder.Limit, pageOrder.Order)
+	users, count := u.UserDao.QueryAll(pageOrder)
 
 	retDto := xcondition.First(u.Mappers.MapSlice(xslice.Sti(users), &dto.UserDto{}, dto.UserDtoAdminMapOption())).([]*dto.UserDto)
-	result.Ok().SetPage(count, pageOrder.Page, pageOrder.Limit, retDto).JSON(c)
+	result.Ok().SetPage(count, pageOrder.PageParam, retDto).JSON(c)
 }
 
 // @Router              /v1/user/{uid} [GET]

@@ -6,6 +6,7 @@ import (
 	"github.com/vidorg/vid_backend/src/database"
 	"github.com/vidorg/vid_backend/src/database/helper"
 	"github.com/vidorg/vid_backend/src/model/dto"
+	"github.com/vidorg/vid_backend/src/model/param"
 	"github.com/vidorg/vid_backend/src/model/po"
 	"log"
 )
@@ -26,10 +27,9 @@ func NewUserDao(dic *xdi.DiContainer) *UserDao {
 	return repo
 }
 
-func (u *UserDao) QueryAll(page int32, limit int32, orderBy string) ([]*po.User, int32) {
+func (u *UserDao) QueryAll(pageOrder *param.PageOrderParam) ([]*po.User, int32) {
 	users := make([]*po.User, 0)
-	log.Println(u.OrderByFunc(orderBy))
-	total := u.Db.QueryMultiHelper(&po.User{}, limit, page, &po.User{}, u.OrderByFunc(orderBy), &users)
+	total := u.Db.QueryMultiHelper(&po.User{}, pageOrder.Limit, pageOrder.Page, &po.User{}, u.OrderByFunc(pageOrder.Order), &users)
 	return users, total
 }
 

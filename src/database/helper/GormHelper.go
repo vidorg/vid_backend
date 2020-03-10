@@ -15,6 +15,10 @@ func NewGormHelper(db *gorm.DB) *GormHelper {
 	return &GormHelper{db}
 }
 
+func (db *GormHelper) PageHelper(limit int32, page int32) *GormHelper {
+	return NewGormHelper(db.Limit(limit).Offset((page - 1) * limit))
+}
+
 func (db *GormHelper) QueryFirstHelper(model interface{}, where interface{}) interface{} {
 	rdb := db.Model(model).Where(where).First(where)
 	if rdb.RecordNotFound() {
@@ -23,13 +27,10 @@ func (db *GormHelper) QueryFirstHelper(model interface{}, where interface{}) int
 	return where
 }
 
-func (db *GormHelper) QueryMultiHelper(model interface{}, pageSize int32, currentPage int32, where interface{}, order string, out interface{}) int32 {
+func (db *GormHelper) QueryMultiHelper(model interface{}, limit int32, page int32, where interface{}, order string, out interface{}) int32 {
 	var total int32 = 0
 	db.Model(model).Count(&total)
-	db.Model(model).
-		Limit(pageSize).Offset((currentPage - 1) * pageSize).
-		Where(where).Order(order).
-		Find(out)
+	db.PageHelper(limit, page).Model(model).Where(where).Order(order).Find(out)
 	return total
 }
 
@@ -43,11 +44,11 @@ func (db *GormHelper) ExistHelper(model interface{}, where interface{}) bool {
 	return db.CountHelper(model, where) > 0
 }
 
-func (db *GormHelper) SearchHelper(model interface{}, pageSize int32, currentPage int32, columns string, against string, out interface{}) int32 {
+func (db *GormHelper) SearchHelper(model interface{}, limit int32, page int32, columns string, against string, out interface{}) int32 {
 	var total int32
 	rdb := db.Model(model).Where(fmt.Sprintf("MATCH (%s) AGAINST (? IN BOOLEAN MODE)", columns), against)
 	rdb.Count(&total)
-	rdb.Limit(pageSize).Offset((currentPage - 1) * pageSize).Find(out)
+	rdb.Limit(limit).Offset((page - 1) * limit).Find(out)
 	return total
 }
 

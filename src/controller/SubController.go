@@ -49,14 +49,14 @@ func (s *SubController) QuerySubscriberUsers(c *gin.Context) {
 	}
 	pageOrder := param.BindPageOrder(c, s.Config)
 
-	users, count, status := s.SubDao.QuerySubscriberUsers(uid, pageOrder.Page, pageOrder.Limit, pageOrder.Order)
+	users, count, status := s.SubDao.QuerySubscriberUsers(uid, pageOrder)
 	if status == database.DbNotFound {
 		result.Error(exception.UserNotFoundError).JSON(c)
 		return
 	}
 
 	retDto := xcondition.First(s.Mappers.MapSlice(xslice.Sti(users), &dto.UserDto{})).([]*dto.UserDto)
-	result.Ok().SetPage(count, pageOrder.Page, pageOrder.Limit, retDto).JSON(c)
+	result.Ok().SetPage(count, pageOrder.PageParam, retDto).JSON(c)
 }
 
 // @Router              /v1/user/{uid}/subscribing [GET]
@@ -75,14 +75,14 @@ func (s *SubController) QuerySubscribingUsers(c *gin.Context) {
 	}
 	pageOrder := param.BindPageOrder(c, s.Config)
 
-	users, count, status := s.SubDao.QuerySubscribingUsers(uid, pageOrder.Page, pageOrder.Limit, pageOrder.Order)
+	users, count, status := s.SubDao.QuerySubscribingUsers(uid, pageOrder)
 	if status == database.DbNotFound {
 		result.Error(exception.UserNotFoundError).JSON(c)
 		return
 	}
 
 	retDto := xcondition.First(s.Mappers.MapSlice(xslice.Sti(users), &dto.UserDto{})).([]*dto.UserDto)
-	result.Ok().SetPage(count, pageOrder.Page, pageOrder.Limit, retDto).JSON(c)
+	result.Ok().SetPage(count, pageOrder.PageParam, retDto).JSON(c)
 }
 
 // @Router              /v1/user/subscribing [PUT]

@@ -2,6 +2,7 @@ package result
 
 import (
 	"github.com/vidorg/vid_backend/src/common/exception"
+	"github.com/vidorg/vid_backend/src/model/param"
 	"net/http"
 	"strings"
 
@@ -63,13 +64,13 @@ func (r *Result) PutData(field string, data interface{}) *Result {
 	return r
 }
 
-func (r *Result) SetPage(total int32, page int32, limit int32, data interface{}) *Result {
+func (r *Result) SetPage(total int32, page *param.PageParam, data interface{}) *Result {
 	if r.Data == nil {
 		r.Data = xlinkedhashmap.NewLinkedHashMap()
 	}
 	r.Data.Set("total", total)
-	r.Data.Set("page", page)
-	r.Data.Set("limit", limit)
+	r.Data.Set("page", page.Page)
+	r.Data.Set("limit", page.Limit)
 	r.Data.Set("data", data)
 	return r
 }

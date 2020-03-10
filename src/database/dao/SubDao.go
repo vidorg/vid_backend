@@ -6,6 +6,7 @@ import (
 	"github.com/vidorg/vid_backend/src/database"
 	"github.com/vidorg/vid_backend/src/database/helper"
 	"github.com/vidorg/vid_backend/src/model/dto"
+	"github.com/vidorg/vid_backend/src/model/param"
 	"github.com/vidorg/vid_backend/src/model/po"
 	"log"
 )
@@ -32,24 +33,26 @@ func NewSubDao(dic *xdi.DiContainer) *SubDao {
 	return repo
 }
 
-func (s *SubDao) QuerySubscriberUsers(uid int32, page int32, limit int32, orderBy string) (users []*po.User, count int32, status database.DbStatus) {
+func (s *SubDao) QuerySubscriberUsers(uid int32, pageOrder *param.PageOrderParam) ([]*po.User, int32, database.DbStatus) {
 	// https://gorm.io/docs/many_to_many.html
 	user := &po.User{Uid: uid}
 	if !s.UserDao.Exist(uid) {
 		return nil, 0, database.DbNotFound
 	}
-	count = int32(s.Db.Model(user).Association(s.ColSubscribers).Count()) // association pattern
-	s.Db.Limit(limit).Offset((page-1)*limit).Model(user).Order(s.OrderByFunc(orderBy)).Related(&users, s.ColSubscribers)
+	count := int32(s.Db.Model(user).Association(s.ColSubscribers).Count()) // association pattern
+	users := make([]*po.User, 0)
+	s.Db.PageHelper(pageOrder.Limit, pageOrder.Page).Model(user).Order(s.OrderByFunc(pageOrder.Order)).Related(&users, s.ColSubscribers)
 	return users, count, database.DbSuccess
 }
 
-func (s *SubDao) QuerySubscribingUsers(uid int32, page int32, limit int32, orderBy string) (users []*po.User, count int32, status database.DbStatus) {
+func (s *SubDao) QuerySubscribingUsers(uid int32, pageOrder *param.PageOrderParam) ([]*po.User, int32, database.DbStatus) {
 	user := &po.User{Uid: uid}
 	if !s.UserDao.Exist(uid) {
 		return nil, 0, database.DbNotFound
 	}
-	count = int32(s.Db.Model(user).Association(s.ColSubscribings).Count())
-	s.Db.Limit(limit).Offset((page-1)*limit).Model(user).Order(s.OrderByFunc(orderBy)).Related(&users, s.ColSubscribings)
+	count := int32(s.Db.Model(user).Association(s.ColSubscribings).Count())
+	users := make([]*po.User, 0)
+	s.Db.PageHelper(pageOrder.Limit, pageOrder.Page).Model(user).Order(s.OrderByFunc(pageOrder.Order)).Related(&users, s.ColSubscribings)
 	return users, count, database.DbSuccess
 }
 

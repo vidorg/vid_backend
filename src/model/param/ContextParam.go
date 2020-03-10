@@ -25,8 +25,7 @@ type PageParam struct {
 }
 
 type PageOrderParam struct {
-	Page  int32
-	Limit int32
+	*PageParam
 	Order string
 }
 
@@ -35,7 +34,7 @@ func BindPage(c *gin.Context, config *config.ServerConfig) *PageParam {
 	if err != nil || page <= 0 {
 		page = 1
 	}
-	limit, err := strconv.Atoi(c.DefaultQuery("limit", "1"))
+	limit, err := strconv.Atoi(c.DefaultQuery("limit", "0"))
 	if err != nil {
 		if limit <= 0 {
 			limit = int(config.MetaConfig.DefPageSize)
@@ -53,8 +52,7 @@ func BindPageOrder(c *gin.Context, config *config.ServerConfig) *PageOrderParam 
 	page := BindPage(c, config)
 	order := c.DefaultQuery("order", "")
 	return &PageOrderParam{
-		Page:  page.Page,
-		Limit: page.Limit,
-		Order: order,
+		PageParam: page,
+		Order:     order,
 	}
 }

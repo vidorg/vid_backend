@@ -6,6 +6,7 @@ import (
 	"github.com/vidorg/vid_backend/src/database"
 	"github.com/vidorg/vid_backend/src/database/helper"
 	"github.com/vidorg/vid_backend/src/model/dto"
+	"github.com/vidorg/vid_backend/src/model/param"
 	"github.com/vidorg/vid_backend/src/model/po"
 	"log"
 )
@@ -36,22 +37,22 @@ func (v *VideoDao) WrapVideo(video *po.Video) {
 	}
 }
 
-func (v *VideoDao) QueryAll(page int32, limit int32, orderBy string) ([]*po.Video, int32) {
+func (v *VideoDao) QueryAll(pageOrder *param.PageOrderParam) ([]*po.Video, int32) {
 	videos := make([]*po.Video, 0)
-	total := v.Db.QueryMultiHelper(&po.Video{}, limit, page, &po.Video{}, v.OrderByFunc(orderBy), &videos)
+	total := v.Db.QueryMultiHelper(&po.Video{}, pageOrder.Limit, pageOrder.Page, &po.Video{}, v.OrderByFunc(pageOrder.Order), &videos)
 	for idx := range videos {
 		v.WrapVideo(videos[idx])
 	}
 	return videos, total
 }
 
-func (v *VideoDao) QueryByUid(uid int32, page int32, limit int32, orderBy string) ([]*po.Video, int32, database.DbStatus) {
+func (v *VideoDao) QueryByUid(uid int32, pageOrder *param.PageOrderParam) ([]*po.Video, int32, database.DbStatus) {
 	author := v.UserDao.QueryByUid(uid)
 	if author == nil {
 		return nil, 0, database.DbNotFound
 	}
 	videos := make([]*po.Video, 0)
-	total := v.Db.QueryMultiHelper(&po.Video{}, limit, page, &po.Video{AuthorUid: uid}, v.OrderByFunc(orderBy), &videos)
+	total := v.Db.QueryMultiHelper(&po.Video{}, pageOrder.Limit, pageOrder.Page, &po.Video{AuthorUid: uid}, v.OrderByFunc(pageOrder.Order), &videos)
 	for idx := range videos {
 		videos[idx].Author = author
 	}
