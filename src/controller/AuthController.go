@@ -5,6 +5,7 @@ import (
 	"github.com/Aoi-hosizora/ahlib/xdi"
 	"github.com/Aoi-hosizora/ahlib/xentity"
 	"github.com/gin-gonic/gin"
+	"github.com/sirupsen/logrus"
 	"github.com/vidorg/vid_backend/src/common/exception"
 	"github.com/vidorg/vid_backend/src/common/result"
 	"github.com/vidorg/vid_backend/src/config"
@@ -21,6 +22,7 @@ import (
 
 type AuthController struct {
 	Config     *config.ServerConfig   `di:"~"`
+	Logger     *logrus.Logger         `di:"~"`
 	JwtService *middleware.JwtService `di:"~"`
 	AccountDao *dao.AccountDao        `di:"~"`
 	TokenDao   *dao.TokenDao          `di:"~"`

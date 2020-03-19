@@ -6,6 +6,7 @@ import (
 	"github.com/Aoi-hosizora/ahlib/xentity"
 	"github.com/Aoi-hosizora/ahlib/xslice"
 	"github.com/gin-gonic/gin"
+	"github.com/sirupsen/logrus"
 	"github.com/vidorg/vid_backend/src/common/exception"
 	"github.com/vidorg/vid_backend/src/common/result"
 	"github.com/vidorg/vid_backend/src/common/seg"
@@ -19,6 +20,7 @@ import (
 
 type SearchController struct {
 	Config         *config.ServerConfig   `di:"~"`
+	Logger         *logrus.Logger         `di:"~"`
 	SearchDao      *dao.SearchDao         `di:"~"`
 	Mappers        *xentity.EntityMappers `di:"~"`
 	SegmentService *seg.SegmentService    `di:"~"`

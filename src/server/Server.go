@@ -21,21 +21,21 @@ type Server struct {
 }
 
 func NewServer(config *config.ServerConfig) *Server {
-	// Gin Server
-	engine := gin.Default()
-	SetupLogger()
+	// Gin Server & Binding
+	engine := gin.New()
 
 	gin.SetMode(config.RunMode)
 	if config.RunMode == "debug" {
 		ginpprof.Wrap(engine)
 	}
+	SetupBinding()
 
-	// Binding & DI
-	BindValidation()
-	dic := ProvideService(config)
+	// DI
+	logger := SetupLogger(config)
+	dic := ProvideServices(config, logger)
 
 	// Route
-	router.SetupV1Router(engine, config, dic)
+	router.SetupV1Router(engine, dic)
 	engine.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	router.SetupCommonRouter(engine)
 

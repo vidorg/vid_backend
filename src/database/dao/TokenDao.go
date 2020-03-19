@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/Aoi-hosizora/ahlib/xdi"
 	"github.com/gomodule/redigo/redis"
+	"github.com/sirupsen/logrus"
 	"github.com/vidorg/vid_backend/src/config"
 	"github.com/vidorg/vid_backend/src/database/helper"
 	"log"
@@ -12,6 +13,7 @@ import (
 
 type TokenDao struct {
 	Config *config.ServerConfig `di:"~"`
+	Logger *logrus.Logger       `di:"~"`
 	Conn   *helper.RedisHelper  `di:"~"`
 }
 

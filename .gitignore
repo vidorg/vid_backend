@@ -8,7 +8,7 @@ assets/docs/
 
 usr/image/*.*
 usr/video/*.*
-log/*
+*.log
 dictionary.txt
 
 !.gitkeep

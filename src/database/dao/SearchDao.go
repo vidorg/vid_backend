@@ -2,6 +2,7 @@ package dao
 
 import (
 	"github.com/Aoi-hosizora/ahlib/xdi"
+	"github.com/sirupsen/logrus"
 	"github.com/vidorg/vid_backend/src/database/helper"
 	"github.com/vidorg/vid_backend/src/model/param"
 	"github.com/vidorg/vid_backend/src/model/po"
@@ -10,6 +11,7 @@ import (
 
 type SearchDao struct {
 	Db       *helper.GormHelper `di:"~"`
+	Logger   *logrus.Logger     `di:"~"`
 	VideoDao *VideoDao          `di:"~"`
 }
 

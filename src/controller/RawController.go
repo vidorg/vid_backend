@@ -5,6 +5,7 @@ import (
 	"github.com/Aoi-hosizora/ahlib/xdi"
 	"github.com/Aoi-hosizora/ahlib/xstring"
 	"github.com/gin-gonic/gin"
+	"github.com/sirupsen/logrus"
 	"github.com/vidorg/vid_backend/src/common/exception"
 	"github.com/vidorg/vid_backend/src/common/result"
 	"github.com/vidorg/vid_backend/src/config"
@@ -14,6 +15,7 @@ import (
 
 type RawController struct {
 	Config *config.ServerConfig `di:"~"`
+	Logger *logrus.Logger       `di:"~"`
 }
 
 func NewRawController(dic *xdi.DiContainer) *RawController {

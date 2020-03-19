@@ -3,6 +3,7 @@ package middleware
 import (
 	"github.com/Aoi-hosizora/ahlib/xdi"
 	"github.com/gin-gonic/gin"
+	"github.com/sirupsen/logrus"
 	"github.com/vidorg/vid_backend/src/common/enum"
 	"github.com/vidorg/vid_backend/src/common/exception"
 	"github.com/vidorg/vid_backend/src/common/result"
@@ -15,6 +16,7 @@ import (
 
 type JwtService struct {
 	Config   *config.ServerConfig `di:"~"`
+	Logger   *logrus.Logger       `di:"~"`
 	TokenDao *dao.TokenDao        `di:"~"`
 	UserDao  *dao.UserDao         `di:"~"`
 

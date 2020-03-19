@@ -3,6 +3,7 @@ package dao
 import (
 	"github.com/Aoi-hosizora/ahlib/xdi"
 	"github.com/Aoi-hosizora/ahlib/xproperty"
+	"github.com/sirupsen/logrus"
 	"github.com/vidorg/vid_backend/src/database"
 	"github.com/vidorg/vid_backend/src/database/helper"
 	"github.com/vidorg/vid_backend/src/model/dto"
@@ -12,9 +13,10 @@ import (
 )
 
 type SubDao struct {
-	Db              *helper.GormHelper         `di:"~"`
-	PropertyMappers *xproperty.PropertyMappers `di:"~"`
-	UserDao         *UserDao                   `di:"~"`
+	Db      *helper.GormHelper         `di:"~"`
+	Logger  *logrus.Logger             `di:"~"`
+	Mappers *xproperty.PropertyMappers `di:"~"`
+	UserDao *UserDao                   `di:"~"`
 
 	OrderByFunc     func(string) string `di:"-"`
 	ColSubscribers  string              `di:"-"`
@@ -29,7 +31,7 @@ func NewSubDao(dic *xdi.DiContainer) *SubDao {
 	if !dic.Inject(repo) {
 		log.Fatalln("Inject failed")
 	}
-	repo.OrderByFunc = repo.PropertyMappers.GetPropertyMapping(&dto.UserDto{}, &po.User{}).ApplyOrderBy
+	repo.OrderByFunc = repo.Mappers.GetPropertyMapping(&dto.UserDto{}, &po.User{}).ApplyOrderBy
 	return repo
 }
 

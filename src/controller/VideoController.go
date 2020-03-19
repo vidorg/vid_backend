@@ -6,6 +6,7 @@ import (
 	"github.com/Aoi-hosizora/ahlib/xentity"
 	"github.com/Aoi-hosizora/ahlib/xslice"
 	"github.com/gin-gonic/gin"
+	"github.com/sirupsen/logrus"
 	"github.com/vidorg/vid_backend/src/common/enum"
 	"github.com/vidorg/vid_backend/src/common/exception"
 	"github.com/vidorg/vid_backend/src/common/result"
@@ -22,6 +23,7 @@ import (
 
 type VideoController struct {
 	Config     *config.ServerConfig   `di:"~"`
+	Logger     *logrus.Logger         `di:"~"`
 	JwtService *middleware.JwtService `di:"~"`
 	VideoDao   *dao.VideoDao          `di:"~"`
 	Mappers    *xentity.EntityMappers `di:"~"`
