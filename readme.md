@@ -28,3 +28,4 @@ go run main.go
 + [jwt-go](https://github.com/dgrijalva/jwt-go)
 + [yaml.v2](https://github.com/go-yaml/yaml)
 + [swag](https://github.com/swaggo/swag)
++ [logrus](https://github.com/sirupsen/logrus)

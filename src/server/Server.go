@@ -23,6 +23,7 @@ type Server struct {
 func NewServer(config *config.ServerConfig) *Server {
 	// Gin Server & Binding
 	engine := gin.New()
+	// engine := gin.Default()
 
 	gin.SetMode(config.RunMode)
 	if config.RunMode == "debug" {

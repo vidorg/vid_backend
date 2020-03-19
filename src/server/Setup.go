@@ -41,6 +41,7 @@ func SetupLogger(config *config.ServerConfig) *logrus.Logger {
 	logger.SetFormatter(&logrus.TextFormatter{
 		ForceColors:     true,
 		FullTimestamp:   true,
+		DisableSorting:  true,
 		TimestampFormat: "2006/01/02 15:04:05",
 		CallerPrettyfier: func(f *runtime.Frame) (string, string) {
 			filename := path.Base(f.File)

@@ -1,7 +1,7 @@
 run-mode: debug
 
 meta:
-  port: 13344
+  port: 3344
   def-page-size: 10
   max-page-size: 30
 

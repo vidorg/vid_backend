@@ -5,6 +5,7 @@ import (
 	"github.com/Aoi-hosizora/ahlib-gin-gorm/xgorm"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
+	"github.com/sirupsen/logrus"
 	"github.com/vidorg/vid_backend/src/config"
 	"github.com/vidorg/vid_backend/src/database/helper"
 	"github.com/vidorg/vid_backend/src/model/po"
@@ -15,7 +16,7 @@ const (
 	DefaultDeleteAtTimeStamp = "2000-01-01 00:00:00"
 )
 
-func SetupMySqlConn(cfg *config.MySqlConfig) *helper.GormHelper {
+func SetupMySqlConn(cfg *config.MySqlConfig, logger *logrus.Logger) *helper.GormHelper {
 	dbParams := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=%s&parseTime=True&loc=Local",
 		cfg.User, cfg.Password,
 		cfg.Host, cfg.Port,
@@ -25,10 +26,11 @@ func SetupMySqlConn(cfg *config.MySqlConfig) *helper.GormHelper {
 	if err != nil {
 		log.Fatalln("Failed to connect mysql:", err)
 	}
-	// Change default deletedAt field behavior
-	xgorm.HookDeleteAtField(db, DefaultDeleteAtTimeStamp)
 
 	db.LogMode(cfg.IsLog)
+	db.SetLogger(NewGormLogger(logger))
+
+	xgorm.HookDeleteAtField(db, DefaultDeleteAtTimeStamp)
 	db.SingularTable(true)
 	gorm.DefaultTableNameHandler = func(db *gorm.DB, defaultTableName string) string {
 		return "tbl_" + defaultTableName

@@ -24,7 +24,7 @@ func ProvideServices(config *config.ServerConfig, logger *logrus.Logger) *xdi.Di
 	segSrv := seg.NewSegmentService(dic)
 	dic.Provide(segSrv)
 
-	gormHelper := conn.SetupMySqlConn(config.MySqlConfig)
+	gormHelper := conn.SetupMySqlConn(config.MySqlConfig, logger)
 	dic.Provide(gormHelper) // after config
 	redisHelper := conn.SetupRedisConn(config.RedisConfig)
 	dic.Provide(redisHelper) // after config
