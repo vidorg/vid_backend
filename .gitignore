@@ -1,14 +1,17 @@
+### Editor ###
 .idea/
-.docs/
+.vscode/
 .ionide/
-*.rdb
+.history/
+__pycache__/
 
-build/
-assets/docs/
+### Server ###
+.docs/
+*.log
+*.rdb
 
 usr/image/*.*
 usr/video/*.*
-*.log
 dictionary.txt
 
 !.gitkeep

@@ -9,6 +9,7 @@ import (
 	"github.com/swaggo/gin-swagger/swaggerFiles"
 	_ "github.com/vidorg/vid_backend/docs"
 	"github.com/vidorg/vid_backend/src/config"
+	"github.com/vidorg/vid_backend/src/middleware"
 	"github.com/vidorg/vid_backend/src/server/router"
 	"log"
 	"net/http"
@@ -21,26 +22,28 @@ type Server struct {
 }
 
 func NewServer(config *config.ServerConfig) *Server {
-	// Gin Server & Binding
 	engine := gin.New()
-	// engine := gin.Default()
 
 	gin.SetMode(config.RunMode)
 	if config.RunMode == "debug" {
 		ginpprof.Wrap(engine)
 	}
-	SetupBinding()
 
-	// DI
+	SetupBinding()
 	logger := SetupLogger(config)
 	dic := ProvideServices(config, logger)
 
-	// Route
-	router.SetupV1Router(engine, dic)
+	// mw
+	engine.Use(gin.Recovery())
+	engine.Use(middleware.LoggerMiddleware(logger))
+	engine.Use(middleware.CorsMiddleware())
+
+	// route
 	engine.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	router.SetupApiRouter(engine, dic)
 	router.SetupCommonRouter(engine)
 
-	// Server
+	// server
 	server := &http.Server{
 		Addr:    fmt.Sprintf(":%d", config.MetaConfig.Port),
 		Handler: engine,
@@ -55,7 +58,9 @@ func NewServer(config *config.ServerConfig) *Server {
 func (s *Server) Serve() {
 	fmt.Println()
 	log.Printf("Server init on port %s\n\n", s.Server.Addr)
-	if err := s.Server.ListenAndServe(); err != nil {
+
+	err := s.Server.ListenAndServe()
+	if err != nil {
 		log.Fatalln("Failed to listen and serve:", err)
 	}
 }

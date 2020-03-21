@@ -10,7 +10,7 @@ import (
 	"log"
 )
 
-func SetupV1Router(router *gin.Engine, dic *xdi.DiContainer) {
+func SetupApiRouter(router *gin.Engine, dic *xdi.DiContainer) {
 	container := &struct {
 		Config *config.ServerConfig   `di:"~"`
 		Logger *logrus.Logger         `di:"~"`
@@ -20,15 +20,9 @@ func SetupV1Router(router *gin.Engine, dic *xdi.DiContainer) {
 		log.Fatalln("Inject failed")
 	}
 
-	corsMw := middleware.CorsMiddleware()
-	logger := middleware.LoggerMiddleware(container.Logger)
 	jwtMw := container.JwtSrv.JwtMiddleware(false)
 	jwtAdminMw := container.JwtSrv.JwtMiddleware(true)
 	limit2MMw := middleware.LimitMiddleware(int64(container.Config.FileConfig.ImageMaxSize << 20)) // MB
-
-	router.Use(logger)
-	router.Use(gin.Recovery())
-	router.Use(corsMw)
 
 	authCtrl := controller.NewAuthController(dic)
 	userCtrl := controller.NewUserController(dic)

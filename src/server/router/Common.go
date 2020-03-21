@@ -18,17 +18,17 @@ import (
 // @ResponseHeader 200   { "Content-Type": "application/json; charset=utf-8" }
 // @ResponseModel 200    #Ping
 // @ResponseEx 200       { "ping": "pong" }
-func SetupCommonRouter(router *gin.Engine) {
-	router.HandleMethodNotAllowed = true
+func SetupCommonRouter(engine *gin.Engine) {
+	engine.HandleMethodNotAllowed = true
 
-	router.GET("/ping", func(c *gin.Context) {
+	engine.GET("/ping", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"ping": "pong"})
 	})
 
-	router.NoMethod(func(c *gin.Context) {
+	engine.NoMethod(func(c *gin.Context) {
 		result.Status(http.StatusMethodNotAllowed).JSON(c)
 	})
-	router.NoRoute(func(c *gin.Context) {
+	engine.NoRoute(func(c *gin.Context) {
 		result.Status(http.StatusNotFound).SetMessage(fmt.Sprintf("route %s is not found", c.Request.URL.Path)).JSON(c)
 	})
 }
