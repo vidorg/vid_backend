@@ -35,20 +35,7 @@ func SetupLogger(config *config.ServerConfig) *logrus.Logger {
 		logLevel = logrus.DebugLevel
 	}
 
-	logger.SetLevel(logLevel)
-	logger.SetReportCaller(true)
-
-	logger.SetFormatter(&logrus.TextFormatter{
-		ForceColors:     true,
-		FullTimestamp:   true,
-		DisableSorting:  true,
-		TimestampFormat: "2006/01/02 15:04:05",
-		CallerPrettyfier: func(f *runtime.Frame) (string, string) {
-			filename := path.Base(f.File)
-			return "", fmt.Sprintf(" %s:%d:", filename, f.Line)
-		},
-	})
-
+	// file
 	fileHook, err := rotatefilehook.NewRotateFileHook(rotatefilehook.RotateFileConfig{
 		Filename:   "logs/console.log",
 		MaxSize:    50,
@@ -62,8 +49,23 @@ func SetupLogger(config *config.ServerConfig) *logrus.Logger {
 	if err != nil {
 		log.Fatalf("Failed to initialize file rotate hook: %v", err)
 	}
-	logger.AddHook(fileHook)
 
+	// logrus
+	logger.SetLevel(logLevel)
+	logger.SetReportCaller(true)
+	logger.AddHook(fileHook)
+	logger.SetFormatter(&logrus.TextFormatter{
+		ForceColors:     true,
+		FullTimestamp:   true,
+		DisableSorting:  true,
+		TimestampFormat: "2006/01/02 15:04:05",
+		CallerPrettyfier: func(f *runtime.Frame) (string, string) {
+			filename := path.Base(f.File)
+			return "", fmt.Sprintf(" %s:%d:", filename, f.Line)
+		},
+	})
+
+	// writer
 	out := io.MultiWriter(ansicolor.NewAnsiColorWriter(os.Stdout))
 	gin.DefaultWriter = out
 	logger.Out = out
