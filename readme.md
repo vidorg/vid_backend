@@ -10,14 +10,19 @@
 [api.html](https://github.com/vidorg/vid_backend/blob/master/docs/api.html)
 
 ```bash
+# To generate api document
 sh gendoc.sh
 ```
 
 ### Run
 
 ```bash
-# cd vid_backend
+# To run directly
 go run main.go
+
+# To build
+go build -i -o ./build/vid_backend.out main.go
+./build/vid_backend.out
 ```
 
 ### Dependencies

@@ -1,12 +1,13 @@
-echo Generating swagger yaml...
-python3 ./docs/script/gen_yaml.py \
-    -m ./main.go \
-    -s . \
-    -o ./docs/api.yaml \
-    -e go
+echo Generating yaml and swagger...
 
-echo
-echo Generating swagger html...
-python3 ./docs/script/gen_swagger.py \
-    -i ./docs/api.yaml \
-    -o ./docs/api.html
+apiparser.exe \
+  --do_yaml \
+  --main main.go \
+  --dir . \
+  --yaml_output ./docs/api.yaml \
+  --ext go \
+  --do_swag \
+  --swag_output ./docs/api.html
+#  --do_apib \
+#  --apib_output ./docs/api.apib \
+#  --need_content_type
