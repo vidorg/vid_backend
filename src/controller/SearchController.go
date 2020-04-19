@@ -36,7 +36,6 @@ func NewSearchController(dic *xdi.DiContainer) *SearchController {
 // @Tag                 Search
 // @Param               key query string true "搜索关键词"
 // @ResponseModel 200   #Result<Page<UserDto>>
-// @ResponseEx 200      ${resp_page_users}
 func (s *SearchController) SearchUser(c *gin.Context) {
 	key := c.DefaultQuery("key", "")
 	if key == "" {
@@ -59,7 +58,6 @@ func (s *SearchController) SearchUser(c *gin.Context) {
 // @Tag                 Search
 // @Param               key query string true "搜索关键词"
 // @ResponseModel 200   #Result<Page<VideoDto>>
-// @ResponseEx 200      ${resp_page_videos}
 func (s *SearchController) SearchVideo(c *gin.Context) {
 	key := strings.TrimSpace(c.DefaultQuery("key", ""))
 	if key == "" {

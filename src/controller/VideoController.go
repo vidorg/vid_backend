@@ -41,7 +41,6 @@ func NewVideoController(dic *xdi.DiContainer) *VideoController {
 // @Tag                 Video
 // @Tag                 Administration
 // @ResponseModel 200   #Result<Page<VideoDto>>
-// @ResponseEx 200      ${resp_page_videos}
 func (v *VideoController) QueryAllVideos(c *gin.Context) {
 	pageOrder := param.BindPageOrder(c, v.Config)
 	videos, count := v.VideoService.QueryAll(pageOrder)
@@ -57,7 +56,6 @@ func (v *VideoController) QueryAllVideos(c *gin.Context) {
 // @Param               uid path integer true "用户id"
 // @ResponseDesc 404    "user not found"
 // @ResponseModel 200   #Result<Page<VideoDto>>
-// @ResponseEx 200      ${resp_page_videos}
 func (v *VideoController) QueryVideosByUid(c *gin.Context) {
 	uid, ok := param.BindRouteId(c, "uid")
 	if !ok {
@@ -84,7 +82,6 @@ func (v *VideoController) QueryVideosByUid(c *gin.Context) {
 // @Param               vid path integer true "视频id"
 // @ResponseDesc 404    "video not found"
 // @ResponseModel 200   #Result<VideoDto>
-// @ResponseEx 200      ${resp_video}
 func (v *VideoController) QueryVideoByVid(c *gin.Context) {
 	vid, ok := param.BindRouteId(c, "vid")
 	if !ok {
@@ -111,7 +108,6 @@ func (v *VideoController) QueryVideoByVid(c *gin.Context) {
 // @ResponseDesc 400    "video url has been used"
 // @ResponseDesc 500    "video insert failed"
 // @ResponseModel 201   #Result<VideoDto>
-// @ResponseEx 201      ${resp_new_video}
 func (v *VideoController) InsertVideo(c *gin.Context) {
 	authUser := v.JwtService.GetContextUser(c)
 	videoParam := &param.VideoParam{}
@@ -152,7 +148,6 @@ func (v *VideoController) InsertVideo(c *gin.Context) {
 // @ResponseDesc 404    "video not found"
 // @ResponseDesc 500    "video update failed"
 // @ResponseModel 200   #Result<VideoDto>
-// @ResponseEx 200      ${resp_video}
 func (v *VideoController) UpdateVideo(c *gin.Context) {
 	authUser := v.JwtService.GetContextUser(c)
 	vid, ok := param.BindRouteId(c, "vid")
@@ -203,7 +198,6 @@ func (v *VideoController) UpdateVideo(c *gin.Context) {
 // @ResponseDesc 404    "video not found"
 // @ResponseDesc 500    "video delete failed"
 // @ResponseModel 200   #Result
-// @ResponseEx 200      ${resp_success}
 func (v *VideoController) DeleteVideo(c *gin.Context) {
 	authUser := v.JwtService.GetContextUser(c)
 	vid, ok := param.BindRouteId(c, "vid")

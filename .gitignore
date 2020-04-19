@@ -5,14 +5,14 @@
 .history/
 
 ### Server ###
-.docs/
 build/
-logs/
+log/
 *.rdb
+config.yaml
+dictionary.txt
 
 usr/image/*.*
 usr/video/*.*
-dictionary.txt
 
 !.gitkeep
 !usr/image/avatar.jpg

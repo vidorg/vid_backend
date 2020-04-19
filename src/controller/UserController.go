@@ -42,7 +42,6 @@ func NewUserController(dic *xdi.DiContainer) *UserController {
 // @Tag                 User
 // @Tag                 Administration
 // @ResponseModel 200   #Result<Page<UserDto>>
-// @ResponseEx 200      ${resp_page_users}
 func (u *UserController) QueryAllUsers(c *gin.Context) {
 	pageOrder := param.BindPageOrder(c, u.Config)
 	users, count := u.UserService.QueryAll(pageOrder)
@@ -59,7 +58,6 @@ func (u *UserController) QueryAllUsers(c *gin.Context) {
 // @Param               uid path integer true "用户id"
 // @ResponseDesc 404    "user not found"
 // @ResponseModel 200   #Result<UserExtraDto>
-// @ResponseEx 200      ${resp_user_info}
 func (u *UserController) QueryUser(c *gin.Context) {
 	uid, ok := param.BindRouteId(c, "uid")
 	if !ok {
@@ -97,7 +95,6 @@ func (u *UserController) QueryUser(c *gin.Context) {
 // @ResponseDesc 404    "user not found"
 // @ResponseDesc 500    "user update failed"
 // @ResponseModel 200   #Result<UserDto>
-// @ResponseEx 200      ${resp_user}
 //
 // @Router              /v1/user/admin/{uid} [PUT]
 // @Security            Jwt
@@ -112,7 +109,6 @@ func (u *UserController) QueryUser(c *gin.Context) {
 // @ResponseDesc 404    "user not found"
 // @ResponseDesc 500    "user update failed"
 // @ResponseModel 200   #Result<UserDto>
-// @ResponseEx 200      ${resp_user}
 func (u *UserController) UpdateUser(isSpec bool) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		user := &po.User{}
@@ -163,7 +159,6 @@ func (u *UserController) UpdateUser(isSpec bool) func(c *gin.Context) {
 // @ResponseDesc 404    "user not found"
 // @ResponseDesc 500    "user delete failed"
 // @ResponseModel 200   #Result
-// @ResponseEx 200      ${resp_success}
 //
 // @Router              /v1/user/admin/{uid} [DELETE]
 // @Security            Jwt
@@ -176,7 +171,6 @@ func (u *UserController) UpdateUser(isSpec bool) func(c *gin.Context) {
 // @ResponseDesc 404    "user not found"
 // @ResponseDesc 500    "user delete failed"
 // @ResponseModel 200   #Result
-// @ResponseEx 200      ${resp_success}
 func (u *UserController) DeleteUser(isSpec bool) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		var uid int32

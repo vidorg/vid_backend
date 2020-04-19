@@ -38,7 +38,6 @@ func NewSubController(dic *xdi.DiContainer) *SubController {
 // @Param               uid path integer true "用户id"
 // @ResponseDesc 404    "user not found"
 // @ResponseModel 200   #Result<Page<UserDto>>
-// @ResponseEx 200      ${resp_page_users}
 func (s *SubController) QuerySubscriberUsers(c *gin.Context) {
 	uid, ok := param.BindRouteId(c, "uid")
 	if !ok {
@@ -64,7 +63,6 @@ func (s *SubController) QuerySubscriberUsers(c *gin.Context) {
 // @Param               uid path integer true "用户id"
 // @ResponseDesc 404    "user not found"
 // @ResponseModel 200   #Result<Page<UserDto>>
-// @ResponseEx 200      ${resp_page_users}
 func (s *SubController) QuerySubscribingUsers(c *gin.Context) {
 	uid, ok := param.BindRouteId(c, "uid")
 	if !ok {
@@ -93,7 +91,6 @@ func (s *SubController) QuerySubscribingUsers(c *gin.Context) {
 // @ResponseDesc 404    "user not found"
 // @ResponseDesc 500    "subscribe failed"
 // @ResponseModel 200   #Result
-// @ResponseEx 200      ${resp_success}
 func (s *SubController) SubscribeUser(c *gin.Context) {
 	authUser := s.JwtService.GetContextUser(c)
 	subParam := &param.SubParam{}
@@ -127,7 +124,6 @@ func (s *SubController) SubscribeUser(c *gin.Context) {
 // @ResponseDesc 404    "user not found"
 // @ResponseDesc 500    "unsubscribe failed"
 // @ResponseModel 200   #Result
-// @ResponseEx 200      ${resp_success}
 func (s *SubController) UnSubscribeUser(c *gin.Context) {
 	authUser := s.JwtService.GetContextUser(c)
 	subParam := &param.SubParam{}

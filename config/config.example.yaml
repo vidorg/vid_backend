@@ -1,7 +1,7 @@
-run-mode: debug
-
 meta:
+  run-mode: debug
   port: 3344
+  log-path: ./log/console.log
   def-page-size: 10
   max-page-size: 30
 
@@ -30,9 +30,9 @@ redis:
   write-timeout: 1000
 
 jwt:
-  secret: 9C27D0C7C04BDA8A1F1B099CF4F9B1956AF5164F
-  expire: 604800 # second
+  secret: xxx
   issuer: vid.srv.auth
+  expire: 604800 # second
   redis-fmt: vid-token-%s-%s
 
 search:

@@ -20,7 +20,7 @@ type Server struct {
 
 func NewServer(config *config.ServerConfig) *Server {
 	engine := gin.New()
-	gin.SetMode(config.RunMode)
+	gin.SetMode(config.MetaConfig.RunMode)
 
 	// setup
 	setupBinding()
@@ -29,11 +29,11 @@ func NewServer(config *config.ServerConfig) *Server {
 
 	// mw
 	engine.Use(middleware.LoggerMiddleware(logger))
-	engine.Use(gin.Recovery())
-	engine.Use(middleware.CorsMiddleware())
+	engine.Use(middleware.RecoveryMiddleware(config, logger))
+	engine.Use(middleware.CorsMiddleware(config))
 
 	// route
-	if config.RunMode == "debug" {
+	if config.MetaConfig.RunMode == "debug" {
 		ginpprof.Wrap(engine)
 	}
 	engine.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))

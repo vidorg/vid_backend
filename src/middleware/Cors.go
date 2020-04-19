@@ -13,7 +13,7 @@ func CorsMiddleware(config *config.ServerConfig) gin.HandlerFunc {
 		ExposeHeaders:    []string{"Content-Length"},
 		AllowCredentials: true,
 		AllowOriginFunc: func(origin string) bool {
-			if config.RunMode == "debug" {
+			if config.MetaConfig.RunMode == "debug" {
 				return true
 			} else {
 				return origin == "http://xxx.yyy.zzz" || origin == "https://xxx.yyy.zzz"

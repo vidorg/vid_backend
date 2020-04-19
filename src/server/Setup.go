@@ -31,13 +31,13 @@ func setupBinding() {
 func setupLogger(config *config.ServerConfig) *logrus.Logger {
 	logger := logrus.New()
 	logLevel := logrus.WarnLevel
-	if config.RunMode == "debug" {
+	if config.MetaConfig.RunMode == "debug" {
 		logLevel = logrus.DebugLevel
 	}
 
 	// file
 	fileHook, err := rotatefilehook.NewRotateFileHook(rotatefilehook.RotateFileConfig{
-		Filename:   "logs/console.log",
+		Filename:   config.MetaConfig.LogPath,
 		MaxSize:    50,
 		MaxBackups: 3,
 		MaxAge:     30,

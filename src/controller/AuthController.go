@@ -42,7 +42,6 @@ func NewAuthController(dic *xdi.DiContainer) *AuthController {
 // @ResponseDesc 404    "user not found"
 // @ResponseDesc 500    "login failed"
 // @ResponseModel 200   #Result<LoginDto>
-// @ResponseEx 200      ${resp_login}
 func (a *AuthController) Login(c *gin.Context) {
 	loginParam := &param.LoginParam{}
 	if err := c.ShouldBind(loginParam); err != nil {
@@ -89,7 +88,6 @@ func (a *AuthController) Login(c *gin.Context) {
 // @ResponseDesc 400    "username has been used"
 // @ResponseDesc 500    "register failed"
 // @ResponseModel 201   #Result<UserDto>
-// @ResponseEx 201      ${resp_register}
 func (a *AuthController) Register(c *gin.Context) {
 	registerParam := &param.RegisterParam{}
 	if err := c.ShouldBind(registerParam); err != nil {
@@ -128,7 +126,6 @@ func (a *AuthController) Register(c *gin.Context) {
 // @Summary             当前登录用户
 // @Tag                 Authorization
 // @ResponseModel 200   #Result<UserDto>
-// @ResponseEx 200      ${resp_user}
 func (a *AuthController) CurrentUser(c *gin.Context) {
 	authUser := a.JwtService.GetContextUser(c)
 	retDto := xcondition.First(a.Mappers.Map(authUser, &dto.UserDto{}, dto.UserDtoShowAllOption())).(*dto.UserDto)
@@ -142,9 +139,8 @@ func (a *AuthController) CurrentUser(c *gin.Context) {
 // @Tag                 Authorization
 // @ResponseDesc 500    "logout failed"
 // @ResponseModel 200   #Result
-// @ResponseEx 200      ${resp_success}
 func (a *AuthController) Logout(c *gin.Context) {
-	authHeader := a.JwtService.GetAuthToken(c)
+	authHeader := a.JwtService.GetToken(c)
 	ok := a.TokenService.Delete(authHeader)
 	if !ok {
 		result.Error(exception.LogoutError).JSON(c)
@@ -163,7 +159,6 @@ func (a *AuthController) Logout(c *gin.Context) {
 // @ResponseDesc 404    "user not found"
 // @ResponseDesc 500    "update password failed"
 // @ResponseModel 200   #Result
-// @ResponseEx 200      ${resp_success}
 func (a *AuthController) UpdatePassword(c *gin.Context) {
 	authUser := a.JwtService.GetContextUser(c)
 	passParam := &param.PassParam{}
