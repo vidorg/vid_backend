@@ -4,19 +4,20 @@ import (
 	"github.com/Aoi-hosizora/ahlib-gin-gorm/xgin"
 )
 
-// Request
+// Request / Response
 var (
-	RequestParamError  = NewError(400, "request param error")
-	RequestFormatError = NewError(400, "request format error")
-	RequestLargeError  = NewError(413, "request body too large")
+	RequestParamError   = NewError(400, "request param error")
+	RequestFormatError  = NewError(400, "request format error")
+	RequestLargeError   = NewError(413, "request body too large")
+	ServerRecoveryError = NewError(500, "server unknown error")
 )
 
 // Authorization
 var (
-	UnAuthorizedError           = NewError(401, "unauthorized user")
-	TokenExpiredError           = NewError(401, "token has expired")
-	AuthorizedUserNotFoundError = NewError(401, "authorized user not found")
-	NeedAdminError              = NewError(403, "need admin authority")
+	UnAuthorizedError = NewError(401, "unauthorized user")
+	TokenExpiredError = NewError(401, "token has expired")
+	// AuthorizedUserNotFoundError = NewError(401, "authorized user not found")
+	// NeedAdminError              = NewError(403, "need admin authority")
 
 	PasswordError   = NewError(401, "password error")
 	LoginError      = NewError(500, "login failed")           // R

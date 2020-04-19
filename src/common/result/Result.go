@@ -17,6 +17,7 @@ type Result struct {
 	Code    int32                         `json:"code"`
 	Message string                        `json:"message"`
 	Data    *xlinkedhashmap.LinkedHashMap `json:"data,omitempty"`
+	Error   *exception.ErrorDto           `json:"error,omitempty"`
 }
 
 func Status(code int32) *Result {
@@ -47,6 +48,13 @@ func (r *Result) SetCode(code int32) *Result {
 
 func (r *Result) SetMessage(message string) *Result {
 	r.Message = strings.ToLower(message)
+	return r
+}
+
+func (r *Result) SetError(err error, c *gin.Context) *Result {
+	if gin.Mode() == gin.DebugMode {
+		r.Error = exception.NewErrorDto(err, -1, c, false)
+	}
 	return r
 }
 

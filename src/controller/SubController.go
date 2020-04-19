@@ -11,20 +11,18 @@ import (
 	"github.com/vidorg/vid_backend/src/common/result"
 	"github.com/vidorg/vid_backend/src/config"
 	"github.com/vidorg/vid_backend/src/database"
-	"github.com/vidorg/vid_backend/src/middleware"
 	"github.com/vidorg/vid_backend/src/model/dto"
 	"github.com/vidorg/vid_backend/src/model/param"
 	"github.com/vidorg/vid_backend/src/service"
-	"log"
 )
 
 type SubController struct {
-	Config     *config.ServerConfig      `di:"~"`
-	Logger     *logrus.Logger            `di:"~"`
-	JwtService *middleware.JwtService    `di:"~"`
-	UserDao    *service.UserService      `di:"~"`
-	SubDao     *service.SubscribeService `di:"~"`
-	Mappers    *xentity.EntityMappers    `di:"~"`
+	Config      *config.ServerConfig      `di:"~"`
+	Logger      *logrus.Logger            `di:"~"`
+	Mappers     *xentity.EntityMappers    `di:"~"`
+	JwtService  *service.JwtService       `di:"~"`
+	UserService *service.UserService      `di:"~"`
+	SubService  *service.SubscribeService `di:"~"`
 }
 
 func NewSubController(dic *xdi.DiContainer) *SubController {
@@ -49,7 +47,7 @@ func (s *SubController) QuerySubscriberUsers(c *gin.Context) {
 	}
 	pageOrder := param.BindPageOrder(c, s.Config)
 
-	users, count, status := s.SubDao.QuerySubscriberUsers(uid, pageOrder)
+	users, count, status := s.SubService.QuerySubscriberUsers(uid, pageOrder)
 	if status == database.DbNotFound {
 		result.Error(exception.UserNotFoundError).JSON(c)
 		return
@@ -75,7 +73,7 @@ func (s *SubController) QuerySubscribingUsers(c *gin.Context) {
 	}
 	pageOrder := param.BindPageOrder(c, s.Config)
 
-	users, count, status := s.SubDao.QuerySubscribingUsers(uid, pageOrder)
+	users, count, status := s.SubService.QuerySubscribingUsers(uid, pageOrder)
 	if status == database.DbNotFound {
 		result.Error(exception.UserNotFoundError).JSON(c)
 		return
@@ -108,7 +106,7 @@ func (s *SubController) SubscribeUser(c *gin.Context) {
 		return
 	}
 
-	status := s.SubDao.SubscribeUser(authUser.Uid, subParam.Uid)
+	status := s.SubService.SubscribeUser(authUser.Uid, subParam.Uid)
 	if status == database.DbNotFound {
 		result.Error(exception.UserNotFoundError).JSON(c)
 		return
@@ -138,7 +136,7 @@ func (s *SubController) UnSubscribeUser(c *gin.Context) {
 		return
 	}
 
-	status := s.SubDao.UnSubscribeUser(authUser.Uid, subParam.Uid)
+	status := s.SubService.UnSubscribeUser(authUser.Uid, subParam.Uid)
 	if status == database.DbNotFound {
 		result.Error(exception.UserNotFoundError).JSON(c)
 		return

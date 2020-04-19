@@ -9,14 +9,9 @@ import (
 )
 
 var (
-	help       bool
-	configPath string
+	help       = *flag.Bool("h", false, "show help")
+	configPath = *flag.String("config", "./config/config.yaml", "set config path")
 )
-
-func init() {
-	flag.BoolVar(&help, "h", false, "show help")
-	flag.StringVar(&configPath, "config", "./src/config.yaml", "change the config path")
-}
 
 func main() {
 	flag.Parse()
@@ -47,7 +42,6 @@ func main() {
 // @Tag              Administration "*-Controller"
 // @Tag              Search         "*-Controller"
 // @GlobalSecurity   Jwt Authorization header
-// @DemoModel        ./docs/demo.json
 
 // @Template Page.Param            page  query integer false "当前页" (default:1)
 // @Template Page.Param            limit query integer false "页大小" (default:10)

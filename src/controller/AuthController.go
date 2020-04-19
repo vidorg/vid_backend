@@ -10,7 +10,6 @@ import (
 	"github.com/vidorg/vid_backend/src/common/result"
 	"github.com/vidorg/vid_backend/src/config"
 	"github.com/vidorg/vid_backend/src/database"
-	"github.com/vidorg/vid_backend/src/middleware"
 	"github.com/vidorg/vid_backend/src/model/dto"
 	"github.com/vidorg/vid_backend/src/model/param"
 	"github.com/vidorg/vid_backend/src/model/po"
@@ -20,12 +19,12 @@ import (
 )
 
 type AuthController struct {
-	Config     *config.ServerConfig    `di:"~"`
-	Logger     *logrus.Logger          `di:"~"`
-	JwtService *middleware.JwtService  `di:"~"`
-	AccountDao *service.AccountService `di:"~"`
-	TokenDao   *service.TokenService   `di:"~"`
-	Mappers    *xentity.EntityMappers  `di:"~"`
+	Config         *config.ServerConfig    `di:"~"`
+	Logger         *logrus.Logger          `di:"~"`
+	Mappers        *xentity.EntityMappers  `di:"~"`
+	JwtService     *service.JwtService     `di:"~"`
+	AccountService *service.AccountService `di:"~"`
+	TokenService   *service.TokenService   `di:"~"`
 }
 
 func NewAuthController(dic *xdi.DiContainer) *AuthController {
@@ -54,7 +53,7 @@ func (a *AuthController) Login(c *gin.Context) {
 		loginParam.Expire = a.Config.JwtConfig.Expire
 	}
 
-	account := a.AccountDao.QueryByUsername(loginParam.Username)
+	account := a.AccountService.QueryByUsername(loginParam.Username)
 	if account == nil {
 		result.Error(exception.UserNotFoundError).JSON(c)
 		return
@@ -69,7 +68,7 @@ func (a *AuthController) Login(c *gin.Context) {
 		result.Error(exception.LoginError).JSON(c)
 		return
 	}
-	ok := a.TokenDao.Insert(token, account.Uid, loginParam.Expire)
+	ok := a.TokenService.Insert(token, account.Uid, loginParam.Expire)
 	if !ok {
 		result.Error(exception.LoginError).JSON(c)
 		return
@@ -110,7 +109,7 @@ func (a *AuthController) Register(c *gin.Context) {
 			RegisterIP: c.ClientIP(),
 		},
 	}
-	status := a.AccountDao.Insert(passRecord)
+	status := a.AccountService.Insert(passRecord)
 	if status == database.DbExisted {
 		result.Error(exception.UsernameUsedError).JSON(c)
 		return
@@ -146,7 +145,7 @@ func (a *AuthController) CurrentUser(c *gin.Context) {
 // @ResponseEx 200      ${resp_success}
 func (a *AuthController) Logout(c *gin.Context) {
 	authHeader := a.JwtService.GetAuthToken(c)
-	ok := a.TokenDao.Delete(authHeader)
+	ok := a.TokenService.Delete(authHeader)
 	if !ok {
 		result.Error(exception.LogoutError).JSON(c)
 		return
@@ -182,7 +181,7 @@ func (a *AuthController) UpdatePassword(c *gin.Context) {
 		EncryptedPass: encrypted,
 		Uid:           authUser.Uid,
 	}
-	status := a.AccountDao.Update(passRecord)
+	status := a.AccountService.Update(passRecord)
 	if status == database.DbNotFound {
 		result.Error(exception.UserNotFoundError).JSON(c)
 		return
@@ -190,7 +189,7 @@ func (a *AuthController) UpdatePassword(c *gin.Context) {
 		result.Error(exception.UpdatePassError).JSON(c)
 		return
 	}
-	_ = a.TokenDao.DeleteAll(authUser.Uid)
+	_ = a.TokenService.DeleteAll(authUser.Uid)
 
 	result.Ok().JSON(c)
 }

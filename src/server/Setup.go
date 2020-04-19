@@ -17,7 +17,7 @@ import (
 	"time"
 )
 
-func SetupBinding() {
+func setupBinding() {
 	xgin.SetupRegexBinding()
 
 	xgin.SetupDateTimeBinding("date", xdatetime.ISO8601DateFormat)
@@ -28,7 +28,7 @@ func SetupBinding() {
 	xgin.SetupSpecificRegexpBinding("phone", "^(13[0-9]|15[012356789]|17[678]|18[0-9]|14[57])[0-9]{8}$") // 11
 }
 
-func SetupLogger(config *config.ServerConfig) *logrus.Logger {
+func setupLogger(config *config.ServerConfig) *logrus.Logger {
 	logger := logrus.New()
 	logLevel := logrus.WarnLevel
 	if config.RunMode == "debug" {
@@ -58,7 +58,7 @@ func SetupLogger(config *config.ServerConfig) *logrus.Logger {
 		ForceColors:     true,
 		FullTimestamp:   true,
 		DisableSorting:  true,
-		TimestampFormat: "2006/01/02 15:04:05",
+		TimestampFormat: time.RFC3339,
 		CallerPrettyfier: func(f *runtime.Frame) (string, string) {
 			filename := path.Base(f.File)
 			return "", fmt.Sprintf(" %s:%d:", filename, f.Line)
@@ -67,6 +67,7 @@ func SetupLogger(config *config.ServerConfig) *logrus.Logger {
 
 	// writer
 	out := io.MultiWriter(ansicolor.NewAnsiColorWriter(os.Stdout))
+	log.SetOutput(out)
 	gin.DefaultWriter = out
 	logger.Out = out
 

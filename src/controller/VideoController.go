@@ -12,7 +12,6 @@ import (
 	"github.com/vidorg/vid_backend/src/common/result"
 	"github.com/vidorg/vid_backend/src/config"
 	"github.com/vidorg/vid_backend/src/database"
-	"github.com/vidorg/vid_backend/src/middleware"
 	"github.com/vidorg/vid_backend/src/model/dto"
 	"github.com/vidorg/vid_backend/src/model/param"
 	"github.com/vidorg/vid_backend/src/model/po"
@@ -21,11 +20,11 @@ import (
 )
 
 type VideoController struct {
-	Config     *config.ServerConfig   `di:"~"`
-	Logger     *logrus.Logger         `di:"~"`
-	JwtService *middleware.JwtService `di:"~"`
-	VideoDao   *service.VideoService  `di:"~"`
-	Mappers    *xentity.EntityMappers `di:"~"`
+	Config       *config.ServerConfig   `di:"~"`
+	Logger       *logrus.Logger         `di:"~"`
+	Mappers      *xentity.EntityMappers `di:"~"`
+	JwtService   *service.JwtService    `di:"~"`
+	VideoService *service.VideoService  `di:"~"`
 }
 
 func NewVideoController(dic *xdi.DiContainer) *VideoController {
@@ -45,7 +44,7 @@ func NewVideoController(dic *xdi.DiContainer) *VideoController {
 // @ResponseEx 200      ${resp_page_videos}
 func (v *VideoController) QueryAllVideos(c *gin.Context) {
 	pageOrder := param.BindPageOrder(c, v.Config)
-	videos, count := v.VideoDao.QueryAll(pageOrder)
+	videos, count := v.VideoService.QueryAll(pageOrder)
 
 	retDto := xcondition.First(v.Mappers.MapSlice(xslice.Sti(videos), &dto.VideoDto{})).([]*dto.VideoDto)
 	result.Ok().SetPage(count, pageOrder.Page, pageOrder.Limit, retDto).JSON(c)
@@ -67,7 +66,7 @@ func (v *VideoController) QueryVideosByUid(c *gin.Context) {
 	}
 	pageOrder := param.BindPageOrder(c, v.Config)
 
-	videos, count, status := v.VideoDao.QueryByUid(uid, pageOrder)
+	videos, count, status := v.VideoService.QueryByUid(uid, pageOrder)
 	if status == database.DbNotFound {
 		result.Error(exception.UserNotFoundError).JSON(c)
 		return
@@ -93,7 +92,7 @@ func (v *VideoController) QueryVideoByVid(c *gin.Context) {
 		return
 	}
 
-	video := v.VideoDao.QueryByVid(vid)
+	video := v.VideoService.QueryByVid(vid)
 	if video == nil {
 		result.Error(exception.VideoNotFoundError).JSON(c)
 		return
@@ -127,7 +126,7 @@ func (v *VideoController) InsertVideo(c *gin.Context) {
 	}
 
 	_ = v.Mappers.MapProp(videoParam, video)
-	status := v.VideoDao.Insert(video)
+	status := v.VideoService.Insert(video)
 	if status == database.DbExisted {
 		result.Error(exception.VideoUrlExistError).JSON(c)
 		return
@@ -167,7 +166,7 @@ func (v *VideoController) UpdateVideo(c *gin.Context) {
 		return
 	}
 
-	video := v.VideoDao.QueryByVid(vid)
+	video := v.VideoService.QueryByVid(vid)
 	if video == nil {
 		result.Error(exception.VideoNotFoundError).JSON(c)
 		return
@@ -177,7 +176,7 @@ func (v *VideoController) UpdateVideo(c *gin.Context) {
 	}
 	// Update
 	_ = v.Mappers.MapProp(videoParam, video)
-	status := v.VideoDao.Update(video)
+	status := v.VideoService.Update(video)
 	if status == database.DbExisted {
 		result.Error(exception.VideoUrlExistError).JSON(c)
 		return
@@ -215,9 +214,9 @@ func (v *VideoController) DeleteVideo(c *gin.Context) {
 
 	var status database.DbStatus
 	if authUser.Authority == constant.AuthAdmin {
-		status = v.VideoDao.Delete(vid)
+		status = v.VideoService.Delete(vid)
 	} else {
-		status = v.VideoDao.DeleteBy2Id(vid, authUser.Uid)
+		status = v.VideoService.DeleteBy2Id(vid, authUser.Uid)
 	}
 	if status == database.DbNotFound {
 		result.Error(exception.VideoNotFoundError).JSON(c)

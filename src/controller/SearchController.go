@@ -19,8 +19,8 @@ import (
 type SearchController struct {
 	Config         *config.ServerConfig    `di:"~"`
 	Logger         *logrus.Logger          `di:"~"`
-	SearchDao      *service.SearchService  `di:"~"`
 	Mappers        *xentity.EntityMappers  `di:"~"`
+	SearchService  *service.SearchService  `di:"~"`
 	SegmentService *service.SegmentService `di:"~"`
 }
 
@@ -47,7 +47,7 @@ func (s *SearchController) SearchUser(c *gin.Context) {
 
 	keys := s.SegmentService.Seg(key)
 	against := s.SegmentService.Cat(keys)
-	users, total := s.SearchDao.SearchUser(against, page)
+	users, total := s.SearchService.SearchUser(against, page)
 
 	retDto := xcondition.First(s.Mappers.MapSlice(xslice.Sti(users), &dto.UserDto{})).([]*dto.UserDto)
 	result.Ok().SetPage(total, page.Page, page.Limit, retDto).JSON(c)
@@ -70,7 +70,7 @@ func (s *SearchController) SearchVideo(c *gin.Context) {
 
 	keys := s.SegmentService.Seg(key)
 	against := s.SegmentService.Cat(keys)
-	videos, total := s.SearchDao.SearchVideo(against, page)
+	videos, total := s.SearchService.SearchVideo(against, page)
 
 	retDto := xcondition.First(s.Mappers.MapSlice(xslice.Sti(videos), &dto.VideoDto{})).([]*dto.VideoDto)
 	result.Ok().SetPage(total, page.Page, page.Limit, retDto).JSON(c)

@@ -1,24 +1,52 @@
-package router
+package server
 
 import (
+	"fmt"
 	"github.com/Aoi-hosizora/ahlib/xdi"
 	"github.com/gin-gonic/gin"
-	"github.com/sirupsen/logrus"
+	"github.com/vidorg/vid_backend/src/common/exception"
+	"github.com/vidorg/vid_backend/src/common/result"
 	"github.com/vidorg/vid_backend/src/config"
 	"github.com/vidorg/vid_backend/src/controller"
 	"github.com/vidorg/vid_backend/src/middleware"
+	"github.com/vidorg/vid_backend/src/service"
+	"net/http"
 )
 
-func SetupApiRouter(router *gin.Engine, dic *xdi.DiContainer) {
+// @Router             /ping [GET]
+// @Summary            Ping
+// @Tag                Ping
+// @ResponseDesc 200   "OK"
+// @ResponseEx 200     { "ping": "pong" }
+func setupCommonRouter(engine *gin.Engine) {
+	engine.HandleMethodNotAllowed = true
+	engine.GET("/ping", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{"ping": "pong"})
+	})
+	engine.GET("/error", func(c *gin.Context) {
+		err := fmt.Errorf("test error in /error")
+		result.Error(exception.ServerRecoveryError).SetError(err, c).JSON(c)
+	})
+	engine.GET("/panic", func(c *gin.Context) {
+		panic("test panic in /panic")
+	})
+
+	engine.NoMethod(func(c *gin.Context) {
+		result.Status(http.StatusMethodNotAllowed).JSON(c)
+	})
+	engine.NoRoute(func(c *gin.Context) {
+		result.Status(http.StatusNotFound).SetMessage(fmt.Sprintf("route %s is not found", c.Request.URL.Path)).JSON(c)
+	})
+}
+
+func setupApiRouter(router *gin.Engine, dic *xdi.DiContainer) {
 	container := &struct {
-		Config *config.ServerConfig   `di:"~"`
-		Logger *logrus.Logger         `di:"~"`
-		JwtSrv *middleware.JwtService `di:"~"`
+		Config *config.ServerConfig `di:"~"`
+		JwtSrv *service.JwtService  `di:"~"`
 	}{}
 	dic.MustInject(container)
 
-	jwtMw := container.JwtSrv.JwtMiddleware(false)
-	jwtAdminMw := container.JwtSrv.JwtMiddleware(true)
+	jwtMw := middleware.JwtMiddleware(container.JwtSrv)
 	limit2MMw := middleware.LimitMiddleware(int64(container.Config.FileConfig.ImageMaxSize << 20)) // MB
 
 	authCtrl := controller.NewAuthController(dic)
@@ -41,7 +69,7 @@ func SetupApiRouter(router *gin.Engine, dic *xdi.DiContainer) {
 
 		userGroup := v1.Group("/user")
 		{
-			userGroup.GET("", jwtAdminMw, userCtrl.QueryAllUsers)
+			userGroup.GET("", jwtMw, userCtrl.QueryAllUsers) // admin
 			userGroup.GET("/:uid", userCtrl.QueryUser)
 			userGroup.PUT("", jwtMw, userCtrl.UpdateUser(false))
 			userGroup.DELETE("", jwtMw, userCtrl.DeleteUser(false))
@@ -53,13 +81,13 @@ func SetupApiRouter(router *gin.Engine, dic *xdi.DiContainer) {
 			userGroup.PUT("/subscribing", jwtMw, subCtrl.SubscribeUser)
 			userGroup.DELETE("/subscribing", jwtMw, subCtrl.UnSubscribeUser)
 
-			userGroup.PUT("/admin/:uid", jwtAdminMw, userCtrl.UpdateUser(true))
-			userGroup.DELETE("/admin/:uid", jwtAdminMw, userCtrl.DeleteUser(true))
+			userGroup.PUT("/admin/:uid", jwtMw, userCtrl.UpdateUser(true))    // admin
+			userGroup.DELETE("/admin/:uid", jwtMw, userCtrl.DeleteUser(true)) // admin
 		}
 
 		videoGroup := v1.Group("/video")
 		{
-			videoGroup.GET("", jwtAdminMw, videoCtrl.QueryAllVideos)
+			videoGroup.GET("", jwtMw, videoCtrl.QueryAllVideos) // admin
 			videoGroup.GET("/:vid", videoCtrl.QueryVideoByVid)
 
 			videoGroup.POST("", jwtMw, videoCtrl.InsertVideo)

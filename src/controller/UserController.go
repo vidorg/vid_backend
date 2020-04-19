@@ -11,7 +11,6 @@ import (
 	"github.com/vidorg/vid_backend/src/common/result"
 	"github.com/vidorg/vid_backend/src/config"
 	"github.com/vidorg/vid_backend/src/database"
-	"github.com/vidorg/vid_backend/src/middleware"
 	"github.com/vidorg/vid_backend/src/model/dto"
 	"github.com/vidorg/vid_backend/src/model/param"
 	"github.com/vidorg/vid_backend/src/model/po"
@@ -19,14 +18,14 @@ import (
 )
 
 type UserController struct {
-	Config     *config.ServerConfig      `di:"~"`
-	Logger     *logrus.Logger            `di:"~"`
-	JwtService *middleware.JwtService    `di:"~"`
-	UserDao    *service.UserService      `di:"~"`
-	VideoDao   *service.VideoService     `di:"~"`
-	SubDao     *service.SubscribeService `di:"~"`
-	SearchDao  *service.SearchService    `di:"~"`
-	Mappers    *xentity.EntityMappers    `di:"~"`
+	Config        *config.ServerConfig      `di:"~"`
+	Logger        *logrus.Logger            `di:"~"`
+	Mappers       *xentity.EntityMappers    `di:"~"`
+	JwtService    *service.JwtService       `di:"~"`
+	UserService   *service.UserService      `di:"~"`
+	SubService    *service.SubscribeService `di:"~"`
+	VideoService  *service.VideoService     `di:"~"`
+	SearchService *service.SearchService    `di:"~"`
 }
 
 func NewUserController(dic *xdi.DiContainer) *UserController {
@@ -46,7 +45,7 @@ func NewUserController(dic *xdi.DiContainer) *UserController {
 // @ResponseEx 200      ${resp_page_users}
 func (u *UserController) QueryAllUsers(c *gin.Context) {
 	pageOrder := param.BindPageOrder(c, u.Config)
-	users, count := u.UserDao.QueryAll(pageOrder)
+	users, count := u.UserService.QueryAll(pageOrder)
 
 	retDto := xcondition.First(u.Mappers.MapSlice(xslice.Sti(users), &dto.UserDto{}, dto.UserDtoShowAllOption())).([]*dto.UserDto)
 	result.Ok().SetPage(count, pageOrder.Page, pageOrder.Limit, retDto).JSON(c)
@@ -68,13 +67,13 @@ func (u *UserController) QueryUser(c *gin.Context) {
 		return
 	}
 
-	user := u.UserDao.QueryByUid(uid)
+	user := u.UserService.QueryByUid(uid)
 	if user == nil {
 		result.Error(exception.UserNotFoundError).JSON(c)
 		return
 	}
-	subscribingCnt, subscriberCnt, _ := u.SubDao.QueryCountByUid(user.Uid)
-	videoCnt, _ := u.VideoDao.QueryCountByUid(user.Uid)
+	subscribingCnt, subscriberCnt, _ := u.SubService.QueryCountByUid(user.Uid)
+	videoCnt, _ := u.VideoService.QueryCountByUid(user.Uid)
 	extraInfo := &dto.UserExtraDto{
 		SubscribingCount: subscribingCnt,
 		SubscriberCount:  subscriberCnt,
@@ -125,7 +124,7 @@ func (u *UserController) UpdateUser(isSpec bool) func(c *gin.Context) {
 				result.Error(exception.RequestParamError).JSON(c)
 				return
 			}
-			user = u.UserDao.QueryByUid(uid)
+			user = u.UserService.QueryByUid(uid)
 			if user == nil {
 				result.Error(exception.UserNotFoundError).JSON(c)
 				return
@@ -139,7 +138,7 @@ func (u *UserController) UpdateUser(isSpec bool) func(c *gin.Context) {
 		}
 
 		_ = u.Mappers.MapProp(userParam, user)
-		status := u.UserDao.Update(user)
+		status := u.UserService.Update(user)
 		if status == database.DbNotFound {
 			result.Error(exception.UserNotFoundError).JSON(c)
 			return
@@ -192,7 +191,7 @@ func (u *UserController) DeleteUser(isSpec bool) func(c *gin.Context) {
 			}
 		}
 		// Delete
-		status := u.UserDao.Delete(uid)
+		status := u.UserService.Delete(uid)
 		if status == database.DbNotFound {
 			result.Error(exception.UserNotFoundError).JSON(c)
 			return

@@ -5,6 +5,10 @@ type Error struct {
 	Message string
 }
 
+func (e *Error) Error() string {
+	return e.Message
+}
+
 func NewError(code int32, message string) *Error {
 	return &Error{
 		Code:    code,
