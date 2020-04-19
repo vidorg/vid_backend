@@ -11,30 +11,27 @@ import (
 	"github.com/vidorg/vid_backend/src/common/result"
 	"github.com/vidorg/vid_backend/src/config"
 	"github.com/vidorg/vid_backend/src/database"
-	"github.com/vidorg/vid_backend/src/database/dao"
 	"github.com/vidorg/vid_backend/src/middleware"
 	"github.com/vidorg/vid_backend/src/model/dto"
 	"github.com/vidorg/vid_backend/src/model/param"
 	"github.com/vidorg/vid_backend/src/model/po"
-	"log"
+	"github.com/vidorg/vid_backend/src/service"
 )
 
 type UserController struct {
-	Config     *config.ServerConfig   `di:"~"`
-	Logger     *logrus.Logger         `di:"~"`
-	JwtService *middleware.JwtService `di:"~"`
-	UserDao    *dao.UserDao           `di:"~"`
-	VideoDao   *dao.VideoDao          `di:"~"`
-	SubDao     *dao.SubDao            `di:"~"`
-	SearchDao  *dao.SearchDao         `di:"~"`
-	Mappers    *xentity.EntityMappers `di:"~"`
+	Config     *config.ServerConfig      `di:"~"`
+	Logger     *logrus.Logger            `di:"~"`
+	JwtService *middleware.JwtService    `di:"~"`
+	UserDao    *service.UserService      `di:"~"`
+	VideoDao   *service.VideoService     `di:"~"`
+	SubDao     *service.SubscribeService `di:"~"`
+	SearchDao  *service.SearchService    `di:"~"`
+	Mappers    *xentity.EntityMappers    `di:"~"`
 }
 
 func NewUserController(dic *xdi.DiContainer) *UserController {
 	ctrl := &UserController{}
-	if !dic.Inject(ctrl) {
-		log.Fatalln("Inject failed")
-	}
+	dic.MustInject(ctrl)
 	return ctrl
 }
 

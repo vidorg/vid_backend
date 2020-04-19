@@ -10,30 +10,27 @@ import (
 	"github.com/vidorg/vid_backend/src/common/result"
 	"github.com/vidorg/vid_backend/src/config"
 	"github.com/vidorg/vid_backend/src/database"
-	"github.com/vidorg/vid_backend/src/database/dao"
 	"github.com/vidorg/vid_backend/src/middleware"
 	"github.com/vidorg/vid_backend/src/model/dto"
 	"github.com/vidorg/vid_backend/src/model/param"
 	"github.com/vidorg/vid_backend/src/model/po"
+	"github.com/vidorg/vid_backend/src/service"
 	"github.com/vidorg/vid_backend/src/util"
-	"log"
 	"net/http"
 )
 
 type AuthController struct {
-	Config     *config.ServerConfig   `di:"~"`
-	Logger     *logrus.Logger         `di:"~"`
-	JwtService *middleware.JwtService `di:"~"`
-	AccountDao *dao.AccountDao        `di:"~"`
-	TokenDao   *dao.TokenDao          `di:"~"`
-	Mappers    *xentity.EntityMappers `di:"~"`
+	Config     *config.ServerConfig    `di:"~"`
+	Logger     *logrus.Logger          `di:"~"`
+	JwtService *middleware.JwtService  `di:"~"`
+	AccountDao *service.AccountService `di:"~"`
+	TokenDao   *service.TokenService   `di:"~"`
+	Mappers    *xentity.EntityMappers  `di:"~"`
 }
 
 func NewAuthController(dic *xdi.DiContainer) *AuthController {
 	ctrl := &AuthController{}
-	if !dic.Inject(ctrl) {
-		log.Fatalln("Inject failed")
-	}
+	dic.MustInject(ctrl)
 	return ctrl
 }
 

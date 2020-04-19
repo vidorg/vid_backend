@@ -3,12 +3,11 @@ package server
 import (
 	"github.com/Aoi-hosizora/ahlib/xdi"
 	"github.com/sirupsen/logrus"
-	"github.com/vidorg/vid_backend/src/common/seg"
 	"github.com/vidorg/vid_backend/src/config"
-	"github.com/vidorg/vid_backend/src/database/conn"
-	"github.com/vidorg/vid_backend/src/database/dao"
+	"github.com/vidorg/vid_backend/src/database"
 	"github.com/vidorg/vid_backend/src/middleware"
 	"github.com/vidorg/vid_backend/src/model/profile"
+	"github.com/vidorg/vid_backend/src/service"
 )
 
 func ProvideServices(config *config.ServerConfig, logger *logrus.Logger) *xdi.DiContainer {
@@ -21,25 +20,25 @@ func ProvideServices(config *config.ServerConfig, logger *logrus.Logger) *xdi.Di
 	propertyMappers := profile.CreatePropertyMappers()
 	dic.Provide(propertyMappers)
 
-	segSrv := seg.NewSegmentService(dic)
+	segSrv := service.NewSegmentService(dic)
 	dic.Provide(segSrv)
 
-	gormHelper := conn.SetupMySqlConn(config.MySqlConfig, logger)
+	gormHelper := database.SetupMySQLConn(config.MySqlConfig, logger)
 	dic.Provide(gormHelper) // after config
-	redisHelper := conn.SetupRedisConn(config.RedisConfig)
+	redisHelper := database.SetupRedisConn(config.RedisConfig)
 	dic.Provide(redisHelper) // after config
 
-	passDao := dao.NewPassDao(dic)
+	passDao := service.NewAccountService(dic)
 	dic.Provide(passDao) // after gorm
-	tokenDao := dao.NewTokenDao(dic)
+	tokenDao := service.NewTokenService(dic)
 	dic.Provide(tokenDao) // after redis
-	userDao := dao.NewUserDao(dic)
+	userDao := service.NewUserService(dic)
 	dic.Provide(userDao)
-	subDao := dao.NewSubDao(dic)
+	subDao := service.NewSubscribeService(dic)
 	dic.Provide(subDao)
-	videoDao := dao.NewVideoDao(dic)
+	videoDao := service.NewVideoService(dic)
 	dic.Provide(videoDao)
-	searchDao := dao.NewSearchDao(dic)
+	searchDao := service.NewSearchService(dic)
 	dic.Provide(searchDao) // after segSrv
 
 	jwtSrv := middleware.NewJwtService(dic)

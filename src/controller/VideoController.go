@@ -7,17 +7,16 @@ import (
 	"github.com/Aoi-hosizora/ahlib/xslice"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
-	"github.com/vidorg/vid_backend/src/common/enum"
+	"github.com/vidorg/vid_backend/src/common/constant"
 	"github.com/vidorg/vid_backend/src/common/exception"
 	"github.com/vidorg/vid_backend/src/common/result"
 	"github.com/vidorg/vid_backend/src/config"
 	"github.com/vidorg/vid_backend/src/database"
-	"github.com/vidorg/vid_backend/src/database/dao"
 	"github.com/vidorg/vid_backend/src/middleware"
 	"github.com/vidorg/vid_backend/src/model/dto"
 	"github.com/vidorg/vid_backend/src/model/param"
 	"github.com/vidorg/vid_backend/src/model/po"
-	"log"
+	"github.com/vidorg/vid_backend/src/service"
 	"net/http"
 )
 
@@ -25,15 +24,13 @@ type VideoController struct {
 	Config     *config.ServerConfig   `di:"~"`
 	Logger     *logrus.Logger         `di:"~"`
 	JwtService *middleware.JwtService `di:"~"`
-	VideoDao   *dao.VideoDao          `di:"~"`
+	VideoDao   *service.VideoService  `di:"~"`
 	Mappers    *xentity.EntityMappers `di:"~"`
 }
 
 func NewVideoController(dic *xdi.DiContainer) *VideoController {
 	ctrl := &VideoController{}
-	if !dic.Inject(ctrl) {
-		log.Fatalln("Inject failed")
-	}
+	dic.MustInject(ctrl)
 	return ctrl
 }
 
@@ -174,7 +171,7 @@ func (v *VideoController) UpdateVideo(c *gin.Context) {
 	if video == nil {
 		result.Error(exception.VideoNotFoundError).JSON(c)
 		return
-	} else if authUser.Authority != enum.AuthAdmin && authUser.Uid != video.AuthorUid {
+	} else if authUser.Authority != constant.AuthAdmin && authUser.Uid != video.AuthorUid {
 		result.Error(exception.VideoNotFoundError).JSON(c)
 		return
 	}
@@ -217,7 +214,7 @@ func (v *VideoController) DeleteVideo(c *gin.Context) {
 	}
 
 	var status database.DbStatus
-	if authUser.Authority == enum.AuthAdmin {
+	if authUser.Authority == constant.AuthAdmin {
 		status = v.VideoDao.Delete(vid)
 	} else {
 		status = v.VideoDao.DeleteBy2Id(vid, authUser.Uid)

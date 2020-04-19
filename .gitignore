@@ -3,11 +3,11 @@
 .vscode/
 .ionide/
 .history/
-__pycache__/
 
 ### Server ###
 .docs/
-*.log
+build/
+logs/
 *.rdb
 
 usr/image/*.*

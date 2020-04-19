@@ -1,4 +1,4 @@
-package dao
+package service
 
 import (
 	"github.com/Aoi-hosizora/ahlib/xdi"
@@ -9,28 +9,25 @@ import (
 	"github.com/vidorg/vid_backend/src/model/dto"
 	"github.com/vidorg/vid_backend/src/model/param"
 	"github.com/vidorg/vid_backend/src/model/po"
-	"log"
 )
 
-type VideoDao struct {
+type VideoService struct {
 	Db      *helper.GormHelper         `di:"~"`
 	Logger  *logrus.Logger             `di:"~"`
 	Mappers *xproperty.PropertyMappers `di:"~"`
-	UserDao *UserDao                   `di:"~"`
+	UserDao *UserService               `di:"~"`
 
 	OrderByFunc func(string) string `di:"-"`
 }
 
-func NewVideoDao(dic *xdi.DiContainer) *VideoDao {
-	repo := &VideoDao{}
-	if !dic.Inject(repo) {
-		log.Fatalln("Inject failed")
-	}
+func NewVideoService(dic *xdi.DiContainer) *VideoService {
+	repo := &VideoService{}
+	dic.MustInject(repo)
 	repo.OrderByFunc = repo.Mappers.GetPropertyMapping(&dto.VideoDto{}, &po.Video{}).ApplyOrderBy
 	return repo
 }
 
-func (v *VideoDao) WrapVideo(video *po.Video) {
+func (v *VideoService) WrapVideo(video *po.Video) {
 	out := v.Db.QueryFirstHelper(&po.User{}, &po.User{Uid: video.AuthorUid})
 	if out != nil {
 		video.Author = out.(*po.User)
@@ -39,7 +36,7 @@ func (v *VideoDao) WrapVideo(video *po.Video) {
 	}
 }
 
-func (v *VideoDao) QueryAll(pageOrder *param.PageOrderParam) ([]*po.Video, int32) {
+func (v *VideoService) QueryAll(pageOrder *param.PageOrderParam) ([]*po.Video, int32) {
 	videos := make([]*po.Video, 0)
 	total := v.Db.QueryMultiHelper(&po.Video{}, pageOrder.Limit, pageOrder.Page, &po.Video{}, v.OrderByFunc(pageOrder.Order), &videos)
 	for idx := range videos {
@@ -48,7 +45,7 @@ func (v *VideoDao) QueryAll(pageOrder *param.PageOrderParam) ([]*po.Video, int32
 	return videos, total
 }
 
-func (v *VideoDao) QueryByUid(uid int32, pageOrder *param.PageOrderParam) ([]*po.Video, int32, database.DbStatus) {
+func (v *VideoService) QueryByUid(uid int32, pageOrder *param.PageOrderParam) ([]*po.Video, int32, database.DbStatus) {
 	author := v.UserDao.QueryByUid(uid)
 	if author == nil {
 		return nil, 0, database.DbNotFound
@@ -61,7 +58,7 @@ func (v *VideoDao) QueryByUid(uid int32, pageOrder *param.PageOrderParam) ([]*po
 	return videos, total, database.DbSuccess
 }
 
-func (v *VideoDao) QueryCountByUid(uid int32) (int32, database.DbStatus) {
+func (v *VideoService) QueryCountByUid(uid int32) (int32, database.DbStatus) {
 	if !v.UserDao.Exist(uid) {
 		return 0, database.DbNotFound
 	}
@@ -69,7 +66,7 @@ func (v *VideoDao) QueryCountByUid(uid int32) (int32, database.DbStatus) {
 	return cnt, database.DbSuccess
 }
 
-func (v *VideoDao) QueryByVid(vid int32) *po.Video {
+func (v *VideoService) QueryByVid(vid int32) *po.Video {
 	out := v.Db.QueryFirstHelper(&po.Video{}, &po.Video{Vid: vid})
 	if out == nil {
 		return nil
@@ -79,22 +76,22 @@ func (v *VideoDao) QueryByVid(vid int32) *po.Video {
 	return video
 }
 
-func (v *VideoDao) Exist(vid int32) bool {
+func (v *VideoService) Exist(vid int32) bool {
 	return v.Db.ExistHelper(&po.Video{}, &po.Video{Vid: vid})
 }
 
-func (v *VideoDao) Insert(video *po.Video) database.DbStatus {
+func (v *VideoService) Insert(video *po.Video) database.DbStatus {
 	return v.Db.InsertHelper(&po.Video{}, video)
 }
 
-func (v *VideoDao) Update(video *po.Video) database.DbStatus {
+func (v *VideoService) Update(video *po.Video) database.DbStatus {
 	return v.Db.UpdateHelper(&po.Video{}, video)
 }
 
-func (v *VideoDao) Delete(vid int32) database.DbStatus {
+func (v *VideoService) Delete(vid int32) database.DbStatus {
 	return v.Db.DeleteHelper(&po.Video{}, &po.Video{Vid: vid})
 }
 
-func (v *VideoDao) DeleteBy2Id(vid int32, uid int32) database.DbStatus {
+func (v *VideoService) DeleteBy2Id(vid int32, uid int32) database.DbStatus {
 	return v.Db.DeleteHelper(&po.Video{}, &po.Video{Vid: vid, AuthorUid: uid})
 }

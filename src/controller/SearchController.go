@@ -9,28 +9,24 @@ import (
 	"github.com/sirupsen/logrus"
 	"github.com/vidorg/vid_backend/src/common/exception"
 	"github.com/vidorg/vid_backend/src/common/result"
-	"github.com/vidorg/vid_backend/src/common/seg"
 	"github.com/vidorg/vid_backend/src/config"
-	"github.com/vidorg/vid_backend/src/database/dao"
 	"github.com/vidorg/vid_backend/src/model/dto"
 	"github.com/vidorg/vid_backend/src/model/param"
-	"log"
+	"github.com/vidorg/vid_backend/src/service"
 	"strings"
 )
 
 type SearchController struct {
-	Config         *config.ServerConfig   `di:"~"`
-	Logger         *logrus.Logger         `di:"~"`
-	SearchDao      *dao.SearchDao         `di:"~"`
-	Mappers        *xentity.EntityMappers `di:"~"`
-	SegmentService *seg.SegmentService    `di:"~"`
+	Config         *config.ServerConfig    `di:"~"`
+	Logger         *logrus.Logger          `di:"~"`
+	SearchDao      *service.SearchService  `di:"~"`
+	Mappers        *xentity.EntityMappers  `di:"~"`
+	SegmentService *service.SegmentService `di:"~"`
 }
 
 func NewSearchController(dic *xdi.DiContainer) *SearchController {
 	ctrl := &SearchController{}
-	if !dic.Inject(ctrl) {
-		log.Fatalln("Inject failed")
-	}
+	dic.MustInject(ctrl)
 	return ctrl
 }
 

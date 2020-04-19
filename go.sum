@@ -1,5 +1,6 @@
 github.com/Aoi-hosizora/ahlib v0.0.0-20200316115942-ed311d5d7dd9 h1:YEs0Jqx6l8WDt7FssJiMo+MgBpnLsmrTz1+nGmtjr5c=
 github.com/Aoi-hosizora/ahlib v0.0.0-20200316115942-ed311d5d7dd9/go.mod h1:oa2f9jtUDzZ5zklB+pZKOUV7SBpdINmGdjlsKMa77pY=
+github.com/Aoi-hosizora/ahlib v0.0.0-20200418083058-e5eff78b17b0/go.mod h1:oa2f9jtUDzZ5zklB+pZKOUV7SBpdINmGdjlsKMa77pY=
 github.com/Aoi-hosizora/ahlib-gin-gorm v0.0.0-20200227043052-1d9e28f9af56 h1:/Ey01PApvbpn6zLZjFoGGvHKjYx4k6CX43V5TldDV6E=
 github.com/Aoi-hosizora/ahlib-gin-gorm v0.0.0-20200227043052-1d9e28f9af56/go.mod h1:GMkxZxfrUEFfRbYFjT6Rp1yB8sByE6XBj/9IoadF8es=
 github.com/BurntSushi/toml v0.3.1 h1:WXkYYl6Yr3qBf1K79EBnL4mak0OimBfB0XUf9Vl28OQ=

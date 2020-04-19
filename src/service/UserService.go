@@ -1,4 +1,4 @@
-package dao
+package service
 
 import (
 	"github.com/Aoi-hosizora/ahlib/xdi"
@@ -9,10 +9,9 @@ import (
 	"github.com/vidorg/vid_backend/src/model/dto"
 	"github.com/vidorg/vid_backend/src/model/param"
 	"github.com/vidorg/vid_backend/src/model/po"
-	"log"
 )
 
-type UserDao struct {
+type UserService struct {
 	Db      *helper.GormHelper         `di:"~"`
 	Logger  *logrus.Logger             `di:"~"`
 	Mappers *xproperty.PropertyMappers `di:"~"`
@@ -20,22 +19,20 @@ type UserDao struct {
 	OrderByFunc func(string) string `di:"-"`
 }
 
-func NewUserDao(dic *xdi.DiContainer) *UserDao {
-	repo := &UserDao{}
-	if !dic.Inject(repo) {
-		log.Fatalln("Inject failed")
-	}
+func NewUserService(dic *xdi.DiContainer) *UserService {
+	repo := &UserService{}
+	dic.MustInject(repo)
 	repo.OrderByFunc = repo.Mappers.GetPropertyMapping(&dto.UserDto{}, &po.User{}).ApplyOrderBy
 	return repo
 }
 
-func (u *UserDao) QueryAll(pageOrder *param.PageOrderParam) ([]*po.User, int32) {
+func (u *UserService) QueryAll(pageOrder *param.PageOrderParam) ([]*po.User, int32) {
 	users := make([]*po.User, 0)
 	total := u.Db.QueryMultiHelper(&po.User{}, pageOrder.Limit, pageOrder.Page, &po.User{}, u.OrderByFunc(pageOrder.Order), &users)
 	return users, total
 }
 
-func (u *UserDao) QueryByUid(uid int32) *po.User {
+func (u *UserService) QueryByUid(uid int32) *po.User {
 	out := u.Db.QueryFirstHelper(&po.User{}, &po.User{Uid: uid})
 	if out == nil {
 		return nil
@@ -43,15 +40,15 @@ func (u *UserDao) QueryByUid(uid int32) *po.User {
 	return out.(*po.User)
 }
 
-func (u *UserDao) Exist(uid int32) bool {
+func (u *UserService) Exist(uid int32) bool {
 	return u.Db.ExistHelper(&po.User{}, &po.User{Uid: uid})
 }
 
-func (u *UserDao) Update(user *po.User) database.DbStatus {
+func (u *UserService) Update(user *po.User) database.DbStatus {
 	return u.Db.UpdateHelper(&po.User{}, user)
 }
 
-func (u *UserDao) Delete(uid int32) database.DbStatus {
+func (u *UserService) Delete(uid int32) database.DbStatus {
 	ret := u.Db.DeleteHelper(&po.User{}, &po.User{Uid: uid})
 	if ret == database.DbSuccess {
 		u.Db.DeleteHelper(&po.Account{}, &po.Account{Uid: uid})

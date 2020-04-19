@@ -4,7 +4,7 @@ import (
 	"github.com/Aoi-hosizora/ahlib-gin-gorm/xdatetime"
 	"github.com/Aoi-hosizora/ahlib/xcondition"
 	"github.com/Aoi-hosizora/ahlib/xentity"
-	"github.com/vidorg/vid_backend/src/common/enum"
+	"github.com/vidorg/vid_backend/src/common/constant"
 	"github.com/vidorg/vid_backend/src/config"
 	"github.com/vidorg/vid_backend/src/model/dto"
 	"github.com/vidorg/vid_backend/src/model/param"
@@ -52,7 +52,7 @@ func addParamMappers(config *config.ServerConfig, mappers *xentity.EntityMappers
 
 		user.Username = userParam.Username
 		user.Profile = *userParam.Profile
-		user.Sex = enum.ParseSexType(userParam.Sex)
+		user.Sex = constant.ParseSexEnum(userParam.Sex)
 		user.Birthday = xcondition.First(xdatetime.ParseISO8601Date(userParam.Birthday)).(xdatetime.JsonDate)
 		user.PhoneNumber = userParam.PhoneNumber
 		user.AvatarUrl = util.CommonUtil.GetFilenameFromUrl(userParam.AvatarUrl, config.FileConfig.ImageUrlPrefix)

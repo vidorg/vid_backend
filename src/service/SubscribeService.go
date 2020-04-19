@@ -1,4 +1,4 @@
-package dao
+package service
 
 import (
 	"github.com/Aoi-hosizora/ahlib/xdi"
@@ -9,33 +9,30 @@ import (
 	"github.com/vidorg/vid_backend/src/model/dto"
 	"github.com/vidorg/vid_backend/src/model/param"
 	"github.com/vidorg/vid_backend/src/model/po"
-	"log"
 )
 
-type SubDao struct {
+type SubscribeService struct {
 	Db      *helper.GormHelper         `di:"~"`
 	Logger  *logrus.Logger             `di:"~"`
 	Mappers *xproperty.PropertyMappers `di:"~"`
-	UserDao *UserDao                   `di:"~"`
+	UserDao *UserService               `di:"~"`
 
 	OrderByFunc     func(string) string `di:"-"`
 	ColSubscribers  string              `di:"-"`
 	ColSubscribings string              `di:"-"`
 }
 
-func NewSubDao(dic *xdi.DiContainer) *SubDao {
-	repo := &SubDao{
+func NewSubscribeService(dic *xdi.DiContainer) *SubscribeService {
+	repo := &SubscribeService{
 		ColSubscribers:  "Subscribers",
 		ColSubscribings: "Subscribings",
 	}
-	if !dic.Inject(repo) {
-		log.Fatalln("Inject failed")
-	}
+	dic.MustInject(repo)
 	repo.OrderByFunc = repo.Mappers.GetPropertyMapping(&dto.UserDto{}, &po.User{}).ApplyOrderBy
 	return repo
 }
 
-func (s *SubDao) QuerySubscriberUsers(uid int32, pageOrder *param.PageOrderParam) ([]*po.User, int32, database.DbStatus) {
+func (s *SubscribeService) QuerySubscriberUsers(uid int32, pageOrder *param.PageOrderParam) ([]*po.User, int32, database.DbStatus) {
 	// https://gorm.io/docs/many_to_many.html
 	user := &po.User{Uid: uid}
 	if !s.UserDao.Exist(uid) {
@@ -47,7 +44,7 @@ func (s *SubDao) QuerySubscriberUsers(uid int32, pageOrder *param.PageOrderParam
 	return users, count, database.DbSuccess
 }
 
-func (s *SubDao) QuerySubscribingUsers(uid int32, pageOrder *param.PageOrderParam) ([]*po.User, int32, database.DbStatus) {
+func (s *SubscribeService) QuerySubscribingUsers(uid int32, pageOrder *param.PageOrderParam) ([]*po.User, int32, database.DbStatus) {
 	user := &po.User{Uid: uid}
 	if !s.UserDao.Exist(uid) {
 		return nil, 0, database.DbNotFound
@@ -58,7 +55,7 @@ func (s *SubDao) QuerySubscribingUsers(uid int32, pageOrder *param.PageOrderPara
 	return users, count, database.DbSuccess
 }
 
-func (s *SubDao) QueryCountByUid(uid int32) (subscribingCnt int32, subscriberCnt int32, status database.DbStatus) {
+func (s *SubscribeService) QueryCountByUid(uid int32) (subscribingCnt int32, subscriberCnt int32, status database.DbStatus) {
 	if !s.UserDao.Exist(uid) {
 		return 0, 0, database.DbNotFound
 	}
@@ -68,7 +65,7 @@ func (s *SubDao) QueryCountByUid(uid int32) (subscribingCnt int32, subscriberCnt
 	return subscribingCnt, subscriberCnt, database.DbSuccess
 }
 
-func (s *SubDao) SubscribeUser(meUid int32, toUid int32) database.DbStatus {
+func (s *SubscribeService) SubscribeUser(meUid int32, toUid int32) database.DbStatus {
 	if !s.UserDao.Exist(toUid) || !s.UserDao.Exist(meUid) {
 		return database.DbNotFound
 	}
@@ -79,7 +76,7 @@ func (s *SubDao) SubscribeUser(meUid int32, toUid int32) database.DbStatus {
 	return database.DbSuccess
 }
 
-func (s *SubDao) UnSubscribeUser(meUid int32, toUid int32) database.DbStatus {
+func (s *SubscribeService) UnSubscribeUser(meUid int32, toUid int32) database.DbStatus {
 	if !s.UserDao.Exist(toUid) || !s.UserDao.Exist(meUid) {
 		return database.DbNotFound
 	}

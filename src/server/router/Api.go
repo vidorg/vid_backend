@@ -7,7 +7,6 @@ import (
 	"github.com/vidorg/vid_backend/src/config"
 	"github.com/vidorg/vid_backend/src/controller"
 	"github.com/vidorg/vid_backend/src/middleware"
-	"log"
 )
 
 func SetupApiRouter(router *gin.Engine, dic *xdi.DiContainer) {
@@ -16,9 +15,7 @@ func SetupApiRouter(router *gin.Engine, dic *xdi.DiContainer) {
 		Logger *logrus.Logger         `di:"~"`
 		JwtSrv *middleware.JwtService `di:"~"`
 	}{}
-	if !dic.Inject(container) {
-		log.Fatalln("Inject failed")
-	}
+	dic.MustInject(container)
 
 	jwtMw := container.JwtSrv.JwtMiddleware(false)
 	jwtAdminMw := container.JwtSrv.JwtMiddleware(true)

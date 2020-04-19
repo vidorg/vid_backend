@@ -1,4 +1,4 @@
-package conn
+package database
 
 import (
 	"fmt"
@@ -12,11 +12,7 @@ import (
 	"log"
 )
 
-const (
-	DefaultDeleteAtTimeStamp = "2000-01-01 00:00:00"
-)
-
-func SetupMySqlConn(cfg *config.MySqlConfig, logger *logrus.Logger) *helper.GormHelper {
+func SetupMySQLConn(cfg *config.MySqlConfig, logger *logrus.Logger) *helper.GormHelper {
 	dbParams := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=%s&parseTime=True&loc=Local",
 		cfg.User, cfg.Password,
 		cfg.Host, cfg.Port,
@@ -30,7 +26,7 @@ func SetupMySqlConn(cfg *config.MySqlConfig, logger *logrus.Logger) *helper.Gorm
 	db.LogMode(cfg.IsLog)
 	db.SetLogger(NewGormLogger(logger))
 
-	xgorm.HookDeleteAtField(db, DefaultDeleteAtTimeStamp)
+	xgorm.HookDeleteAtField(db, xgorm.DefaultDeleteAtTimeStamp)
 	db.SingularTable(true)
 	gorm.DefaultTableNameHandler = func(db *gorm.DB, defaultTableName string) string {
 		return "tbl_" + defaultTableName

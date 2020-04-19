@@ -2,7 +2,7 @@ package dto
 
 import (
 	"github.com/Aoi-hosizora/ahlib/xentity"
-	"github.com/vidorg/vid_backend/src/common/enum"
+	"github.com/vidorg/vid_backend/src/common/constant"
 	"github.com/vidorg/vid_backend/src/model/po"
 )
 
@@ -55,7 +55,7 @@ func UserDtoCheckUserOption(authUser *po.User) xentity.MapFunc {
 		}
 		user := from.(*po.User)
 		userDto := to.(*UserDto)
-		if authUser.Authority == enum.AuthAdmin { // admin, all info
+		if authUser.Authority == constant.AuthAdmin { // admin, all info
 			userDto.PhoneNumber = user.PhoneNumber
 		} else { // normal, only me
 			if user.Uid == authUser.Uid {

@@ -53,7 +53,7 @@ var (
 	ImageSaveError         = NewError(500, "image save failed")
 )
 
-func WrapValidationError(err error) *ServerError {
+func WrapValidationError(err error) *Error {
 	isf := xgin.IsValidationFormatError(err)
 	if isf {
 		return RequestFormatError

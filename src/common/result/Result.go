@@ -36,7 +36,7 @@ func Ok() *Result {
 	return Status(http.StatusOK)
 }
 
-func Error(se *exception.ServerError) *Result {
+func Error(se *exception.Error) *Result {
 	return Status(se.Code).SetMessage(se.Message)
 }
 

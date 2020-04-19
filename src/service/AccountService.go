@@ -1,4 +1,4 @@
-package dao
+package service
 
 import (
 	"github.com/Aoi-hosizora/ahlib/xdi"
@@ -6,23 +6,20 @@ import (
 	"github.com/vidorg/vid_backend/src/database"
 	"github.com/vidorg/vid_backend/src/database/helper"
 	"github.com/vidorg/vid_backend/src/model/po"
-	"log"
 )
 
-type AccountDao struct {
+type AccountService struct {
 	Db     *helper.GormHelper `di:"~"`
 	Logger *logrus.Logger     `di:"~"`
 }
 
-func NewPassDao(dic *xdi.DiContainer) *AccountDao {
-	repo := &AccountDao{}
-	if !dic.Inject(repo) {
-		log.Fatalln("Inject failed")
-	}
+func NewAccountService(dic *xdi.DiContainer) *AccountService {
+	repo := &AccountService{}
+	dic.MustInject(repo)
 	return repo
 }
 
-func (a *AccountDao) QueryByUsername(username string) *po.Account {
+func (a *AccountService) QueryByUsername(username string) *po.Account {
 	out := a.Db.QueryFirstHelper(&po.User{}, &po.User{Username: username})
 	if out == nil {
 		return nil
@@ -37,10 +34,10 @@ func (a *AccountDao) QueryByUsername(username string) *po.Account {
 	return account
 }
 
-func (a *AccountDao) Insert(pass *po.Account) database.DbStatus {
+func (a *AccountService) Insert(pass *po.Account) database.DbStatus {
 	return a.Db.InsertHelper(&po.Account{}, pass) // cascade create
 }
 
-func (a *AccountDao) Update(pass *po.Account) database.DbStatus {
+func (a *AccountService) Update(pass *po.Account) database.DbStatus {
 	return a.Db.UpdateHelper(&po.Account{}, pass)
 }

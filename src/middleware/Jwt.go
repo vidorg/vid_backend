@@ -4,30 +4,27 @@ import (
 	"github.com/Aoi-hosizora/ahlib/xdi"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
-	"github.com/vidorg/vid_backend/src/common/enum"
+	"github.com/vidorg/vid_backend/src/common/constant"
 	"github.com/vidorg/vid_backend/src/common/exception"
 	"github.com/vidorg/vid_backend/src/common/result"
 	"github.com/vidorg/vid_backend/src/config"
-	"github.com/vidorg/vid_backend/src/database/dao"
 	"github.com/vidorg/vid_backend/src/model/po"
+	"github.com/vidorg/vid_backend/src/service"
 	"github.com/vidorg/vid_backend/src/util"
-	"log"
 )
 
 type JwtService struct {
-	Config   *config.ServerConfig `di:"~"`
-	Logger   *logrus.Logger       `di:"~"`
-	TokenDao *dao.TokenDao        `di:"~"`
-	UserDao  *dao.UserDao         `di:"~"`
+	Config   *config.ServerConfig  `di:"~"`
+	Logger   *logrus.Logger        `di:"~"`
+	TokenDao *service.TokenService `di:"~"`
+	UserDao  *service.UserService  `di:"~"`
 
 	_key string `di:"-"`
 }
 
 func NewJwtService(dic *xdi.DiContainer) *JwtService {
 	srv := &JwtService{_key: "user"}
-	if !dic.Inject(srv) {
-		log.Fatalln("Inject failed")
-	}
+	dic.MustInject(srv)
 	return srv
 }
 
@@ -58,7 +55,7 @@ func (j *JwtService) processJwt(needAdmin bool, forMw bool) gin.HandlerFunc {
 		}
 
 		// check admin
-		if needAdmin && user.Authority != enum.AuthAdmin {
+		if needAdmin && user.Authority != constant.AuthAdmin {
 			if forMw {
 				result.Error(exception.NeedAdminError).JSON(c)
 				c.Abort()
@@ -72,7 +69,7 @@ func (j *JwtService) processJwt(needAdmin bool, forMw bool) gin.HandlerFunc {
 	}
 }
 
-func (j *JwtService) jwtCheck(token string) (*po.User, *exception.ServerError) {
+func (j *JwtService) jwtCheck(token string) (*po.User, *exception.Error) {
 	if token == "" {
 		return nil, exception.UnAuthorizedError
 	}
