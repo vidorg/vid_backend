@@ -5,14 +5,13 @@ import (
 	"github.com/Aoi-hosizora/ahlib/xproperty"
 	"github.com/sirupsen/logrus"
 	"github.com/vidorg/vid_backend/src/database"
-	"github.com/vidorg/vid_backend/src/database/helper"
 	"github.com/vidorg/vid_backend/src/model/dto"
 	"github.com/vidorg/vid_backend/src/model/param"
 	"github.com/vidorg/vid_backend/src/model/po"
 )
 
 type UserService struct {
-	Db      *helper.GormHelper         `di:"~"`
+	Db      *database.GormHelper       `di:"~"`
 	Logger  *logrus.Logger             `di:"~"`
 	Mappers *xproperty.PropertyMappers `di:"~"`
 

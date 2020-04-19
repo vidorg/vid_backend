@@ -6,14 +6,14 @@ import (
 	"github.com/gomodule/redigo/redis"
 	"github.com/sirupsen/logrus"
 	"github.com/vidorg/vid_backend/src/config"
-	"github.com/vidorg/vid_backend/src/database/helper"
+	"github.com/vidorg/vid_backend/src/database"
 	"strconv"
 )
 
 type TokenService struct {
-	Config *config.ServerConfig `di:"~"`
-	Logger *logrus.Logger       `di:"~"`
-	Conn   *helper.RedisHelper  `di:"~"`
+	Config *config.ServerConfig  `di:"~"`
+	Logger *logrus.Logger        `di:"~"`
+	Conn   *database.RedisHelper `di:"~"`
 }
 
 func NewTokenService(dic *xdi.DiContainer) *TokenService {

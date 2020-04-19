@@ -7,6 +7,8 @@ func (s SexEnum) String() string {
 }
 
 const (
+	AuthAdmin string = "admin"
+
 	SexUnknown SexEnum = "unknown"
 	SexMale    SexEnum = "male"
 	SexFemale  SexEnum = "female"

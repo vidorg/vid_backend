@@ -11,9 +11,9 @@ import (
 )
 
 type JwtService struct {
-	Config    *config.ServerConfig `di:"~"`
-	UserRepo  *UserService         `di:"~"`
-	TokenRepo *TokenService        `di:"~"`
+	Config       *config.ServerConfig `di:"~"`
+	UserService  *UserService         `di:"~"`
+	TokenService *TokenService        `di:"~"`
 
 	UserKey string `di:"-"`
 }
@@ -48,13 +48,13 @@ func (j *JwtService) JwtCheck(token string) (*po.User, *exception.Error) {
 	}
 
 	// redis
-	ok := j.TokenRepo.Query(token)
+	ok := j.TokenService.Query(token)
 	if !ok {
 		return nil, exception.UnAuthorizedError
 	}
 
 	// mysql
-	user := j.UserRepo.QueryByUid(claims.UserId)
+	user := j.UserService.QueryByUid(claims.UserId)
 	if user != nil {
 		return nil, exception.UnAuthorizedError
 	}

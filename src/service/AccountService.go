@@ -4,13 +4,12 @@ import (
 	"github.com/Aoi-hosizora/ahlib/xdi"
 	"github.com/sirupsen/logrus"
 	"github.com/vidorg/vid_backend/src/database"
-	"github.com/vidorg/vid_backend/src/database/helper"
 	"github.com/vidorg/vid_backend/src/model/po"
 )
 
 type AccountService struct {
-	Db     *helper.GormHelper `di:"~"`
-	Logger *logrus.Logger     `di:"~"`
+	Db     *database.GormHelper `di:"~"`
+	Logger *logrus.Logger       `di:"~"`
 }
 
 func NewAccountService(dic *xdi.DiContainer) *AccountService {

@@ -4,7 +4,6 @@ import (
 	"github.com/Aoi-hosizora/ahlib/xdi"
 	"github.com/casbin/casbin/v2"
 	"github.com/casbin/gorm-adapter/v2"
-	"github.com/jinzhu/gorm"
 	"github.com/sirupsen/logrus"
 	"github.com/vidorg/vid_backend/src/config"
 	"github.com/vidorg/vid_backend/src/database"
@@ -14,7 +13,7 @@ import (
 type CasbinService struct {
 	Config     *config.ServerConfig `di:"~"`
 	Logger     *logrus.Logger       `di:"~"`
-	Db         *gorm.DB             `di:"~"`
+	Db         *database.GormHelper `di:"~"`
 	JwtService *JwtService          `di:"~"`
 
 	Adapter *gormadapter.Adapter `di:"-"`
@@ -24,7 +23,7 @@ func NewCasbinService(dic *xdi.DiContainer) *CasbinService {
 	srv := &CasbinService{}
 	dic.MustInject(srv)
 
-	adapter, err := gormadapter.NewAdapterByDBUsePrefix(srv.Db, "tbl_")
+	adapter, err := gormadapter.NewAdapterByDBUsePrefix(srv.Db.DB, "tbl_")
 	if err != nil {
 		panic(err)
 	}

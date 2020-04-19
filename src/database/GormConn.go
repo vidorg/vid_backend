@@ -7,12 +7,11 @@ import (
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 	"github.com/sirupsen/logrus"
 	"github.com/vidorg/vid_backend/src/config"
-	"github.com/vidorg/vid_backend/src/database/helper"
 	"github.com/vidorg/vid_backend/src/model/po"
 	"log"
 )
 
-func SetupMySQLConn(cfg *config.MySQLConfig, logger *logrus.Logger) *helper.GormHelper {
+func SetupMySQLConn(cfg *config.MySQLConfig, logger *logrus.Logger) *GormHelper {
 	dbParams := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=%s&parseTime=True&loc=Local",
 		cfg.User, cfg.Password,
 		cfg.Host, cfg.Port,
@@ -35,7 +34,7 @@ func SetupMySQLConn(cfg *config.MySQLConfig, logger *logrus.Logger) *helper.Gorm
 	autoMigrateModel(db)
 	addFullTextIndex(db, cfg)
 
-	return helper.NewGormHelper(db)
+	return NewGormHelper(db)
 }
 
 func autoMigrateModel(db *gorm.DB) {

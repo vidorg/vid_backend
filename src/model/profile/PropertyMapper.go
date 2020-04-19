@@ -14,7 +14,7 @@ func addPropertyMappers(mappers *xproperty.PropertyMappers) {
 		"profile":       xproperty.NewPropertyMapperValue([]string{"profile"}, false),
 		"avatar_url":    xproperty.NewPropertyMapperValue([]string{"avatar_url"}, false),
 		"birthday":      xproperty.NewPropertyMapperValue([]string{"birthday"}, false),
-		"authority":     xproperty.NewPropertyMapperValue([]string{"authority"}, false),
+		"role":          xproperty.NewPropertyMapperValue([]string{"role"}, false),
 		"phone_number":  xproperty.NewPropertyMapperValue([]string{"phone_number"}, false),
 		"register_time": xproperty.NewPropertyMapperValue([]string{"register_time"}, false),
 	}))

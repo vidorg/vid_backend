@@ -4,6 +4,7 @@ require (
 	github.com/Aoi-hosizora/ahlib v0.0.0-20200418083058-e5eff78b17b0
 	github.com/Aoi-hosizora/ahlib-gin-gorm v0.0.0-20200227043052-1d9e28f9af56
 	github.com/DeanThompson/ginpprof v0.0.0-20190408063150-3be636683586
+	github.com/adamzy/cedar-go v0.0.0-20170805034717-80a9c64b256d // indirect
 	github.com/casbin/casbin/v2 v2.2.2
 	github.com/casbin/gorm-adapter/v2 v2.0.3
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
@@ -20,6 +21,7 @@ require (
 	github.com/swaggo/swag v1.6.3
 	golang.org/x/crypto v0.0.0-20191205180655-e7c4368fe9dd
 	golang.org/x/image v0.0.0-20190802002840-cff245a6509b
+	gopkg.in/natefinch/lumberjack.v2 v2.0.0 // indirect
 	gopkg.in/yaml.v2 v2.2.4
 )
 

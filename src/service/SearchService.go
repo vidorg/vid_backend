@@ -3,15 +3,15 @@ package service
 import (
 	"github.com/Aoi-hosizora/ahlib/xdi"
 	"github.com/sirupsen/logrus"
-	"github.com/vidorg/vid_backend/src/database/helper"
+	"github.com/vidorg/vid_backend/src/database"
 	"github.com/vidorg/vid_backend/src/model/param"
 	"github.com/vidorg/vid_backend/src/model/po"
 )
 
 type SearchService struct {
-	Db       *helper.GormHelper `di:"~"`
-	Logger   *logrus.Logger     `di:"~"`
-	VideoDao *VideoService      `di:"~"`
+	Db           *database.GormHelper `di:"~"`
+	Logger       *logrus.Logger       `di:"~"`
+	VideoService *VideoService        `di:"~"`
 }
 
 func NewSearchService(dic *xdi.DiContainer) *SearchService {
@@ -30,7 +30,7 @@ func (s *SearchService) SearchVideo(against string, page *param.PageParam) ([]*p
 	videos := make([]*po.Video, 0)
 	total := s.Db.SearchHelper(&po.Video{}, page.Limit, page.Page, "title, description", against, &videos)
 	for _, video := range videos {
-		s.VideoDao.WrapVideo(video)
+		s.VideoService.WrapVideo(video)
 	}
 	return videos, total
 }

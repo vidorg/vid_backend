@@ -5,17 +5,16 @@ import (
 	"github.com/Aoi-hosizora/ahlib/xproperty"
 	"github.com/sirupsen/logrus"
 	"github.com/vidorg/vid_backend/src/database"
-	"github.com/vidorg/vid_backend/src/database/helper"
 	"github.com/vidorg/vid_backend/src/model/dto"
 	"github.com/vidorg/vid_backend/src/model/param"
 	"github.com/vidorg/vid_backend/src/model/po"
 )
 
 type VideoService struct {
-	Db      *helper.GormHelper         `di:"~"`
-	Logger  *logrus.Logger             `di:"~"`
-	Mappers *xproperty.PropertyMappers `di:"~"`
-	UserDao *UserService               `di:"~"`
+	Db          *database.GormHelper       `di:"~"`
+	Logger      *logrus.Logger             `di:"~"`
+	Mappers     *xproperty.PropertyMappers `di:"~"`
+	UserService *UserService               `di:"~"`
 
 	OrderByFunc func(string) string `di:"-"`
 }
@@ -46,7 +45,7 @@ func (v *VideoService) QueryAll(pageOrder *param.PageOrderParam) ([]*po.Video, i
 }
 
 func (v *VideoService) QueryByUid(uid int32, pageOrder *param.PageOrderParam) ([]*po.Video, int32, database.DbStatus) {
-	author := v.UserDao.QueryByUid(uid)
+	author := v.UserService.QueryByUid(uid)
 	if author == nil {
 		return nil, 0, database.DbNotFound
 	}
@@ -59,7 +58,7 @@ func (v *VideoService) QueryByUid(uid int32, pageOrder *param.PageOrderParam) ([
 }
 
 func (v *VideoService) QueryCountByUid(uid int32) (int32, database.DbStatus) {
-	if !v.UserDao.Exist(uid) {
+	if !v.UserService.Exist(uid) {
 		return 0, database.DbNotFound
 	}
 	cnt := v.Db.CountHelper(&po.Video{}, &po.Video{AuthorUid: uid})

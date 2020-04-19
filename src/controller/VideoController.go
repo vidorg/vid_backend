@@ -154,7 +154,7 @@ func (v *VideoController) UpdateVideo(c *gin.Context) {
 	if video == nil {
 		result.Error(exception.VideoNotFoundError).JSON(c)
 		return
-	} else if authUser.Authority != constant.AuthAdmin && authUser.Uid != video.AuthorUid {
+	} else if authUser.Role != constant.AuthAdmin && authUser.Uid != video.AuthorUid {
 		result.Error(exception.VideoNotFoundError).JSON(c)
 		return
 	}
@@ -193,7 +193,7 @@ func (v *VideoController) DeleteVideo(c *gin.Context) {
 	}
 
 	var status database.DbStatus
-	if authUser.Authority == constant.AuthAdmin {
+	if authUser.Role == constant.AuthAdmin {
 		status = v.VideoService.Delete(vid)
 	} else {
 		status = v.VideoService.DeleteBy2Id(vid, authUser.Uid)

@@ -5,12 +5,11 @@ import (
 	"github.com/gomodule/redigo/redis"
 	"github.com/sirupsen/logrus"
 	"github.com/vidorg/vid_backend/src/config"
-	"github.com/vidorg/vid_backend/src/database/helper"
 	"log"
 	"time"
 )
 
-func SetupRedisConn(config *config.RedisConfig, logger *logrus.Logger) *helper.RedisHelper {
+func SetupRedisConn(config *config.RedisConfig, logger *logrus.Logger) *RedisHelper {
 	conn, err := redis.Dial(
 		config.ConnType,
 		fmt.Sprintf("%s:%d", config.Host, config.Port),
@@ -25,5 +24,5 @@ func SetupRedisConn(config *config.RedisConfig, logger *logrus.Logger) *helper.R
 	}
 
 	connLogger := NewRedisLogger(conn, logger)
-	return helper.NewRedisHelper(connLogger)
+	return NewRedisHelper(connLogger)
 }

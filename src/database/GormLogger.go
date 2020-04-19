@@ -20,32 +20,38 @@ func NewGormLogger(logger *logrus.Logger) *GormLogger {
 }
 
 func (g *GormLogger) Print(v ...interface{}) {
-	if len(v) == 0 {
-		g.logger.WithFields(logrus.Fields{"Module": "gorm"}).Error(fmt.Sprintf("[Gorm] Unknown message"))
+	if len(v) == 0 || len(v) == 1 {
+		g.logger.WithFields(logrus.Fields{
+			"Module": "gorm",
+		}).Error(fmt.Sprintf("[Gorm] Unknown message: %v", v))
 		return
 	}
 
 	level := v[0]
-	errField := g.logger.WithFields(logrus.Fields{
-		"Module": "gorm",
-		"Type":   level,
-	})
-	if len(v) == 1 {
-		errField.Error(fmt.Sprintf("[Gorm] %s: Unknown message", level))
+	if level == "info" {
+		info := v[1]
+		g.logger.WithFields(logrus.Fields{
+			"Module": "gorm",
+			"Type":   level,
+			"Info":   info,
+		}).Info(fmt.Sprintf("[Gorm] info: %s", info))
 		return
 	}
-	source := v[1]
 	if level != "sql" {
-		errField.Error(fmt.Sprintf("[Gorm] %v", v[2:]...))
+		g.logger.WithFields(logrus.Fields{
+			"Module": "gorm",
+			"Type":   level,
+		}).Info(fmt.Sprintf("[Gorm] unknown level %s: %v", level, v))
 		return
 	}
 
+	source := v[1]
 	duration := v[2]
 	sql := g.render(v[3].(string), v[4])
 	rows := v[5]
 	g.logger.WithFields(logrus.Fields{
 		"Module":   "gorm",
-		"Type":     "sql",
+		"Type":     level,
 		"Source":   source,
 		"Duration": duration,
 		"SQL":      sql,
