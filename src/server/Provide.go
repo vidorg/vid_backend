@@ -18,7 +18,7 @@ func ProvideServices(config *config.ServerConfig, logger *logrus.Logger) *xdi.Di
 	dic.Provide(profile.CreateEntityMappers(config))
 	dic.Provide(profile.CreatePropertyMappers())
 
-	dic.Provide(database.SetupMySQLConn(config.MySqlConfig, logger))
+	dic.Provide(database.SetupMySQLConn(config.MySQLConfig, logger))
 	dic.Provide(database.SetupRedisConn(config.RedisConfig, logger))
 
 	dic.Provide(service.NewAccountService(dic))
@@ -30,6 +30,7 @@ func ProvideServices(config *config.ServerConfig, logger *logrus.Logger) *xdi.Di
 	dic.Provide(service.NewSegmentService(dic))
 	dic.Provide(service.NewSearchService(dic))
 	dic.Provide(service.NewJwtService(dic))
+	dic.Provide(service.NewCasbinService(dic))
 
 	return dic
 }

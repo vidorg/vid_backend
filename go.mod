@@ -3,20 +3,16 @@ module github.com/vidorg/vid_backend
 require (
 	github.com/Aoi-hosizora/ahlib v0.0.0-20200418083058-e5eff78b17b0
 	github.com/Aoi-hosizora/ahlib-gin-gorm v0.0.0-20200227043052-1d9e28f9af56
-	github.com/BurntSushi/toml v0.3.1 // indirect
 	github.com/DeanThompson/ginpprof v0.0.0-20190408063150-3be636683586
-	github.com/adamzy/cedar-go v0.0.0-20170805034717-80a9c64b256d // indirect
+	github.com/casbin/casbin/v2 v2.2.2
+	github.com/casbin/gorm-adapter/v2 v2.0.3
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/gin-contrib/cors v1.3.0
 	github.com/gin-gonic/gin v1.5.0
-	github.com/go-openapi/jsonreference v0.19.3 // indirect
 	github.com/go-openapi/spec v0.19.3 // indirect
 	github.com/gomodule/redigo v2.0.0+incompatible
 	github.com/huichen/sego v0.0.0-20180617034105-3f3c8a8cfacc
-	github.com/issue9/assert v1.3.4 // indirect
 	github.com/jinzhu/gorm v1.9.12
-	github.com/mailru/easyjson v0.7.0 // indirect
-	github.com/mattn/go-isatty v0.0.12 // indirect
 	github.com/shiena/ansicolor v0.0.0-20151119151921-a422bbe96644
 	github.com/sirupsen/logrus v1.4.2
 	github.com/snowzach/rotatefilehook v0.0.0-20180327172521-2f64f265f58c
@@ -24,12 +20,6 @@ require (
 	github.com/swaggo/swag v1.6.3
 	golang.org/x/crypto v0.0.0-20191205180655-e7c4368fe9dd
 	golang.org/x/image v0.0.0-20190802002840-cff245a6509b
-	golang.org/x/net v0.0.0-20191011234655-491137f69257 // indirect
-	golang.org/x/sys v0.0.0-20200223170610-d5e6a3e2c0ae // indirect
-	golang.org/x/tools v0.0.0-20191216173652-a0e659d51361 // indirect
-	google.golang.org/appengine v1.6.1 // indirect
-	gopkg.in/check.v1 v1.0.0-20190902080502-41f04d3bba15 // indirect
-	gopkg.in/natefinch/lumberjack.v2 v2.0.0 // indirect
 	gopkg.in/yaml.v2 v2.2.4
 )
 

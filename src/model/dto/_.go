@@ -1,6 +1,11 @@
 package dto
 
-//////////////////////////////////////////////////////////////////////////////////////
+// @Model         Result
+// @Description   返回统一响应结果
+// @Property      code    integer true "响应码"
+// @Property      message string  true "状态信息"
+
+// ////////////////////////////////////////////////////////////////////////////////////
 // OtherDto
 
 // @Model         _ImageDto
@@ -8,7 +13,7 @@ package dto
 // @Property      url  string  true "图片链接"
 // @Property      size integer true "图片大小，单位为字节"
 
-//////////////////////////////////////////////////////////////////////////////////////
+// ////////////////////////////////////////////////////////////////////////////////////
 // Result
 
 // @Model         Result<UserDto>
@@ -41,24 +46,31 @@ package dto
 // @Property      message string             true "返回信息"
 // @Property      data    object(#_ImageDto) true "返回数据"
 
-//////////////////////////////////////////////////////////////////////////////////////
+// ////////////////////////////////////////////////////////////////////////////////////
 // _Page
 
 // @Model         Page<UserDto>
 // @Description   用户分页信息
 // @Property      total  integer          true "数据总量"
-// @Property      page   int              true "当前页"
-// @Property      limit  int              true "页大小"
+// @Property      page   integer          true "当前页"
+// @Property      limit  integer          true "页大小"
 // @Property      data   array(#_UserDto) true "返回数据"
 
 // @Model         Page<VideoDto>
 // @Description   视频分页信息
 // @Property      total  integer           true "数据总量"
-// @Property      page   int               true "当前页"
-// @Property      limit  int               true "页大小"
+// @Property      page   integer           true "当前页"
+// @Property      limit  integer           true "页大小"
 // @Property      data   array(#_VideoDto) true "返回数据"
 
-//////////////////////////////////////////////////////////////////////////////////////
+// @Model         Page<PolicyDto>
+// @Description   policy page
+// @Property      total  integer            true "数据总量"
+// @Property      page   integer            true "当前页"
+// @Property      limit  integer            true "页大小"
+// @Property      data   array(#_PolicyDto) true "返回数据"
+
+// ////////////////////////////////////////////////////////////////////////////////////
 // PageResult
 
 // @Model         Result<Page<UserDto>>
@@ -72,3 +84,9 @@ package dto
 // @Property      code      integer                 true "返回响应码"
 // @Property      message   string                  true "返回信息"
 // @Property      data      object(#Page<VideoDto>) true "返回数据"
+
+// @Model         Result<Page<PolicyDto>>
+// @Description   policy page response
+// @Property      code      integer                  true "返回响应码"
+// @Property      message   string                   true "返回信息"
+// @Property      data      object(#Page<PolicyDto>) true "返回数据"

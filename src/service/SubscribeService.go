@@ -17,16 +17,11 @@ type SubscribeService struct {
 	Mappers *xproperty.PropertyMappers `di:"~"`
 	UserDao *UserService               `di:"~"`
 
-	OrderByFunc     func(string) string `di:"-"`
-	ColSubscribers  string              `di:"-"`
-	ColSubscribings string              `di:"-"`
+	OrderByFunc func(string) string `di:"-"`
 }
 
 func NewSubscribeService(dic *xdi.DiContainer) *SubscribeService {
-	repo := &SubscribeService{
-		ColSubscribers:  "Subscribers",
-		ColSubscribings: "Subscribings",
-	}
+	repo := &SubscribeService{}
 	dic.MustInject(repo)
 	repo.OrderByFunc = repo.Mappers.GetPropertyMapping(&dto.UserDto{}, &po.User{}).ApplyOrderBy
 	return repo
@@ -38,9 +33,9 @@ func (s *SubscribeService) QuerySubscriberUsers(uid int32, pageOrder *param.Page
 	if !s.UserDao.Exist(uid) {
 		return nil, 0, database.DbNotFound
 	}
-	count := int32(s.Db.Model(user).Association(s.ColSubscribers).Count()) // association pattern
+	count := int32(s.Db.Model(user).Association("Subscribers").Count()) // association pattern
 	users := make([]*po.User, 0)
-	s.Db.PageHelper(pageOrder.Limit, pageOrder.Page).Model(user).Order(s.OrderByFunc(pageOrder.Order)).Related(&users, s.ColSubscribers)
+	s.Db.PageHelper(pageOrder.Limit, pageOrder.Page).Model(user).Order(s.OrderByFunc(pageOrder.Order)).Related(&users, "Subscribers")
 	return users, count, database.DbSuccess
 }
 
@@ -49,9 +44,9 @@ func (s *SubscribeService) QuerySubscribingUsers(uid int32, pageOrder *param.Pag
 	if !s.UserDao.Exist(uid) {
 		return nil, 0, database.DbNotFound
 	}
-	count := int32(s.Db.Model(user).Association(s.ColSubscribings).Count())
+	count := int32(s.Db.Model(user).Association("Subscribings").Count())
 	users := make([]*po.User, 0)
-	s.Db.PageHelper(pageOrder.Limit, pageOrder.Page).Model(user).Order(s.OrderByFunc(pageOrder.Order)).Related(&users, s.ColSubscribings)
+	s.Db.PageHelper(pageOrder.Limit, pageOrder.Page).Model(user).Order(s.OrderByFunc(pageOrder.Order)).Related(&users, "Subscribings")
 	return users, count, database.DbSuccess
 }
 
@@ -60,8 +55,8 @@ func (s *SubscribeService) QueryCountByUid(uid int32) (subscribingCnt int32, sub
 		return 0, 0, database.DbNotFound
 	}
 	user := &po.User{Uid: uid}
-	subscribingCnt = int32(s.Db.Model(user).Association(s.ColSubscribings).Count())
-	subscriberCnt = int32(s.Db.Model(user).Association(s.ColSubscribers).Count())
+	subscribingCnt = int32(s.Db.Model(user).Association("Subscribings").Count())
+	subscriberCnt = int32(s.Db.Model(user).Association("Subscribers").Count())
 	return subscribingCnt, subscriberCnt, database.DbSuccess
 }
 
@@ -69,7 +64,7 @@ func (s *SubscribeService) SubscribeUser(meUid int32, toUid int32) database.DbSt
 	if !s.UserDao.Exist(toUid) || !s.UserDao.Exist(meUid) {
 		return database.DbNotFound
 	}
-	ass := s.Db.Model(&po.User{Uid: toUid}).Association(s.ColSubscribers).Append(&po.User{Uid: meUid})
+	ass := s.Db.Model(&po.User{Uid: toUid}).Association("Subscribers").Append(&po.User{Uid: meUid})
 	if ass.Error != nil {
 		return database.DbFailed
 	}
@@ -80,7 +75,7 @@ func (s *SubscribeService) UnSubscribeUser(meUid int32, toUid int32) database.Db
 	if !s.UserDao.Exist(toUid) || !s.UserDao.Exist(meUid) {
 		return database.DbNotFound
 	}
-	ass := s.Db.Model(&po.User{Uid: toUid}).Association(s.ColSubscribers).Delete(&po.User{Uid: meUid})
+	ass := s.Db.Model(&po.User{Uid: toUid}).Association("Subscribers").Delete(&po.User{Uid: meUid})
 	if ass.Error != nil {
 		return database.DbFailed
 	}

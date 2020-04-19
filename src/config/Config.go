@@ -22,7 +22,7 @@ type FileConfig struct {
 	ImageUrlPrefix string `json:"image-url-prefix" yaml:"image-url-prefix"`
 }
 
-type MySqlConfig struct {
+type MySQLConfig struct {
 	Host     string `json:"host"     yaml:"host"`
 	Port     int32  `json:"port"     yaml:"port"`
 	Name     string `json:"name"     yaml:"name"`
@@ -55,13 +55,18 @@ type SearchConfig struct {
 	DictPath string `json:"dictionary-path" yaml:"dictionary-path"`
 }
 
+type CasbinConfig struct {
+	ConfigPath string `json:"config-path" yaml:"config-path"`
+}
+
 type ServerConfig struct {
-	MetaConfig   *MetaConfig   `yaml:"meta"`
-	FileConfig   *FileConfig   `yaml:"file"`
-	MySqlConfig  *MySqlConfig  `yaml:"mysql"`
-	RedisConfig  *RedisConfig  `yaml:"redis"`
-	JwtConfig    *JwtConfig    `yaml:"jwt"`
-	SearchConfig *SearchConfig `yaml:"search"`
+	MetaConfig   *MetaConfig   `json:"meta"   yaml:"meta"`
+	FileConfig   *FileConfig   `json:"file"   yaml:"file"`
+	MySQLConfig  *MySQLConfig  `json:"mysql"  yaml:"mysql"`
+	RedisConfig  *RedisConfig  `json:"redis"  yaml:"redis"`
+	JwtConfig    *JwtConfig    `json:"jwt"    yaml:"jwt"`
+	SearchConfig *SearchConfig `json:"search" yaml:"search"`
+	CasbinConfig *CasbinConfig `json:"casbin" yaml:"casbin"`
 }
 
 func Load(path string) (*ServerConfig, error) {

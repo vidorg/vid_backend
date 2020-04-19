@@ -39,7 +39,8 @@ func main() {
 // @Tag              Subscribe      "Sub-Controller"
 // @Tag              Video          "Video-Controller"
 // @Tag              Raw            "Raw-Controller"
-// @Tag              Search         "*-Controller"
+// @Tag              Policy         "Policy-Controller"
+// @Tag              Search         "Search-Controller"
 // @Tag              Administration "*-Controller"
 // @GlobalSecurity   Jwt Authorization header
 

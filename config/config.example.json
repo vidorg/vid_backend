@@ -39,5 +39,8 @@
   },
   "search": {
     "dictionary-path": "./config/dictionary.txt"
+  },
+  "casbin": {
+    "config-path": "./config/rbac-model.conf"
   }
 }

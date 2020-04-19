@@ -12,7 +12,7 @@ import (
 	"log"
 )
 
-func SetupMySQLConn(cfg *config.MySqlConfig, logger *logrus.Logger) *helper.GormHelper {
+func SetupMySQLConn(cfg *config.MySQLConfig, logger *logrus.Logger) *helper.GormHelper {
 	dbParams := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=%s&parseTime=True&loc=Local",
 		cfg.User, cfg.Password,
 		cfg.Host, cfg.Port,
@@ -51,7 +51,7 @@ func autoMigrateModel(db *gorm.DB) {
 	autoMigrate(&po.Video{})
 }
 
-func addFullTextIndex(db *gorm.DB, cfg *config.MySqlConfig) {
+func addFullTextIndex(db *gorm.DB, cfg *config.MySQLConfig) {
 	checkExecIndex := func(tblName string, idxName string, param string) {
 		cnt := 0
 		rdb := db.Table("INFORMATION_SCHEMA.STATISTICS").Where("TABLE_SCHEMA = ? AND TABLE_NAME = ? AND INDEX_NAME = ?", cfg.Name, tblName, idxName).Count(&cnt)

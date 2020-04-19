@@ -2,7 +2,6 @@ package dto
 
 import (
 	"github.com/Aoi-hosizora/ahlib/xentity"
-	"github.com/vidorg/vid_backend/src/common/constant"
 	"github.com/vidorg/vid_backend/src/model/po"
 )
 
@@ -20,7 +19,7 @@ import (
 // @Property      profile       string                           true "用户简介"
 // @Property      avatar_url    string                           true "用户头像"
 // @Property      birthday      string(format:date)              true "用户生日"
-// @Property      authority     string(enum:normal,admin)        true "用户权限"
+// @Property      role          string                           true "用户角色"
 // @Property      phone_number  string                           true "用户手机号码，部分接口可见"
 // @Property      register_time string(format:datetime)          true "用户注册时间"
 type UserDto struct {
@@ -30,7 +29,7 @@ type UserDto struct {
 	Profile      string `json:"profile"`
 	AvatarUrl    string `json:"avatar_url"`
 	Birthday     string `json:"birthday"`
-	Authority    string `json:"authority"`
+	Role         string `json:"role"`
 	PhoneNumber  string `json:"phone_number,omitempty"`
 	RegisterTime string `json:"register_time"`
 }
@@ -55,7 +54,7 @@ func UserDtoCheckUserOption(authUser *po.User) xentity.MapFunc {
 		}
 		user := from.(*po.User)
 		userDto := to.(*UserDto)
-		if authUser.Authority == constant.AuthAdmin { // admin, all info
+		if authUser.Role == "admin" { // admin, all info
 			userDto.PhoneNumber = user.PhoneNumber
 		} else { // normal, only me
 			if user.Uid == authUser.Uid {

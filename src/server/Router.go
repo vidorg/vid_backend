@@ -40,66 +40,72 @@ func setupCommonRouter(engine *gin.Engine) {
 
 func setupApiRouter(router *gin.Engine, dic *xdi.DiContainer) {
 	container := &struct {
-		Config *config.ServerConfig `di:"~"`
-		JwtSrv *service.JwtService  `di:"~"`
+		Config        *config.ServerConfig   `di:"~"`
+		JwtService    *service.JwtService    `di:"~"`
+		CasbinService *service.CasbinService `di:"~"`
 	}{}
 	dic.MustInject(container)
 
-	jwtMw := middleware.JwtMiddleware(container.JwtSrv)
+	jwtMw := middleware.JwtMiddleware(container.JwtService)
+	casbinMw := middleware.CasbinMiddleware(container.JwtService, container.CasbinService)
+	adminMw := func(c *gin.Context) {
+		jwtMw(c)
+		casbinMw(c)
+		c.Next()
+	}
 	limit2MMw := middleware.LimitMiddleware(int64(container.Config.FileConfig.ImageMaxSize << 20)) // MB
-
-	authCtrl := controller.NewAuthController(dic)
-	userCtrl := controller.NewUserController(dic)
-	subCtrl := controller.NewSubController(dic)
-	videoCtrl := controller.NewVideoController(dic)
-	rawCtrl := controller.NewRawController(dic)
-	searchCtrl := controller.NewSearchController(dic)
 
 	v1 := router.Group("/v1")
 	{
+		authCtrl := controller.NewAuthController(dic)
 		authGroup := v1.Group("/auth")
 		{
 			authGroup.POST("/login", authCtrl.Login)
 			authGroup.POST("/register", authCtrl.Register)
-			authGroup.GET("", jwtMw, authCtrl.CurrentUser)
-			authGroup.POST("/logout", jwtMw, authCtrl.Logout)
-			authGroup.PUT("/password", jwtMw, authCtrl.UpdatePassword)
+			authGroup.GET("", adminMw, authCtrl.CurrentUser)
+			authGroup.POST("/logout", adminMw, authCtrl.Logout)
+			authGroup.PUT("/password", adminMw, authCtrl.UpdatePassword)
 		}
 
+		userCtrl := controller.NewUserController(dic)
+		subCtrl := controller.NewSubController(dic)
+		videoCtrl := controller.NewVideoController(dic)
 		userGroup := v1.Group("/user")
 		{
-			userGroup.GET("", jwtMw, userCtrl.QueryAllUsers) // admin
+			userGroup.GET("", adminMw, userCtrl.QueryAllUsers)
 			userGroup.GET("/:uid", userCtrl.QueryUser)
-			userGroup.PUT("", jwtMw, userCtrl.UpdateUser(false))
-			userGroup.DELETE("", jwtMw, userCtrl.DeleteUser(false))
-
-			userGroup.GET("/:uid/video", videoCtrl.QueryVideosByUid)
+			userGroup.PUT("", adminMw, userCtrl.UpdateUser(false))
+			userGroup.DELETE("", adminMw, userCtrl.DeleteUser(false))
 
 			userGroup.GET("/:uid/subscriber", subCtrl.QuerySubscriberUsers)
 			userGroup.GET("/:uid/subscribing", subCtrl.QuerySubscribingUsers)
-			userGroup.PUT("/subscribing", jwtMw, subCtrl.SubscribeUser)
-			userGroup.DELETE("/subscribing", jwtMw, subCtrl.UnSubscribeUser)
+			userGroup.PUT("/subscribing", adminMw, subCtrl.SubscribeUser)
+			userGroup.DELETE("/subscribing", adminMw, subCtrl.UnSubscribeUser)
 
-			userGroup.PUT("/admin/:uid", jwtMw, userCtrl.UpdateUser(true))    // admin
-			userGroup.DELETE("/admin/:uid", jwtMw, userCtrl.DeleteUser(true)) // admin
+			userGroup.PUT("/admin/:uid", adminMw, userCtrl.UpdateUser(true))
+			userGroup.DELETE("/admin/:uid", adminMw, userCtrl.DeleteUser(true))
+
+			userGroup.GET("/:uid/video", videoCtrl.QueryVideosByUid)
 		}
 
 		videoGroup := v1.Group("/video")
 		{
-			videoGroup.GET("", jwtMw, videoCtrl.QueryAllVideos) // admin
+			videoGroup.GET("", adminMw, videoCtrl.QueryAllVideos)
 			videoGroup.GET("/:vid", videoCtrl.QueryVideoByVid)
 
-			videoGroup.POST("", jwtMw, videoCtrl.InsertVideo)
-			videoGroup.PUT("/:vid", jwtMw, videoCtrl.UpdateVideo)
-			videoGroup.DELETE("/:vid", jwtMw, videoCtrl.DeleteVideo)
+			videoGroup.POST("", adminMw, videoCtrl.InsertVideo)
+			videoGroup.PUT("/:vid", adminMw, videoCtrl.UpdateVideo)
+			videoGroup.DELETE("/:vid", adminMw, videoCtrl.DeleteVideo)
 		}
 
+		rawCtrl := controller.NewRawController(dic)
 		rawGroup := v1.Group("/raw")
 		{
-			rawGroup.POST("/image", jwtMw, limit2MMw, rawCtrl.UploadImage)
+			rawGroup.POST("/image", adminMw, limit2MMw, rawCtrl.UploadImage)
 			rawGroup.GET("/image/:filename", rawCtrl.RawImage)
 		}
 
+		searchCtrl := controller.NewSearchController(dic)
 		searchGroup := v1.Group("/search")
 		{
 			searchGroup.GET("/user", searchCtrl.SearchUser)

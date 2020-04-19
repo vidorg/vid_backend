@@ -54,7 +54,7 @@ func (a *AuthController) Login(c *gin.Context) {
 		return
 	}
 	if !util.AuthUtil.CheckPassword(loginParam.Password, account.EncryptedPass) {
-		result.Error(exception.PasswordError).JSON(c)
+		result.Error(exception.WrongPasswordError).JSON(c)
 		return
 	}
 

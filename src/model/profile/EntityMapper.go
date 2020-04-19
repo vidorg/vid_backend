@@ -23,7 +23,7 @@ func addDtoMappers(config *config.ServerConfig, mappers *xentity.EntityMappers) 
 		userDto.Profile = user.Profile
 		userDto.AvatarUrl = util.CommonUtil.GetServerUrl(user.AvatarUrl, config.FileConfig.ImageUrlPrefix)
 		userDto.Birthday = user.Birthday.String()
-		userDto.Authority = user.Authority.String()
+		userDto.Role = user.Authority.String()
 		userDto.RegisterTime = xdatetime.NewJsonDateTime(user.CreatedAt).String()
 		userDto.PhoneNumber = ""
 		return nil

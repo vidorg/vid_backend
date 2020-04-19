@@ -14,8 +14,10 @@ tags:
   description: Video-Controller
 - name: Raw
   description: Raw-Controller
+- name: Policy
+  description: Policy-Controller
 - name: Search
-  description: '*-Controller'
+  description: Search-Controller
 - name: Administration
   description: '*-Controller'
 info:
@@ -128,6 +130,107 @@ paths:
         description: 请求参数
         schema:
           $ref: '#/definitions/PassParam'
+      security:
+      - Jwt: []
+      responses:
+        '200':
+          schema:
+            $ref: '#/definitions/Result'
+  /v1/policy/role/{uid}:
+    put:
+      operationId: v1-policy-role-uid-put
+      summary: 修改用户权限
+      tags:
+      - Policy
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - name: uid
+        in: path
+        type: integer
+        required: true
+        description: 用户id
+      - name: param
+        in: body
+        required: true
+        description: 请求参数
+        schema:
+          $ref: '#/definitions/RoleParam'
+      security:
+      - Jwt: []
+      responses:
+        '200':
+          schema:
+            $ref: '#/definitions/Result'
+  /v1/policy:
+    get:
+      operationId: v1-policy-get
+      summary: 查询所有策略
+      tags:
+      - Policy
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - name: page
+        in: query
+        type: integer
+        required: false
+        description: 当前页
+        default: 1
+      - name: limit
+        in: query
+        type: integer
+        required: false
+        description: 页大小
+        default: 10
+      security:
+      - Jwt: []
+      responses:
+        '200':
+          schema:
+            $ref: '#/definitions/Result<Page<PolicyDto>>'
+    post:
+      operationId: v1-policy-post
+      summary: 插入策略
+      tags:
+      - Policy
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - name: param
+        in: body
+        required: true
+        description: 请求参数
+        schema:
+          $ref: '#/definitions/PolicyParam'
+      security:
+      - Jwt: []
+      responses:
+        '200':
+          schema:
+            $ref: '#/definitions/Result'
+    delete:
+      operationId: v1-policy-delete
+      summary: 删除策略
+      tags:
+      - Policy
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - name: param
+        in: body
+        required: true
+        description: 请求参数
+        schema:
+          $ref: '#/definitions/PolicyParam'
       security:
       - Jwt: []
       responses:
@@ -702,19 +805,23 @@ paths:
                 "ping": "pong"
               }
 definitions:
-  Result:
-    title: Result
-    description: 返回统一响应结果
+  _PolicyDto:
+    title: _PolicyDto
+    description: policy response
     type: object
     required:
-    - code
-    - message
+    - role
+    - path
+    - method
     properties:
-      code:
-        description: 响应码
-        type: integer
-      message:
-        description: 状态信息
+      role:
+        description: 策略角色 (sub)
+        type: string
+      path:
+        description: 策略路径 (obj)
+        type: string
+      method:
+        description: 策略方法 (act)
         type: string
   _LoginDto:
     title: _LoginDto
@@ -746,7 +853,7 @@ definitions:
     - profile
     - avatar_url
     - birthday
-    - authority
+    - role
     - phone_number
     - register_time
     properties:
@@ -773,12 +880,9 @@ definitions:
         description: 用户生日
         type: string
         format: date
-      authority:
-        description: 用户权限
+      role:
+        description: 用户角色
         type: string
-        enum:
-        - normal
-        - admin
       phone_number:
         description: 用户手机号码，部分接口可见
         type: string
@@ -861,6 +965,20 @@ definitions:
         description: 视频作者，用户id为-1表示用户已删除
         type: object
         $ref: '#/definitions/_UserDto'
+  Result:
+    title: Result
+    description: 返回统一响应结果
+    type: object
+    required:
+    - code
+    - message
+    properties:
+      code:
+        description: 响应码
+        type: integer
+      message:
+        description: 状态信息
+        type: string
   _ImageDto:
     title: _ImageDto
     description: 上传图片信息
@@ -1018,6 +1136,30 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/_VideoDto'
+  Page<PolicyDto>:
+    title: Page<PolicyDto>
+    description: policy page
+    type: object
+    required:
+    - total
+    - page
+    - limit
+    - data
+    properties:
+      total:
+        description: 数据总量
+        type: integer
+      page:
+        description: 当前页
+        type: integer
+      limit:
+        description: 页大小
+        type: integer
+      data:
+        description: 返回数据
+        type: array
+        items:
+          $ref: '#/definitions/_PolicyDto'
   Result<Page<UserDto>>:
     title: Result<Page<UserDto>>
     description: 返回用户分页信息
@@ -1056,6 +1198,25 @@ definitions:
         description: 返回数据
         type: object
         $ref: '#/definitions/Page<VideoDto>'
+  Result<Page<PolicyDto>>:
+    title: Result<Page<PolicyDto>>
+    description: policy page response
+    type: object
+    required:
+    - code
+    - message
+    - data
+    properties:
+      code:
+        description: 返回响应码
+        type: integer
+      message:
+        description: 返回信息
+        type: string
+      data:
+        description: 返回数据
+        type: object
+        $ref: '#/definitions/Page<PolicyDto>'
   LoginParam:
     title: LoginParam
     description: 登录请求参数
@@ -1096,6 +1257,34 @@ definitions:
     properties:
       password:
         description: 密码，长度在 [8, 30] 之间
+        type: string
+  PolicyParam:
+    title: PolicyParam
+    description: 权限策略参数
+    type: object
+    required:
+    - role
+    - path
+    - method
+    properties:
+      role:
+        description: policy role
+        type: string
+      path:
+        description: policy path
+        type: string
+      method:
+        description: policy method
+        type: string
+  RoleParam:
+    title: RoleParam
+    description: 修改权限参数
+    type: object
+    required:
+    - role
+    properties:
+      role:
+        description: policy role
         type: string
   SubParam:
     title: SubParam

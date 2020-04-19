@@ -1,11 +1,5 @@
 package constant
 
-type AuthEnum string
-
-func (s AuthEnum) String() string {
-	return string(s)
-}
-
 type SexEnum string
 
 func (s SexEnum) String() string {
@@ -13,9 +7,6 @@ func (s SexEnum) String() string {
 }
 
 const (
-	AuthAdmin  AuthEnum = "admin"
-	AuthNormal AuthEnum = "normal"
-
 	SexUnknown SexEnum = "unknown"
 	SexMale    SexEnum = "male"
 	SexFemale  SexEnum = "female"

@@ -9,12 +9,12 @@ import (
 
 type User struct {
 	Uid         int32              `gorm:"primary_key;auto_increment"`
-	Username    string             `gorm:"not_null;type:varchar(30);unique_index:idx_user_username_deleted_at_unique"` // 30
+	Username    string             `gorm:"not_null;type:varchar(30);uniquEWWe_index:idx_user_username_deleted_at_unique"` // 30
 	Sex         constant.SexEnum   `gorm:"not_null;type:enum('unknown','male','female');default:'unknown'"`
 	Profile     string             `gorm:"type:varchar(255)"`          // 255
 	AvatarUrl   string             `gorm:"not_null;type:varchar(255)"` // 255
 	Birthday    xdatetime.JsonDate `gorm:"not_null;type:date;default:'2000-01-01'"`
-	Authority   constant.AuthEnum  `gorm:"not_null;type:enum('admin', 'normal');default:'normal'"`
+	Role        string             `gorm:"not_null;default:'normal'"`
 	RegisterIP  string             `gorm:"type:varchar(15)"` // 15
 	PhoneNumber string             `gorm:"type:varchar(11)"` // 11
 
