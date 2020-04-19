@@ -35,12 +35,12 @@ func NewUserController(dic *xdi.DiContainer) *UserController {
 }
 
 // @Router              /v1/user [GET]
-// @Security            Jwt
-// @Template            Admin Auth Order Page
 // @Summary             查询所有用户
 // @Description         管理员权限，此处可见用户手机号码
 // @Tag                 User
 // @Tag                 Administration
+// @Security            Jwt
+// @Template            Order Page
 // @ResponseModel 200   #Result<Page<UserDto>>
 func (u *UserController) QueryAllUsers(c *gin.Context) {
 	pageOrder := param.BindPageOrder(c, u.Config)
@@ -51,12 +51,10 @@ func (u *UserController) QueryAllUsers(c *gin.Context) {
 }
 
 // @Router              /v1/user/{uid} [GET]
-// @Template            ParamA
 // @Summary             查询用户
 // @Description         此处用户本人可见手机号码，管理员不受限制
 // @Tag                 User
 // @Param               uid path integer true "用户id"
-// @ResponseDesc 404    "user not found"
 // @ResponseModel 200   #Result<UserExtraDto>
 func (u *UserController) QueryUser(c *gin.Context) {
 	uid, ok := param.BindRouteId(c, "uid")
@@ -86,28 +84,20 @@ func (u *UserController) QueryUser(c *gin.Context) {
 }
 
 // @Router              /v1/user [PUT]
-// @Security            Jwt
-// @Template            Auth Param
 // @Summary             更新用户
 // @Tag                 User
+// @Security            Jwt
 // @Param               param body #UserParam true "请求参数"
-// @ResponseDesc 400    "username has been used"
-// @ResponseDesc 404    "user not found"
-// @ResponseDesc 500    "user update failed"
 // @ResponseModel 200   #Result<UserDto>
 //
 // @Router              /v1/user/admin/{uid} [PUT]
-// @Security            Jwt
-// @Template            Admin Auth Param
 // @Summary             更新用户
 // @Description         管理员权限
 // @Tag                 User
 // @Tag                 Administration
+// @Security            Jwt
 // @Param               uid   path integer    true "用户id"
 // @Param               param body #UserParam true "请求参数"
-// @ResponseDesc 400    "username has been used"
-// @ResponseDesc 404    "user not found"
-// @ResponseDesc 500    "user update failed"
 // @ResponseModel 200   #Result<UserDto>
 func (u *UserController) UpdateUser(isSpec bool) func(c *gin.Context) {
 	return func(c *gin.Context) {
@@ -153,23 +143,17 @@ func (u *UserController) UpdateUser(isSpec bool) func(c *gin.Context) {
 
 // @Router              /v1/user [DELETE]
 // @Security            Jwt
-// @Template            Auth
 // @Summary             删除用户
 // @Tag                 User
-// @ResponseDesc 404    "user not found"
-// @ResponseDesc 500    "user delete failed"
 // @ResponseModel 200   #Result
 //
 // @Router              /v1/user/admin/{uid} [DELETE]
 // @Security            Jwt
-// @Template            Admin Auth ParamA
 // @Summary             删除用户
 // @Description         管理员权限
 // @Tag                 User
 // @Tag                 Administration
 // @Param               uid path integer true "用户id"
-// @ResponseDesc 404    "user not found"
-// @ResponseDesc 500    "user delete failed"
 // @ResponseModel 200   #Result
 func (u *UserController) DeleteUser(isSpec bool) func(c *gin.Context) {
 	return func(c *gin.Context) {

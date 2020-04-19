@@ -34,13 +34,9 @@ func NewAuthController(dic *xdi.DiContainer) *AuthController {
 }
 
 // @Router              /v1/auth/login [POST]
-// @Template            ParamA
 // @Summary             登录
 // @Tag                 Authorization
 // @Param               param body #LoginParam true "请求参数"
-// @ResponseDesc 401    "password error"
-// @ResponseDesc 404    "user not found"
-// @ResponseDesc 500    "login failed"
 // @ResponseModel 200   #Result<LoginDto>
 func (a *AuthController) Login(c *gin.Context) {
 	loginParam := &param.LoginParam{}
@@ -81,12 +77,9 @@ func (a *AuthController) Login(c *gin.Context) {
 }
 
 // @Router              /v1/auth/register [POST]
-// @Template            Param
 // @Summary             注册
 // @Tag                 Authorization
 // @Param               param body #RegisterParam true "请求参数"
-// @ResponseDesc 400    "username has been used"
-// @ResponseDesc 500    "register failed"
 // @ResponseModel 201   #Result<UserDto>
 func (a *AuthController) Register(c *gin.Context) {
 	registerParam := &param.RegisterParam{}
@@ -121,10 +114,9 @@ func (a *AuthController) Register(c *gin.Context) {
 }
 
 // @Router              /v1/auth [GET]
-// @Security            Jwt
-// @Template            Auth
 // @Summary             当前登录用户
 // @Tag                 Authorization
+// @Security            Jwt
 // @ResponseModel 200   #Result<UserDto>
 func (a *AuthController) CurrentUser(c *gin.Context) {
 	authUser := a.JwtService.GetContextUser(c)
@@ -133,11 +125,9 @@ func (a *AuthController) CurrentUser(c *gin.Context) {
 }
 
 // @Router              /v1/auth/logout [POST]
-// @Security            Jwt
-// @Template            Auth
 // @Summary             注销
 // @Tag                 Authorization
-// @ResponseDesc 500    "logout failed"
+// @Security            Jwt
 // @ResponseModel 200   #Result
 func (a *AuthController) Logout(c *gin.Context) {
 	authHeader := a.JwtService.GetToken(c)
@@ -151,13 +141,10 @@ func (a *AuthController) Logout(c *gin.Context) {
 }
 
 // @Router              /v1/auth/password [PUT]
-// @Security            Jwt
-// @Template            Auth Param
 // @Summary             修改密码
 // @Tag                 Authorization
+// @Security            Jwt
 // @Param               param body #PassParam true "请求参数"
-// @ResponseDesc 404    "user not found"
-// @ResponseDesc 500    "update password failed"
 // @ResponseModel 200   #Result
 func (a *AuthController) UpdatePassword(c *gin.Context) {
 	authUser := a.JwtService.GetContextUser(c)

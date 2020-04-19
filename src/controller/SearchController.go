@@ -31,9 +31,9 @@ func NewSearchController(dic *xdi.DiContainer) *SearchController {
 }
 
 // @Router              /v1/search/user [GET]
-// @Template            Page ParamA
 // @Summary             搜索用户
 // @Tag                 Search
+// @Template            Page
 // @Param               key query string true "搜索关键词"
 // @ResponseModel 200   #Result<Page<UserDto>>
 func (s *SearchController) SearchUser(c *gin.Context) {
@@ -53,9 +53,9 @@ func (s *SearchController) SearchUser(c *gin.Context) {
 }
 
 // @Router              /v1/search/video [GET]
-// @Template            Page ParamA
 // @Summary             搜索视频
 // @Tag                 Search
+// @Template            Page
 // @Param               key query string true "搜索关键词"
 // @ResponseModel 200   #Result<Page<VideoDto>>
 func (s *SearchController) SearchVideo(c *gin.Context) {

@@ -14,9 +14,9 @@ tags:
   description: Video-Controller
 - name: Raw
   description: Raw-Controller
-- name: Administration
-  description: '*-Controller'
 - name: Search
+  description: '*-Controller'
+- name: Administration
   description: '*-Controller'
 info:
   title: vid backend
@@ -54,42 +54,9 @@ paths:
           $ref: '#/definitions/LoginParam'
       security: []
       responses:
-        '400':
-          description: |-
-            "request param error"
-        '401':
-          description: |-
-            "password error"
-        '404':
-          description: |-
-            "user not found"
-        '500':
-          description: |-
-            "login failed"
         '200':
           schema:
             $ref: '#/definitions/Result<LoginDto>'
-          examples:
-            application/json: |-
-              {
-                "code": 200,
-                "message": "success",
-                "data": {
-                  "user": {
-                    "uid": 1,
-                    "username": "admin",
-                    "sex": "male",
-                    "profile": "Demo admin profile",
-                    "avatar_url": "http://localhost:3344/v1/raw/image/avatar.jpg",
-                    "birthday": "2020-01-10",
-                    "authority": "admin",
-                    "phone_number": "13512345678",
-                    "register_time": "2020-01-10T00:30:49+08:00"
-                  },
-                  "token": "Bearer xxx",
-                  "expire": 604800
-                }
-              }
   /v1/auth/register:
     post:
       operationId: v1-auth-register-post
@@ -109,32 +76,9 @@ paths:
           $ref: '#/definitions/RegisterParam'
       security: []
       responses:
-        '400':
-          description: |-
-            "request param error", "request format error", "username has been used"
-        '500':
-          description: |-
-            "register failed"
         '201':
           schema:
             $ref: '#/definitions/Result<UserDto>'
-          examples:
-            application/json: |-
-              {
-                "code": 201,
-                "message": "created",
-                "data": {
-                  "uid": 1,
-                  "username": "admin",
-                  "sex": "male",
-                  "profile": "Demo admin profile",
-                  "avatar_url": "http://localhost:3344/v1/raw/image/avatar.jpg",
-                  "birthday": "2020-01-10",
-                  "authority": "admin",
-                  "phone_number": "13512345678",
-                  "register_time": "2020-01-10T00:30:49+08:00"
-                }
-              }
   /v1/auth:
     get:
       operationId: v1-auth-get
@@ -148,29 +92,9 @@ paths:
       security:
       - Jwt: []
       responses:
-        '401':
-          description: |-
-            "unauthorized user", "token has expired", "authorized user not found"
         '200':
           schema:
             $ref: '#/definitions/Result<UserDto>'
-          examples:
-            application/json: |-
-              {
-                "code": 200,
-                "message": "success",
-                "data": {
-                  "uid": 1,
-                  "username": "admin",
-                  "sex": "male",
-                  "profile": "Demo admin profile",
-                  "avatar_url": "http://localhost:3344/v1/raw/image/avatar.jpg",
-                  "birthday": "2020-01-10",
-                  "authority": "admin",
-                  "phone_number": "13512345678",
-                  "register_time": "2020-01-10T00:30:49+08:00"
-                }
-              }
   /v1/auth/logout:
     post:
       operationId: v1-auth-logout-post
@@ -184,21 +108,9 @@ paths:
       security:
       - Jwt: []
       responses:
-        '401':
-          description: |-
-            "unauthorized user", "token has expired", "authorized user not found"
-        '500':
-          description: |-
-            "logout failed"
         '200':
           schema:
             $ref: '#/definitions/Result'
-          examples:
-            application/json: |-
-              {
-                "code": 200,
-                "message": "success"
-              }
   /v1/auth/password:
     put:
       operationId: v1-auth-password-put
@@ -219,27 +131,9 @@ paths:
       security:
       - Jwt: []
       responses:
-        '401':
-          description: |-
-            "unauthorized user", "token has expired", "authorized user not found"
-        '400':
-          description: |-
-            "request param error", "request format error"
-        '404':
-          description: |-
-            "user not found"
-        '500':
-          description: |-
-            "update password failed"
         '200':
           schema:
             $ref: '#/definitions/Result'
-          examples:
-            application/json: |-
-              {
-                "code": 200,
-                "message": "success"
-              }
   /v1/raw/image:
     post:
       operationId: v1-raw-image-post
@@ -259,31 +153,9 @@ paths:
       security:
       - Jwt: []
       responses:
-        '401':
-          description: |-
-            "unauthorized user", "token has expired", "authorized user not found"
-        '400':
-          description: |-
-            "request param error", "image type not supported"
-        '413':
-          description: |-
-            "request body too large"
-        '500':
-          description: |-
-            "image save failed"
         '200':
           schema:
             $ref: '#/definitions/Result<ImageDto>'
-          examples:
-            application/json: |-
-              {
-                "code": 200,
-                "message": "success",
-                "data": {
-                  "url": "http://localhost:3344/v1/raw/image/20200110130323908439.jpg",
-                  "size": 381952
-                }
-              }
   /v1/raw/image/{filename}:
     get:
       operationId: v1-raw-image-filename-get
@@ -302,9 +174,6 @@ paths:
         description: 图片文件名
       security: []
       responses:
-        '404':
-          description: |-
-            "image not found"
         '200':
           headers:
             Content-Type:
@@ -340,36 +209,9 @@ paths:
         description: 搜索关键词
       security: []
       responses:
-        '400':
-          description: |-
-            "request param error"
         '200':
           schema:
             $ref: '#/definitions/Result<Page<UserDto>>'
-          examples:
-            application/json: |-
-              {
-                "code": 200,
-                "message": "success",
-                "data": {
-                  "total": 1,
-                  "page": 1,
-                  "limit": 10,
-                  "data": [
-                    {
-                      "uid": 1,
-                      "username": "admin",
-                      "sex": "male",
-                      "profile": "Demo admin profile",
-                      "avatar_url": "http://localhost:3344/v1/raw/image/avatar.jpg",
-                      "birthday": "2020-01-10",
-                      "authority": "admin",
-                      "phone_number": "13512345678",
-                      "register_time": "2020-01-10T00:30:49+08:00"
-                    }
-                  ]
-                }
-              }
   /v1/search/video:
     get:
       operationId: v1-search-video-get
@@ -400,45 +242,9 @@ paths:
         description: 搜索关键词
       security: []
       responses:
-        '400':
-          description: |-
-            "request param error"
         '200':
           schema:
             $ref: '#/definitions/Result<Page<VideoDto>>'
-          examples:
-            application/json: |-
-              {
-                "code": 200,
-                "message": "success",
-                "data": {
-                  "total": 1,
-                  "page": 1,
-                  "limit": 10,
-                  "data": [
-                    {
-                      "vid": 1,
-                      "title": "The First Video",
-                      "description": "This is the first video uploaded",
-                      "video_url": "123",
-                      "cover_url": "http://localhost:3344/v1/raw/image/avatar.jpg",
-                      "upload_time": "2020-01-10T00:55:36+08:00",
-                      "update_time": "2020-01-10T14:31:00+08:00",
-                      "author": {
-                        "uid": 1,
-                        "username": "admin",
-                        "sex": "male",
-                        "profile": "Demo admin profile",
-                        "avatar_url": "http://localhost:3344/v1/raw/image/avatar.jpg",
-                        "birthday": "2020-01-10",
-                        "authority": "admin",
-                        "phone_number": "13512345678",
-                        "register_time": "2020-01-10T00:30:49+08:00"
-                      }
-                    }
-                  ]
-                }
-              }
   /v1/user/{uid}/subscriber:
     get:
       operationId: v1-user-uid-subscriber-get
@@ -474,39 +280,9 @@ paths:
         description: 用户id
       security: []
       responses:
-        '400':
-          description: |-
-            "request param error"
-        '404':
-          description: |-
-            "user not found"
         '200':
           schema:
             $ref: '#/definitions/Result<Page<UserDto>>'
-          examples:
-            application/json: |-
-              {
-                "code": 200,
-                "message": "success",
-                "data": {
-                  "total": 1,
-                  "page": 1,
-                  "limit": 10,
-                  "data": [
-                    {
-                      "uid": 1,
-                      "username": "admin",
-                      "sex": "male",
-                      "profile": "Demo admin profile",
-                      "avatar_url": "http://localhost:3344/v1/raw/image/avatar.jpg",
-                      "birthday": "2020-01-10",
-                      "authority": "admin",
-                      "phone_number": "13512345678",
-                      "register_time": "2020-01-10T00:30:49+08:00"
-                    }
-                  ]
-                }
-              }
   /v1/user/{uid}/subscribing:
     get:
       operationId: v1-user-uid-subscribing-get
@@ -542,39 +318,9 @@ paths:
         description: 用户id
       security: []
       responses:
-        '400':
-          description: |-
-            "request param error"
-        '404':
-          description: |-
-            "user not found"
         '200':
           schema:
             $ref: '#/definitions/Result<Page<UserDto>>'
-          examples:
-            application/json: |-
-              {
-                "code": 200,
-                "message": "success",
-                "data": {
-                  "total": 1,
-                  "page": 1,
-                  "limit": 10,
-                  "data": [
-                    {
-                      "uid": 1,
-                      "username": "admin",
-                      "sex": "male",
-                      "profile": "Demo admin profile",
-                      "avatar_url": "http://localhost:3344/v1/raw/image/avatar.jpg",
-                      "birthday": "2020-01-10",
-                      "authority": "admin",
-                      "phone_number": "13512345678",
-                      "register_time": "2020-01-10T00:30:49+08:00"
-                    }
-                  ]
-                }
-              }
   /v1/user/subscribing:
     put:
       operationId: v1-user-subscribing-put
@@ -595,27 +341,9 @@ paths:
       security:
       - Jwt: []
       responses:
-        '401':
-          description: |-
-            "unauthorized user", "token has expired", "authorized user not found"
-        '400':
-          description: |-
-            "request param error", "request format error", "subscribe oneself invalid"
-        '404':
-          description: |-
-            "user not found"
-        '500':
-          description: |-
-            "subscribe failed"
         '200':
           schema:
             $ref: '#/definitions/Result'
-          examples:
-            application/json: |-
-              {
-                "code": 200,
-                "message": "success"
-              }
     delete:
       operationId: v1-user-subscribing-delete
       summary: 取消关注用户
@@ -635,27 +363,9 @@ paths:
       security:
       - Jwt: []
       responses:
-        '401':
-          description: |-
-            "unauthorized user", "token has expired", "authorized user not found"
-        '400':
-          description: |-
-            "request param error", "request format error"
-        '404':
-          description: |-
-            "user not found"
-        '500':
-          description: |-
-            "unsubscribe failed"
         '200':
           schema:
             $ref: '#/definitions/Result'
-          examples:
-            application/json: |-
-              {
-                "code": 200,
-                "message": "success"
-              }
   /v1/user:
     get:
       operationId: v1-user-get
@@ -689,36 +399,9 @@ paths:
       security:
       - Jwt: []
       responses:
-        '401':
-          description: |-
-            "unauthorized user", "token has expired", "authorized user not found", "need admin authority"
         '200':
           schema:
             $ref: '#/definitions/Result<Page<UserDto>>'
-          examples:
-            application/json: |-
-              {
-                "code": 200,
-                "message": "success",
-                "data": {
-                  "total": 1,
-                  "page": 1,
-                  "limit": 10,
-                  "data": [
-                    {
-                      "uid": 1,
-                      "username": "admin",
-                      "sex": "male",
-                      "profile": "Demo admin profile",
-                      "avatar_url": "http://localhost:3344/v1/raw/image/avatar.jpg",
-                      "birthday": "2020-01-10",
-                      "authority": "admin",
-                      "phone_number": "13512345678",
-                      "register_time": "2020-01-10T00:30:49+08:00"
-                    }
-                  ]
-                }
-              }
     put:
       operationId: v1-user-put
       summary: 更新用户
@@ -738,38 +421,9 @@ paths:
       security:
       - Jwt: []
       responses:
-        '401':
-          description: |-
-            "unauthorized user", "token has expired", "authorized user not found"
-        '400':
-          description: |-
-            "request param error", "request format error", "username has been used"
-        '404':
-          description: |-
-            "user not found"
-        '500':
-          description: |-
-            "user update failed"
         '200':
           schema:
             $ref: '#/definitions/Result<UserDto>'
-          examples:
-            application/json: |-
-              {
-                "code": 200,
-                "message": "success",
-                "data": {
-                  "uid": 1,
-                  "username": "admin",
-                  "sex": "male",
-                  "profile": "Demo admin profile",
-                  "avatar_url": "http://localhost:3344/v1/raw/image/avatar.jpg",
-                  "birthday": "2020-01-10",
-                  "authority": "admin",
-                  "phone_number": "13512345678",
-                  "register_time": "2020-01-10T00:30:49+08:00"
-                }
-              }
     delete:
       operationId: v1-user-delete
       summary: 删除用户
@@ -782,24 +436,9 @@ paths:
       security:
       - Jwt: []
       responses:
-        '401':
-          description: |-
-            "unauthorized user", "token has expired", "authorized user not found"
-        '404':
-          description: |-
-            "user not found"
-        '500':
-          description: |-
-            "user delete failed"
         '200':
           schema:
             $ref: '#/definitions/Result'
-          examples:
-            application/json: |-
-              {
-                "code": 200,
-                "message": "success"
-              }
   /v1/user/{uid}:
     get:
       operationId: v1-user-uid-get
@@ -819,39 +458,9 @@ paths:
         description: 用户id
       security: []
       responses:
-        '400':
-          description: |-
-            "request param error"
-        '404':
-          description: |-
-            "user not found"
         '200':
           schema:
             $ref: '#/definitions/Result<UserExtraDto>'
-          examples:
-            application/json: |-
-              {
-                "code": 200,
-                "message": "success",
-                "data": {
-                  "user": {
-                    "uid": 1,
-                    "username": "admin",
-                    "sex": "male",
-                    "profile": "Demo admin profile",
-                    "avatar_url": "http://localhost:3344/v1/raw/image/avatar.jpg",
-                    "birthday": "2020-01-10",
-                    "authority": "admin",
-                    "phone_number": "13512345678",
-                    "register_time": "2020-01-10T00:30:49+08:00"
-                  },
-                  "extra": {
-                    "subscribing_cnt": 3,
-                    "subscriber_cnt": 2,
-                    "video_cnt": 3
-                  }
-                }
-              }
   /v1/user/admin/{uid}:
     put:
       operationId: v1-user-admin-uid-put
@@ -879,38 +488,9 @@ paths:
       security:
       - Jwt: []
       responses:
-        '401':
-          description: |-
-            "unauthorized user", "token has expired", "authorized user not found", "need admin authority"
-        '400':
-          description: |-
-            "request param error", "request format error", "username has been used"
-        '404':
-          description: |-
-            "user not found"
-        '500':
-          description: |-
-            "user update failed"
         '200':
           schema:
             $ref: '#/definitions/Result<UserDto>'
-          examples:
-            application/json: |-
-              {
-                "code": 200,
-                "message": "success",
-                "data": {
-                  "uid": 1,
-                  "username": "admin",
-                  "sex": "male",
-                  "profile": "Demo admin profile",
-                  "avatar_url": "http://localhost:3344/v1/raw/image/avatar.jpg",
-                  "birthday": "2020-01-10",
-                  "authority": "admin",
-                  "phone_number": "13512345678",
-                  "register_time": "2020-01-10T00:30:49+08:00"
-                }
-              }
     delete:
       operationId: v1-user-admin-uid-delete
       summary: 删除用户
@@ -931,27 +511,9 @@ paths:
       security:
       - Jwt: []
       responses:
-        '401':
-          description: |-
-            "unauthorized user", "token has expired", "authorized user not found", "need admin authority"
-        '400':
-          description: |-
-            "request param error"
-        '404':
-          description: |-
-            "user not found"
-        '500':
-          description: |-
-            "user delete failed"
         '200':
           schema:
             $ref: '#/definitions/Result'
-          examples:
-            application/json: |-
-              {
-                "code": 200,
-                "message": "success"
-              }
   /v1/video:
     get:
       operationId: v1-video-get
@@ -985,45 +547,9 @@ paths:
       security:
       - Jwt: []
       responses:
-        '401':
-          description: |-
-            "unauthorized user", "token has expired", "authorized user not found", "need admin authority"
         '200':
           schema:
             $ref: '#/definitions/Result<Page<VideoDto>>'
-          examples:
-            application/json: |-
-              {
-                "code": 200,
-                "message": "success",
-                "data": {
-                  "total": 1,
-                  "page": 1,
-                  "limit": 10,
-                  "data": [
-                    {
-                      "vid": 1,
-                      "title": "The First Video",
-                      "description": "This is the first video uploaded",
-                      "video_url": "123",
-                      "cover_url": "http://localhost:3344/v1/raw/image/avatar.jpg",
-                      "upload_time": "2020-01-10T00:55:36+08:00",
-                      "update_time": "2020-01-10T14:31:00+08:00",
-                      "author": {
-                        "uid": 1,
-                        "username": "admin",
-                        "sex": "male",
-                        "profile": "Demo admin profile",
-                        "avatar_url": "http://localhost:3344/v1/raw/image/avatar.jpg",
-                        "birthday": "2020-01-10",
-                        "authority": "admin",
-                        "phone_number": "13512345678",
-                        "register_time": "2020-01-10T00:30:49+08:00"
-                      }
-                    }
-                  ]
-                }
-              }
     post:
       operationId: v1-video-post
       summary: 新建视频
@@ -1043,44 +569,9 @@ paths:
       security:
       - Jwt: []
       responses:
-        '401':
-          description: |-
-            "unauthorized user", "token has expired", "authorized user not found"
-        '400':
-          description: |-
-            "request param error", "request format error", "video url has been used"
-        '500':
-          description: |-
-            "video insert failed"
         '201':
           schema:
             $ref: '#/definitions/Result<VideoDto>'
-          examples:
-            application/json: |-
-              {
-                "code": 201,
-                "message": "created",
-                "data": {
-                  "vid": 1,
-                  "title": "The First Video",
-                  "description": "This is the first video uploaded",
-                  "video_url": "123",
-                  "cover_url": "http://localhost:3344/v1/raw/image/avatar.jpg",
-                  "upload_time": "2020-01-10T00:55:36+08:00",
-                  "update_time": "2020-01-10T14:31:00+08:00",
-                  "author": {
-                    "uid": 1,
-                    "username": "admin",
-                    "sex": "male",
-                    "profile": "Demo admin profile",
-                    "avatar_url": "http://localhost:3344/v1/raw/image/avatar.jpg",
-                    "birthday": "2020-01-10",
-                    "authority": "admin",
-                    "phone_number": "13512345678",
-                    "register_time": "2020-01-10T00:30:49+08:00"
-                  }
-                }
-              }
   /v1/user/{uid}/video:
     get:
       operationId: v1-user-uid-video-get
@@ -1116,53 +607,13 @@ paths:
         description: 用户id
       security: []
       responses:
-        '400':
-          description: |-
-            "request param error"
-        '404':
-          description: |-
-            "user not found"
         '200':
           schema:
             $ref: '#/definitions/Result<Page<VideoDto>>'
-          examples:
-            application/json: |-
-              {
-                "code": 200,
-                "message": "success",
-                "data": {
-                  "total": 1,
-                  "page": 1,
-                  "limit": 10,
-                  "data": [
-                    {
-                      "vid": 1,
-                      "title": "The First Video",
-                      "description": "This is the first video uploaded",
-                      "video_url": "123",
-                      "cover_url": "http://localhost:3344/v1/raw/image/avatar.jpg",
-                      "upload_time": "2020-01-10T00:55:36+08:00",
-                      "update_time": "2020-01-10T14:31:00+08:00",
-                      "author": {
-                        "uid": 1,
-                        "username": "admin",
-                        "sex": "male",
-                        "profile": "Demo admin profile",
-                        "avatar_url": "http://localhost:3344/v1/raw/image/avatar.jpg",
-                        "birthday": "2020-01-10",
-                        "authority": "admin",
-                        "phone_number": "13512345678",
-                        "register_time": "2020-01-10T00:30:49+08:00"
-                      }
-                    }
-                  ]
-                }
-              }
   /v1/video/{vid}:
     get:
       operationId: v1-video-vid-get
       summary: 查询视频
-      description: 作者为 null 表示用户已删除
       tags:
       - Video
       consumes:
@@ -1177,41 +628,9 @@ paths:
         description: 视频id
       security: []
       responses:
-        '400':
-          description: |-
-            "request param error"
-        '404':
-          description: |-
-            "video not found"
         '200':
           schema:
             $ref: '#/definitions/Result<VideoDto>'
-          examples:
-            application/json: |-
-              {
-                "code": 200,
-                "message": "success",
-                "data": {
-                  "vid": 1,
-                  "title": "The First Video",
-                  "description": "This is the first video uploaded",
-                  "video_url": "123",
-                  "cover_url": "http://localhost:3344/v1/raw/image/avatar.jpg",
-                  "upload_time": "2020-01-10T00:55:36+08:00",
-                  "update_time": "2020-01-10T14:31:00+08:00",
-                  "author": {
-                    "uid": 1,
-                    "username": "admin",
-                    "sex": "male",
-                    "profile": "Demo admin profile",
-                    "avatar_url": "http://localhost:3344/v1/raw/image/avatar.jpg",
-                    "birthday": "2020-01-10",
-                    "authority": "admin",
-                    "phone_number": "13512345678",
-                    "register_time": "2020-01-10T00:30:49+08:00"
-                  }
-                }
-              }
     post:
       operationId: v1-video-vid-post
       summary: 更新视频
@@ -1238,47 +657,9 @@ paths:
       security:
       - Jwt: []
       responses:
-        '401':
-          description: |-
-            "unauthorized user", "token has expired", "authorized user not found"
-        '400':
-          description: |-
-            "request param error", "request format error", "video url has been used"
-        '404':
-          description: |-
-            "video not found"
-        '500':
-          description: |-
-            "video update failed"
         '200':
           schema:
             $ref: '#/definitions/Result<VideoDto>'
-          examples:
-            application/json: |-
-              {
-                "code": 200,
-                "message": "success",
-                "data": {
-                  "vid": 1,
-                  "title": "The First Video",
-                  "description": "This is the first video uploaded",
-                  "video_url": "123",
-                  "cover_url": "http://localhost:3344/v1/raw/image/avatar.jpg",
-                  "upload_time": "2020-01-10T00:55:36+08:00",
-                  "update_time": "2020-01-10T14:31:00+08:00",
-                  "author": {
-                    "uid": 1,
-                    "username": "admin",
-                    "sex": "male",
-                    "profile": "Demo admin profile",
-                    "avatar_url": "http://localhost:3344/v1/raw/image/avatar.jpg",
-                    "birthday": "2020-01-10",
-                    "authority": "admin",
-                    "phone_number": "13512345678",
-                    "register_time": "2020-01-10T00:30:49+08:00"
-                  }
-                }
-              }
     delete:
       operationId: v1-video-vid-delete
       summary: 删除视频
@@ -1299,27 +680,9 @@ paths:
       security:
       - Jwt: []
       responses:
-        '401':
-          description: |-
-            "unauthorized user", "token has expired", "authorized user not found"
-        '400':
-          description: |-
-            "request param error"
-        '404':
-          description: |-
-            "video not found"
-        '500':
-          description: |-
-            "video delete failed"
         '200':
           schema:
             $ref: '#/definitions/Result'
-          examples:
-            application/json: |-
-              {
-                "code": 200,
-                "message": "success"
-              }
   /ping:
     get:
       operationId: ping-get
@@ -1333,14 +696,6 @@ paths:
       security: []
       responses:
         '200':
-          description: |-
-            "OK"
-          headers:
-            Content-Type:
-              type: string
-              description: application/json; charset=utf-8
-          schema:
-            $ref: '#/definitions/Ping'
           examples:
             application/json: |-
               {
@@ -1811,14 +1166,3 @@ definitions:
       video_url:
         description: 视频资源链接
         type: string
-  Ping:
-    title: Ping
-    description: Ping
-    type: object
-    required:
-    - ping
-    properties:
-      ping:
-        description: pong
-        type: string
-        default: pong

@@ -26,14 +26,10 @@ func NewRawController(dic *xdi.DiContainer) *RawController {
 }
 
 // @Router              /v1/raw/image [POST]
-// @Security            Jwt
-// @Template            Auth ParamA
 // @Summary             上传图片
 // @Tag                 Raw
+// @Security            Jwt
 // @Param               image formData file true "上传的图片，大小限制在2M，允许后缀名为 {.jpg, .jpeg, .png, .bmp, .gif}"
-// @ResponseDesc 400    "image type not supported"
-// @ResponseDesc 413    "request body too large"
-// @ResponseDesc 500    "image save failed"
 // @ResponseModel 200   #Result<ImageDto>
 func (r *RawController) UploadImage(c *gin.Context) {
 	imageFile, imageHeader, err := c.Request.FormFile("image")
@@ -62,7 +58,6 @@ func (r *RawController) UploadImage(c *gin.Context) {
 // @Summary              获取图片
 // @Tag                  Raw
 // @Param                filename path string true "图片文件名"
-// @ResponseDesc 404     "image not found"
 // @ResponseHeader 200   { "Content-Type": "image/jpeg" }
 func (r *RawController) RawImage(c *gin.Context) {
 	filename := c.Param("filename")

@@ -32,11 +32,10 @@ func NewSubController(dic *xdi.DiContainer) *SubController {
 }
 
 // @Router              /v1/user/{uid}/subscriber [GET]
-// @Template            Page ParamA Order Page
 // @Summary             查询用户粉丝
 // @Tag                 Subscribe
+// @Template            Order Page
 // @Param               uid path integer true "用户id"
-// @ResponseDesc 404    "user not found"
 // @ResponseModel 200   #Result<Page<UserDto>>
 func (s *SubController) QuerySubscriberUsers(c *gin.Context) {
 	uid, ok := param.BindRouteId(c, "uid")
@@ -57,11 +56,10 @@ func (s *SubController) QuerySubscriberUsers(c *gin.Context) {
 }
 
 // @Router              /v1/user/{uid}/subscribing [GET]
-// @Template            Page ParamA Order Page
 // @Summary             查询用户关注
 // @Tag                 Subscribe
+// @Template            Order Page
 // @Param               uid path integer true "用户id"
-// @ResponseDesc 404    "user not found"
 // @ResponseModel 200   #Result<Page<UserDto>>
 func (s *SubController) QuerySubscribingUsers(c *gin.Context) {
 	uid, ok := param.BindRouteId(c, "uid")
@@ -82,14 +80,10 @@ func (s *SubController) QuerySubscribingUsers(c *gin.Context) {
 }
 
 // @Router              /v1/user/subscribing [PUT]
-// @Security            Jwt
-// @Template            Auth Param
 // @Summary             关注用户
 // @Tag                 Subscribe
+// @Security            Jwt
 // @Param               param body #SubParam true "请求参数"
-// @ResponseDesc 400    "subscribe oneself invalid"
-// @ResponseDesc 404    "user not found"
-// @ResponseDesc 500    "subscribe failed"
 // @ResponseModel 200   #Result
 func (s *SubController) SubscribeUser(c *gin.Context) {
 	authUser := s.JwtService.GetContextUser(c)
@@ -116,13 +110,10 @@ func (s *SubController) SubscribeUser(c *gin.Context) {
 }
 
 // @Router              /v1/user/subscribing [DELETE]
-// @Security            Jwt
-// @Template            Auth Param
 // @Summary             取消关注用户
 // @Tag                 Subscribe
+// @Security            Jwt
 // @Param               param body #SubParam true "请求参数"
-// @ResponseDesc 404    "user not found"
-// @ResponseDesc 500    "unsubscribe failed"
 // @ResponseModel 200   #Result
 func (s *SubController) UnSubscribeUser(c *gin.Context) {
 	authUser := s.JwtService.GetContextUser(c)

@@ -39,20 +39,13 @@ func main() {
 // @Tag              Subscribe      "Sub-Controller"
 // @Tag              Video          "Video-Controller"
 // @Tag              Raw            "Raw-Controller"
-// @Tag              Administration "*-Controller"
 // @Tag              Search         "*-Controller"
+// @Tag              Administration "*-Controller"
 // @GlobalSecurity   Jwt Authorization header
 
-// @Template Page.Param            page  query integer false "当前页" (default:1)
-// @Template Page.Param            limit query integer false "页大小" (default:10)
-// @Template Order.Param           order query string  false "排序字符串"
-// @Template Auth.ResponseDesc     401 "unauthorized user"
-// @Template Auth.ResponseDesc     401 "token has expired"
-// @Template Auth.ResponseDesc     401 "authorized user not found"
-// @Template Admin.ResponseDesc    401 "need admin authority"
-// @Template Param.ResponseDesc    400 "request param error"
-// @Template Param.ResponseDesc    400 "request format error"
-// @Template ParamA.ResponseDesc   400 "request param error"
+// @Template Page.Param    page  query integer false "当前页" (default:1)
+// @Template Page.Param    limit query integer false "页大小" (default:10)
+// @Template Order.Param   order query string  false "排序字符串"
 
 func run() {
 	cfg, err := config.Load(configPath)

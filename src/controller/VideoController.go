@@ -34,12 +34,12 @@ func NewVideoController(dic *xdi.DiContainer) *VideoController {
 }
 
 // @Router              /v1/video [GET]
-// @Security            Jwt
-// @Template            Admin Auth Order Page
 // @Summary             查询所有视频
 // @Description         管理员权限
 // @Tag                 Video
 // @Tag                 Administration
+// @Security            Jwt
+// @Template            Order Page
 // @ResponseModel 200   #Result<Page<VideoDto>>
 func (v *VideoController) QueryAllVideos(c *gin.Context) {
 	pageOrder := param.BindPageOrder(c, v.Config)
@@ -50,11 +50,10 @@ func (v *VideoController) QueryAllVideos(c *gin.Context) {
 }
 
 // @Router              /v1/user/{uid}/video [GET]
-// @Template            ParamA Order Page
 // @Summary             查询用户发布的所有视频
 // @Tag                 Video
+// @Template            Order Page
 // @Param               uid path integer true "用户id"
-// @ResponseDesc 404    "user not found"
 // @ResponseModel 200   #Result<Page<VideoDto>>
 func (v *VideoController) QueryVideosByUid(c *gin.Context) {
 	uid, ok := param.BindRouteId(c, "uid")
@@ -75,12 +74,9 @@ func (v *VideoController) QueryVideosByUid(c *gin.Context) {
 }
 
 // @Router              /v1/video/{vid} [GET]
-// @Template            ParamA
 // @Summary             查询视频
-// @Description         作者为 null 表示用户已删除
 // @Tag                 Video
 // @Param               vid path integer true "视频id"
-// @ResponseDesc 404    "video not found"
 // @ResponseModel 200   #Result<VideoDto>
 func (v *VideoController) QueryVideoByVid(c *gin.Context) {
 	vid, ok := param.BindRouteId(c, "vid")
@@ -100,13 +96,10 @@ func (v *VideoController) QueryVideoByVid(c *gin.Context) {
 }
 
 // @Router              /v1/video [POST]
-// @Security            Jwt
-// @Template            Auth Param
 // @Summary             新建视频
 // @Tag                 Video
+// @Security            Jwt
 // @Param               param body #VideoParam true "请求参数"
-// @ResponseDesc 400    "video url has been used"
-// @ResponseDesc 500    "video insert failed"
 // @ResponseModel 201   #Result<VideoDto>
 func (v *VideoController) InsertVideo(c *gin.Context) {
 	authUser := v.JwtService.GetContextUser(c)
@@ -136,17 +129,13 @@ func (v *VideoController) InsertVideo(c *gin.Context) {
 }
 
 // @Router              /v1/video/{vid} [POST]
-// @Security            Jwt
-// @Template            Auth Param
 // @Summary             更新视频
 // @Description         管理员或者作者本人权限
 // @Tag                 Video
 // @Tag                 Administration
+// @Security            Jwt
 // @Param               vid   path string      true "视频id"
 // @Param               param body #VideoParam true "请求参数"
-// @ResponseDesc 400    "video url has been used"
-// @ResponseDesc 404    "video not found"
-// @ResponseDesc 500    "video update failed"
 // @ResponseModel 200   #Result<VideoDto>
 func (v *VideoController) UpdateVideo(c *gin.Context) {
 	authUser := v.JwtService.GetContextUser(c)
@@ -188,15 +177,12 @@ func (v *VideoController) UpdateVideo(c *gin.Context) {
 }
 
 // @Router              /v1/video/{vid} [DELETE]
-// @Security            Jwt
-// @Template            Auth ParamA
 // @Summary             删除视频
 // @Description         管理员或者作者本人权限
 // @Tag                 Video
 // @Tag                 Administration
+// @Security            Jwt
 // @Param               vid path string true "视频id"
-// @ResponseDesc 404    "video not found"
-// @ResponseDesc 500    "video delete failed"
 // @ResponseModel 200   #Result
 func (v *VideoController) DeleteVideo(c *gin.Context) {
 	authUser := v.JwtService.GetContextUser(c)
