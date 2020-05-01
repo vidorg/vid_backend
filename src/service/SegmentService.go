@@ -17,16 +17,19 @@ func NewSegmentService(dic *xdi.DiContainer) *SegmentService {
 	srv := &SegmentService{}
 	dic.MustInject(srv)
 
-	var segmenter sego.Segmenter
-	segmenter.LoadDictionary(srv.Config.SearchConfig.DictPath)
-	srv.Segmenter = &segmenter
+	// TODO
+	// var segmenter sego.Segmenter
+	// segmenter.LoadDictionary(srv.Config.SearchConfig.DictPath)
+	// srv.Segmenter = &segmenter
 
 	return srv
 }
 
 func (s *SegmentService) Seg(str string) []string {
-	segments := s.Segmenter.Segment([]byte(str))
-	return sego.SegmentsToSlice(segments, true)
+	// TODO
+	// segments := s.Segmenter.Segment([]byte(str))
+	// return sego.SegmentsToSlice(segments, true)
+	return []string{""}
 }
 
 func (s *SegmentService) Cat(tokens []string) string {

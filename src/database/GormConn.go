@@ -51,21 +51,22 @@ func autoMigrateModel(db *gorm.DB) {
 }
 
 func addFullTextIndex(db *gorm.DB, cfg *config.MySQLConfig) {
-	checkExecIndex := func(tblName string, idxName string, param string) {
-		cnt := 0
-		rdb := db.Table("INFORMATION_SCHEMA.STATISTICS").Where("TABLE_SCHEMA = ? AND TABLE_NAME = ? AND INDEX_NAME = ?", cfg.Name, tblName, idxName).Count(&cnt)
-		if rdb.Error != nil {
-			log.Fatalln(rdb.Error)
-		}
-		if cnt == 0 {
-			sql := fmt.Sprintf("CREATE FULLTEXT INDEX `%s` ON `%s` (%s) WITH PARSER `ngram`", idxName, tblName, param)
-			rdb := db.Exec(sql)
-			if rdb.Error != nil {
-				log.Fatalln(rdb.Error)
-			}
-		}
-	}
-
-	checkExecIndex("tbl_user", "idx_username_profile_fulltext", "`username`(100), `profile`(20)")
-	checkExecIndex("tbl_video", "idx_title_description_fulltext", "`title`(100), `description`(40)")
+	// TODO
+	// checkExecIndex := func(tblName string, idxName string, param string) {
+	// 	cnt := 0
+	// 	rdb := db.Table("INFORMATION_SCHEMA.STATISTICS").Where("TABLE_SCHEMA = ? AND TABLE_NAME = ? AND INDEX_NAME = ?", cfg.Name, tblName, idxName).Count(&cnt)
+	// 	if rdb.Error != nil {
+	// 		log.Fatalln(rdb.Error)
+	// 	}
+	// 	if cnt == 0 {
+	// 		sql := fmt.Sprintf("CREATE FULLTEXT INDEX `%s` ON `%s` (%s) WITH PARSER `ngram`", idxName, tblName, param)
+	// 		rdb := db.Exec(sql)
+	// 		if rdb.Error != nil {
+	// 			log.Fatalln(rdb.Error)
+	// 		}
+	// 	}
+	// }
+	//
+	// checkExecIndex("tbl_user", "idx_username_profile_fulltext", "`username`(100), `profile`(20)")
+	// checkExecIndex("tbl_video", "idx_title_description_fulltext", "`title`(100), `description`(40)")
 }

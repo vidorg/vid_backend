@@ -9,9 +9,14 @@ import (
 )
 
 var (
-	help       = *flag.Bool("h", false, "show help")
-	configPath = *flag.String("config", "./config/config.yaml", "set config path")
+	help       bool
+	configPath string
 )
+
+func init() {
+	flag.BoolVar(&help, "h", false, "show help")
+	flag.StringVar(&configPath, "config", "./config/config.yaml", "set config path")
+}
 
 func main() {
 	flag.Parse()
