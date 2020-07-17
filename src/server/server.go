@@ -2,6 +2,9 @@ package server
 
 import (
 	"fmt"
+	"github.com/Aoi-hosizora/ahlib-web/xtime"
+	"github.com/Aoi-hosizora/ahlib-web/xvalidator"
+	"github.com/Aoi-hosizora/ahlib/xdi"
 	"github.com/DeanThompson/ginpprof"
 	"github.com/gin-gonic/gin"
 	"github.com/swaggo/gin-swagger"
@@ -9,55 +12,49 @@ import (
 	_ "github.com/vidorg/vid_backend/docs"
 	"github.com/vidorg/vid_backend/src/config"
 	"github.com/vidorg/vid_backend/src/middleware"
-	"log"
-	"net/http"
+	"github.com/vidorg/vid_backend/src/provide/sn"
 )
 
 type Server struct {
-	Engine *gin.Engine
-	Config *config.Config
+	engine *gin.Engine
+	config *config.Config
 }
 
-func NewServer(config *config.Config) *Server {
-	engine := gin.New()
-	gin.SetMode(config.Meta.RunMode)
-
-	// setup
+func NewServer() *Server {
+	cfg := xdi.GetByNameForce(sn.SConfig).(*config.Config)
+	gin.SetMode(cfg.Meta.RunMode)
 	setupBinding()
-	logger := setupLogger(config)
-	dic := ProvideServices(config, logger)
+
+	engine := gin.New()
 
 	// mw
-	engine.Use(middleware.LoggerMiddleware(logger))
-	engine.Use(middleware.RecoveryMiddleware(config, logger))
-	engine.Use(middleware.CorsMiddleware(config))
+	engine.Use(middleware.LoggerMiddleware())
+	engine.Use(middleware.RecoveryMiddleware())
+	engine.Use(middleware.CorsMiddleware())
 
 	// route
-	if config.Meta.RunMode == "debug" {
+	if cfg.Meta.RunMode == "debug" {
 		ginpprof.Wrap(engine)
 	}
 	engine.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
-	setupApiRouter(engine, dic)
-	setupCommonRouter(engine)
+	initRoute(engine)
 
 	// server
-	return &Server{
-		Engine: engine,
-		Config: config,
-	}
+	return &Server{engine: engine, config: cfg}
 }
 
-func (s *Server) Serve() {
-	server := &http.Server{
-		Addr:    fmt.Sprintf(":%d", s.Config.Meta.Port),
-		Handler: s.Engine,
-	}
+func (s *Server) Serve() error {
+	addr := fmt.Sprintf("0.0.0.0:%d", s.config.Meta.Port)
+	return s.engine.Run(addr)
+}
 
-	fmt.Println()
-	log.Printf("Server is listening on port %s\n\n", server.Addr)
+func setupBinding() {
+	xvalidator.SetupRegexBinding()
 
-	err := server.ListenAndServe()
-	if err != nil {
-		log.Fatalf("Failed to listen port and serve: %v\n", err)
-	}
+	xvalidator.SetupDateTimeBinding("date", xtime.RFC3339Date)
+	xvalidator.SetupDateTimeBinding("datetime", xtime.RFC3339DateTime)
+
+	xvalidator.SetupSpecificRegexpBinding("name", "^[a-zA-Z0-9\u4E00-\u9FBF\u3040-\u30FF\\-_]+$")              // alphabet number character kana - _
+	xvalidator.SetupSpecificRegexpBinding("pwd", "^.+$")                                                       // all
+	xvalidator.SetupSpecificRegexpBinding("phone", "^(13[0-9]|15[012356789]|17[678]|18[0-9]|14[57])[0-9]{8}$") // 11
 }

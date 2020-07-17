@@ -2,10 +2,9 @@ package main
 
 import (
 	"flag"
-	"log"
-
-	"github.com/vidorg/vid_backend/src/config"
+	"github.com/vidorg/vid_backend/src/provide"
 	"github.com/vidorg/vid_backend/src/server"
+	"log"
 )
 
 var (
@@ -49,11 +48,11 @@ func main() {
 // @Template Order.Param   order query string  false "排序字符串"
 
 func run() {
-	cfg, err := config.Load(*fConfig)
-	if err != nil {
-		log.Fatalln("Failed to load yaml config file:", err)
-	}
+	provide.Provide(*fConfig)
 
-	s := server.NewServer(cfg)
-	s.Serve()
+	s := server.NewServer()
+	err := s.Serve()
+	if err != nil {
+		log.Fatalln("Failed to serve:", err)
+	}
 }

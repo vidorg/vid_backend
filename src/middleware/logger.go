@@ -3,9 +3,9 @@ package middleware
 import (
 	"github.com/Aoi-hosizora/ahlib-web/xgin"
 	"github.com/Aoi-hosizora/ahlib/xdi"
-	"github.com/Aoi-hosizora/gin-n-scaffold/src/provide/sn"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
+	"github.com/vidorg/vid_backend/src/provide/sn"
 	"time"
 )
 

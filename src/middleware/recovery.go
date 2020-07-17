@@ -7,6 +7,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"github.com/vidorg/vid_backend/src/common/exception"
 	"github.com/vidorg/vid_backend/src/common/result"
+	"github.com/vidorg/vid_backend/src/provide/sn"
 )
 
 func RecoveryMiddleware() gin.HandlerFunc {

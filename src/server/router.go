@@ -13,11 +13,7 @@ import (
 	"net/http"
 )
 
-// @Router             /ping [GET]
-// @Summary            Ping
-// @Tag                Ping
-// @ResponseEx 200     { "ping": "pong" }
-func setupCommonRouter(engine *gin.Engine) {
+func initRoute(engine *gin.Engine) {
 	engine.HandleMethodNotAllowed = true
 	engine.GET("/ping", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"ping": "pong"})
@@ -36,22 +32,20 @@ func setupCommonRouter(engine *gin.Engine) {
 	engine.NoRoute(func(c *gin.Context) {
 		result.Status(http.StatusNotFound).SetMessage(fmt.Sprintf("route %s is not found", c.Request.URL.Path)).JSON(c)
 	})
-}
 
-func setupApiRouter(router *gin.Engine, dic *xdi.DiContainer) {
 	container := &struct {
 		Config        *config.Config         `di:"~"`
 		JwtService    *service.JwtService    `di:"~"`
 		CasbinService *service.CasbinService `di:"~"`
 	}{}
-	dic.MustInject(container)
+	xdi.MustInject(container)
 
 	jwtMw := middleware.JwtMiddleware(container.JwtService)
 	casbinMw := middleware.CasbinMiddleware(container.JwtService, container.CasbinService)
 	adminMw := middleware.AuthMiddleware(jwtMw, casbinMw)
 	limit2MMw := middleware.LimitMiddleware(int64(container.Config.File.ImageMaxSize << 20)) // MB
 
-	v1 := router.Group("/v1")
+	v1 := engine.Group("/v1")
 	{
 		authCtrl := controller.NewAuthController(dic)
 		authGroup := v1.Group("/auth")
