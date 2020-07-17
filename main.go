@@ -9,18 +9,13 @@ import (
 )
 
 var (
-	help       bool
-	configPath string
+	fConfig = flag.String("config", "./config/config.yaml", "change config path")
+	fHelp   = flag.Bool("h", false, "show help")
 )
-
-func init() {
-	flag.BoolVar(&help, "h", false, "show help")
-	flag.StringVar(&configPath, "config", "./config/config.yaml", "set config path")
-}
 
 func main() {
 	flag.Parse()
-	if help {
+	if *fHelp {
 		flag.Usage()
 	} else {
 		run()
@@ -54,11 +49,11 @@ func main() {
 // @Template Order.Param   order query string  false "排序字符串"
 
 func run() {
-	cfg, err := config.Load(configPath)
+	cfg, err := config.Load(*fConfig)
 	if err != nil {
 		log.Fatalln("Failed to load yaml config file:", err)
 	}
 
 	s := server.NewServer(cfg)
-	s.Serve() // with log
+	s.Serve()
 }

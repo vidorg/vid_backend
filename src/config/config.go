@@ -1,11 +1,8 @@
 package config
 
 import (
-	"encoding/json"
-	"fmt"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
-	"path/filepath"
 )
 
 type MetaConfig struct {
@@ -76,18 +73,7 @@ func Load(path string) (*ServerConfig, error) {
 	}
 
 	config := &ServerConfig{}
-	ext := filepath.Ext(path)
-	switch ext {
-	case ".yml":
-		fallthrough
-	case ".yaml":
-		err = yaml.Unmarshal(f, config)
-	case ".json":
-		err = json.Unmarshal(f, config)
-	default:
-		return nil, fmt.Errorf("Expected a yaml or json file, got a \"%s\" file\n", ext)
-	}
-
+	err = yaml.Unmarshal(f, config)
 	if err != nil {
 		return nil, err
 	}

@@ -83,11 +83,11 @@ func (s *SubController) QuerySubscribingUsers(c *gin.Context) {
 // @Summary             关注用户
 // @Tag                 Subscribe
 // @Security            Jwt
-// @Param               param body #SubParam true "请求参数"
+// @Param               param body #SubscribeParam true "请求参数"
 // @ResponseModel 200   #Result
 func (s *SubController) SubscribeUser(c *gin.Context) {
 	authUser := s.JwtService.GetContextUser(c)
-	subParam := &param.SubParam{}
+	subParam := &param.SubscribeParam{}
 	if err := c.ShouldBind(subParam); err != nil {
 		result.Error(exception.WrapValidationError(err)).JSON(c)
 		return
@@ -113,11 +113,11 @@ func (s *SubController) SubscribeUser(c *gin.Context) {
 // @Summary             取消关注用户
 // @Tag                 Subscribe
 // @Security            Jwt
-// @Param               param body #SubParam true "请求参数"
+// @Param               param body #SubscribeParam true "请求参数"
 // @ResponseModel 200   #Result
 func (s *SubController) UnSubscribeUser(c *gin.Context) {
 	authUser := s.JwtService.GetContextUser(c)
-	subParam := &param.SubParam{}
+	subParam := &param.SubscribeParam{}
 	if err := c.ShouldBind(subParam); err != nil {
 		result.Error(exception.WrapValidationError(err)).JSON(c)
 		return
