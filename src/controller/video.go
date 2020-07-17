@@ -20,7 +20,7 @@ import (
 )
 
 type VideoController struct {
-	Config       *config.ServerConfig   `di:"~"`
+	Config       *config.Config         `di:"~"`
 	Logger       *logrus.Logger         `di:"~"`
 	Mappers      *xentity.EntityMappers `di:"~"`
 	JwtService   *service.JwtService    `di:"~"`

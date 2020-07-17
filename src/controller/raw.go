@@ -14,7 +14,7 @@ import (
 )
 
 type RawController struct {
-	Config  *config.ServerConfig   `di:"~"`
+	Config  *config.Config         `di:"~"`
 	Logger  *logrus.Logger         `di:"~"`
 	Mappers *xentity.EntityMappers `di:"~"`
 }
@@ -44,13 +44,13 @@ func (r *RawController) UploadImage(c *gin.Context) {
 	}
 
 	filename := fmt.Sprintf("%s.jpg", xstring.CurrentTimeUuid(20))
-	savePath := fmt.Sprintf("%s%s", r.Config.FileConfig.ImagePath, filename)
+	savePath := fmt.Sprintf("%s%s", r.Config.File.ImagePath, filename)
 	if err := util.ImageUtil.SaveAsJpg(imageFile, ext, savePath); err != nil {
 		result.Error(exception.ImageSaveError).JSON(c)
 		return
 	}
 
-	url := fmt.Sprintf("%s%s", r.Config.FileConfig.ImageUrlPrefix, filename)
+	url := fmt.Sprintf("%s%s", r.Config.File.ImageUrlPrefix, filename)
 	result.Ok().PutData("url", url).PutData("size", imageHeader.Size).JSON(c)
 }
 
@@ -61,7 +61,7 @@ func (r *RawController) UploadImage(c *gin.Context) {
 // @ResponseHeader 200   { "Content-Type": "image/jpeg" }
 func (r *RawController) RawImage(c *gin.Context) {
 	filename := c.Param("filename")
-	filePath := fmt.Sprintf("%s%s", r.Config.FileConfig.ImagePath, filename)
+	filePath := fmt.Sprintf("%s%s", r.Config.File.ImagePath, filename)
 	if !util.CommonUtil.IsDirOrFileExist(filePath) {
 		result.Error(exception.ImageNotFoundError).JSON(c)
 		return

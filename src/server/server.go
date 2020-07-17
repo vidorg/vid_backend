@@ -15,12 +15,12 @@ import (
 
 type Server struct {
 	Engine *gin.Engine
-	Config *config.ServerConfig
+	Config *config.Config
 }
 
-func NewServer(config *config.ServerConfig) *Server {
+func NewServer(config *config.Config) *Server {
 	engine := gin.New()
-	gin.SetMode(config.MetaConfig.RunMode)
+	gin.SetMode(config.Meta.RunMode)
 
 	// setup
 	setupBinding()
@@ -33,7 +33,7 @@ func NewServer(config *config.ServerConfig) *Server {
 	engine.Use(middleware.CorsMiddleware(config))
 
 	// route
-	if config.MetaConfig.RunMode == "debug" {
+	if config.Meta.RunMode == "debug" {
 		ginpprof.Wrap(engine)
 	}
 	engine.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
@@ -49,7 +49,7 @@ func NewServer(config *config.ServerConfig) *Server {
 
 func (s *Server) Serve() {
 	server := &http.Server{
-		Addr:    fmt.Sprintf(":%d", s.Config.MetaConfig.Port),
+		Addr:    fmt.Sprintf(":%d", s.Config.Meta.Port),
 		Handler: s.Engine,
 	}
 

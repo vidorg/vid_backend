@@ -2,7 +2,7 @@ package database
 
 import (
 	"fmt"
-	"github.com/Aoi-hosizora/ahlib-gin-gorm/xgorm"
+	"github.com/Aoi-hosizora/ahlib-web/xgorm"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 	"github.com/sirupsen/logrus"
@@ -23,7 +23,7 @@ func SetupMySQLConn(cfg *config.MySQLConfig, logger *logrus.Logger) *GormHelper 
 	}
 
 	db.LogMode(cfg.IsLog)
-	db.SetLogger(NewGormLogger(logger))
+	db.SetLogger(xgorm.NewGormLogrus(logger))
 
 	xgorm.HookDeleteAtField(db, xgorm.DefaultDeleteAtTimeStamp)
 	db.SingularTable(true)

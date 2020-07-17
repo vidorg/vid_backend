@@ -2,6 +2,7 @@ package database
 
 import (
 	"fmt"
+	"github.com/Aoi-hosizora/ahlib-web/xredis"
 	"github.com/gomodule/redigo/redis"
 	"github.com/sirupsen/logrus"
 	"github.com/vidorg/vid_backend/src/config"
@@ -23,6 +24,6 @@ func SetupRedisConn(config *config.RedisConfig, logger *logrus.Logger) *RedisHel
 		log.Fatalln("Failed to connect redis:", err)
 	}
 
-	connLogger := NewRedisLogger(conn, logger)
+	connLogger := xredis.NewRedisLogrus(conn, logger)
 	return NewRedisHelper(connLogger)
 }

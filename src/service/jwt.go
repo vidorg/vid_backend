@@ -11,9 +11,9 @@ import (
 )
 
 type JwtService struct {
-	Config       *config.ServerConfig `di:"~"`
-	UserService  *UserService         `di:"~"`
-	TokenService *TokenService        `di:"~"`
+	Config       *config.Config `di:"~"`
+	UserService  *UserService   `di:"~"`
+	TokenService *TokenService  `di:"~"`
 
 	UserKey string `di:"-"`
 }
@@ -38,7 +38,7 @@ func (j *JwtService) JwtCheck(token string) (*po.User, *exception.Error) {
 	}
 
 	// parse
-	claims, err := util.AuthUtil.ParseToken(token, j.Config.JwtConfig)
+	claims, err := util.AuthUtil.ParseToken(token, j.Config.Jwt)
 	if err != nil {
 		if util.AuthUtil.IsTokenExpireError(err) {
 			return nil, exception.TokenExpiredError

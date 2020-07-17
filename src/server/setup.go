@@ -2,8 +2,8 @@ package server
 
 import (
 	"fmt"
-	"github.com/Aoi-hosizora/ahlib-gin-gorm/xdatetime"
-	"github.com/Aoi-hosizora/ahlib-gin-gorm/xgin"
+	"github.com/Aoi-hosizora/ahlib-web/xdatetime"
+	"github.com/Aoi-hosizora/ahlib-web/xgin"
 	"github.com/gin-gonic/gin"
 	"github.com/shiena/ansicolor"
 	"github.com/sirupsen/logrus"
@@ -28,16 +28,16 @@ func setupBinding() {
 	xgin.SetupSpecificRegexpBinding("phone", "^(13[0-9]|15[012356789]|17[678]|18[0-9]|14[57])[0-9]{8}$") // 11
 }
 
-func setupLogger(config *config.ServerConfig) *logrus.Logger {
+func setupLogger(config *config.Config) *logrus.Logger {
 	logger := logrus.New()
 	logLevel := logrus.WarnLevel
-	if config.MetaConfig.RunMode == "debug" {
+	if config.Meta.RunMode == "debug" {
 		logLevel = logrus.DebugLevel
 	}
 
 	// file
 	fileHook, err := rotatefilehook.NewRotateFileHook(rotatefilehook.RotateFileConfig{
-		Filename:   config.MetaConfig.LogPath,
+		Filename:   config.Meta.LogPath,
 		MaxSize:    50,
 		MaxBackups: 3,
 		MaxAge:     30,

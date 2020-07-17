@@ -11,7 +11,7 @@ import (
 )
 
 type TokenService struct {
-	Config *config.ServerConfig  `di:"~"`
+	Config *config.Config        `di:"~"`
 	Logger *logrus.Logger        `di:"~"`
 	Conn   *database.RedisHelper `di:"~"`
 }
@@ -23,7 +23,7 @@ func NewTokenService(dic *xdi.DiContainer) *TokenService {
 }
 
 func (t *TokenService) concat(uid string, token string) string {
-	return fmt.Sprintf(t.Config.JwtConfig.RedisFmt, uid, token)
+	return fmt.Sprintf(t.Config.Jwt.RedisFmt, uid, token)
 }
 
 func (t *TokenService) Query(token string) bool {

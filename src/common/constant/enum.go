@@ -6,9 +6,8 @@ func (s SexEnum) String() string {
 	return string(s)
 }
 
+// SexEnum
 const (
-	AuthAdmin string = "admin"
-
 	SexUnknown SexEnum = "unknown"
 	SexMale    SexEnum = "male"
 	SexFemale  SexEnum = "female"
@@ -24,3 +23,8 @@ func ParseSexEnum(sexString string) SexEnum {
 		return SexUnknown
 	}
 }
+
+// AuthToken
+const (
+	AuthAdmin string = "admin"
+)

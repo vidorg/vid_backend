@@ -6,7 +6,7 @@ import (
 	"github.com/vidorg/vid_backend/src/config"
 )
 
-func CreateEntityMappers(config *config.ServerConfig) *xentity.EntityMappers {
+func CreateEntityMappers(config *config.Config) *xentity.EntityMappers {
 	mappers := xentity.NewEntityMappers()
 	addDtoMappers(config, mappers)
 	addParamMappers(config, mappers)

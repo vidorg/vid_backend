@@ -9,7 +9,7 @@ import (
 	"github.com/vidorg/vid_backend/src/service"
 )
 
-func ProvideServices(config *config.ServerConfig, logger *logrus.Logger) *xdi.DiContainer {
+func ProvideServices(config *config.Config, logger *logrus.Logger) *xdi.DiContainer {
 	dic := xdi.NewDiContainer()
 
 	dic.Provide(config)
@@ -18,8 +18,8 @@ func ProvideServices(config *config.ServerConfig, logger *logrus.Logger) *xdi.Di
 	dic.Provide(profile.CreateEntityMappers(config))
 	dic.Provide(profile.CreatePropertyMappers())
 
-	dic.Provide(database.SetupMySQLConn(config.MySQLConfig, logger))
-	dic.Provide(database.SetupRedisConn(config.RedisConfig, logger))
+	dic.Provide(database.SetupMySQLConn(config.MySQL, logger))
+	dic.Provide(database.SetupRedisConn(config.Redis, logger))
 
 	dic.Provide(service.NewAccountService(dic))
 	dic.Provide(service.NewTokenService(dic))

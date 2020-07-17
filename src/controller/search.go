@@ -17,7 +17,7 @@ import (
 )
 
 type SearchController struct {
-	Config         *config.ServerConfig    `di:"~"`
+	Config         *config.Config          `di:"~"`
 	Logger         *logrus.Logger          `di:"~"`
 	Mappers        *xentity.EntityMappers  `di:"~"`
 	SearchService  *service.SearchService  `di:"~"`

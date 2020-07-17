@@ -1,8 +1,8 @@
 package po
 
 import (
-	"github.com/Aoi-hosizora/ahlib-gin-gorm/xdatetime"
-	"github.com/Aoi-hosizora/ahlib-gin-gorm/xgorm"
+	"github.com/Aoi-hosizora/ahlib-web/xdatetime"
+	"github.com/Aoi-hosizora/ahlib-web/xgorm"
 	"github.com/vidorg/vid_backend/src/common/constant"
 	"time"
 )

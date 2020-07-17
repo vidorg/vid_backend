@@ -11,7 +11,7 @@ import (
 )
 
 type CasbinService struct {
-	Config     *config.ServerConfig `di:"~"`
+	Config     *config.Config       `di:"~"`
 	Logger     *logrus.Logger       `di:"~"`
 	Db         *database.GormHelper `di:"~"`
 	JwtService *JwtService          `di:"~"`
@@ -32,7 +32,7 @@ func NewCasbinService(dic *xdi.DiContainer) *CasbinService {
 }
 
 func (c *CasbinService) GetEnforcer() (*casbin.Enforcer, error) {
-	enforcer, err := casbin.NewEnforcer(c.Config.CasbinConfig.ConfigPath, c.Adapter)
+	enforcer, err := casbin.NewEnforcer(c.Config.Casbin.ConfigPath, c.Adapter)
 	if err != nil {
 		return nil, err
 	}

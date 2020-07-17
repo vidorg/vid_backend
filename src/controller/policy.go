@@ -16,7 +16,7 @@ import (
 )
 
 type PolicyController struct {
-	Config        *config.ServerConfig   `di:"~"`
+	Config        *config.Config         `di:"~"`
 	Mapper        *xentity.EntityMappers `di:"~"`
 	UserService   *service.UserService   `di:"~"`
 	CasbinService *service.CasbinService `di:"~"`

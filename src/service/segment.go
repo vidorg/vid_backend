@@ -8,7 +8,7 @@ import (
 )
 
 type SegmentService struct {
-	Config *config.ServerConfig `di:"~"`
+	Config *config.Config `di:"~"`
 
 	Segmenter *sego.Segmenter `di:"-"`
 }
@@ -19,7 +19,7 @@ func NewSegmentService(dic *xdi.DiContainer) *SegmentService {
 
 	// TODO
 	// var segmenter sego.Segmenter
-	// segmenter.LoadDictionary(srv.Config.SearchConfig.DictPath)
+	// segmenter.LoadDictionary(srv.Config.Search.DictPath)
 	// srv.Segmenter = &segmenter
 
 	return srv

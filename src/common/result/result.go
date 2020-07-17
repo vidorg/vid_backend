@@ -1,30 +1,32 @@
 package result
 
 import (
+	"github.com/Aoi-hosizora/ahlib-web/xdto"
+	"github.com/Aoi-hosizora/ahlib-web/xgin"
+	"github.com/gin-gonic/gin"
 	"github.com/vidorg/vid_backend/src/common/exception"
 	"net/http"
 	"strings"
-
-	"github.com/Aoi-hosizora/ahlib/xlinkedhashmap"
-	"github.com/gin-gonic/gin"
 )
 
 type Result struct {
-	Code    int32                         `json:"code"`
-	Message string                        `json:"message"`
-	Data    *xlinkedhashmap.LinkedHashMap `json:"data,omitempty"`
-	Error   *exception.ErrorDto           `json:"error,omitempty"`
+	Status  int32          `json:"-"`
+	Code    int32          `json:"code"`
+	Message string         `json:"message"`
+	Data    interface{}    `json:"data,omitempty"`
+	Error   *xdto.ErrorDto `json:"error,omitempty"`
 }
 
-func Status(code int32) *Result {
-	message := http.StatusText(int(code))
-	if code == 200 {
+func Status(status int32) *Result {
+	message := http.StatusText(int(status))
+	if status == 200 {
 		message = "success"
 	} else if message == "" {
 		message = "unknown"
 	}
 	return &Result{
-		Code:    code,
+		Status:  status,
+		Code:    status,
 		Message: strings.ToLower(message),
 	}
 }
@@ -33,8 +35,13 @@ func Ok() *Result {
 	return Status(http.StatusOK)
 }
 
-func Error(se *exception.Error) *Result {
-	return Status(se.Code).SetMessage(se.Message)
+func Error(e *exception.Error) *Result {
+	return Status(e.Status).SetCode(e.Code).SetMessage(e.Message)
+}
+
+func (r *Result) SetStatus(status int32) *Result {
+	r.Status = status
+	return r
 }
 
 func (r *Result) SetCode(code int32) *Result {
@@ -47,41 +54,27 @@ func (r *Result) SetMessage(message string) *Result {
 	return r
 }
 
+func (r *Result) SetData(data interface{}) *Result {
+	r.Data = data
+	return r
+}
+
+func (r *Result) SetPage(page int32, limit int32, total int32, data interface{}) *Result {
+	r.Data = NewPage(page, limit, total, data)
+	return r
+}
+
 func (r *Result) SetError(err error, c *gin.Context) *Result {
 	if gin.Mode() == gin.DebugMode {
-		r.Error = exception.NewErrorDto(err, -1, c, false)
+		r.Error = xgin.BuildBasicErrorDto(err, c)
 	}
-	return r
-}
-
-func (r *Result) SetData(data interface{}) *Result {
-	r.Data = xlinkedhashmap.ObjectToLinkedHashMap(data)
-	return r
-}
-
-func (r *Result) PutData(field string, data interface{}) *Result {
-	if r.Data == nil {
-		r.Data = xlinkedhashmap.NewLinkedHashMap()
-	}
-	r.Data.Set(field, data)
-	return r
-}
-
-func (r *Result) SetPage(total int32, page int32, limit int32, data interface{}) *Result {
-	if r.Data == nil {
-		r.Data = xlinkedhashmap.NewLinkedHashMap()
-	}
-	r.Data.Set("total", total)
-	r.Data.Set("page", page)
-	r.Data.Set("limit", limit)
-	r.Data.Set("data", data)
 	return r
 }
 
 func (r *Result) JSON(c *gin.Context) {
-	c.JSON(int(r.Code), r)
+	c.JSON(int(r.Status), r)
 }
 
 func (r *Result) XML(c *gin.Context) {
-	c.XML(int(r.Code), r)
+	c.XML(int(r.Status), r)
 }

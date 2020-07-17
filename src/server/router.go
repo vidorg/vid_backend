@@ -40,7 +40,7 @@ func setupCommonRouter(engine *gin.Engine) {
 
 func setupApiRouter(router *gin.Engine, dic *xdi.DiContainer) {
 	container := &struct {
-		Config        *config.ServerConfig   `di:"~"`
+		Config        *config.Config         `di:"~"`
 		JwtService    *service.JwtService    `di:"~"`
 		CasbinService *service.CasbinService `di:"~"`
 	}{}
@@ -49,7 +49,7 @@ func setupApiRouter(router *gin.Engine, dic *xdi.DiContainer) {
 	jwtMw := middleware.JwtMiddleware(container.JwtService)
 	casbinMw := middleware.CasbinMiddleware(container.JwtService, container.CasbinService)
 	adminMw := middleware.AuthMiddleware(jwtMw, casbinMw)
-	limit2MMw := middleware.LimitMiddleware(int64(container.Config.FileConfig.ImageMaxSize << 20)) // MB
+	limit2MMw := middleware.LimitMiddleware(int64(container.Config.File.ImageMaxSize << 20)) // MB
 
 	v1 := router.Group("/v1")
 	{

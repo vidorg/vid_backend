@@ -1,7 +1,7 @@
 package profile
 
 import (
-	"github.com/Aoi-hosizora/ahlib-gin-gorm/xdatetime"
+	"github.com/Aoi-hosizora/ahlib-web/xdatetime"
 	"github.com/Aoi-hosizora/ahlib/xcondition"
 	"github.com/Aoi-hosizora/ahlib/xentity"
 	"github.com/vidorg/vid_backend/src/common/constant"
@@ -12,7 +12,7 @@ import (
 	"github.com/vidorg/vid_backend/src/util"
 )
 
-func addDtoMappers(config *config.ServerConfig, mappers *xentity.EntityMappers) {
+func addDtoMappers(config *config.Config, mappers *xentity.EntityMappers) {
 	// userPo -> userDto
 	mappers.AddMapper(xentity.NewEntityMapper(&po.User{}, func() interface{} { return &dto.UserDto{} }, func(from interface{}, to interface{}) error {
 		user := from.(*po.User)
@@ -22,7 +22,7 @@ func addDtoMappers(config *config.ServerConfig, mappers *xentity.EntityMappers) 
 		userDto.Username = user.Username
 		userDto.Sex = user.Sex.String()
 		userDto.Profile = user.Profile
-		userDto.AvatarUrl = util.CommonUtil.GetServerUrl(user.AvatarUrl, config.FileConfig.ImageUrlPrefix)
+		userDto.AvatarUrl = util.CommonUtil.GetServerUrl(user.AvatarUrl, config.File.ImageUrlPrefix)
 		userDto.Birthday = user.Birthday.String()
 		userDto.Role = user.Role
 		userDto.RegisterTime = xdatetime.NewJsonDateTime(user.CreatedAt).String()
@@ -39,7 +39,7 @@ func addDtoMappers(config *config.ServerConfig, mappers *xentity.EntityMappers) 
 		videoDto.Title = video.Title
 		videoDto.Description = video.Description
 		videoDto.VideoUrl = video.VideoUrl
-		videoDto.CoverUrl = util.CommonUtil.GetServerUrl(video.CoverUrl, config.FileConfig.ImageUrlPrefix)
+		videoDto.CoverUrl = util.CommonUtil.GetServerUrl(video.CoverUrl, config.File.ImageUrlPrefix)
 		videoDto.UploadTime = xdatetime.NewJsonDateTime(video.CreatedAt).String()
 		videoDto.UpdateTime = xdatetime.NewJsonDateTime(video.UpdatedAt).String()
 		videoDto.Author = xcondition.First(mappers.Map(video.Author, &dto.UserDto{})).(*dto.UserDto)
@@ -58,7 +58,7 @@ func addDtoMappers(config *config.ServerConfig, mappers *xentity.EntityMappers) 
 	}))
 }
 
-func addParamMappers(config *config.ServerConfig, mappers *xentity.EntityMappers) {
+func addParamMappers(config *config.Config, mappers *xentity.EntityMappers) {
 	// userParam -> userPo
 	mappers.AddMapper(xentity.NewEntityMapper(&param.UserParam{}, func() interface{} { return &po.User{} }, func(from interface{}, to interface{}) error {
 		userParam := from.(*param.UserParam)
@@ -69,7 +69,7 @@ func addParamMappers(config *config.ServerConfig, mappers *xentity.EntityMappers
 		user.Sex = constant.ParseSexEnum(userParam.Sex)
 		user.Birthday = xcondition.First(xdatetime.ParseISO8601Date(userParam.Birthday)).(xdatetime.JsonDate)
 		user.PhoneNumber = userParam.PhoneNumber
-		user.AvatarUrl = util.CommonUtil.GetFilenameFromUrl(userParam.AvatarUrl, config.FileConfig.ImageUrlPrefix)
+		user.AvatarUrl = util.CommonUtil.GetFilenameFromUrl(userParam.AvatarUrl, config.File.ImageUrlPrefix)
 		return nil
 	}))
 
@@ -80,7 +80,7 @@ func addParamMappers(config *config.ServerConfig, mappers *xentity.EntityMappers
 
 		video.Title = videoParam.Title
 		video.Description = *videoParam.Description
-		video.CoverUrl = util.CommonUtil.GetFilenameFromUrl(videoParam.CoverUrl, config.FileConfig.ImageUrlPrefix)
+		video.CoverUrl = util.CommonUtil.GetFilenameFromUrl(videoParam.CoverUrl, config.File.ImageUrlPrefix)
 		video.VideoUrl = videoParam.VideoUrl
 		return nil
 	}))

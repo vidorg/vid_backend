@@ -19,7 +19,7 @@ import (
 )
 
 type AuthController struct {
-	Config         *config.ServerConfig    `di:"~"`
+	Config         *config.Config          `di:"~"`
 	Logger         *logrus.Logger          `di:"~"`
 	Mappers        *xentity.EntityMappers  `di:"~"`
 	JwtService     *service.JwtService     `di:"~"`
@@ -45,7 +45,7 @@ func (a *AuthController) Login(c *gin.Context) {
 		return
 	}
 	if loginParam.Expire <= 0 {
-		loginParam.Expire = a.Config.JwtConfig.Expire
+		loginParam.Expire = a.Config.Jwt.Expire
 	}
 
 	account := a.AccountService.QueryByUsername(loginParam.Username)
@@ -58,7 +58,7 @@ func (a *AuthController) Login(c *gin.Context) {
 		return
 	}
 
-	token, err := util.AuthUtil.GenerateToken(account.User.Uid, loginParam.Expire, a.Config.JwtConfig)
+	token, err := util.AuthUtil.GenerateToken(account.User.Uid, loginParam.Expire, a.Config.Jwt)
 	if err != nil {
 		result.Error(exception.LoginError).JSON(c)
 		return
