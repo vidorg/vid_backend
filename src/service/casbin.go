@@ -33,10 +33,12 @@ func (c *CasbinService) GetEnforcer() (*casbin.Enforcer, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	err = enforcer.LoadPolicy()
 	if err != nil {
 		return nil, err
 	}
+
 	return enforcer, nil
 }
 
@@ -45,6 +47,7 @@ func (c *CasbinService) Enforce(sub string, obj string, act string) (bool, error
 	if err != nil {
 		return false, nil
 	}
+
 	return enforcer.Enforce(sub, obj, act)
 }
 
@@ -53,15 +56,17 @@ func (c *CasbinService) GetRoles() ([]string, bool) {
 	if err != nil {
 		return nil, false
 	}
+
 	return enforcer.GetAllRoles(), true
 }
 
-func (c *CasbinService) GetPolicies(limit int32, page int32) (int32, []*po.Policy) {
-	total := 0
-	policies := make([]*po.Policy, 0)
+func (c *CasbinService) GetPolicies(limit int32, page int32) (total int32, policies []*po.Policy) {
+	total = 0
+	policies = make([]*po.Policy, 0)
 	c.db.Table("tbl_casbin_rule").Count(&total)
 	c.db.Table("tbl_casbin_rule").Limit(limit).Offset((page - 1) * limit).Find(&policies)
-	return int32(total), policies
+
+	return total, policies
 }
 
 func (c *CasbinService) AddPolicy(sub string, obj string, act string) database.DbStatus {
@@ -69,6 +74,7 @@ func (c *CasbinService) AddPolicy(sub string, obj string, act string) database.D
 	if err != nil {
 		return database.DbFailed
 	}
+
 	ok, err := enforcer.AddPolicy(sub, obj, act)
 	if !ok {
 		return database.DbExisted
@@ -83,6 +89,7 @@ func (c *CasbinService) DeletePolicy(sub string, obj string, act string) databas
 	if err != nil {
 		return database.DbFailed
 	}
+
 	ok, err := enforcer.RemovePolicy(sub, obj, act)
 	if !ok {
 		return database.DbNotFound

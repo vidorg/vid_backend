@@ -5,6 +5,7 @@ import (
 	"github.com/Aoi-hosizora/ahlib/xproperty"
 	"github.com/jinzhu/gorm"
 	"github.com/vidorg/vid_backend/src/database"
+	"github.com/vidorg/vid_backend/src/database/helper"
 	"github.com/vidorg/vid_backend/src/model/dto"
 	"github.com/vidorg/vid_backend/src/model/param"
 	"github.com/vidorg/vid_backend/src/model/po"
@@ -24,32 +25,51 @@ func NewUserService() *UserService {
 	}
 }
 
-func (u *UserService) QueryAll(pageOrder *param.PageOrderParam) ([]*po.User, int32) {
-	users := make([]*po.User, 0)
-	total := u.db.QueryMultiHelper(&po.User{}, pageOrder.Limit, pageOrder.Page, &po.User{}, u._orderByFunc(pageOrder.Order), &users)
+func (u *UserService) QueryAll(pageOrder *param.PageOrderParam) (users []*po.User, total int32) {
+	total = 0
+	u.db.Model(&po.User{}).Count(&total)
+
+	users = make([]*po.User, 0)
+	helper.GormPager(u.db, pageOrder.Limit, pageOrder.Page).
+		Model(&po.User{}).
+		Order(u._orderByFunc(pageOrder.Order)).
+		Find(&users)
+
 	return users, total
 }
 
 func (u *UserService) QueryByUid(uid int32) *po.User {
-	out := u.db.QueryFirstHelper(&po.User{}, &po.User{Uid: uid})
-	if out == nil {
+	user := &po.User{}
+	rdb := u.db.Model(&po.User{}).Where(&po.User{Uid: uid}).First(user)
+	if rdb.RecordNotFound() {
 		return nil
 	}
-	return out.(*po.User)
+	return user
 }
 
 func (u *UserService) Exist(uid int32) bool {
-	return u.db.ExistHelper(&po.User{}, &po.User{Uid: uid})
+	return helper.GormExist(u.db, &po.User{}, &po.User{Uid: uid})
 }
 
 func (u *UserService) Update(user *po.User) database.DbStatus {
-	return u.db.UpdateHelper(&po.User{}, user)
+	return helper.GormUpdate(u.db, &po.User{}, user)
 }
 
 func (u *UserService) Delete(uid int32) database.DbStatus {
-	ret := u.db.DeleteHelper(&po.User{}, &po.User{Uid: uid})
-	if ret == database.DbSuccess {
-		u.db.DeleteHelper(&po.Account{}, &po.Account{Uid: uid})
+	tx := u.db.Begin()
+
+	status := helper.GormDelete(tx, &po.User{}, &po.User{Uid: uid})
+	if status != database.DbSuccess {
+		tx.Rollback()
+		return status
 	}
-	return ret
+
+	status = helper.GormDelete(u.db, &po.Account{}, &po.Account{Uid: uid})
+	if status != database.DbSuccess {
+		tx.Rollback()
+		return status
+	}
+
+	tx.Commit()
+	return database.DbSuccess
 }

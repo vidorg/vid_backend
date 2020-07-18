@@ -35,9 +35,6 @@ const (
 	// /src/service/video.go
 	SVideoService xdi.ServiceName = "video-service"
 
-	// /src/service/search.go
-	SSearchService xdi.ServiceName = "search-service"
-
 	// /src/service/jwt.go
 	SJwtService xdi.ServiceName = "jwt-service"
 

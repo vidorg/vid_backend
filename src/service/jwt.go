@@ -29,11 +29,11 @@ func NewJwtService() *JwtService {
 }
 
 func (j *JwtService) GetToken(c *gin.Context) string {
-	if token := c.Request.Header.Get("Authorization"); token != "" {
+	token := c.Request.Header.Get("Authorization")
+	if token != "" {
 		return token
-	} else {
-		return c.DefaultQuery("Authorization", "")
 	}
+	return c.DefaultQuery("Authorization", "")
 }
 
 func (j *JwtService) JwtCheck(token string) (*po.User, *exception.Error) {
@@ -68,7 +68,7 @@ func (j *JwtService) JwtCheck(token string) (*po.User, *exception.Error) {
 
 func (j *JwtService) GetContextUser(c *gin.Context) *po.User {
 	_user, exist := c.Get(j.UserKey)
-	if exist { // has jwtMw
+	if exist { // jwt middleware has checked (or this method will not be invoked)
 		user, ok := _user.(*po.User)
 		if !ok {
 			result.Error(exception.UnAuthorizedError).JSON(c)
@@ -76,14 +76,14 @@ func (j *JwtService) GetContextUser(c *gin.Context) *po.User {
 			return nil
 		}
 		return user
-	} else { // no jwtMw
-		token := j.GetToken(c)
-		user, err := j.JwtCheck(token)
-		if err != nil {
-			return nil // auth failed
-		} else {
-			c.Set(j.UserKey, user)
-			return user
-		}
 	}
+
+	// otherwise, jwt is not required in this http method
+	token := j.GetToken(c)
+	user, err := j.JwtCheck(token)
+	if err != nil {
+		return nil // auth failed
+	}
+	c.Set(j.UserKey, user)
+	return user
 }

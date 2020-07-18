@@ -94,12 +94,5 @@ func initRoute(engine *gin.Engine) {
 			rawGroup.POST("/image", adminMw, limit2MMw, rawCtrl.UploadImage)
 			rawGroup.GET("/image/:filename", rawCtrl.RawImage)
 		}
-
-		// searchCtrl := controller.NewSearchController()
-		// searchGroup := v1.Group("/search")
-		// {
-		// 	searchGroup.GET("/user", searchCtrl.SearchUser)
-		// 	searchGroup.GET("/video", searchCtrl.SearchVideo)
-		// }
 	}
 }

@@ -66,7 +66,6 @@ func Provide(configPath string) {
 	// /src/service/video.go
 	xdi.ProvideName(sn.SVideoService, service.NewVideoService())
 
-	// /src/service/search.go
 	xdi.ProvideName(sn.SSearchService, service.NewSearchService())
 
 	// /src/service/jwt.go
