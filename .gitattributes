@@ -1,4 +1,3 @@
 * text=auto
 
 ./docs/script/* linguist-documentation
-./usr/* -linguist-detectable

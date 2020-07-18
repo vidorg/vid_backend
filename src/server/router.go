@@ -87,12 +87,5 @@ func initRoute(engine *gin.Engine) {
 			videoGroup.PUT("/:vid", adminMw, videoCtrl.UpdateVideo)
 			videoGroup.DELETE("/:vid", adminMw, videoCtrl.DeleteVideo)
 		}
-
-		rawCtrl := controller.NewRawController()
-		rawGroup := v1.Group("/raw")
-		{
-			rawGroup.POST("/image", adminMw, limit2MMw, rawCtrl.UploadImage)
-			rawGroup.GET("/image/:filename", rawCtrl.RawImage)
-		}
 	}
 }

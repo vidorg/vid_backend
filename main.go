@@ -8,7 +8,7 @@ import (
 )
 
 var (
-	fConfig = flag.String("config", "./config/config.yaml", "change config path")
+	fConfig = flag.String("config", "./config.yaml", "change config path")
 	fHelp   = flag.Bool("h", false, "show help")
 )
 

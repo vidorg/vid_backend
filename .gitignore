@@ -9,10 +9,3 @@ build/
 log/
 *.rdb
 config.yaml
-
-usr/image/*.*
-usr/video/*.*
-
-!.gitkeep
-!usr/image/avatar.jpg
-!usr/image/cover.jpg

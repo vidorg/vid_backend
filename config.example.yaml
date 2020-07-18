@@ -36,4 +36,4 @@ jwt:
   redis-fmt: vid-token-%s-%s
 
 casbin:
-  config-path: ./config/rbac-model.conf
+  config-path: ./rbac-model.conf
