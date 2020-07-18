@@ -5,7 +5,6 @@ import (
 	"github.com/Aoi-hosizora/ahlib/xentity"
 	"github.com/Aoi-hosizora/ahlib/xslice"
 	"github.com/gin-gonic/gin"
-	"github.com/sirupsen/logrus"
 	"github.com/vidorg/vid_backend/src/common/constant"
 	"github.com/vidorg/vid_backend/src/common/exception"
 	"github.com/vidorg/vid_backend/src/common/result"
@@ -14,21 +13,23 @@ import (
 	"github.com/vidorg/vid_backend/src/model/dto"
 	"github.com/vidorg/vid_backend/src/model/param"
 	"github.com/vidorg/vid_backend/src/model/po"
+	"github.com/vidorg/vid_backend/src/provide/sn"
 	"github.com/vidorg/vid_backend/src/service"
 	"net/http"
 )
 
 type VideoController struct {
-	Config       *config.Config        `di:"~"`
-	Logger       *logrus.Logger        `di:"~"`
-	JwtService   *service.JwtService   `di:"~"`
-	VideoService *service.VideoService `di:"~"`
+	config       *config.Config
+	jwtService   *service.JwtService
+	videoService *service.VideoService
 }
 
-func NewVideoController(dic *xdi.DiContainer) *VideoController {
-	ctrl := &VideoController{}
-	dic.MustInject(ctrl)
-	return ctrl
+func NewVideoController() *VideoController {
+	return &VideoController{
+		config:       xdi.GetByNameForce(sn.SConfig).(*config.Config),
+		jwtService:   xdi.GetByNameForce(sn.SJwtService).(*service.JwtService),
+		videoService: xdi.GetByNameForce(sn.SVideoService).(*service.VideoService),
+	}
 }
 
 // @Router              /v1/video [GET]
@@ -40,8 +41,8 @@ func NewVideoController(dic *xdi.DiContainer) *VideoController {
 // @Template            Order Page
 // @ResponseModel 200   #Result<Page<VideoDto>>
 func (v *VideoController) QueryAllVideos(c *gin.Context) {
-	pageOrder := param.BindPageOrder(c, v.Config)
-	videos, count := v.VideoService.QueryAll(pageOrder)
+	pageOrder := param.BindPageOrder(c, v.config)
+	videos, count := v.videoService.QueryAll(pageOrder)
 
 	retDto := xentity.MustMapSlice(xslice.Sti(videos), &dto.VideoDto{}).([]*dto.VideoDto)
 	result.Ok().SetPage(count, pageOrder.Page, pageOrder.Limit, retDto).JSON(c)
@@ -59,9 +60,9 @@ func (v *VideoController) QueryVideosByUid(c *gin.Context) {
 		result.Error(exception.RequestParamError).JSON(c)
 		return
 	}
-	pageOrder := param.BindPageOrder(c, v.Config)
+	pageOrder := param.BindPageOrder(c, v.config)
 
-	videos, count, status := v.VideoService.QueryByUid(uid, pageOrder)
+	videos, count, status := v.videoService.QueryByUid(uid, pageOrder)
 	if status == database.DbNotFound {
 		result.Error(exception.UserNotFoundError).JSON(c)
 		return
@@ -83,7 +84,7 @@ func (v *VideoController) QueryVideoByVid(c *gin.Context) {
 		return
 	}
 
-	video := v.VideoService.QueryByVid(vid)
+	video := v.videoService.QueryByVid(vid)
 	if video == nil {
 		result.Error(exception.VideoNotFoundError).JSON(c)
 		return
@@ -100,7 +101,7 @@ func (v *VideoController) QueryVideoByVid(c *gin.Context) {
 // @Param               param body #VideoParam true "请求参数"
 // @ResponseModel 201   #Result<VideoDto>
 func (v *VideoController) InsertVideo(c *gin.Context) {
-	authUser := v.JwtService.GetContextUser(c)
+	authUser := v.jwtService.GetContextUser(c)
 	videoParam := &param.VideoParam{}
 	if err := c.ShouldBind(videoParam); err != nil {
 		result.Error(exception.WrapValidationError(err)).JSON(c)
@@ -113,7 +114,7 @@ func (v *VideoController) InsertVideo(c *gin.Context) {
 	}
 
 	xentity.MustMapProp(videoParam, video)
-	status := v.VideoService.Insert(video)
+	status := v.videoService.Insert(video)
 	if status == database.DbExisted {
 		result.Error(exception.VideoUrlExistError).JSON(c)
 		return
@@ -136,7 +137,7 @@ func (v *VideoController) InsertVideo(c *gin.Context) {
 // @Param               param body #VideoParam true "请求参数"
 // @ResponseModel 200   #Result<VideoDto>
 func (v *VideoController) UpdateVideo(c *gin.Context) {
-	authUser := v.JwtService.GetContextUser(c)
+	authUser := v.jwtService.GetContextUser(c)
 	vid, ok := param.BindRouteId(c, "vid")
 	if !ok {
 		result.Error(exception.RequestParamError).JSON(c)
@@ -148,7 +149,7 @@ func (v *VideoController) UpdateVideo(c *gin.Context) {
 		return
 	}
 
-	video := v.VideoService.QueryByVid(vid)
+	video := v.videoService.QueryByVid(vid)
 	if video == nil {
 		result.Error(exception.VideoNotFoundError).JSON(c)
 		return
@@ -158,7 +159,7 @@ func (v *VideoController) UpdateVideo(c *gin.Context) {
 	}
 	// Update
 	xentity.MustMapProp(videoParam, video)
-	status := v.VideoService.Update(video)
+	status := v.videoService.Update(video)
 	if status == database.DbExisted {
 		result.Error(exception.VideoUrlExistError).JSON(c)
 		return
@@ -183,7 +184,7 @@ func (v *VideoController) UpdateVideo(c *gin.Context) {
 // @Param               vid path string true "视频id"
 // @ResponseModel 200   #Result
 func (v *VideoController) DeleteVideo(c *gin.Context) {
-	authUser := v.JwtService.GetContextUser(c)
+	authUser := v.jwtService.GetContextUser(c)
 	vid, ok := param.BindRouteId(c, "vid")
 	if !ok {
 		result.Error(exception.RequestParamError).JSON(c)
@@ -192,9 +193,9 @@ func (v *VideoController) DeleteVideo(c *gin.Context) {
 
 	var status database.DbStatus
 	if authUser.Role == constant.AuthAdmin {
-		status = v.VideoService.Delete(vid)
+		status = v.videoService.Delete(vid)
 	} else {
-		status = v.VideoService.DeleteBy2Id(vid, authUser.Uid)
+		status = v.videoService.DeleteBy2Id(vid, authUser.Uid)
 	}
 	if status == database.DbNotFound {
 		result.Error(exception.VideoNotFoundError).JSON(c)

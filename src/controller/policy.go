@@ -11,19 +11,36 @@ import (
 	"github.com/vidorg/vid_backend/src/database"
 	"github.com/vidorg/vid_backend/src/model/dto"
 	"github.com/vidorg/vid_backend/src/model/param"
+	"github.com/vidorg/vid_backend/src/provide/sn"
 	"github.com/vidorg/vid_backend/src/service"
 )
 
 type PolicyController struct {
-	Config        *config.Config         `di:"~"`
-	UserService   *service.UserService   `di:"~"`
-	CasbinService *service.CasbinService `di:"~"`
+	config        *config.Config
+	userService   *service.UserService
+	casbinService *service.CasbinService
 }
 
-func NewPolicyController(dic *xdi.DiContainer) *PolicyController {
-	ctrl := &PolicyController{}
-	dic.MustInject(ctrl)
-	return ctrl
+func NewPolicyController() *PolicyController {
+	return &PolicyController{
+		config:        xdi.GetByNameForce(sn.SConfig).(*config.Config),
+		userService:   xdi.GetByNameForce(sn.SUserService).(*service.UserService),
+		casbinService: xdi.GetByNameForce(sn.SCasbinService).(*service.CasbinService),
+	}
+}
+
+// @Router              /v1/policy [GET]
+// @Summary             查询所有策略
+// @Tag                 Policy
+// @Security            Jwt
+// @Template            Page
+// @ResponseModel 200   #Result<Page<PolicyDto>>
+func (r *PolicyController) Query(c *gin.Context) {
+	page := param.BindPage(c, r.config)
+	total, policies := r.casbinService.GetPolicies(page.Limit, page.Page)
+
+	policiesDto := xentity.MustMapSlice(xslice.Sti(policies), &dto.PolicyDto{}).([]*dto.PolicyDto)
+	result.Ok().SetPage(total, page.Page, page.Limit, policiesDto).JSON(c)
 }
 
 // @Router              /v1/policy/role/{uid} [PUT]
@@ -41,7 +58,7 @@ func (r *PolicyController) SetRole(c *gin.Context) {
 		return
 	}
 
-	user := r.UserService.QueryByUid(uid)
+	user := r.userService.QueryByUid(uid)
 	if user == nil {
 		result.Error(exception.UserNotFoundError).JSON(c)
 		return
@@ -52,7 +69,7 @@ func (r *PolicyController) SetRole(c *gin.Context) {
 	}
 	user.Role = roleParam.Role
 
-	status := r.UserService.Update(user)
+	status := r.userService.Update(user)
 	if status == database.DbNotFound {
 		result.Error(exception.UserNotFoundError).JSON(c)
 		return
@@ -62,20 +79,6 @@ func (r *PolicyController) SetRole(c *gin.Context) {
 	}
 
 	result.Ok().JSON(c)
-}
-
-// @Router              /v1/policy [GET]
-// @Summary             查询所有策略
-// @Tag                 Policy
-// @Security            Jwt
-// @Template            Page
-// @ResponseModel 200   #Result<Page<PolicyDto>>
-func (r *PolicyController) Query(c *gin.Context) {
-	page := param.BindPage(c, r.Config)
-	total, policies := r.CasbinService.GetPolicies(page.Limit, page.Page)
-
-	policiesDto := xentity.MustMapSlice(xslice.Sti(policies), &dto.PolicyDto{}).([]*dto.PolicyDto)
-	result.Ok().SetPage(total, page.Page, page.Limit, policiesDto).JSON(c)
 }
 
 // @Router              /v1/policy [POST]
@@ -90,7 +93,7 @@ func (r *PolicyController) Insert(c *gin.Context) {
 		result.Error(exception.RequestParamError).JSON(c)
 	}
 
-	status := r.CasbinService.AddPolicy(policyParam.Role, policyParam.Path, policyParam.Method)
+	status := r.casbinService.AddPolicy(policyParam.Role, policyParam.Path, policyParam.Method)
 	if status == database.DbExisted {
 		result.Error(exception.PolicyExistedError).JSON(c)
 		return
@@ -114,7 +117,7 @@ func (r *PolicyController) Delete(c *gin.Context) {
 		result.Error(exception.RequestParamError).JSON(c)
 	}
 
-	status := r.CasbinService.DeletePolicy(policyParam.Role, policyParam.Path, policyParam.Method)
+	status := r.casbinService.DeletePolicy(policyParam.Role, policyParam.Path, policyParam.Method)
 	if status == database.DbNotFound {
 		result.Error(exception.PolicyNotFountError).JSON(c)
 		return

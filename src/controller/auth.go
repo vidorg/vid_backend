@@ -4,7 +4,6 @@ import (
 	"github.com/Aoi-hosizora/ahlib/xdi"
 	"github.com/Aoi-hosizora/ahlib/xentity"
 	"github.com/gin-gonic/gin"
-	"github.com/sirupsen/logrus"
 	"github.com/vidorg/vid_backend/src/common/exception"
 	"github.com/vidorg/vid_backend/src/common/result"
 	"github.com/vidorg/vid_backend/src/config"
@@ -12,23 +11,26 @@ import (
 	"github.com/vidorg/vid_backend/src/model/dto"
 	"github.com/vidorg/vid_backend/src/model/param"
 	"github.com/vidorg/vid_backend/src/model/po"
+	"github.com/vidorg/vid_backend/src/provide/sn"
 	"github.com/vidorg/vid_backend/src/service"
 	"github.com/vidorg/vid_backend/src/util"
 	"net/http"
 )
 
 type AuthController struct {
-	Config         *config.Config          `di:"~"`
-	Logger         *logrus.Logger          `di:"~"`
-	JwtService     *service.JwtService     `di:"~"`
-	AccountService *service.AccountService `di:"~"`
-	TokenService   *service.TokenService   `di:"~"`
+	config         *config.Config
+	jwtService     *service.JwtService
+	accountService *service.AccountService
+	tokenService   *service.TokenService
 }
 
-func NewAuthController(dic *xdi.DiContainer) *AuthController {
-	ctrl := &AuthController{}
-	dic.MustInject(ctrl)
-	return ctrl
+func NewAuthController() *AuthController {
+	return &AuthController{
+		config:         xdi.GetByNameForce(sn.SConfig).(*config.Config),
+		jwtService:     xdi.GetByNameForce(sn.SJwtService).(*service.JwtService),
+		accountService: xdi.GetByNameForce(sn.SAccountService).(*service.AccountService),
+		tokenService:   xdi.GetByNameForce(sn.STokenService).(*service.TokenService),
+	}
 }
 
 // @Router              /v1/auth/login [POST]
@@ -43,10 +45,10 @@ func (a *AuthController) Login(c *gin.Context) {
 		return
 	}
 	if loginParam.Expire <= 0 {
-		loginParam.Expire = a.Config.Jwt.Expire
+		loginParam.Expire = a.config.Jwt.Expire
 	}
 
-	account := a.AccountService.QueryByUsername(loginParam.Username)
+	account := a.accountService.QueryByUsername(loginParam.Username)
 	if account == nil {
 		result.Error(exception.UserNotFoundError).JSON(c)
 		return
@@ -56,12 +58,12 @@ func (a *AuthController) Login(c *gin.Context) {
 		return
 	}
 
-	token, err := util.AuthUtil.GenerateToken(account.User.Uid, loginParam.Expire, a.Config.Jwt)
+	token, err := util.AuthUtil.GenerateToken(account.User.Uid, loginParam.Expire, a.config.Jwt)
 	if err != nil {
 		result.Error(exception.LoginError).JSON(c)
 		return
 	}
-	ok := a.TokenService.Insert(token, account.Uid, loginParam.Expire)
+	ok := a.tokenService.Insert(token, account.Uid, loginParam.Expire)
 	if !ok {
 		result.Error(exception.LoginError).JSON(c)
 		return
@@ -98,7 +100,7 @@ func (a *AuthController) Register(c *gin.Context) {
 			RegisterIP: c.ClientIP(),
 		},
 	}
-	status := a.AccountService.Insert(passRecord)
+	status := a.accountService.Insert(passRecord)
 	if status == database.DbExisted {
 		result.Error(exception.UsernameUsedError).JSON(c)
 		return
@@ -117,7 +119,7 @@ func (a *AuthController) Register(c *gin.Context) {
 // @Security            Jwt
 // @ResponseModel 200   #Result<UserDto>
 func (a *AuthController) CurrentUser(c *gin.Context) {
-	authUser := a.JwtService.GetContextUser(c)
+	authUser := a.jwtService.GetContextUser(c)
 	retDto := xentity.MustMap(authUser, &dto.UserDto{}, dto.UserDtoShowAllOption()).(*dto.UserDto)
 	result.Ok().SetData(retDto).JSON(c)
 }
@@ -128,8 +130,8 @@ func (a *AuthController) CurrentUser(c *gin.Context) {
 // @Security            Jwt
 // @ResponseModel 200   #Result
 func (a *AuthController) Logout(c *gin.Context) {
-	authHeader := a.JwtService.GetToken(c)
-	ok := a.TokenService.Delete(authHeader)
+	authHeader := a.jwtService.GetToken(c)
+	ok := a.tokenService.Delete(authHeader)
 	if !ok {
 		result.Error(exception.LogoutError).JSON(c)
 		return
@@ -145,7 +147,7 @@ func (a *AuthController) Logout(c *gin.Context) {
 // @Param               param body #PassParam true "请求参数"
 // @ResponseModel 200   #Result
 func (a *AuthController) UpdatePassword(c *gin.Context) {
-	authUser := a.JwtService.GetContextUser(c)
+	authUser := a.jwtService.GetContextUser(c)
 	passParam := &param.PassParam{}
 	if err := c.ShouldBind(passParam); err != nil {
 		result.Error(exception.WrapValidationError(err)).JSON(c)
@@ -161,7 +163,7 @@ func (a *AuthController) UpdatePassword(c *gin.Context) {
 		EncryptedPass: encrypted,
 		Uid:           authUser.Uid,
 	}
-	status := a.AccountService.Update(passRecord)
+	status := a.accountService.Update(passRecord)
 	if status == database.DbNotFound {
 		result.Error(exception.UserNotFoundError).JSON(c)
 		return
@@ -169,7 +171,7 @@ func (a *AuthController) UpdatePassword(c *gin.Context) {
 		result.Error(exception.UpdatePassError).JSON(c)
 		return
 	}
-	_ = a.TokenService.DeleteAll(authUser.Uid)
+	_ = a.tokenService.DeleteAll(authUser.Uid)
 
 	result.Ok().JSON(c)
 }

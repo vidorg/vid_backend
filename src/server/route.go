@@ -2,52 +2,44 @@ package server
 
 import (
 	"fmt"
-	"github.com/Aoi-hosizora/ahlib/xdi"
 	"github.com/gin-gonic/gin"
-	"github.com/vidorg/vid_backend/src/common/exception"
 	"github.com/vidorg/vid_backend/src/common/result"
-	"github.com/vidorg/vid_backend/src/config"
 	"github.com/vidorg/vid_backend/src/controller"
 	"github.com/vidorg/vid_backend/src/middleware"
-	"github.com/vidorg/vid_backend/src/service"
 	"net/http"
 )
 
 func initRoute(engine *gin.Engine) {
+	// common api
 	engine.HandleMethodNotAllowed = true
-	engine.GET("/ping", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{"ping": "pong"})
-	})
-	engine.GET("/error", func(c *gin.Context) {
-		err := fmt.Errorf("test error in /error")
-		result.Error(exception.ServerRecoveryError).SetError(err, c).JSON(c)
-	})
-	engine.GET("/panic", func(c *gin.Context) {
-		panic("test panic in /panic")
-	})
-
 	engine.NoMethod(func(c *gin.Context) {
 		result.Status(http.StatusMethodNotAllowed).JSON(c)
 	})
 	engine.NoRoute(func(c *gin.Context) {
 		result.Status(http.StatusNotFound).SetMessage(fmt.Sprintf("route %s is not found", c.Request.URL.Path)).JSON(c)
 	})
+	engine.GET("/ping", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{"ping": "pong"})
+	})
 
-	container := &struct {
-		Config        *config.Config         `di:"~"`
-		JwtService    *service.JwtService    `di:"~"`
-		CasbinService *service.CasbinService `di:"~"`
-	}{}
-	xdi.MustInject(container)
+	// service api
+	jwtMw := middleware.JwtMiddleware()
+	casbinMw := middleware.CasbinMiddleware()
+	adminMw := func(c *gin.Context) {
+		jwtMw(c)
+		casbinMw(c)
+		c.Next()
+	}
 
-	jwtMw := middleware.JwtMiddleware(container.JwtService)
-	casbinMw := middleware.CasbinMiddleware(container.JwtService, container.CasbinService)
-	adminMw := middleware.AuthMiddleware(jwtMw, casbinMw)
-	limit2MMw := middleware.LimitMiddleware(int64(container.Config.File.ImageMaxSize << 20)) // MB
-
+	var (
+		authCtrl      = controller.NewAuthController()
+		policyCtrl    = controller.NewPolicyController()
+		userCtrl      = controller.NewUserController()
+		subscribeCtrl = controller.NewSubscribeController()
+		videoCtrl     = controller.NewVideoController()
+	)
 	v1 := engine.Group("/v1")
 	{
-		authCtrl := controller.NewAuthController()
 		authGroup := v1.Group("/auth")
 		{
 			authGroup.POST("/login", authCtrl.Login)
@@ -57,9 +49,14 @@ func initRoute(engine *gin.Engine) {
 			authGroup.PUT("/password", adminMw, authCtrl.UpdatePassword)
 		}
 
-		userCtrl := controller.NewUserController()
-		subCtrl := controller.NewSubController()
-		videoCtrl := controller.NewVideoController()
+		policyGroup := v1.Group("/policy")
+		{
+			policyGroup.GET("", policyCtrl.Query)
+			policyGroup.PUT("/role/:uid", policyCtrl.SetRole)
+			policyGroup.POST("/role", policyCtrl.Insert)
+			policyGroup.DELETE("/role", policyCtrl.Delete)
+		}
+
 		userGroup := v1.Group("/user")
 		{
 			userGroup.GET("", adminMw, userCtrl.QueryAllUsers)
@@ -67,10 +64,10 @@ func initRoute(engine *gin.Engine) {
 			userGroup.PUT("", adminMw, userCtrl.UpdateUser(false))
 			userGroup.DELETE("", adminMw, userCtrl.DeleteUser(false))
 
-			userGroup.GET("/:uid/subscriber", subCtrl.QuerySubscriberUsers)
-			userGroup.GET("/:uid/subscribing", subCtrl.QuerySubscribingUsers)
-			userGroup.PUT("/subscribing", adminMw, subCtrl.SubscribeUser)
-			userGroup.DELETE("/subscribing", adminMw, subCtrl.UnSubscribeUser)
+			userGroup.GET("/:uid/subscriber", subscribeCtrl.QuerySubscriberUsers)
+			userGroup.GET("/:uid/subscribing", subscribeCtrl.QuerySubscribingUsers)
+			userGroup.PUT("/subscribing", adminMw, subscribeCtrl.SubscribeUser)
+			userGroup.DELETE("/subscribing", adminMw, subscribeCtrl.UnSubscribeUser)
 
 			userGroup.PUT("/admin/:uid", adminMw, userCtrl.UpdateUser(true))
 			userGroup.DELETE("/admin/:uid", adminMw, userCtrl.DeleteUser(true))

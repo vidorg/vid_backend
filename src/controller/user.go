@@ -5,7 +5,6 @@ import (
 	"github.com/Aoi-hosizora/ahlib/xentity"
 	"github.com/Aoi-hosizora/ahlib/xslice"
 	"github.com/gin-gonic/gin"
-	"github.com/sirupsen/logrus"
 	"github.com/vidorg/vid_backend/src/common/exception"
 	"github.com/vidorg/vid_backend/src/common/result"
 	"github.com/vidorg/vid_backend/src/config"
@@ -13,23 +12,26 @@ import (
 	"github.com/vidorg/vid_backend/src/model/dto"
 	"github.com/vidorg/vid_backend/src/model/param"
 	"github.com/vidorg/vid_backend/src/model/po"
+	"github.com/vidorg/vid_backend/src/provide/sn"
 	"github.com/vidorg/vid_backend/src/service"
 )
 
 type UserController struct {
-	Config        *config.Config            `di:"~"`
-	Logger        *logrus.Logger            `di:"~"`
-	JwtService    *service.JwtService       `di:"~"`
-	UserService   *service.UserService      `di:"~"`
-	SubService    *service.SubscribeService `di:"~"`
-	VideoService  *service.VideoService     `di:"~"`
-	SearchService *service.SearchService    `di:"~"`
+	config           *config.Config
+	jwtService       *service.JwtService
+	userService      *service.UserService
+	subscribeService *service.SubscribeService
+	videoService     *service.VideoService
 }
 
-func NewUserController(dic *xdi.DiContainer) *UserController {
-	ctrl := &UserController{}
-	dic.MustInject(ctrl)
-	return ctrl
+func NewUserController() *UserController {
+	return &UserController{
+		config:           xdi.GetByNameForce(sn.SConfig).(*config.Config),
+		jwtService:       xdi.GetByNameForce(sn.SJwtService).(*service.JwtService),
+		userService:      xdi.GetByNameForce(sn.SUserService).(*service.UserService),
+		subscribeService: xdi.GetByNameForce(sn.SSubscribeService).(*service.SubscribeService),
+		videoService:     xdi.GetByNameForce(sn.SVideoService).(*service.VideoService),
+	}
 }
 
 // @Router              /v1/user [GET]
@@ -41,8 +43,8 @@ func NewUserController(dic *xdi.DiContainer) *UserController {
 // @Template            Order Page
 // @ResponseModel 200   #Result<Page<UserDto>>
 func (u *UserController) QueryAllUsers(c *gin.Context) {
-	pageOrder := param.BindPageOrder(c, u.Config)
-	users, count := u.UserService.QueryAll(pageOrder)
+	pageOrder := param.BindPageOrder(c, u.config)
+	users, count := u.userService.QueryAll(pageOrder)
 
 	retDto := xentity.MustMapSlice(xslice.Sti(users), &dto.UserDto{}, dto.UserDtoShowAllOption()).([]*dto.UserDto)
 	result.Ok().SetPage(count, pageOrder.Page, pageOrder.Limit, retDto).JSON(c)
@@ -61,20 +63,20 @@ func (u *UserController) QueryUser(c *gin.Context) {
 		return
 	}
 
-	user := u.UserService.QueryByUid(uid)
+	user := u.userService.QueryByUid(uid)
 	if user == nil {
 		result.Error(exception.UserNotFoundError).JSON(c)
 		return
 	}
-	subscribingCnt, subscriberCnt, _ := u.SubService.QueryCountByUid(user.Uid)
-	videoCnt, _ := u.VideoService.QueryCountByUid(user.Uid)
+	subscribingCnt, subscriberCnt, _ := u.subscribeService.QueryCountByUid(user.Uid)
+	videoCnt, _ := u.videoService.QueryCountByUid(user.Uid)
 	extraInfo := &dto.UserExtraDto{
 		SubscribingCount: subscribingCnt,
 		SubscriberCount:  subscriberCnt,
 		VideoCount:       videoCnt,
 	}
 
-	authUser := u.JwtService.GetContextUser(c)
+	authUser := u.jwtService.GetContextUser(c)
 	retDto := xentity.MustMap(user, &dto.UserDto{}, dto.UserDtoCheckUserOption(authUser)).(*dto.UserDto)
 	result.Ok().
 		PutData("user", retDto).
@@ -101,14 +103,14 @@ func (u *UserController) UpdateUser(isSpec bool) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		user := &po.User{}
 		if !isSpec {
-			user = u.JwtService.GetContextUser(c)
+			user = u.jwtService.GetContextUser(c)
 		} else {
 			uid, ok := param.BindRouteId(c, "uid")
 			if !ok {
 				result.Error(exception.RequestParamError).JSON(c)
 				return
 			}
-			user = u.UserService.QueryByUid(uid)
+			user = u.userService.QueryByUid(uid)
 			if user == nil {
 				result.Error(exception.UserNotFoundError).JSON(c)
 				return
@@ -122,7 +124,7 @@ func (u *UserController) UpdateUser(isSpec bool) func(c *gin.Context) {
 		}
 
 		xentity.MustMapProp(userParam, user)
-		status := u.UserService.Update(user)
+		status := u.userService.Update(user)
 		if status == database.DbNotFound {
 			result.Error(exception.UserNotFoundError).JSON(c)
 			return
@@ -157,7 +159,7 @@ func (u *UserController) DeleteUser(isSpec bool) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		var uid int32
 		if !isSpec {
-			uid = u.JwtService.GetContextUser(c).Uid
+			uid = u.jwtService.GetContextUser(c).Uid
 		} else {
 			var ok bool
 			uid, ok = param.BindRouteId(c, "uid")
@@ -167,7 +169,7 @@ func (u *UserController) DeleteUser(isSpec bool) func(c *gin.Context) {
 			}
 		}
 		// Delete
-		status := u.UserService.Delete(uid)
+		status := u.userService.Delete(uid)
 		if status == database.DbNotFound {
 			result.Error(exception.UserNotFoundError).JSON(c)
 			return

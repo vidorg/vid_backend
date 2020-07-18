@@ -5,28 +5,30 @@ import (
 	"github.com/Aoi-hosizora/ahlib/xentity"
 	"github.com/Aoi-hosizora/ahlib/xslice"
 	"github.com/gin-gonic/gin"
-	"github.com/sirupsen/logrus"
 	"github.com/vidorg/vid_backend/src/common/exception"
 	"github.com/vidorg/vid_backend/src/common/result"
 	"github.com/vidorg/vid_backend/src/config"
 	"github.com/vidorg/vid_backend/src/database"
 	"github.com/vidorg/vid_backend/src/model/dto"
 	"github.com/vidorg/vid_backend/src/model/param"
+	"github.com/vidorg/vid_backend/src/provide/sn"
 	"github.com/vidorg/vid_backend/src/service"
 )
 
-type SubController struct {
-	Config      *config.Config            `di:"~"`
-	Logger      *logrus.Logger            `di:"~"`
-	JwtService  *service.JwtService       `di:"~"`
-	UserService *service.UserService      `di:"~"`
-	SubService  *service.SubscribeService `di:"~"`
+type SubscribeController struct {
+	config           *config.Config
+	jwtService       *service.JwtService
+	userService      *service.UserService
+	subscribeService *service.SubscribeService
 }
 
-func NewSubController(dic *xdi.DiContainer) *SubController {
-	ctrl := &SubController{}
-	dic.MustInject(ctrl)
-	return ctrl
+func NewSubscribeController() *SubscribeController {
+	return &SubscribeController{
+		config:           xdi.GetByNameForce(sn.SConfig).(*config.Config),
+		jwtService:       xdi.GetByNameForce(sn.SJwtService).(*service.JwtService),
+		userService:      xdi.GetByNameForce(sn.SUserService).(*service.UserService),
+		subscribeService: xdi.GetByNameForce(sn.SSubscribeService).(*service.SubscribeService),
+	}
 }
 
 // @Router              /v1/user/{uid}/subscriber [GET]
@@ -35,15 +37,15 @@ func NewSubController(dic *xdi.DiContainer) *SubController {
 // @Template            Order Page
 // @Param               uid path integer true "用户id"
 // @ResponseModel 200   #Result<Page<UserDto>>
-func (s *SubController) QuerySubscriberUsers(c *gin.Context) {
+func (s *SubscribeController) QuerySubscriberUsers(c *gin.Context) {
 	uid, ok := param.BindRouteId(c, "uid")
 	if !ok {
 		result.Error(exception.RequestParamError).JSON(c)
 		return
 	}
-	pageOrder := param.BindPageOrder(c, s.Config)
+	pageOrder := param.BindPageOrder(c, s.config)
 
-	users, count, status := s.SubService.QuerySubscriberUsers(uid, pageOrder)
+	users, count, status := s.subscribeService.QuerySubscriberUsers(uid, pageOrder)
 	if status == database.DbNotFound {
 		result.Error(exception.UserNotFoundError).JSON(c)
 		return
@@ -59,15 +61,15 @@ func (s *SubController) QuerySubscriberUsers(c *gin.Context) {
 // @Template            Order Page
 // @Param               uid path integer true "用户id"
 // @ResponseModel 200   #Result<Page<UserDto>>
-func (s *SubController) QuerySubscribingUsers(c *gin.Context) {
+func (s *SubscribeController) QuerySubscribingUsers(c *gin.Context) {
 	uid, ok := param.BindRouteId(c, "uid")
 	if !ok {
 		result.Error(exception.RequestParamError).JSON(c)
 		return
 	}
-	pageOrder := param.BindPageOrder(c, s.Config)
+	pageOrder := param.BindPageOrder(c, s.config)
 
-	users, count, status := s.SubService.QuerySubscribingUsers(uid, pageOrder)
+	users, count, status := s.subscribeService.QuerySubscribingUsers(uid, pageOrder)
 	if status == database.DbNotFound {
 		result.Error(exception.UserNotFoundError).JSON(c)
 		return
@@ -83,8 +85,8 @@ func (s *SubController) QuerySubscribingUsers(c *gin.Context) {
 // @Security            Jwt
 // @Param               param body #SubscribeParam true "请求参数"
 // @ResponseModel 200   #Result
-func (s *SubController) SubscribeUser(c *gin.Context) {
-	authUser := s.JwtService.GetContextUser(c)
+func (s *SubscribeController) SubscribeUser(c *gin.Context) {
+	authUser := s.jwtService.GetContextUser(c)
 	subParam := &param.SubscribeParam{}
 	if err := c.ShouldBind(subParam); err != nil {
 		result.Error(exception.WrapValidationError(err)).JSON(c)
@@ -95,7 +97,7 @@ func (s *SubController) SubscribeUser(c *gin.Context) {
 		return
 	}
 
-	status := s.SubService.SubscribeUser(authUser.Uid, subParam.Uid)
+	status := s.subscribeService.SubscribeUser(authUser.Uid, subParam.Uid)
 	if status == database.DbNotFound {
 		result.Error(exception.UserNotFoundError).JSON(c)
 		return
@@ -113,15 +115,15 @@ func (s *SubController) SubscribeUser(c *gin.Context) {
 // @Security            Jwt
 // @Param               param body #SubscribeParam true "请求参数"
 // @ResponseModel 200   #Result
-func (s *SubController) UnSubscribeUser(c *gin.Context) {
-	authUser := s.JwtService.GetContextUser(c)
+func (s *SubscribeController) UnSubscribeUser(c *gin.Context) {
+	authUser := s.jwtService.GetContextUser(c)
 	subParam := &param.SubscribeParam{}
 	if err := c.ShouldBind(subParam); err != nil {
 		result.Error(exception.WrapValidationError(err)).JSON(c)
 		return
 	}
 
-	status := s.SubService.UnSubscribeUser(authUser.Uid, subParam.Uid)
+	status := s.subscribeService.UnSubscribeUser(authUser.Uid, subParam.Uid)
 	if status == database.DbNotFound {
 		result.Error(exception.UserNotFoundError).JSON(c)
 		return

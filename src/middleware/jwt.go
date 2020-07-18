@@ -1,22 +1,26 @@
 package middleware
 
 import (
+	"github.com/Aoi-hosizora/ahlib/xdi"
 	"github.com/gin-gonic/gin"
 	"github.com/vidorg/vid_backend/src/common/result"
+	"github.com/vidorg/vid_backend/src/provide/sn"
 	"github.com/vidorg/vid_backend/src/service"
 )
 
-func JwtMiddleware(srv *service.JwtService) gin.HandlerFunc {
+func JwtMiddleware() gin.HandlerFunc {
+	jwtService := xdi.GetByNameForce(sn.SJwtService).(*service.JwtService)
+
 	return func(c *gin.Context) {
-		token := srv.GetToken(c)
-		user, err := srv.JwtCheck(token)
+		token := jwtService.GetToken(c)
+		user, err := jwtService.JwtCheck(token)
 		if err != nil {
 			result.Error(err).JSON(c)
 			c.Abort()
 			return
 		}
 
-		c.Set(srv.UserKey, user)
+		c.Set(jwtService.UserKey, user)
 		c.Next()
 	}
 }
