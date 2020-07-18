@@ -5,15 +5,16 @@ import (
 	"github.com/Aoi-hosizora/ahlib/xlogger"
 	"github.com/sirupsen/logrus"
 	"github.com/vidorg/vid_backend/src/config"
+	"github.com/vidorg/vid_backend/src/provide/sn"
 	"time"
 )
 
 func Setup() (*logrus.Logger, error) {
-	c := xdi.GetByNameForce(sn.SConfig).(*config.Config)
+	cfg := xdi.GetByNameForce(sn.SConfig).(*config.Config)
 
 	logger := logrus.New()
 	logLevel := logrus.WarnLevel
-	if c.Meta.RunMode == "debug" {
+	if cfg.Meta.RunMode == "debug" {
 		logLevel = logrus.DebugLevel
 	}
 
@@ -23,7 +24,7 @@ func Setup() (*logrus.Logger, error) {
 		MaxSize:    20,
 		MaxAge:     30,
 		MaxBackups: 15,
-		Filename:   c.Meta.LogPath,
+		Filename:   cfg.Meta.LogPath,
 		Level:      logLevel,
 		Formatter:  &logrus.JSONFormatter{TimestampFormat: time.RFC3339},
 	}))

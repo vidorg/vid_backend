@@ -35,7 +35,7 @@ func (s *SearchController) SearchUser(c *gin.Context) {
 		result.Error(exception.RequestParamError).JSON(c)
 		return
 	}
-	// page := param.BindPage(c, s.Config)
+	// page := param.BindPage(c, s.config)
 
 	// TODO
 	// keys := s.SegmentService.Seg(key)
@@ -58,7 +58,7 @@ func (s *SearchController) SearchVideo(c *gin.Context) {
 		result.Error(exception.RequestParamError).JSON(c)
 		return
 	}
-	// page := param.BindPage(c, s.Config)
+	// page := param.BindPage(c, s.config)
 
 	// TODO
 	// keys := s.SegmentService.Seg(key)

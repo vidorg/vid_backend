@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/Aoi-hosizora/ahlib-web/xgorm"
 	"github.com/Aoi-hosizora/ahlib/xdi"
+	gormadapter "github.com/casbin/gorm-adapter/v2"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 	"github.com/sirupsen/logrus"
@@ -52,4 +53,14 @@ func migrate(db *gorm.DB) error {
 		}
 	}
 	return nil
+}
+
+func NewGormAdapter() (*gormadapter.Adapter, error) {
+	db := xdi.GetByNameForce(sn.SGorm).(*gorm.DB)
+
+	adapter, err := gormadapter.NewAdapterByDBUsePrefix(db, "tbl_")
+	if err != nil {
+		return nil, err
+	}
+	return adapter, nil
 }

@@ -3,30 +3,31 @@ package service
 import (
 	"github.com/Aoi-hosizora/ahlib/xdi"
 	"github.com/Aoi-hosizora/ahlib/xproperty"
-	"github.com/sirupsen/logrus"
+	"github.com/jinzhu/gorm"
 	"github.com/vidorg/vid_backend/src/database"
 	"github.com/vidorg/vid_backend/src/model/dto"
 	"github.com/vidorg/vid_backend/src/model/param"
 	"github.com/vidorg/vid_backend/src/model/po"
+	"github.com/vidorg/vid_backend/src/provide/sn"
 )
 
 type VideoService struct {
-	Db          *database.GormHelper `di:"~"`
-	Logger      *logrus.Logger       `di:"~"`
-	UserService *UserService         `di:"~"`
+	db          *gorm.DB
+	userService *UserService
 
-	OrderByFunc func(string) string `di:"-"`
+	_orderByFunc func(string) string
 }
 
-func NewVideoService(dic *xdi.DiContainer) *VideoService {
-	repo := &VideoService{}
-	dic.MustInject(repo)
-	repo.OrderByFunc = xproperty.GetMapperDefault(&dto.VideoDto{}, &po.Video{}).ApplyOrderBy
-	return repo
+func NewVideoService() *VideoService {
+	return &VideoService{
+		db:           xdi.GetByNameForce(sn.SGorm).(*gorm.DB),
+		userService:  xdi.GetByNameForce(sn.SUserService).(*UserService),
+		_orderByFunc: xproperty.GetMapperDefault(&dto.VideoDto{}, &po.Video{}).ApplyOrderBy,
+	}
 }
 
 func (v *VideoService) WrapVideo(video *po.Video) {
-	out := v.Db.QueryFirstHelper(&po.User{}, &po.User{Uid: video.AuthorUid})
+	out := v.db.QueryFirstHelper(&po.User{}, &po.User{Uid: video.AuthorUid})
 	if out != nil {
 		video.Author = out.(*po.User)
 	} else {
@@ -36,7 +37,7 @@ func (v *VideoService) WrapVideo(video *po.Video) {
 
 func (v *VideoService) QueryAll(pageOrder *param.PageOrderParam) ([]*po.Video, int32) {
 	videos := make([]*po.Video, 0)
-	total := v.Db.QueryMultiHelper(&po.Video{}, pageOrder.Limit, pageOrder.Page, &po.Video{}, v.OrderByFunc(pageOrder.Order), &videos)
+	total := v.db.QueryMultiHelper(&po.Video{}, pageOrder.Limit, pageOrder.Page, &po.Video{}, v._orderByFunc(pageOrder.Order), &videos)
 	for idx := range videos {
 		v.WrapVideo(videos[idx])
 	}
@@ -44,12 +45,12 @@ func (v *VideoService) QueryAll(pageOrder *param.PageOrderParam) ([]*po.Video, i
 }
 
 func (v *VideoService) QueryByUid(uid int32, pageOrder *param.PageOrderParam) ([]*po.Video, int32, database.DbStatus) {
-	author := v.UserService.QueryByUid(uid)
+	author := v.userService.QueryByUid(uid)
 	if author == nil {
 		return nil, 0, database.DbNotFound
 	}
 	videos := make([]*po.Video, 0)
-	total := v.Db.QueryMultiHelper(&po.Video{}, pageOrder.Limit, pageOrder.Page, &po.Video{AuthorUid: uid}, v.OrderByFunc(pageOrder.Order), &videos)
+	total := v.db.QueryMultiHelper(&po.Video{}, pageOrder.Limit, pageOrder.Page, &po.Video{AuthorUid: uid}, v._orderByFunc(pageOrder.Order), &videos)
 	for idx := range videos {
 		videos[idx].Author = author
 	}
@@ -57,15 +58,15 @@ func (v *VideoService) QueryByUid(uid int32, pageOrder *param.PageOrderParam) ([
 }
 
 func (v *VideoService) QueryCountByUid(uid int32) (int32, database.DbStatus) {
-	if !v.UserService.Exist(uid) {
+	if !v.userService.Exist(uid) {
 		return 0, database.DbNotFound
 	}
-	cnt := v.Db.CountHelper(&po.Video{}, &po.Video{AuthorUid: uid})
+	cnt := v.db.CountHelper(&po.Video{}, &po.Video{AuthorUid: uid})
 	return cnt, database.DbSuccess
 }
 
 func (v *VideoService) QueryByVid(vid int32) *po.Video {
-	out := v.Db.QueryFirstHelper(&po.Video{}, &po.Video{Vid: vid})
+	out := v.db.QueryFirstHelper(&po.Video{}, &po.Video{Vid: vid})
 	if out == nil {
 		return nil
 	}
@@ -75,21 +76,21 @@ func (v *VideoService) QueryByVid(vid int32) *po.Video {
 }
 
 func (v *VideoService) Exist(vid int32) bool {
-	return v.Db.ExistHelper(&po.Video{}, &po.Video{Vid: vid})
+	return v.db.ExistHelper(&po.Video{}, &po.Video{Vid: vid})
 }
 
 func (v *VideoService) Insert(video *po.Video) database.DbStatus {
-	return v.Db.InsertHelper(&po.Video{}, video)
+	return v.db.InsertHelper(&po.Video{}, video)
 }
 
 func (v *VideoService) Update(video *po.Video) database.DbStatus {
-	return v.Db.UpdateHelper(&po.Video{}, video)
+	return v.db.UpdateHelper(&po.Video{}, video)
 }
 
 func (v *VideoService) Delete(vid int32) database.DbStatus {
-	return v.Db.DeleteHelper(&po.Video{}, &po.Video{Vid: vid})
+	return v.db.DeleteHelper(&po.Video{}, &po.Video{Vid: vid})
 }
 
 func (v *VideoService) DeleteBy2Id(vid int32, uid int32) database.DbStatus {
-	return v.Db.DeleteHelper(&po.Video{}, &po.Video{Vid: vid, AuthorUid: uid})
+	return v.db.DeleteHelper(&po.Video{}, &po.Video{Vid: vid, AuthorUid: uid})
 }

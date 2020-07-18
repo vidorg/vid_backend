@@ -7,21 +7,25 @@ import (
 	"github.com/vidorg/vid_backend/src/common/result"
 	"github.com/vidorg/vid_backend/src/config"
 	"github.com/vidorg/vid_backend/src/model/po"
+	"github.com/vidorg/vid_backend/src/provide/sn"
 	"github.com/vidorg/vid_backend/src/util"
 )
 
 type JwtService struct {
-	Config       *config.Config `di:"~"`
-	UserService  *UserService   `di:"~"`
-	TokenService *TokenService  `di:"~"`
+	config       *config.Config
+	userService  *UserService
+	tokenService *TokenService
 
-	UserKey string `di:"-"`
+	UserKey string
 }
 
-func NewJwtService(dic *xdi.DiContainer) *JwtService {
-	srv := &JwtService{UserKey: "user"}
-	dic.MustInject(srv)
-	return srv
+func NewJwtService() *JwtService {
+	return &JwtService{
+		config:       xdi.GetByNameForce(sn.SConfig).(*config.Config),
+		userService:  xdi.GetByNameForce(sn.SUserService).(*UserService),
+		tokenService: xdi.GetByNameForce(sn.STokenService).(*TokenService),
+		UserKey:      "user",
+	}
 }
 
 func (j *JwtService) GetToken(c *gin.Context) string {
@@ -38,7 +42,7 @@ func (j *JwtService) JwtCheck(token string) (*po.User, *exception.Error) {
 	}
 
 	// parse
-	claims, err := util.AuthUtil.ParseToken(token, j.Config.Jwt)
+	claims, err := util.AuthUtil.ParseToken(token, j.config.Jwt)
 	if err != nil {
 		if util.AuthUtil.IsTokenExpireError(err) {
 			return nil, exception.TokenExpiredError
@@ -48,13 +52,13 @@ func (j *JwtService) JwtCheck(token string) (*po.User, *exception.Error) {
 	}
 
 	// redis
-	ok := j.TokenService.Query(token)
+	ok := j.tokenService.Query(token)
 	if !ok {
 		return nil, exception.UnAuthorizedError
 	}
 
 	// mysql
-	user := j.UserService.QueryByUid(claims.UserId)
+	user := j.userService.QueryByUid(claims.UserId)
 	if user != nil {
 		return nil, exception.UnAuthorizedError
 	}

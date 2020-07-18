@@ -48,10 +48,6 @@ type JwtConfig struct {
 	RedisFmt string `yaml:"redis-fmt"`
 }
 
-type SearchConfig struct {
-	DictPath string `yaml:"dictionary-path"`
-}
-
 type CasbinConfig struct {
 	ConfigPath string `yaml:"config-path"`
 }
@@ -62,7 +58,6 @@ type Config struct {
 	MySQL  *MySQLConfig  `yaml:"mysql"`
 	Redis  *RedisConfig  `yaml:"redis"`
 	Jwt    *JwtConfig    `yaml:"jwt"`
-	Search *SearchConfig `yaml:"search"`
 	Casbin *CasbinConfig `yaml:"casbin"`
 }
 

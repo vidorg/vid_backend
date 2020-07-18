@@ -4,35 +4,32 @@ import (
 	"github.com/Aoi-hosizora/ahlib/xdi"
 	"github.com/casbin/casbin/v2"
 	"github.com/casbin/gorm-adapter/v2"
-	"github.com/sirupsen/logrus"
+	"github.com/jinzhu/gorm"
 	"github.com/vidorg/vid_backend/src/config"
 	"github.com/vidorg/vid_backend/src/database"
 	"github.com/vidorg/vid_backend/src/model/po"
+	"github.com/vidorg/vid_backend/src/provide/sn"
 )
 
 type CasbinService struct {
-	Config     *config.Config       `di:"~"`
-	Logger     *logrus.Logger       `di:"~"`
-	Db         *database.GormHelper `di:"~"`
-	JwtService *JwtService          `di:"~"`
-
-	Adapter *gormadapter.Adapter `di:"-"`
+	config     *config.Config
+	db         *gorm.DB
+	adapter    *gormadapter.Adapter
+	jwtService *JwtService
 }
 
-func NewCasbinService(dic *xdi.DiContainer) *CasbinService {
-	srv := &CasbinService{}
-	dic.MustInject(srv)
-
-	adapter, err := gormadapter.NewAdapterByDBUsePrefix(srv.Db.DB, "tbl_")
-	if err != nil {
-		panic(err)
+func NewCasbinService() *CasbinService {
+	srv := &CasbinService{
+		config:     xdi.GetByNameForce(sn.SConfig).(*config.Config),
+		db:         xdi.GetByNameForce(sn.SGorm).(*gorm.DB),
+		adapter:    xdi.GetByNameForce(sn.SGormAdapter).(*gormadapter.Adapter),
+		jwtService: xdi.GetByNameForce(sn.SJwtService).(*JwtService),
 	}
-	srv.Adapter = adapter
 	return srv
 }
 
 func (c *CasbinService) GetEnforcer() (*casbin.Enforcer, error) {
-	enforcer, err := casbin.NewEnforcer(c.Config.Casbin.ConfigPath, c.Adapter)
+	enforcer, err := casbin.NewEnforcer(c.config.Casbin.ConfigPath, c.adapter)
 	if err != nil {
 		return nil, err
 	}
@@ -62,8 +59,8 @@ func (c *CasbinService) GetRoles() ([]string, bool) {
 func (c *CasbinService) GetPolicies(limit int32, page int32) (int32, []*po.Policy) {
 	total := 0
 	policies := make([]*po.Policy, 0)
-	c.Db.Table("tbl_casbin_rule").Count(&total)
-	c.Db.Table("tbl_casbin_rule").Limit(limit).Offset((page - 1) * limit).Find(&policies)
+	c.db.Table("tbl_casbin_rule").Count(&total)
+	c.db.Table("tbl_casbin_rule").Limit(limit).Offset((page - 1) * limit).Find(&policies)
 	return int32(total), policies
 }
 

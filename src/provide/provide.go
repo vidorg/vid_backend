@@ -33,6 +33,13 @@ func Provide(configPath string) {
 	}
 	xdi.ProvideName(sn.SGorm, mysql)
 
+	// /src/database/gorm_conn.go
+	adapter, err := database.NewGormAdapter()
+	if err != nil {
+		log.Fatalln("Failed to setup mysql adapter:", err)
+	}
+	xdi.ProvideName(sn.SGormAdapter, adapter)
+
 	// /src/database/redis_conn.go
 	redis, err := database.NewRedisConn()
 	if err != nil {
@@ -44,13 +51,27 @@ func Provide(configPath string) {
 	profile.BuildEntityMappers()
 	profile.BuildPropertyMappers()
 
-	xdi.ProvideType(service.NewAccountService())
-	xdi.ProvideType(service.NewTokenService())
-	xdi.ProvideType(service.NewUserService())
-	xdi.ProvideType(service.NewSubscribeService())
-	xdi.ProvideType(service.NewVideoService())
+	// /src/service/account.go
+	xdi.ProvideName(sn.SAccountService, service.NewAccountService())
 
-	xdi.ProvideType(service.NewSearchService())
-	xdi.ProvideType(service.NewJwtService())
-	xdi.ProvideType(service.NewCasbinService())
+	// /src/service/token.go
+	xdi.ProvideName(sn.STokenService, service.NewTokenService())
+
+	// /src/service/user.go
+	xdi.ProvideName(sn.SUserService, service.NewUserService())
+
+	// /src/service/subscribe.go
+	xdi.ProvideName(sn.SSubscribeService, service.NewSubscribeService())
+
+	// /src/service/video.go
+	xdi.ProvideName(sn.SVideoService, service.NewVideoService())
+
+	// /src/service/search.go
+	xdi.ProvideName(sn.SSearchService, service.NewSearchService())
+
+	// /src/service/jwt.go
+	xdi.ProvideName(sn.SJwtService, service.NewJwtService())
+
+	// /src/service/casbin.go
+	xdi.ProvideName(sn.SCasbinService, service.NewCasbinService())
 }

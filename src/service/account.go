@@ -2,29 +2,29 @@ package service
 
 import (
 	"github.com/Aoi-hosizora/ahlib/xdi"
-	"github.com/sirupsen/logrus"
+	"github.com/jinzhu/gorm"
 	"github.com/vidorg/vid_backend/src/database"
 	"github.com/vidorg/vid_backend/src/model/po"
+	"github.com/vidorg/vid_backend/src/provide/sn"
 )
 
 type AccountService struct {
-	Db     *database.GormHelper `di:"~"`
-	Logger *logrus.Logger       `di:"~"`
+	db *gorm.DB
 }
 
-func NewAccountService(dic *xdi.DiContainer) *AccountService {
-	repo := &AccountService{}
-	dic.MustInject(repo)
-	return repo
+func NewAccountService() *AccountService {
+	return &AccountService{
+		db: xdi.GetByNameForce(sn.SGorm).(*gorm.DB),
+	}
 }
 
 func (a *AccountService) QueryByUsername(username string) *po.Account {
-	out := a.Db.QueryFirstHelper(&po.User{}, &po.User{Username: username})
+	out := a.db.QueryFirstHelper(&po.User{}, &po.User{Username: username})
 	if out == nil {
 		return nil
 	}
 	user := out.(*po.User)
-	out = a.Db.QueryFirstHelper(&po.Account{}, &po.Account{Uid: user.Uid})
+	out = a.db.QueryFirstHelper(&po.Account{}, &po.Account{Uid: user.Uid})
 	if out == nil {
 		return nil
 	}
@@ -34,9 +34,9 @@ func (a *AccountService) QueryByUsername(username string) *po.Account {
 }
 
 func (a *AccountService) Insert(pass *po.Account) database.DbStatus {
-	return a.Db.InsertHelper(&po.Account{}, pass) // cascade create
+	return a.db.InsertHelper(&po.Account{}, pass) // cascade create
 }
 
 func (a *AccountService) Update(pass *po.Account) database.DbStatus {
-	return a.Db.UpdateHelper(&po.Account{}, pass)
+	return a.db.UpdateHelper(&po.Account{}, pass)
 }
