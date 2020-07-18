@@ -9,7 +9,6 @@ build/
 log/
 *.rdb
 config.yaml
-dictionary.txt
 
 usr/image/*.*
 usr/video/*.*

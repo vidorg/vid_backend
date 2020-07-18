@@ -47,7 +47,7 @@ func initRoute(engine *gin.Engine) {
 
 	v1 := engine.Group("/v1")
 	{
-		authCtrl := controller.NewAuthController(dic)
+		authCtrl := controller.NewAuthController()
 		authGroup := v1.Group("/auth")
 		{
 			authGroup.POST("/login", authCtrl.Login)
@@ -57,9 +57,9 @@ func initRoute(engine *gin.Engine) {
 			authGroup.PUT("/password", adminMw, authCtrl.UpdatePassword)
 		}
 
-		userCtrl := controller.NewUserController(dic)
-		subCtrl := controller.NewSubController(dic)
-		videoCtrl := controller.NewVideoController(dic)
+		userCtrl := controller.NewUserController()
+		subCtrl := controller.NewSubController()
+		videoCtrl := controller.NewVideoController()
 		userGroup := v1.Group("/user")
 		{
 			userGroup.GET("", adminMw, userCtrl.QueryAllUsers)
@@ -88,18 +88,18 @@ func initRoute(engine *gin.Engine) {
 			videoGroup.DELETE("/:vid", adminMw, videoCtrl.DeleteVideo)
 		}
 
-		rawCtrl := controller.NewRawController(dic)
+		rawCtrl := controller.NewRawController()
 		rawGroup := v1.Group("/raw")
 		{
 			rawGroup.POST("/image", adminMw, limit2MMw, rawCtrl.UploadImage)
 			rawGroup.GET("/image/:filename", rawCtrl.RawImage)
 		}
 
-		searchCtrl := controller.NewSearchController(dic)
-		searchGroup := v1.Group("/search")
-		{
-			searchGroup.GET("/user", searchCtrl.SearchUser)
-			searchGroup.GET("/video", searchCtrl.SearchVideo)
-		}
+		// searchCtrl := controller.NewSearchController()
+		// searchGroup := v1.Group("/search")
+		// {
+		// 	searchGroup.GET("/user", searchCtrl.SearchUser)
+		// 	searchGroup.GET("/video", searchCtrl.SearchVideo)
+		// }
 	}
 }

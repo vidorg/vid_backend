@@ -11,10 +11,9 @@ import (
 )
 
 type SubscribeService struct {
-	Db          *database.GormHelper       `di:"~"`
-	Logger      *logrus.Logger             `di:"~"`
-	Mappers     *xproperty.PropertyMappers `di:"~"`
-	UserService *UserService               `di:"~"`
+	Db          *database.GormHelper `di:"~"`
+	Logger      *logrus.Logger       `di:"~"`
+	UserService *UserService         `di:"~"`
 
 	OrderByFunc func(string) string `di:"-"`
 }
@@ -22,7 +21,7 @@ type SubscribeService struct {
 func NewSubscribeService(dic *xdi.DiContainer) *SubscribeService {
 	repo := &SubscribeService{}
 	dic.MustInject(repo)
-	repo.OrderByFunc = repo.Mappers.GetPropertyMapping(&dto.UserDto{}, &po.User{}).ApplyOrderBy
+	repo.OrderByFunc = xproperty.GetMapperDefault(&dto.UserDto{}, &po.User{}).ApplyOrderBy
 	return repo
 }
 

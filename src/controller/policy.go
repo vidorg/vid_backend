@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"github.com/Aoi-hosizora/ahlib/xcondition"
 	"github.com/Aoi-hosizora/ahlib/xdi"
 	"github.com/Aoi-hosizora/ahlib/xentity"
 	"github.com/Aoi-hosizora/ahlib/xslice"
@@ -17,7 +16,6 @@ import (
 
 type PolicyController struct {
 	Config        *config.Config         `di:"~"`
-	Mapper        *xentity.EntityMappers `di:"~"`
 	UserService   *service.UserService   `di:"~"`
 	CasbinService *service.CasbinService `di:"~"`
 }
@@ -76,7 +74,7 @@ func (r *PolicyController) Query(c *gin.Context) {
 	page := param.BindPage(c, r.Config)
 	total, policies := r.CasbinService.GetPolicies(page.Limit, page.Page)
 
-	policiesDto := xcondition.First(r.Mapper.MapSlice(xslice.Sti(policies), &dto.PolicyDto{})).([]*dto.PolicyDto)
+	policiesDto := xentity.MustMapSlice(xslice.Sti(policies), &dto.PolicyDto{}).([]*dto.PolicyDto)
 	result.Ok().SetPage(total, page.Page, page.Limit, policiesDto).JSON(c)
 }
 

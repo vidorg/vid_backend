@@ -1,27 +1,20 @@
 package controller
 
 import (
-	"github.com/Aoi-hosizora/ahlib/xcondition"
 	"github.com/Aoi-hosizora/ahlib/xdi"
-	"github.com/Aoi-hosizora/ahlib/xentity"
-	"github.com/Aoi-hosizora/ahlib/xslice"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 	"github.com/vidorg/vid_backend/src/common/exception"
 	"github.com/vidorg/vid_backend/src/common/result"
 	"github.com/vidorg/vid_backend/src/config"
-	"github.com/vidorg/vid_backend/src/model/dto"
-	"github.com/vidorg/vid_backend/src/model/param"
 	"github.com/vidorg/vid_backend/src/service"
 	"strings"
 )
 
 type SearchController struct {
-	Config         *config.Config          `di:"~"`
-	Logger         *logrus.Logger          `di:"~"`
-	Mappers        *xentity.EntityMappers  `di:"~"`
-	SearchService  *service.SearchService  `di:"~"`
-	SegmentService *service.SegmentService `di:"~"`
+	Config        *config.Config         `di:"~"`
+	Logger        *logrus.Logger         `di:"~"`
+	SearchService *service.SearchService `di:"~"`
 }
 
 func NewSearchController(dic *xdi.DiContainer) *SearchController {
@@ -42,14 +35,15 @@ func (s *SearchController) SearchUser(c *gin.Context) {
 		result.Error(exception.RequestParamError).JSON(c)
 		return
 	}
-	page := param.BindPage(c, s.Config)
+	// page := param.BindPage(c, s.Config)
 
-	keys := s.SegmentService.Seg(key)
-	against := s.SegmentService.Cat(keys)
-	users, total := s.SearchService.SearchUser(against, page)
-
-	retDto := xcondition.First(s.Mappers.MapSlice(xslice.Sti(users), &dto.UserDto{})).([]*dto.UserDto)
-	result.Ok().SetPage(total, page.Page, page.Limit, retDto).JSON(c)
+	// TODO
+	// keys := s.SegmentService.Seg(key)
+	// against := s.SegmentService.Cat(keys)
+	// users, total := s.SearchService.SearchUser(against, page)
+	//
+	// retDto := xcondition.First(s.Mappers.MapSlice(xslice.Sti(users), &dto.UserDto{})).([]*dto.UserDto)
+	// result.Ok().SetPage(total, page.Page, page.Limit, retDto).JSON(c)
 }
 
 // @Router              /v1/search/video [GET]
@@ -64,12 +58,13 @@ func (s *SearchController) SearchVideo(c *gin.Context) {
 		result.Error(exception.RequestParamError).JSON(c)
 		return
 	}
-	page := param.BindPage(c, s.Config)
+	// page := param.BindPage(c, s.Config)
 
-	keys := s.SegmentService.Seg(key)
-	against := s.SegmentService.Cat(keys)
-	videos, total := s.SearchService.SearchVideo(against, page)
-
-	retDto := xcondition.First(s.Mappers.MapSlice(xslice.Sti(videos), &dto.VideoDto{})).([]*dto.VideoDto)
-	result.Ok().SetPage(total, page.Page, page.Limit, retDto).JSON(c)
+	// TODO
+	// keys := s.SegmentService.Seg(key)
+	// against := s.SegmentService.Cat(keys)
+	// videos, total := s.SearchService.SearchVideo(against, page)
+	//
+	// retDto := xcondition.First(s.Mappers.MapSlice(xslice.Sti(videos), &dto.VideoDto{})).([]*dto.VideoDto)
+	// result.Ok().SetPage(total, page.Page, page.Limit, retDto).JSON(c)
 }

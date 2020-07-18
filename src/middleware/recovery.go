@@ -11,7 +11,7 @@ import (
 )
 
 func RecoveryMiddleware() gin.HandlerFunc {
-	lgr := xdi.GetByNameForce(sn.SLogger).(*logrus.Logger)
+	logger := xdi.GetByNameForce(sn.SLogger).(*logrus.Logger)
 	skip := 2
 
 	return func(c *gin.Context) {
@@ -21,7 +21,7 @@ func RecoveryMiddleware() gin.HandlerFunc {
 				if gin.Mode() == gin.DebugMode {
 					r.Error = xgin.BuildErrorDto(err, c, skip, true)
 				}
-				lgr.Errorln("[Recovery] panic recovered:", err)
+				logger.Errorln("[Recovery] panic recovered:", err)
 				r.JSON(c)
 			}
 		}()

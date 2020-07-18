@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"github.com/Aoi-hosizora/ahlib/xcondition"
 	"github.com/Aoi-hosizora/ahlib/xdi"
 	"github.com/Aoi-hosizora/ahlib/xentity"
 	"github.com/Aoi-hosizora/ahlib/xslice"
@@ -20,11 +19,10 @@ import (
 )
 
 type VideoController struct {
-	Config       *config.Config         `di:"~"`
-	Logger       *logrus.Logger         `di:"~"`
-	Mappers      *xentity.EntityMappers `di:"~"`
-	JwtService   *service.JwtService    `di:"~"`
-	VideoService *service.VideoService  `di:"~"`
+	Config       *config.Config        `di:"~"`
+	Logger       *logrus.Logger        `di:"~"`
+	JwtService   *service.JwtService   `di:"~"`
+	VideoService *service.VideoService `di:"~"`
 }
 
 func NewVideoController(dic *xdi.DiContainer) *VideoController {
@@ -45,7 +43,7 @@ func (v *VideoController) QueryAllVideos(c *gin.Context) {
 	pageOrder := param.BindPageOrder(c, v.Config)
 	videos, count := v.VideoService.QueryAll(pageOrder)
 
-	retDto := xcondition.First(v.Mappers.MapSlice(xslice.Sti(videos), &dto.VideoDto{})).([]*dto.VideoDto)
+	retDto := xentity.MustMapSlice(xslice.Sti(videos), &dto.VideoDto{}).([]*dto.VideoDto)
 	result.Ok().SetPage(count, pageOrder.Page, pageOrder.Limit, retDto).JSON(c)
 }
 
@@ -69,7 +67,7 @@ func (v *VideoController) QueryVideosByUid(c *gin.Context) {
 		return
 	}
 
-	retDto := xcondition.First(v.Mappers.MapSlice(xslice.Sti(videos), &dto.VideoDto{})).([]*dto.VideoDto)
+	retDto := xentity.MustMapSlice(xslice.Sti(videos), &dto.VideoDto{}).([]*dto.VideoDto)
 	result.Ok().SetPage(count, pageOrder.Page, pageOrder.Limit, retDto).JSON(c)
 }
 
@@ -91,7 +89,7 @@ func (v *VideoController) QueryVideoByVid(c *gin.Context) {
 		return
 	}
 
-	retDto := xcondition.First(v.Mappers.Map(video, &dto.VideoDto{})).(*dto.VideoDto)
+	retDto := xentity.MustMap(video, &dto.VideoDto{}).(*dto.VideoDto)
 	result.Ok().SetData(retDto).JSON(c)
 }
 
@@ -114,7 +112,7 @@ func (v *VideoController) InsertVideo(c *gin.Context) {
 		Author:    authUser,
 	}
 
-	_ = v.Mappers.MapProp(videoParam, video)
+	xentity.MustMapProp(videoParam, video)
 	status := v.VideoService.Insert(video)
 	if status == database.DbExisted {
 		result.Error(exception.VideoUrlExistError).JSON(c)
@@ -124,7 +122,7 @@ func (v *VideoController) InsertVideo(c *gin.Context) {
 		return
 	}
 
-	retDto := xcondition.First(v.Mappers.Map(video, &dto.VideoDto{})).(*dto.VideoDto)
+	retDto := xentity.MustMap(video, &dto.VideoDto{}).(*dto.VideoDto)
 	result.Status(http.StatusCreated).SetData(retDto).JSON(c)
 }
 
@@ -159,7 +157,7 @@ func (v *VideoController) UpdateVideo(c *gin.Context) {
 		return
 	}
 	// Update
-	_ = v.Mappers.MapProp(videoParam, video)
+	xentity.MustMapProp(videoParam, video)
 	status := v.VideoService.Update(video)
 	if status == database.DbExisted {
 		result.Error(exception.VideoUrlExistError).JSON(c)
@@ -172,7 +170,7 @@ func (v *VideoController) UpdateVideo(c *gin.Context) {
 		return
 	}
 
-	retDto := xcondition.First(v.Mappers.Map(video, &dto.VideoDto{})).(*dto.VideoDto)
+	retDto := xentity.MustMap(video, &dto.VideoDto{}).(*dto.VideoDto)
 	result.Ok().SetData(retDto).JSON(c)
 }
 

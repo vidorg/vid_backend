@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"github.com/Aoi-hosizora/ahlib/xcondition"
 	"github.com/Aoi-hosizora/ahlib/xdi"
 	"github.com/Aoi-hosizora/ahlib/xentity"
 	"github.com/Aoi-hosizora/ahlib/xslice"
@@ -19,7 +18,6 @@ import (
 type SubController struct {
 	Config      *config.Config            `di:"~"`
 	Logger      *logrus.Logger            `di:"~"`
-	Mappers     *xentity.EntityMappers    `di:"~"`
 	JwtService  *service.JwtService       `di:"~"`
 	UserService *service.UserService      `di:"~"`
 	SubService  *service.SubscribeService `di:"~"`
@@ -51,7 +49,7 @@ func (s *SubController) QuerySubscriberUsers(c *gin.Context) {
 		return
 	}
 
-	retDto := xcondition.First(s.Mappers.MapSlice(xslice.Sti(users), &dto.UserDto{})).([]*dto.UserDto)
+	retDto := xentity.MustMapSlice(xslice.Sti(users), &dto.UserDto{}).([]*dto.UserDto)
 	result.Ok().SetPage(count, pageOrder.Page, pageOrder.Limit, retDto).JSON(c)
 }
 
@@ -75,7 +73,7 @@ func (s *SubController) QuerySubscribingUsers(c *gin.Context) {
 		return
 	}
 
-	retDto := xcondition.First(s.Mappers.MapSlice(xslice.Sti(users), &dto.UserDto{})).([]*dto.UserDto)
+	retDto := xentity.MustMapSlice(xslice.Sti(users), &dto.UserDto{}).([]*dto.UserDto)
 	result.Ok().SetPage(count, pageOrder.Page, pageOrder.Limit, retDto).JSON(c)
 }
 

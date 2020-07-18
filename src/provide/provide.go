@@ -26,11 +26,23 @@ func Provide(configPath string) {
 	}
 	xdi.ProvideName(sn.SLogger, lgr)
 
-	xdi.ProvideType(profile.CreateEntityMappers(cfg))
-	xdi.ProvideType(profile.CreatePropertyMappers())
+	// /src/database/gorm_conn.go
+	mysql, err := database.NewMySQLConn()
+	if err != nil {
+		log.Fatalln("Failed to setup mysql conn:", err)
+	}
+	xdi.ProvideName(sn.SGorm, mysql)
 
-	xdi.ProvideType(database.SetupMySQLConn(cfg.MySQL, lgr))
-	xdi.ProvideType(database.SetupRedisConn(cfg.Redis, lgr))
+	// /src/database/redis_conn.go
+	redis, err := database.NewRedisConn()
+	if err != nil {
+		log.Fatalln("Failed to setup redis conn:", err)
+	}
+	xdi.ProvideName(sn.SRedis, redis)
+
+	// /src/model/profile/profile.go
+	profile.BuildEntityMappers()
+	profile.BuildPropertyMappers()
 
 	xdi.ProvideType(service.NewAccountService())
 	xdi.ProvideType(service.NewTokenService())
@@ -38,7 +50,6 @@ func Provide(configPath string) {
 	xdi.ProvideType(service.NewSubscribeService())
 	xdi.ProvideType(service.NewVideoService())
 
-	xdi.ProvideType(service.NewSegmentService())
 	xdi.ProvideType(service.NewSearchService())
 	xdi.ProvideType(service.NewJwtService())
 	xdi.ProvideType(service.NewCasbinService())

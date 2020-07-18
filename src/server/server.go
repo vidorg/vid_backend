@@ -43,11 +43,6 @@ func NewServer() *Server {
 	return &Server{engine: engine, config: cfg}
 }
 
-func (s *Server) Serve() error {
-	addr := fmt.Sprintf("0.0.0.0:%d", s.config.Meta.Port)
-	return s.engine.Run(addr)
-}
-
 func setupBinding() {
 	xvalidator.SetupRegexBinding()
 
@@ -57,4 +52,9 @@ func setupBinding() {
 	xvalidator.SetupSpecificRegexpBinding("name", "^[a-zA-Z0-9\u4E00-\u9FBF\u3040-\u30FF\\-_]+$")              // alphabet number character kana - _
 	xvalidator.SetupSpecificRegexpBinding("pwd", "^.+$")                                                       // all
 	xvalidator.SetupSpecificRegexpBinding("phone", "^(13[0-9]|15[012356789]|17[678]|18[0-9]|14[57])[0-9]{8}$") // 11
+}
+
+func (s *Server) Serve() error {
+	addr := fmt.Sprintf("0.0.0.0:%d", s.config.Meta.Port)
+	return s.engine.Run(addr)
 }

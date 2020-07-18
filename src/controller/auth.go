@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"github.com/Aoi-hosizora/ahlib/xcondition"
 	"github.com/Aoi-hosizora/ahlib/xdi"
 	"github.com/Aoi-hosizora/ahlib/xentity"
 	"github.com/gin-gonic/gin"
@@ -21,7 +20,6 @@ import (
 type AuthController struct {
 	Config         *config.Config          `di:"~"`
 	Logger         *logrus.Logger          `di:"~"`
-	Mappers        *xentity.EntityMappers  `di:"~"`
 	JwtService     *service.JwtService     `di:"~"`
 	AccountService *service.AccountService `di:"~"`
 	TokenService   *service.TokenService   `di:"~"`
@@ -69,7 +67,7 @@ func (a *AuthController) Login(c *gin.Context) {
 		return
 	}
 
-	retDto := xcondition.First(a.Mappers.Map(account.User, &dto.UserDto{}, dto.UserDtoShowAllOption())).(*dto.UserDto)
+	retDto := xentity.MustMap(account.User, &dto.UserDto{}, dto.UserDtoShowAllOption()).(*dto.UserDto)
 	result.Ok().
 		PutData("user", retDto).
 		PutData("token", token).
@@ -109,7 +107,7 @@ func (a *AuthController) Register(c *gin.Context) {
 		return
 	}
 
-	retDto := xcondition.First(a.Mappers.Map(passRecord.User, &dto.UserDto{}, dto.UserDtoShowAllOption())).(*dto.UserDto)
+	retDto := xentity.MustMap(passRecord.User, &dto.UserDto{}, dto.UserDtoShowAllOption()).(*dto.UserDto)
 	result.Status(http.StatusCreated).SetData(retDto).JSON(c)
 }
 
@@ -120,7 +118,7 @@ func (a *AuthController) Register(c *gin.Context) {
 // @ResponseModel 200   #Result<UserDto>
 func (a *AuthController) CurrentUser(c *gin.Context) {
 	authUser := a.JwtService.GetContextUser(c)
-	retDto := xcondition.First(a.Mappers.Map(authUser, &dto.UserDto{}, dto.UserDtoShowAllOption())).(*dto.UserDto)
+	retDto := xentity.MustMap(authUser, &dto.UserDto{}, dto.UserDtoShowAllOption()).(*dto.UserDto)
 	result.Ok().SetData(retDto).JSON(c)
 }
 

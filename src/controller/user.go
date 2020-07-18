@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"github.com/Aoi-hosizora/ahlib/xcondition"
 	"github.com/Aoi-hosizora/ahlib/xdi"
 	"github.com/Aoi-hosizora/ahlib/xentity"
 	"github.com/Aoi-hosizora/ahlib/xslice"
@@ -20,7 +19,6 @@ import (
 type UserController struct {
 	Config        *config.Config            `di:"~"`
 	Logger        *logrus.Logger            `di:"~"`
-	Mappers       *xentity.EntityMappers    `di:"~"`
 	JwtService    *service.JwtService       `di:"~"`
 	UserService   *service.UserService      `di:"~"`
 	SubService    *service.SubscribeService `di:"~"`
@@ -46,7 +44,7 @@ func (u *UserController) QueryAllUsers(c *gin.Context) {
 	pageOrder := param.BindPageOrder(c, u.Config)
 	users, count := u.UserService.QueryAll(pageOrder)
 
-	retDto := xcondition.First(u.Mappers.MapSlice(xslice.Sti(users), &dto.UserDto{}, dto.UserDtoShowAllOption())).([]*dto.UserDto)
+	retDto := xentity.MustMapSlice(xslice.Sti(users), &dto.UserDto{}, dto.UserDtoShowAllOption()).([]*dto.UserDto)
 	result.Ok().SetPage(count, pageOrder.Page, pageOrder.Limit, retDto).JSON(c)
 }
 
@@ -77,7 +75,7 @@ func (u *UserController) QueryUser(c *gin.Context) {
 	}
 
 	authUser := u.JwtService.GetContextUser(c)
-	retDto := xcondition.First(u.Mappers.Map(user, &dto.UserDto{}, dto.UserDtoCheckUserOption(authUser))).(*dto.UserDto)
+	retDto := xentity.MustMap(user, &dto.UserDto{}, dto.UserDtoCheckUserOption(authUser)).(*dto.UserDto)
 	result.Ok().
 		PutData("user", retDto).
 		PutData("extra", extraInfo).JSON(c)
@@ -119,11 +117,11 @@ func (u *UserController) UpdateUser(isSpec bool) func(c *gin.Context) {
 		// Update
 		userParam := &param.UserParam{}
 		if err := c.ShouldBind(userParam); err != nil {
-			result.Error(exception.WrapValidationError(err)).PutData("error", err.Error()).JSON(c)
+			result.Error(exception.WrapValidationError(err)).JSON(c)
 			return
 		}
 
-		_ = u.Mappers.MapProp(userParam, user)
+		xentity.MustMapProp(userParam, user)
 		status := u.UserService.Update(user)
 		if status == database.DbNotFound {
 			result.Error(exception.UserNotFoundError).JSON(c)
@@ -136,7 +134,7 @@ func (u *UserController) UpdateUser(isSpec bool) func(c *gin.Context) {
 			return
 		}
 
-		retDto := xcondition.First(u.Mappers.Map(user, &dto.UserDto{}, dto.UserDtoShowAllOption())).(*dto.UserDto)
+		retDto := xentity.MustMap(user, &dto.UserDto{}, dto.UserDtoShowAllOption()).(*dto.UserDto)
 		result.Ok().SetData(retDto).JSON(c)
 	}
 }

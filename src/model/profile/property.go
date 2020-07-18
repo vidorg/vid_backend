@@ -6,27 +6,27 @@ import (
 	"github.com/vidorg/vid_backend/src/model/po"
 )
 
-func addPropertyMappers(mappers *xproperty.PropertyMappers) {
-	mappers.AddMapper(xproperty.NewPropertyMapper(&dto.UserDto{}, &po.User{}, map[string]*xproperty.PropertyMapperValue{
-		"uid":           xproperty.NewPropertyMapperValue([]string{"uid"}, false),
-		"username":      xproperty.NewPropertyMapperValue([]string{"username"}, false),
-		"sex":           xproperty.NewPropertyMapperValue([]string{"sex"}, false),
-		"profile":       xproperty.NewPropertyMapperValue([]string{"profile"}, false),
-		"avatar_url":    xproperty.NewPropertyMapperValue([]string{"avatar_url"}, false),
-		"birthday":      xproperty.NewPropertyMapperValue([]string{"birthday"}, false),
-		"role":          xproperty.NewPropertyMapperValue([]string{"role"}, false),
-		"phone_number":  xproperty.NewPropertyMapperValue([]string{"phone_number"}, false),
-		"register_time": xproperty.NewPropertyMapperValue([]string{"register_time"}, false),
+func addPropertyMappers() {
+	xproperty.AddMapper(xproperty.NewMapper(&dto.UserDto{}, &po.User{}, map[string]*xproperty.PropertyMapperValue{
+		"uid":           xproperty.NewValue(false, "uid"),
+		"username":      xproperty.NewValue(false, "username"),
+		"sex":           xproperty.NewValue(false, "sex"),
+		"profile":       xproperty.NewValue(false, "profile"),
+		"avatar_url":    xproperty.NewValue(false, "avatar_url"),
+		"birthday":      xproperty.NewValue(false, "birthday"),
+		"role":          xproperty.NewValue(false, "role"),
+		"phone_number":  xproperty.NewValue(false, "phone_number"),
+		"register_time": xproperty.NewValue(false, "register_time"),
 	}))
 
-	mappers.AddMapper(xproperty.NewPropertyMapper(&dto.VideoDto{}, &po.Video{}, map[string]*xproperty.PropertyMapperValue{
-		"vid":         xproperty.NewPropertyMapperValue([]string{"vid"}, false),
-		"title":       xproperty.NewPropertyMapperValue([]string{"title"}, false),
-		"description": xproperty.NewPropertyMapperValue([]string{"description"}, false),
-		"video_url":   xproperty.NewPropertyMapperValue([]string{"video_url"}, false),
-		"cover_url":   xproperty.NewPropertyMapperValue([]string{"cover_url"}, false),
-		"upload_time": xproperty.NewPropertyMapperValue([]string{"create_at"}, false),
-		"update_time": xproperty.NewPropertyMapperValue([]string{"update_at"}, false),
-		"author_uid":  xproperty.NewPropertyMapperValue([]string{"author_uid"}, false),
+	xproperty.AddMapper(xproperty.NewMapper(&dto.VideoDto{}, &po.Video{}, map[string]*xproperty.PropertyMapperValue{
+		"vid":         xproperty.NewValue(false, "vid"),
+		"title":       xproperty.NewValue(false, "title"),
+		"description": xproperty.NewValue(false, "description"),
+		"video_url":   xproperty.NewValue(false, "video_url"),
+		"cover_url":   xproperty.NewValue(false, "cover_url"),
+		"upload_time": xproperty.NewValue(false, "create_at"),
+		"update_time": xproperty.NewValue(false, "update_at"),
+		"author_uid":  xproperty.NewValue(false, "author_uid"),
 	}))
 }

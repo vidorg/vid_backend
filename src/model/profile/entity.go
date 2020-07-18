@@ -1,7 +1,7 @@
 package profile
 
 import (
-	"github.com/Aoi-hosizora/ahlib-web/xdatetime"
+	"github.com/Aoi-hosizora/ahlib-web/xtime"
 	"github.com/Aoi-hosizora/ahlib/xcondition"
 	"github.com/Aoi-hosizora/ahlib/xentity"
 	"github.com/vidorg/vid_backend/src/common/constant"
@@ -12,9 +12,9 @@ import (
 	"github.com/vidorg/vid_backend/src/util"
 )
 
-func addDtoMappers(config *config.Config, mappers *xentity.EntityMappers) {
+func addDtoMappers(config *config.Config) {
 	// userPo -> userDto
-	mappers.AddMapper(xentity.NewEntityMapper(&po.User{}, func() interface{} { return &dto.UserDto{} }, func(from interface{}, to interface{}) error {
+	xentity.AddMapper(xentity.NewMapper(&po.User{}, func() interface{} { return &dto.UserDto{} }, func(from interface{}, to interface{}) error {
 		user := from.(*po.User)
 		userDto := to.(*dto.UserDto)
 
@@ -25,13 +25,13 @@ func addDtoMappers(config *config.Config, mappers *xentity.EntityMappers) {
 		userDto.AvatarUrl = util.CommonUtil.GetServerUrl(user.AvatarUrl, config.File.ImageUrlPrefix)
 		userDto.Birthday = user.Birthday.String()
 		userDto.Role = user.Role
-		userDto.RegisterTime = xdatetime.NewJsonDateTime(user.CreatedAt).String()
+		userDto.RegisterTime = xtime.NewJsonDateTime(user.CreatedAt).String()
 		userDto.PhoneNumber = ""
 		return nil
 	}))
 
 	// videoPo -> videoDto
-	mappers.AddMapper(xentity.NewEntityMapper(&po.Video{}, func() interface{} { return &dto.VideoDto{} }, func(from interface{}, to interface{}) error {
+	xentity.AddMapper(xentity.NewMapper(&po.Video{}, func() interface{} { return &dto.VideoDto{} }, func(from interface{}, to interface{}) error {
 		video := from.(*po.Video)
 		videoDto := to.(*dto.VideoDto)
 
@@ -40,14 +40,14 @@ func addDtoMappers(config *config.Config, mappers *xentity.EntityMappers) {
 		videoDto.Description = video.Description
 		videoDto.VideoUrl = video.VideoUrl
 		videoDto.CoverUrl = util.CommonUtil.GetServerUrl(video.CoverUrl, config.File.ImageUrlPrefix)
-		videoDto.UploadTime = xdatetime.NewJsonDateTime(video.CreatedAt).String()
-		videoDto.UpdateTime = xdatetime.NewJsonDateTime(video.UpdatedAt).String()
-		videoDto.Author = xcondition.First(mappers.Map(video.Author, &dto.UserDto{})).(*dto.UserDto)
+		videoDto.UploadTime = xtime.NewJsonDateTime(video.CreatedAt).String()
+		videoDto.UpdateTime = xtime.NewJsonDateTime(video.UpdatedAt).String()
+		videoDto.Author = xentity.MustMap(video.Author, &dto.UserDto{}).(*dto.UserDto)
 		return nil
 	}))
 
 	// policyPo -> policyDto
-	mappers.AddMapper(xentity.NewEntityMapper(&po.Policy{}, func() interface{} { return &dto.PolicyDto{} }, func(from interface{}, to interface{}) error {
+	xentity.AddMapper(xentity.NewMapper(&po.Policy{}, func() interface{} { return &dto.PolicyDto{} }, func(from interface{}, to interface{}) error {
 		policy := from.(*po.Policy)
 		policyDto := to.(*dto.PolicyDto)
 
@@ -58,23 +58,23 @@ func addDtoMappers(config *config.Config, mappers *xentity.EntityMappers) {
 	}))
 }
 
-func addParamMappers(config *config.Config, mappers *xentity.EntityMappers) {
+func addParamMappers(config *config.Config) {
 	// userParam -> userPo
-	mappers.AddMapper(xentity.NewEntityMapper(&param.UserParam{}, func() interface{} { return &po.User{} }, func(from interface{}, to interface{}) error {
+	xentity.AddMapper(xentity.NewMapper(&param.UserParam{}, func() interface{} { return &po.User{} }, func(from interface{}, to interface{}) error {
 		userParam := from.(*param.UserParam)
 		user := to.(*po.User)
 
 		user.Username = userParam.Username
 		user.Profile = *userParam.Profile
 		user.Sex = constant.ParseSexEnum(userParam.Sex)
-		user.Birthday = xcondition.First(xdatetime.ParseISO8601Date(userParam.Birthday)).(xdatetime.JsonDate)
+		user.Birthday = xcondition.First(xtime.ParseRFC3339Date(userParam.Birthday)).(xtime.JsonDate)
 		user.PhoneNumber = userParam.PhoneNumber
 		user.AvatarUrl = util.CommonUtil.GetFilenameFromUrl(userParam.AvatarUrl, config.File.ImageUrlPrefix)
 		return nil
 	}))
 
 	// videoParam -> videoPo
-	mappers.AddMapper(xentity.NewEntityMapper(&param.VideoParam{}, func() interface{} { return &po.Video{} }, func(from interface{}, to interface{}) error {
+	xentity.AddMapper(xentity.NewMapper(&param.VideoParam{}, func() interface{} { return &po.Video{} }, func(from interface{}, to interface{}) error {
 		videoParam := from.(*param.VideoParam)
 		video := to.(*po.Video)
 

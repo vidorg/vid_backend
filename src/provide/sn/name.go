@@ -10,4 +10,10 @@ const (
 
 	// /src/common/logger/logger.go
 	SLogger xdi.ServiceName = "logger"
+
+	// /src/database/gorm_conn.go
+	SGorm xdi.ServiceName = "gorm"
+
+	// /src/database/redis_conn.go
+	SRedis xdi.ServiceName = "redis"
 )

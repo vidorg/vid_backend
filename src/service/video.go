@@ -11,10 +11,9 @@ import (
 )
 
 type VideoService struct {
-	Db          *database.GormHelper       `di:"~"`
-	Logger      *logrus.Logger             `di:"~"`
-	Mappers     *xproperty.PropertyMappers `di:"~"`
-	UserService *UserService               `di:"~"`
+	Db          *database.GormHelper `di:"~"`
+	Logger      *logrus.Logger       `di:"~"`
+	UserService *UserService         `di:"~"`
 
 	OrderByFunc func(string) string `di:"-"`
 }
@@ -22,7 +21,7 @@ type VideoService struct {
 func NewVideoService(dic *xdi.DiContainer) *VideoService {
 	repo := &VideoService{}
 	dic.MustInject(repo)
-	repo.OrderByFunc = repo.Mappers.GetPropertyMapping(&dto.VideoDto{}, &po.Video{}).ApplyOrderBy
+	repo.OrderByFunc = xproperty.GetMapperDefault(&dto.VideoDto{}, &po.Video{}).ApplyOrderBy
 	return repo
 }
 

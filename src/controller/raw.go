@@ -3,7 +3,6 @@ package controller
 import (
 	"fmt"
 	"github.com/Aoi-hosizora/ahlib/xdi"
-	"github.com/Aoi-hosizora/ahlib/xentity"
 	"github.com/Aoi-hosizora/ahlib/xstring"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
@@ -14,9 +13,8 @@ import (
 )
 
 type RawController struct {
-	Config  *config.Config         `di:"~"`
-	Logger  *logrus.Logger         `di:"~"`
-	Mappers *xentity.EntityMappers `di:"~"`
+	Config *config.Config `di:"~"`
+	Logger *logrus.Logger `di:"~"`
 }
 
 func NewRawController(dic *xdi.DiContainer) *RawController {

@@ -3,27 +3,32 @@ package database
 import (
 	"fmt"
 	"github.com/Aoi-hosizora/ahlib-web/xredis"
+	"github.com/Aoi-hosizora/ahlib/xdi"
 	"github.com/gomodule/redigo/redis"
 	"github.com/sirupsen/logrus"
 	"github.com/vidorg/vid_backend/src/config"
+	"github.com/vidorg/vid_backend/src/provide/sn"
 	"log"
 	"time"
 )
 
-func SetupRedisConn(config *config.RedisConfig, logger *logrus.Logger) *RedisHelper {
+func NewRedisConn() (redis.Conn, error) {
+	cfg := xdi.GetByNameForce(sn.SConfig).(*config.Config).Redis
+	logger := xdi.GetByNameForce(sn.SLogger).(*logrus.Logger)
+
 	conn, err := redis.Dial(
-		config.ConnType,
-		fmt.Sprintf("%s:%d", config.Host, config.Port),
-		redis.DialPassword(config.Password),
-		redis.DialDatabase(int(config.Db)),
-		redis.DialConnectTimeout(time.Duration(config.ConnectTimeout)*time.Millisecond),
-		redis.DialReadTimeout(time.Duration(config.ReadTimeout)*time.Millisecond),
-		redis.DialWriteTimeout(time.Duration(config.WriteTimeout)*time.Millisecond),
+		cfg.ConnType,
+		fmt.Sprintf("%s:%d", cfg.Host, cfg.Port),
+		redis.DialPassword(cfg.Password),
+		redis.DialDatabase(int(cfg.Db)),
+		redis.DialConnectTimeout(time.Duration(cfg.ConnectTimeout)*time.Millisecond),
+		redis.DialReadTimeout(time.Duration(cfg.ReadTimeout)*time.Millisecond),
+		redis.DialWriteTimeout(time.Duration(cfg.WriteTimeout)*time.Millisecond),
 	)
 	if err != nil {
 		log.Fatalln("Failed to connect redis:", err)
 	}
 
 	connLogger := xredis.NewRedisLogrus(conn, logger)
-	return NewRedisHelper(connLogger)
+	return connLogger, err
 }

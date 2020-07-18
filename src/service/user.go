@@ -21,7 +21,7 @@ type UserService struct {
 func NewUserService(dic *xdi.DiContainer) *UserService {
 	repo := &UserService{}
 	dic.MustInject(repo)
-	repo.OrderByFunc = repo.Mappers.GetPropertyMapping(&dto.UserDto{}, &po.User{}).ApplyOrderBy
+	repo.OrderByFunc = xproperty.GetMapperDefault(&dto.UserDto{}, &po.User{}).ApplyOrderBy
 	return repo
 }
 

@@ -35,8 +35,5 @@ jwt:
   expire: 604800 # second
   redis-fmt: vid-token-%s-%s
 
-search:
-  dictionary-path: ./config/dictionary.txt
-
 casbin:
   config-path: ./config/rbac-model.conf

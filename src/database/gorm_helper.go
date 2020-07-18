@@ -53,7 +53,7 @@ func (db *GormHelper) SearchHelper(model interface{}, limit int32, page int32, c
 
 func (db *GormHelper) InsertHelper(model interface{}, object interface{}) DbStatus {
 	rdb := db.Model(model).Create(object)
-	if xgorm.IsMySqlDuplicateError(rdb.Error) {
+	if xgorm.IsMySqlDuplicateEntryError(rdb.Error) {
 		return DbExisted
 	} else if rdb.Error != nil || rdb.RowsAffected == 0 {
 		return DbFailed
@@ -64,7 +64,7 @@ func (db *GormHelper) InsertHelper(model interface{}, object interface{}) DbStat
 func (db *GormHelper) UpdateHelper(model interface{}, object interface{}) DbStatus {
 	rdb := db.Model(model).Update(object)
 	if rdb.Error != nil {
-		if xgorm.IsMySqlDuplicateError(rdb.Error) {
+		if xgorm.IsMySqlDuplicateEntryError(rdb.Error) {
 			return DbExisted
 		} else {
 			return DbFailed

@@ -3,15 +3,19 @@ package database
 import (
 	"fmt"
 	"github.com/Aoi-hosizora/ahlib-web/xgorm"
+	"github.com/Aoi-hosizora/ahlib/xdi"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 	"github.com/sirupsen/logrus"
 	"github.com/vidorg/vid_backend/src/config"
 	"github.com/vidorg/vid_backend/src/model/po"
-	"log"
+	"github.com/vidorg/vid_backend/src/provide/sn"
 )
 
-func SetupMySQLConn(cfg *config.MySQLConfig, logger *logrus.Logger) *GormHelper {
+func NewMySQLConn() (*gorm.DB, error) {
+	cfg := xdi.GetByNameForce(sn.SConfig).(*config.Config).MySQL
+	logger := xdi.GetByNameForce(sn.SLogger).(*logrus.Logger)
+
 	dbParams := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=%s&parseTime=True&loc=Local",
 		cfg.User, cfg.Password,
 		cfg.Host, cfg.Port,
@@ -19,7 +23,7 @@ func SetupMySQLConn(cfg *config.MySQLConfig, logger *logrus.Logger) *GormHelper 
 	)
 	db, err := gorm.Open("mysql", dbParams)
 	if err != nil {
-		log.Fatalln("Failed to connect mysql:", err)
+		return nil, err
 	}
 
 	db.LogMode(cfg.IsLog)
@@ -31,42 +35,21 @@ func SetupMySQLConn(cfg *config.MySQLConfig, logger *logrus.Logger) *GormHelper 
 		return "tbl_" + defaultTableName
 	}
 
-	autoMigrateModel(db)
-	addFullTextIndex(db, cfg)
-
-	return NewGormHelper(db)
-}
-
-func autoMigrateModel(db *gorm.DB) {
-	autoMigrate := func(value interface{}) {
-		rdb := db.AutoMigrate(value)
-		if rdb.Error != nil {
-			log.Fatalln(rdb.Error)
-		}
+	err = migrate(db)
+	if err != nil {
+		return nil, err
 	}
 
-	autoMigrate(&po.User{})
-	autoMigrate(&po.Account{})
-	autoMigrate(&po.Video{})
+	return db, nil
 }
 
-func addFullTextIndex(db *gorm.DB, cfg *config.MySQLConfig) {
-	// TODO
-	// checkExecIndex := func(tblName string, idxName string, param string) {
-	// 	cnt := 0
-	// 	rdb := db.Table("INFORMATION_SCHEMA.STATISTICS").Where("TABLE_SCHEMA = ? AND TABLE_NAME = ? AND INDEX_NAME = ?", cfg.Name, tblName, idxName).Count(&cnt)
-	// 	if rdb.Error != nil {
-	// 		log.Fatalln(rdb.Error)
-	// 	}
-	// 	if cnt == 0 {
-	// 		sql := fmt.Sprintf("CREATE FULLTEXT INDEX `%s` ON `%s` (%s) WITH PARSER `ngram`", idxName, tblName, param)
-	// 		rdb := db.Exec(sql)
-	// 		if rdb.Error != nil {
-	// 			log.Fatalln(rdb.Error)
-	// 		}
-	// 	}
-	// }
-	//
-	// checkExecIndex("tbl_user", "idx_username_profile_fulltext", "`username`(100), `profile`(20)")
-	// checkExecIndex("tbl_video", "idx_title_description_fulltext", "`title`(100), `description`(40)")
+func migrate(db *gorm.DB) error {
+	models := []interface{}{&po.User{}, &po.Account{}, &po.Video{}}
+	for _, val := range models {
+		rdb := db.AutoMigrate(val)
+		if rdb.Error != nil {
+			return rdb.Error
+		}
+	}
+	return nil
 }
