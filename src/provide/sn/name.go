@@ -5,39 +5,21 @@ import (
 )
 
 const (
-	// /src/config/config.go
+	// config and logger
 	SConfig xdi.ServiceName = "config"
-
-	// /src/common/logger/logger.go
 	SLogger xdi.ServiceName = "logger"
 
-	// /src/database/gorm_conn.go
-	SGorm xdi.ServiceName = "gorm"
-
-	// /src/database/gorm_conn.go
+	// database
+	SGorm        xdi.ServiceName = "gorm"
 	SGormAdapter xdi.ServiceName = "gorm-adapter"
+	SRedis       xdi.ServiceName = "redis"
 
-	// /src/database/redis_conn.go
-	SRedis xdi.ServiceName = "redis"
-
-	// /src/service/account.go
-	SAccountService xdi.ServiceName = "account-service"
-
-	// /src/service/token.go
-	STokenService xdi.ServiceName = "token-service"
-
-	// /src/service/user.go
-	SUserService xdi.ServiceName = "user-service"
-
-	// /src/service/subscribe.go
+	// service
+	SAccountService   xdi.ServiceName = "account-service"
+	STokenService     xdi.ServiceName = "token-service"
+	SUserService      xdi.ServiceName = "user-service"
 	SSubscribeService xdi.ServiceName = "subscribe-service"
-
-	// /src/service/video.go
-	SVideoService xdi.ServiceName = "video-service"
-
-	// /src/service/jwt.go
-	SJwtService xdi.ServiceName = "jwt-service"
-
-	// /src/service/casbin.go
-	SCasbinService xdi.ServiceName = "casbin-service"
+	SVideoService     xdi.ServiceName = "video-service"
+	SJwtService       xdi.ServiceName = "jwt-service"
+	SCasbinService    xdi.ServiceName = "casbin-service"
 )

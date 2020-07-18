@@ -69,11 +69,12 @@ func (a *AuthController) Login(c *gin.Context) {
 		return
 	}
 
-	retDto := xentity.MustMap(account.User, &dto.UserDto{}, dto.UserDtoShowAllOption()).(*dto.UserDto)
-	result.Ok().
-		PutData("user", retDto).
-		PutData("token", token).
-		PutData("expire", loginParam.Expire).JSON(c)
+	retDto := xentity.MustMap(account.User, &dto.UserDto{}).(*dto.UserDto)
+	result.Ok().SetData(&dto.UserLoginDto{
+		User:   retDto,
+		Token:  token,
+		Expire: loginParam.Expire,
+	}).JSON(c)
 }
 
 // @Router              /v1/auth/register [POST]
@@ -109,7 +110,7 @@ func (a *AuthController) Register(c *gin.Context) {
 		return
 	}
 
-	retDto := xentity.MustMap(passRecord.User, &dto.UserDto{}, dto.UserDtoShowAllOption()).(*dto.UserDto)
+	retDto := xentity.MustMap(passRecord.User, &dto.UserDto{}).(*dto.UserDto)
 	result.Status(http.StatusCreated).SetData(retDto).JSON(c)
 }
 
@@ -120,7 +121,7 @@ func (a *AuthController) Register(c *gin.Context) {
 // @ResponseModel 200   #Result<UserDto>
 func (a *AuthController) CurrentUser(c *gin.Context) {
 	authUser := a.jwtService.GetContextUser(c)
-	retDto := xentity.MustMap(authUser, &dto.UserDto{}, dto.UserDtoShowAllOption()).(*dto.UserDto)
+	retDto := xentity.MustMap(authUser, &dto.UserDto{}).(*dto.UserDto)
 	result.Ok().SetData(retDto).JSON(c)
 }
 

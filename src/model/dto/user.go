@@ -1,11 +1,5 @@
 package dto
 
-import (
-	"github.com/Aoi-hosizora/ahlib/xentity"
-	"github.com/vidorg/vid_backend/src/common/constant"
-	"github.com/vidorg/vid_backend/src/model/po"
-)
-
 // @Model         _LoginDto
 // @Description   登录信息
 // @Property      user   object(#_UserDto) true "用户信息"
@@ -35,37 +29,6 @@ type UserDto struct {
 	RegisterTime string `json:"register_time"`
 }
 
-// show all info
-// Only used in QueryAllUsers()
-func UserDtoShowAllOption() xentity.MapFunc {
-	return func(from interface{}, to interface{}) error {
-		user := from.(*po.User)
-		userDto := to.(*UserDto)
-		userDto.PhoneNumber = user.PhoneNumber
-		return nil
-	}
-}
-
-// show info dependent on authUser
-// Only used in QueryUser()
-func UserDtoCheckUserOption(authUser *po.User) xentity.MapFunc {
-	return func(from interface{}, to interface{}) error {
-		if authUser == nil { // not login, nothing (default)
-			return nil
-		}
-		user := from.(*po.User)
-		userDto := to.(*UserDto)
-		if authUser.Role == constant.AuthAdmin { // admin, all info
-			userDto.PhoneNumber = user.PhoneNumber
-		} else { // normal, only me
-			if user.Uid == authUser.Uid {
-				userDto.PhoneNumber = user.PhoneNumber
-			}
-		}
-		return nil
-	}
-}
-
 // @Model         _UserAndExtraDto
 // @Description   用户与数量信息
 // @Property      user  object(#_UserDto)      true "用户信息"
@@ -82,3 +45,13 @@ type UserExtraDto struct {
 	VideoCount       int32 `json:"video_cnt"`
 }
 
+type UserDetailDto struct {
+	User  *UserDto      `json:"user"`
+	Extra *UserExtraDto `json:"extra"`
+}
+
+type UserLoginDto struct {
+	User   *UserDto `json:"user"`
+	Token  string   `json:"token"`
+	Expire int64    `json:"expire"`
+}

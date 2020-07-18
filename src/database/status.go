@@ -1,6 +1,6 @@
 package database
 
-type DbStatus int32
+type DbStatus uint8
 
 const (
 	DbSuccess DbStatus = iota

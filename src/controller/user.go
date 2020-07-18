@@ -46,7 +46,7 @@ func (u *UserController) QueryAllUsers(c *gin.Context) {
 	pageOrder := param.BindPageOrder(c, u.config)
 	users, count := u.userService.QueryAll(pageOrder)
 
-	retDto := xentity.MustMapSlice(xslice.Sti(users), &dto.UserDto{}, dto.UserDtoShowAllOption()).([]*dto.UserDto)
+	retDto := xentity.MustMapSlice(xslice.Sti(users), &dto.UserDto{}).([]*dto.UserDto)
 	result.Ok().SetPage(count, pageOrder.Page, pageOrder.Limit, retDto).JSON(c)
 }
 
@@ -76,11 +76,8 @@ func (u *UserController) QueryUser(c *gin.Context) {
 		VideoCount:       videoCnt,
 	}
 
-	authUser := u.jwtService.GetContextUser(c)
-	retDto := xentity.MustMap(user, &dto.UserDto{}, dto.UserDtoCheckUserOption(authUser)).(*dto.UserDto)
-	result.Ok().
-		PutData("user", retDto).
-		PutData("extra", extraInfo).JSON(c)
+	retDto := xentity.MustMap(user, &dto.UserDto{}).(*dto.UserDto)
+	result.Ok().SetData(&dto.UserDetailDto{User: retDto, Extra: extraInfo}).JSON(c)
 }
 
 // @Router              /v1/user [PUT]
@@ -136,7 +133,7 @@ func (u *UserController) UpdateUser(isSpec bool) func(c *gin.Context) {
 			return
 		}
 
-		retDto := xentity.MustMap(user, &dto.UserDto{}, dto.UserDtoShowAllOption()).(*dto.UserDto)
+		retDto := xentity.MustMap(user, &dto.UserDto{}).(*dto.UserDto)
 		result.Ok().SetData(retDto).JSON(c)
 	}
 }
