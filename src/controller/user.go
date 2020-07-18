@@ -2,8 +2,6 @@ package controller
 
 import (
 	"github.com/Aoi-hosizora/ahlib/xdi"
-	"github.com/Aoi-hosizora/ahlib/xentity"
-	"github.com/Aoi-hosizora/ahlib/xslice"
 	"github.com/gin-gonic/gin"
 	"github.com/vidorg/vid_backend/src/common/exception"
 	"github.com/vidorg/vid_backend/src/common/result"
@@ -46,8 +44,8 @@ func (u *UserController) QueryAllUsers(c *gin.Context) {
 	pageOrder := param.BindPageOrder(c, u.config)
 	users, count := u.userService.QueryAll(pageOrder)
 
-	retDto := xentity.MustMapSlice(xslice.Sti(users), &dto.UserDto{}).([]*dto.UserDto)
-	result.Ok().SetPage(count, pageOrder.Page, pageOrder.Limit, retDto).JSON(c)
+	ret := dto.BuildUserDtos(users)
+	result.Ok().SetPage(count, pageOrder.Page, pageOrder.Limit, ret).JSON(c)
 }
 
 // @Router              /v1/user/{uid} [GET]
@@ -68,16 +66,13 @@ func (u *UserController) QueryUser(c *gin.Context) {
 		result.Error(exception.UserNotFoundError).JSON(c)
 		return
 	}
+
 	subscribingCnt, subscriberCnt, _ := u.subscribeService.QueryCountByUid(user.Uid)
 	videoCnt, _ := u.videoService.QueryCountByUid(user.Uid)
-	extraInfo := &dto.UserExtraDto{
-		SubscribingCount: subscribingCnt,
-		SubscriberCount:  subscriberCnt,
-		VideoCount:       videoCnt,
-	}
 
-	retDto := xentity.MustMap(user, &dto.UserDto{}).(*dto.UserDto)
-	result.Ok().SetData(&dto.UserDetailDto{User: retDto, Extra: extraInfo}).JSON(c)
+	extra := dto.BuildUserExtraDto(subscribingCnt, subscriberCnt, videoCnt)
+	ret := dto.BuildUserDetailDto(user, extra)
+	result.Ok().SetData(ret).JSON(c)
 }
 
 // @Router              /v1/user [PUT]
@@ -98,6 +93,7 @@ func (u *UserController) QueryUser(c *gin.Context) {
 // @ResponseModel 200   #Result<UserDto>
 func (u *UserController) UpdateUser(isSpec bool) func(c *gin.Context) {
 	return func(c *gin.Context) {
+		// get where parameter
 		user := &po.User{}
 		if !isSpec {
 			user = u.jwtService.GetContextUser(c)
@@ -113,6 +109,7 @@ func (u *UserController) UpdateUser(isSpec bool) func(c *gin.Context) {
 				return
 			}
 		}
+
 		// Update
 		userParam := &param.UserParam{}
 		if err := c.ShouldBind(userParam); err != nil {
@@ -120,7 +117,7 @@ func (u *UserController) UpdateUser(isSpec bool) func(c *gin.Context) {
 			return
 		}
 
-		xentity.MustMapProp(userParam, user)
+		param.MapUserParam(userParam, user)
 		status := u.userService.Update(user)
 		if status == database.DbNotFound {
 			result.Error(exception.UserNotFoundError).JSON(c)
@@ -133,8 +130,8 @@ func (u *UserController) UpdateUser(isSpec bool) func(c *gin.Context) {
 			return
 		}
 
-		retDto := xentity.MustMap(user, &dto.UserDto{}).(*dto.UserDto)
-		result.Ok().SetData(retDto).JSON(c)
+		ret := dto.BuildUserDto(user)
+		result.Ok().SetData(ret).JSON(c)
 	}
 }
 
@@ -154,6 +151,7 @@ func (u *UserController) UpdateUser(isSpec bool) func(c *gin.Context) {
 // @ResponseModel 200   #Result
 func (u *UserController) DeleteUser(isSpec bool) func(c *gin.Context) {
 	return func(c *gin.Context) {
+		// get delete uid param
 		var uid int32
 		if !isSpec {
 			uid = u.jwtService.GetContextUser(c).Uid
@@ -165,6 +163,7 @@ func (u *UserController) DeleteUser(isSpec bool) func(c *gin.Context) {
 				return
 			}
 		}
+
 		// Delete
 		status := u.userService.Delete(uid)
 		if status == database.DbNotFound {
@@ -174,6 +173,7 @@ func (u *UserController) DeleteUser(isSpec bool) func(c *gin.Context) {
 			result.Error(exception.UserDeleteError).JSON(c)
 			return
 		}
+
 		result.Ok().JSON(c)
 	}
 }

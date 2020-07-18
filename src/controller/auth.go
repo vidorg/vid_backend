@@ -2,7 +2,6 @@ package controller
 
 import (
 	"github.com/Aoi-hosizora/ahlib/xdi"
-	"github.com/Aoi-hosizora/ahlib/xentity"
 	"github.com/gin-gonic/gin"
 	"github.com/vidorg/vid_backend/src/common/exception"
 	"github.com/vidorg/vid_backend/src/common/result"
@@ -14,7 +13,6 @@ import (
 	"github.com/vidorg/vid_backend/src/provide/sn"
 	"github.com/vidorg/vid_backend/src/service"
 	"github.com/vidorg/vid_backend/src/util"
-	"net/http"
 )
 
 type AuthController struct {
@@ -44,9 +42,6 @@ func (a *AuthController) Login(c *gin.Context) {
 		result.Error(exception.RequestParamError).JSON(c)
 		return
 	}
-	if loginParam.Expire <= 0 {
-		loginParam.Expire = a.config.Jwt.Expire
-	}
 
 	account := a.accountService.QueryByUsername(loginParam.Username)
 	if account == nil {
@@ -58,23 +53,19 @@ func (a *AuthController) Login(c *gin.Context) {
 		return
 	}
 
-	token, err := util.AuthUtil.GenerateToken(account.User.Uid, loginParam.Expire, a.config.Jwt)
+	token, err := util.AuthUtil.GenerateToken(account.User.Uid, a.config.Jwt.Expire, a.config.Jwt)
 	if err != nil {
 		result.Error(exception.LoginError).JSON(c)
 		return
 	}
-	ok := a.tokenService.Insert(token, account.Uid, loginParam.Expire)
+	ok := a.tokenService.Insert(token, account.Uid, a.config.Jwt.Expire)
 	if !ok {
 		result.Error(exception.LoginError).JSON(c)
 		return
 	}
 
-	retDto := xentity.MustMap(account.User, &dto.UserDto{}).(*dto.UserDto)
-	result.Ok().SetData(&dto.UserLoginDto{
-		User:   retDto,
-		Token:  token,
-		Expire: loginParam.Expire,
-	}).JSON(c)
+	ret := dto.BuildLoginDto(account.User, token)
+	result.Ok().SetData(ret).JSON(c)
 }
 
 // @Router              /v1/auth/register [POST]
@@ -94,14 +85,16 @@ func (a *AuthController) Register(c *gin.Context) {
 		result.Error(exception.RegisterError).JSON(c)
 		return
 	}
-	passRecord := &po.Account{
+
+	account := &po.Account{
 		EncryptedPass: encrypted,
 		User: &po.User{
 			Username:   registerParam.Username,
 			RegisterIP: c.ClientIP(),
 		},
 	}
-	status := a.accountService.Insert(passRecord)
+
+	status := a.accountService.Insert(account) // cascade
 	if status == database.DbExisted {
 		result.Error(exception.UsernameUsedError).JSON(c)
 		return
@@ -110,8 +103,8 @@ func (a *AuthController) Register(c *gin.Context) {
 		return
 	}
 
-	retDto := xentity.MustMap(passRecord.User, &dto.UserDto{}).(*dto.UserDto)
-	result.Status(http.StatusCreated).SetData(retDto).JSON(c)
+	ret := dto.BuildUserDto(account.User)
+	result.Created().SetData(ret).JSON(c)
 }
 
 // @Router              /v1/auth [GET]
@@ -120,9 +113,10 @@ func (a *AuthController) Register(c *gin.Context) {
 // @Security            Jwt
 // @ResponseModel 200   #Result<UserDto>
 func (a *AuthController) CurrentUser(c *gin.Context) {
-	authUser := a.jwtService.GetContextUser(c)
-	retDto := xentity.MustMap(authUser, &dto.UserDto{}).(*dto.UserDto)
-	result.Ok().SetData(retDto).JSON(c)
+	user := a.jwtService.GetContextUser(c)
+
+	ret := dto.BuildUserDto(user)
+	result.Ok().SetData(ret).JSON(c)
 }
 
 // @Router              /v1/auth/logout [POST]
@@ -131,8 +125,8 @@ func (a *AuthController) CurrentUser(c *gin.Context) {
 // @Security            Jwt
 // @ResponseModel 200   #Result
 func (a *AuthController) Logout(c *gin.Context) {
-	authHeader := a.jwtService.GetToken(c)
-	ok := a.tokenService.Delete(authHeader)
+	token := a.jwtService.GetToken(c)
+	ok := a.tokenService.Delete(token)
 	if !ok {
 		result.Error(exception.LogoutError).JSON(c)
 		return
@@ -160,11 +154,13 @@ func (a *AuthController) UpdatePassword(c *gin.Context) {
 		result.Error(exception.UpdatePassError).JSON(c)
 		return
 	}
-	passRecord := &po.Account{
+
+	account := &po.Account{
 		EncryptedPass: encrypted,
 		Uid:           authUser.Uid,
 	}
-	status := a.accountService.Update(passRecord)
+
+	status := a.accountService.Update(account)
 	if status == database.DbNotFound {
 		result.Error(exception.UserNotFoundError).JSON(c)
 		return

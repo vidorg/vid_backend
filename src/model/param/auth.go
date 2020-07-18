@@ -8,7 +8,6 @@ package param
 type LoginParam struct {
 	Username string `form:"username" json:"username" binding:"required"`
 	Password string `form:"password" json:"password" binding:"required"`
-	Expire   int64  `form:"expire"   json:"expire"`
 }
 
 // @Model         RegisterParam

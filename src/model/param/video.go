@@ -1,5 +1,10 @@
 package param
 
+import (
+	"github.com/Aoi-hosizora/ahlib/xentity"
+	"github.com/vidorg/vid_backend/src/model/po"
+)
+
 // @Model         VideoParam
 // @Description   视频请求参数
 // @Property      title       string true "视频标题，长度在 [1, 100] 之间"
@@ -11,4 +16,8 @@ type VideoParam struct {
 	Description *string `form:"description" json:"description" binding:"required,min=0,max=255"`
 	CoverUrl    string  `form:"cover_url"   json:"cover_url"   binding:"required,url"`
 	VideoUrl    string  `form:"video_url"   json:"video_url"   binding:"required"` // TODO url
+}
+
+func MapVideoParam(param *VideoParam, video *po.Video) {
+	xentity.MustMapProp(param, video)
 }

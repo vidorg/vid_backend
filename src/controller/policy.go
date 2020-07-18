@@ -2,8 +2,6 @@ package controller
 
 import (
 	"github.com/Aoi-hosizora/ahlib/xdi"
-	"github.com/Aoi-hosizora/ahlib/xentity"
-	"github.com/Aoi-hosizora/ahlib/xslice"
 	"github.com/gin-gonic/gin"
 	"github.com/vidorg/vid_backend/src/common/exception"
 	"github.com/vidorg/vid_backend/src/common/result"
@@ -39,8 +37,8 @@ func (r *PolicyController) Query(c *gin.Context) {
 	page := param.BindPage(c, r.config)
 	total, policies := r.casbinService.GetPolicies(page.Limit, page.Page)
 
-	policiesDto := xentity.MustMapSlice(xslice.Sti(policies), &dto.PolicyDto{}).([]*dto.PolicyDto)
-	result.Ok().SetPage(total, page.Page, page.Limit, policiesDto).JSON(c)
+	ret := dto.BuildPolicyDtos(policies)
+	result.Ok().SetPage(total, page.Page, page.Limit, ret).JSON(c)
 }
 
 // @Router              /v1/policy/role/{uid} [PUT]

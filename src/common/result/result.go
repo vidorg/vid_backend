@@ -35,6 +35,10 @@ func Ok() *Result {
 	return Status(http.StatusOK)
 }
 
+func Created() *Result {
+	return Status(http.StatusCreated)
+}
+
 func Error(e *exception.Error) *Result {
 	return Status(e.Status).SetCode(e.Code).SetMessage(e.Message)
 }

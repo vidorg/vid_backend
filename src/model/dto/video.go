@@ -1,5 +1,10 @@
 package dto
 
+import (
+	"github.com/Aoi-hosizora/ahlib/xentity"
+	"github.com/vidorg/vid_backend/src/model/po"
+)
+
 // @Model         _VideoDto
 // @Description   视频信息
 // @Property      vid         integer                 true "视频id"
@@ -19,4 +24,12 @@ type VideoDto struct {
 	UploadTime  string   `json:"upload_time"`
 	UpdateTime  string   `json:"update_time"`
 	Author      *UserDto `json:"author"`
+}
+
+func BuildVideoDto(video *po.Video) *VideoDto {
+	return xentity.MustMap(video, &VideoDto{}).(*VideoDto)
+}
+
+func BuildVideoDtos(videos []*po.Video) []*VideoDto {
+	return xentity.MustMapSlice(videos, &VideoDto{}).([]*VideoDto)
 }

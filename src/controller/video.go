@@ -2,8 +2,6 @@ package controller
 
 import (
 	"github.com/Aoi-hosizora/ahlib/xdi"
-	"github.com/Aoi-hosizora/ahlib/xentity"
-	"github.com/Aoi-hosizora/ahlib/xslice"
 	"github.com/gin-gonic/gin"
 	"github.com/vidorg/vid_backend/src/common/constant"
 	"github.com/vidorg/vid_backend/src/common/exception"
@@ -15,7 +13,6 @@ import (
 	"github.com/vidorg/vid_backend/src/model/po"
 	"github.com/vidorg/vid_backend/src/provide/sn"
 	"github.com/vidorg/vid_backend/src/service"
-	"net/http"
 )
 
 type VideoController struct {
@@ -44,8 +41,8 @@ func (v *VideoController) QueryAllVideos(c *gin.Context) {
 	pageOrder := param.BindPageOrder(c, v.config)
 	videos, count := v.videoService.QueryAll(pageOrder)
 
-	retDto := xentity.MustMapSlice(xslice.Sti(videos), &dto.VideoDto{}).([]*dto.VideoDto)
-	result.Ok().SetPage(count, pageOrder.Page, pageOrder.Limit, retDto).JSON(c)
+	ret := dto.BuildVideoDtos(videos)
+	result.Ok().SetPage(count, pageOrder.Page, pageOrder.Limit, ret).JSON(c)
 }
 
 // @Router              /v1/user/{uid}/video [GET]
@@ -68,8 +65,8 @@ func (v *VideoController) QueryVideosByUid(c *gin.Context) {
 		return
 	}
 
-	retDto := xentity.MustMapSlice(xslice.Sti(videos), &dto.VideoDto{}).([]*dto.VideoDto)
-	result.Ok().SetPage(count, pageOrder.Page, pageOrder.Limit, retDto).JSON(c)
+	ret := dto.BuildVideoDtos(videos)
+	result.Ok().SetPage(count, pageOrder.Page, pageOrder.Limit, ret).JSON(c)
 }
 
 // @Router              /v1/video/{vid} [GET]
@@ -90,8 +87,8 @@ func (v *VideoController) QueryVideoByVid(c *gin.Context) {
 		return
 	}
 
-	retDto := xentity.MustMap(video, &dto.VideoDto{}).(*dto.VideoDto)
-	result.Ok().SetData(retDto).JSON(c)
+	ret := dto.BuildVideoDto(video)
+	result.Ok().SetData(ret).JSON(c)
 }
 
 // @Router              /v1/video [POST]
@@ -113,7 +110,7 @@ func (v *VideoController) InsertVideo(c *gin.Context) {
 		Author:    authUser,
 	}
 
-	xentity.MustMapProp(videoParam, video)
+	param.MapVideoParam(videoParam, video)
 	status := v.videoService.Insert(video)
 	if status == database.DbExisted {
 		result.Error(exception.VideoUrlExistError).JSON(c)
@@ -123,8 +120,8 @@ func (v *VideoController) InsertVideo(c *gin.Context) {
 		return
 	}
 
-	retDto := xentity.MustMap(video, &dto.VideoDto{}).(*dto.VideoDto)
-	result.Status(http.StatusCreated).SetData(retDto).JSON(c)
+	ret := dto.BuildVideoDto(video)
+	result.Created().SetData(ret).JSON(c)
 }
 
 // @Router              /v1/video/{vid} [POST]
@@ -157,8 +154,9 @@ func (v *VideoController) UpdateVideo(c *gin.Context) {
 		result.Error(exception.VideoNotFoundError).JSON(c)
 		return
 	}
+
 	// Update
-	xentity.MustMapProp(videoParam, video)
+	param.MapVideoParam(videoParam, video)
 	status := v.videoService.Update(video)
 	if status == database.DbExisted {
 		result.Error(exception.VideoUrlExistError).JSON(c)
@@ -171,8 +169,8 @@ func (v *VideoController) UpdateVideo(c *gin.Context) {
 		return
 	}
 
-	retDto := xentity.MustMap(video, &dto.VideoDto{}).(*dto.VideoDto)
-	result.Ok().SetData(retDto).JSON(c)
+	ret := dto.BuildVideoDto(video)
+	result.Ok().SetData(ret).JSON(c)
 }
 
 // @Router              /v1/video/{vid} [DELETE]

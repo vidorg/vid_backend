@@ -2,8 +2,6 @@ package controller
 
 import (
 	"github.com/Aoi-hosizora/ahlib/xdi"
-	"github.com/Aoi-hosizora/ahlib/xentity"
-	"github.com/Aoi-hosizora/ahlib/xslice"
 	"github.com/gin-gonic/gin"
 	"github.com/vidorg/vid_backend/src/common/exception"
 	"github.com/vidorg/vid_backend/src/common/result"
@@ -51,8 +49,8 @@ func (s *SubscribeController) QuerySubscriberUsers(c *gin.Context) {
 		return
 	}
 
-	retDto := xentity.MustMapSlice(xslice.Sti(users), &dto.UserDto{}).([]*dto.UserDto)
-	result.Ok().SetPage(count, pageOrder.Page, pageOrder.Limit, retDto).JSON(c)
+	ret := dto.BuildUserDtos(users)
+	result.Ok().SetPage(count, pageOrder.Page, pageOrder.Limit, ret).JSON(c)
 }
 
 // @Router              /v1/user/{uid}/subscribing [GET]
@@ -75,8 +73,8 @@ func (s *SubscribeController) QuerySubscribingUsers(c *gin.Context) {
 		return
 	}
 
-	retDto := xentity.MustMapSlice(xslice.Sti(users), &dto.UserDto{}).([]*dto.UserDto)
-	result.Ok().SetPage(count, pageOrder.Page, pageOrder.Limit, retDto).JSON(c)
+	ret := dto.BuildUserDtos(users)
+	result.Ok().SetPage(count, pageOrder.Page, pageOrder.Limit, ret).JSON(c)
 }
 
 // @Router              /v1/user/subscribing [PUT]

@@ -1,5 +1,10 @@
 package param
 
+import (
+	"github.com/Aoi-hosizora/ahlib/xentity"
+	"github.com/vidorg/vid_backend/src/model/po"
+)
+
 // https://godoc.org/github.com/go-playground/validator#hdr-Baked_In_Validators_and_Tags
 
 // @Model         UserParam
@@ -17,4 +22,8 @@ type UserParam struct {
 	Birthday    string  `form:"birthday"     json:"birthday"     binding:"required,date"`
 	PhoneNumber string  `form:"phone_number" json:"phone_number" binding:"required,phone"`
 	AvatarUrl   string  `form:"avatar_url"   json:"avatar_url"   binding:"required,url"`
+}
+
+func MapUserParam(param *UserParam, user *po.User) {
+	xentity.MustMapProp(param, user)
 }

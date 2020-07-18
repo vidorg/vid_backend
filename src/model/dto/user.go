@@ -1,10 +1,14 @@
 package dto
 
+import (
+	"github.com/Aoi-hosizora/ahlib/xentity"
+	"github.com/vidorg/vid_backend/src/model/po"
+)
+
 // @Model         _LoginDto
 // @Description   登录信息
 // @Property      user   object(#_UserDto) true "用户信息"
 // @Property      token  string            true "登录令牌"
-// @Property      expire integer           true "登录有效期，单位为秒"
 
 // @Model         _UserDto
 // @Description   用户信息
@@ -15,7 +19,6 @@ package dto
 // @Property      avatar_url    string                           true "用户头像"
 // @Property      birthday      string(format:date)              true "用户生日"
 // @Property      role          string                           true "用户角色"
-// @Property      phone_number  string                           true "用户手机号码，部分接口可见"
 // @Property      register_time string(format:datetime)          true "用户注册时间"
 type UserDto struct {
 	Uid          int32  `json:"uid"`
@@ -25,8 +28,15 @@ type UserDto struct {
 	AvatarUrl    string `json:"avatar_url"`
 	Birthday     string `json:"birthday"`
 	Role         string `json:"role"`
-	PhoneNumber  string `json:"phone_number,omitempty"`
 	RegisterTime string `json:"register_time"`
+}
+
+func BuildUserDto(user *po.User) *UserDto {
+	return xentity.MustMap(user, &UserDto{}).(*UserDto)
+}
+
+func BuildUserDtos(users []*po.User) []*UserDto {
+	return xentity.MustMapSlice(users, &UserDto{}).([]*UserDto)
 }
 
 // @Model         _UserAndExtraDto
@@ -45,13 +55,34 @@ type UserExtraDto struct {
 	VideoCount       int32 `json:"video_cnt"`
 }
 
+func BuildUserExtraDto(subscribingCnt int32, subscriberCnt int32, videoCnt int32) *UserExtraDto {
+	return &UserExtraDto{
+		SubscribingCount: subscribingCnt,
+		SubscriberCount:  subscriberCnt,
+		VideoCount:       videoCnt,
+	}
+}
+
 type UserDetailDto struct {
 	User  *UserDto      `json:"user"`
 	Extra *UserExtraDto `json:"extra"`
 }
 
-type UserLoginDto struct {
-	User   *UserDto `json:"user"`
-	Token  string   `json:"token"`
-	Expire int64    `json:"expire"`
+func BuildUserDetailDto(user *po.User, extra *UserExtraDto) *UserDetailDto {
+	return &UserDetailDto{
+		User:  BuildUserDto(user),
+		Extra: extra,
+	}
+}
+
+type LoginDto struct {
+	User  *UserDto `json:"user"`
+	Token string   `json:"token"`
+}
+
+func BuildLoginDto(user *po.User, token string) *LoginDto {
+	return &LoginDto{
+		User:  BuildUserDto(user),
+		Token: token,
+	}
 }
