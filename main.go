@@ -2,25 +2,19 @@ package main
 
 import (
 	"flag"
-	"log"
-
-	"github.com/vidorg/vid_backend/src/config"
+	"github.com/vidorg/vid_backend/src/provide"
 	"github.com/vidorg/vid_backend/src/server"
+	"log"
 )
 
 var (
-	help       bool
-	configPath string
+	fConfig = flag.String("config", "./config.yaml", "change config path")
+	fHelp   = flag.Bool("h", false, "show help")
 )
-
-func init() {
-	flag.BoolVar(&help, "h", false, "show help")
-	flag.StringVar(&configPath, "config", "./config/config.yaml", "set config path")
-}
 
 func main() {
 	flag.Parse()
-	if help {
+	if *fHelp {
 		flag.Usage()
 	} else {
 		run()
@@ -54,11 +48,11 @@ func main() {
 // @Template Order.Param   order query string  false "排序字符串"
 
 func run() {
-	cfg, err := config.Load(configPath)
-	if err != nil {
-		log.Fatalln("Failed to load yaml config file:", err)
-	}
+	provide.Provide(*fConfig)
 
-	s := server.NewServer(cfg)
-	s.Serve() // with log
+	s := server.NewServer()
+	err := s.Serve()
+	if err != nil {
+		log.Fatalln("Failed to serve:", err)
+	}
 }

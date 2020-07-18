@@ -4,16 +4,8 @@
 .ionide/
 .history/
 
-### Server ###
+### Project ###
 build/
 log/
 *.rdb
 config.yaml
-dictionary.txt
-
-usr/image/*.*
-usr/video/*.*
-
-!.gitkeep
-!usr/image/avatar.jpg
-!usr/image/cover.jpg
