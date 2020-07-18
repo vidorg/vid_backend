@@ -6,6 +6,6 @@
 
 ### Project ###
 build/
-log/
+logs/*.log
 *.rdb
 config.yaml

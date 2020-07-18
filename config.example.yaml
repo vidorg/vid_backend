@@ -1,14 +1,9 @@
 meta:
   run-mode: debug
   port: 3344
-  log-path: ./log/console.log
-  def-page-size: 10
-  max-page-size: 30
-
-file:
-  image-path: ./usr/image/
-  image-max-size: 2 # MB
-  image-url-prefix: http://localhost:3344/v1/raw/image/
+  log-path: ./logs/console.log
+  def-page-size: 20
+  max-page-size: 50
 
 mysql:
   host: 127.0.0.1
