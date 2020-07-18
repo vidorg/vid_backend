@@ -3,24 +3,18 @@ package docs
 import (
 	"github.com/swaggo/swag"
 	"io/ioutil"
-	"os"
 )
 
 type swagger struct{}
 
 func (s *swagger) ReadDoc() string {
-	f, err := os.Open("./docs/api.yaml")
+	f, err := ioutil.ReadFile("./docs/doc.json")
 	if err != nil {
 		return ""
 	}
-	buf, err := ioutil.ReadAll(f)
-	_ = f.Close()
-	if err != nil {
-		return ""
-	}
-	return string(buf)
+	return string(f)
 }
 
-func init() {
+func RegisterSwag() {
 	swag.Register(swag.Name, &swagger{})
 }

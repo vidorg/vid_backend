@@ -1,0 +1,76 @@
+{
+  "basePath": "/",
+  "definitions": {
+    "Result": {
+      "type": "object",
+      "required": [
+        "code",
+        "message"
+      ],
+      "description": "global response",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "required": true,
+          "description": "status code",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string",
+          "required": true,
+          "description": "status message"
+        }
+      }
+    }
+  },
+  "host": "localhost:3344",
+  "info": {
+    "title": "vid backend",
+    "description": "Vid backend built by golang/gin",
+    "version": "1.2",
+    "termsOfService": "https://github.com/vidorg/vid_backend/issues",
+    "license": {
+      "name": "MIT",
+      "url": "https://github.com/vidorg/vid_backend/blob/master/LICENSE"
+    },
+    "contact": {
+      "name": "vidorg",
+      "url": "https://github.com/vidorg"
+    }
+  },
+  "paths": {},
+  "securityDefinitions": {
+    "Jwt": {
+      "type": "apiKey",
+      "name": "Authorization",
+      "in": "header"
+    }
+  },
+  "swagger": "2.0",
+  "tags": [
+    {
+      "name": "Authorization",
+      "description": "Auth-Controller"
+    },
+    {
+      "name": "User",
+      "description": "User-Controller"
+    },
+    {
+      "name": "Subscribe",
+      "description": "Subscribe-Controller"
+    },
+    {
+      "name": "Video",
+      "description": "Video-Controller"
+    },
+    {
+      "name": "Policy",
+      "description": "Policy-Controller"
+    },
+    {
+      "name": "Administration",
+      "description": "*-Controller"
+    }
+  ]
+}
