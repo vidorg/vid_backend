@@ -4,10 +4,10 @@ import (
 	"github.com/gomodule/redigo/redis"
 )
 
-func RedisDeleteAll(conn redis.Conn, pattern string) bool {
+func RedisDeleteAll(conn redis.Conn, pattern string) (int32, bool) {
 	keys, err := redis.Strings(conn.Do("KEYS", pattern))
 	if err != nil {
-		return false
+		return 0, false
 	}
 
 	cnt := 0
@@ -17,5 +17,5 @@ func RedisDeleteAll(conn redis.Conn, pattern string) bool {
 			cnt += result
 		}
 	}
-	return len(keys) == 0 || cnt > 0
+	return int32(cnt), len(keys) == 0 || cnt > 0
 }

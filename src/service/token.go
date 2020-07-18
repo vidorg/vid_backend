@@ -41,10 +41,12 @@ func (t *TokenService) Insert(token string, uid int32, ex int64) bool {
 
 func (t *TokenService) Delete(token string) bool {
 	pattern := t.concat("*", token)
-	return helper.RedisDeleteAll(t.conn, pattern)
+	_, ok := helper.RedisDeleteAll(t.conn, pattern)
+	return ok
 }
 
 func (t *TokenService) DeleteAll(uid int32) bool {
 	pattern := t.concat(strconv.Itoa(int(uid)), "*")
-	return helper.RedisDeleteAll(t.conn, pattern)
+	_, ok := helper.RedisDeleteAll(t.conn, pattern)
+	return ok
 }

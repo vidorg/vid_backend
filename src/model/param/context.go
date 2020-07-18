@@ -6,7 +6,6 @@ import (
 	"strconv"
 )
 
-// make sure id is greater than 0
 func BindRouteId(c *gin.Context, field string) (int32, bool) {
 	uid, err := strconv.Atoi(c.Param(field))
 	if err != nil {
