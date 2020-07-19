@@ -14,7 +14,7 @@ func init() {
 			WithProperties(
 				goapidoc.NewProperty("username", "string", true, "用户名，长度在 [5, 30] 之间"),
 				goapidoc.NewProperty("profile", "string", true, "用户简介，长度在 [0, 255] 之间").WithAllowEmptyValue(true),
-				goapidoc.NewProperty("sex", "string", true, "性别").WithEnum("male", "female", "unknown"),
+				goapidoc.NewProperty("gender", "string", true, "性别").WithEnum("male", "female", "unknown"),
 				goapidoc.NewProperty("birthday", "string#date", true, "生日"),
 				goapidoc.NewProperty("phone_number", "string", true, "手机号码，长度为 11，仅限中国大陆手机号码"),
 				goapidoc.NewProperty("avatar_url", "string", true, "头像"),
@@ -25,7 +25,7 @@ func init() {
 type UserParam struct {
 	Username    string  `form:"username"     json:"username"     binding:"required,min=5,max=30,name"`
 	Profile     *string `form:"profile"      json:"profile"      binding:"required,min=0,max=255"`
-	Sex         string  `form:"sex"          json:"sex"          binding:"required"`
+	Gender      string  `form:"gender"       json:"gender"       binding:"required"`
 	Birthday    string  `form:"birthday"     json:"birthday"     binding:"required,date"`
 	PhoneNumber string  `form:"phone_number" json:"phone_number" binding:"required,phone"`
 	AvatarUrl   string  `form:"avatar_url"   json:"avatar_url"   binding:"required,url"` // TODO url

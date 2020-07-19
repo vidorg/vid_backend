@@ -190,7 +190,7 @@
       "required": [
         "uid",
         "username",
-        "sex",
+        "gender",
         "profile",
         "avatar_url",
         "birthday",
@@ -210,7 +210,7 @@
           "required": true,
           "description": "用户名"
         },
-        "sex": {
+        "gender": {
           "type": "string",
           "required": true,
           "description": "性别",
@@ -284,7 +284,7 @@
       "required": [
         "username",
         "profile",
-        "sex",
+        "gender",
         "birthday",
         "phone_number",
         "avatar_url"
@@ -302,7 +302,7 @@
           "description": "用户简介，长度在 [0, 255] 之间",
           "allowEmptyValue": true
         },
-        "sex": {
+        "gender": {
           "type": "string",
           "required": true,
           "description": "性别",
@@ -895,7 +895,8 @@
         "summary": "删除策略",
         "operationId": "-v1-policy-delete",
         "tags": [
-          "Policy"
+          "Policy",
+          "Administration"
         ],
         "security": [
           {
@@ -927,7 +928,8 @@
         "summary": "查询所有策略",
         "operationId": "-v1-policy-get",
         "tags": [
-          "Policy"
+          "Policy",
+          "Administration"
         ],
         "security": [
           {
@@ -947,7 +949,8 @@
         "summary": "新建策略",
         "operationId": "-v1-policy-post",
         "tags": [
-          "Policy"
+          "Policy",
+          "Administration"
         ],
         "security": [
           {
@@ -981,7 +984,8 @@
         "summary": "修改用户角色",
         "operationId": "-v1-policy-uid-role-put",
         "tags": [
-          "Policy"
+          "Policy",
+          "Administration"
         ],
         "security": [
           {
@@ -1124,7 +1128,8 @@
         "summary": "管理员删除用户",
         "operationId": "-v1-user-admin-uid-put",
         "tags": [
-          "User"
+          "User",
+          "Administration"
         ],
         "security": [
           {
@@ -1395,7 +1400,8 @@
         "summary": "管理员查询所有视频",
         "operationId": "-v1-video-get",
         "tags": [
-          "Video"
+          "Video",
+          "Administration"
         ],
         "security": [
           {
@@ -1476,7 +1482,8 @@
         "summary": "删除视频",
         "operationId": "-v1-video-vid-delete",
         "tags": [
-          "Video"
+          "Video",
+          "Administration"
         ],
         "security": [
           {
@@ -1531,7 +1538,8 @@
         "summary": "更新视频",
         "operationId": "-v1-video-vid-put",
         "tags": [
-          "Video"
+          "Video",
+          "Administration"
         ],
         "security": [
           {
@@ -1597,6 +1605,10 @@
     {
       "name": "Policy",
       "description": "Policy-Controller"
+    },
+    {
+      "name": "Administration",
+      "description": "*-Controller"
     }
   ]
 }

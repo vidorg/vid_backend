@@ -12,7 +12,7 @@ func init() {
 			WithProperties(
 				goapidoc.NewProperty("uid", "integer#int32", true, "用户id"),
 				goapidoc.NewProperty("username", "string", true, "用户名"),
-				goapidoc.NewProperty("sex", "string", true, "性别").WithEnum("male", "female", "unknown"),
+				goapidoc.NewProperty("gender", "string", true, "性别").WithEnum("male", "female", "unknown"),
 				goapidoc.NewProperty("profile", "string", true, "简介").WithAllowEmptyValue(true),
 				goapidoc.NewProperty("avatar_url", "string", true, "头像"),
 				goapidoc.NewProperty("birthday", "string#date", true, "生日"),
@@ -44,7 +44,7 @@ func init() {
 type UserDto struct {
 	Uid          int32  `json:"uid"`
 	Username     string `json:"username"`
-	Sex          string `json:"sex"`
+	Gender       string `json:"gender"`
 	Profile      string `json:"profile"`
 	AvatarUrl    string `json:"avatar_url"` // TODO url
 	Birthday     string `json:"birthday"`

@@ -18,10 +18,9 @@ func addDtoMappers() {
 
 		userDto.Uid = user.Uid
 		userDto.Username = user.Username
-		userDto.Sex = user.Sex.String()
+		userDto.Gender = user.Gender.String()
 		userDto.Profile = user.Profile
-		// TODO
-		// userDto.AvatarUrl = util.CommonUtil.GetServerUrl(user.AvatarUrl, config.File.ImageUrlPrefix)
+		userDto.AvatarUrl = user.AvatarUrl // TODO
 		userDto.Birthday = user.Birthday.String()
 		userDto.Role = user.Role
 		userDto.RegisterTime = xtime.NewJsonDateTime(user.CreatedAt).String()
@@ -36,9 +35,8 @@ func addDtoMappers() {
 		videoDto.Vid = video.Vid
 		videoDto.Title = video.Title
 		videoDto.Description = video.Description
+		videoDto.CoverUrl = video.CoverUrl // TODO
 		videoDto.VideoUrl = video.VideoUrl
-		// TODO
-		// videoDto.CoverUrl = util.CommonUtil.GetServerUrl(video.CoverUrl, config.File.ImageUrlPrefix)
 		videoDto.UploadTime = xtime.NewJsonDateTime(video.CreatedAt).String()
 		videoDto.UpdateTime = xtime.NewJsonDateTime(video.UpdatedAt).String()
 		videoDto.Author = xentity.MustMap(video.Author, &dto.UserDto{}).(*dto.UserDto)
@@ -65,11 +63,10 @@ func addParamMappers() {
 
 		user.Username = userParam.Username
 		user.Profile = *userParam.Profile
-		user.Sex = constant.ParseSexEnum(userParam.Sex)
+		user.Gender = constant.ParseSexEnum(userParam.Gender)
 		user.Birthday = xcondition.First(xtime.ParseRFC3339Date(userParam.Birthday)).(xtime.JsonDate)
 		user.PhoneNumber = userParam.PhoneNumber
-		// TODO
-		// user.AvatarUrl = util.CommonUtil.GetFilenameFromUrl(userParam.AvatarUrl, config.File.ImageUrlPrefix)
+		user.AvatarUrl = userParam.AvatarUrl // TODO
 		return nil
 	}))
 
@@ -80,9 +77,8 @@ func addParamMappers() {
 
 		video.Title = videoParam.Title
 		video.Description = *videoParam.Description
-		// TODO
-		// video.CoverUrl = util.CommonUtil.GetFilenameFromUrl(videoParam.CoverUrl, config.File.ImageUrlPrefix)
-		video.VideoUrl = videoParam.VideoUrl
+		video.CoverUrl = videoParam.CoverUrl // TODO
+		video.VideoUrl = videoParam.VideoUrl // TODO
 		return nil
 	}))
 }

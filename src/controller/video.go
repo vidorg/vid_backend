@@ -19,8 +19,7 @@ import (
 func init() {
 	goapidoc.AddPaths(
 		goapidoc.NewPath("GET", "/v1/video", "管理员查询所有视频").
-			WithTags("Video").
-			// WithTags("Administration").
+			WithTags("Video", "Administration").
 			WithSecurities("Jwt").
 			WithParams(param.ADPage, param.ADLimit, param.ADOrder).
 			WithResponses(goapidoc.NewResponse(200).WithType("_Result<_Page<VideoDto>>")),
@@ -45,8 +44,7 @@ func init() {
 			WithResponses(goapidoc.NewResponse(200).WithType("_Result<VideoDto>")),
 
 		goapidoc.NewPath("PUT", "/v1/video/{vid}", "更新视频").
-			WithTags("Video").
-			// WithTags("Administration").
+			WithTags("Video", "Administration").
 			WithSecurities("Jwt").
 			WithParams(
 				goapidoc.NewPathParam("vid", "integer#int32", true, "视频id"),
@@ -55,8 +53,7 @@ func init() {
 			WithResponses(goapidoc.NewResponse(200).WithType("_Result<VideoDto>")),
 
 		goapidoc.NewPath("DELETE", "/v1/video/{vid}", "删除视频").
-			WithTags("Video").
-			// WithTags("Administration").
+			WithTags("Video", "Administration").
 			WithSecurities("Jwt").
 			WithParams(goapidoc.NewPathParam("vid", "integer#int32", true, "视频id")).
 			WithResponses(goapidoc.NewResponse(200).WithType("Result")),

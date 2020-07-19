@@ -35,8 +35,7 @@ func init() {
 			WithResponses(goapidoc.NewResponse(200).WithType("_Result<UserDto>")),
 
 		goapidoc.NewPath("PUT", "/v1/user/admin/{uid}", "管理员更新用户").
-			WithTags("User").
-			// WithTags("Administration").
+			WithTags("User", "Administration").
 			WithSecurities("Jwt").
 			WithParams(
 				goapidoc.NewPathParam("uid", "integer#int32", true, "用户id"),
@@ -50,8 +49,7 @@ func init() {
 			WithResponses(goapidoc.NewResponse(200).WithType("Result")),
 
 		goapidoc.NewPath("PUT", "/v1/user/admin/{uid}", "管理员删除用户").
-			WithTags("User").
-			// WithTags("Administration").
+			WithTags("User", "Administration").
 			WithSecurities("Jwt").
 			WithParams(goapidoc.NewPathParam("uid", "integer#int32", true, "用户id")).
 			WithResponses(goapidoc.NewResponse(200).WithType("Result")),
