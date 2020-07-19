@@ -502,6 +502,45 @@
         }
       }
     },
+    "_Page<VideoDto>": {
+      "type": "object",
+      "required": [
+        "page",
+        "limit",
+        "total",
+        "data"
+      ],
+      "description": "page response",
+      "properties": {
+        "page": {
+          "type": "integer",
+          "required": true,
+          "description": "current page",
+          "format": "int32"
+        },
+        "limit": {
+          "type": "integer",
+          "required": true,
+          "description": "page size",
+          "format": "int32"
+        },
+        "total": {
+          "type": "integer",
+          "required": true,
+          "description": "data count",
+          "format": "int32"
+        },
+        "data": {
+          "type": "array",
+          "required": true,
+          "description": "page data",
+          "items": {
+            "originRef": "VideoDto",
+            "$ref": "#/definitions/VideoDto"
+          }
+        }
+      }
+    },
     "_Result<LoginDto>": {
       "type": "object",
       "required": [
@@ -530,6 +569,34 @@
         }
       }
     },
+    "_Result<UserDetailDto>": {
+      "type": "object",
+      "required": [
+        "code",
+        "message",
+        "data"
+      ],
+      "description": "global response",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "required": true,
+          "description": "status code",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string",
+          "required": true,
+          "description": "status message"
+        },
+        "data": {
+          "required": true,
+          "description": "response data",
+          "originRef": "UserDetailDto",
+          "$ref": "#/definitions/UserDetailDto"
+        }
+      }
+    },
     "_Result<UserDto>": {
       "type": "object",
       "required": [
@@ -555,6 +622,34 @@
           "description": "response data",
           "originRef": "UserDto",
           "$ref": "#/definitions/UserDto"
+        }
+      }
+    },
+    "_Result<VideoDto>": {
+      "type": "object",
+      "required": [
+        "code",
+        "message",
+        "data"
+      ],
+      "description": "global response",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "required": true,
+          "description": "status code",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string",
+          "required": true,
+          "description": "status message"
+        },
+        "data": {
+          "required": true,
+          "description": "response data",
+          "originRef": "VideoDto",
+          "$ref": "#/definitions/VideoDto"
         }
       }
     },
@@ -611,6 +706,34 @@
           "description": "response data",
           "originRef": "_Page\u003cUserDto\u003e",
           "$ref": "#/definitions/_Page\u003cUserDto\u003e"
+        }
+      }
+    },
+    "_Result<_Page<VideoDto>>": {
+      "type": "object",
+      "required": [
+        "code",
+        "message",
+        "data"
+      ],
+      "description": "global response",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "required": true,
+          "description": "status code",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string",
+          "required": true,
+          "description": "status message"
+        },
+        "data": {
+          "required": true,
+          "description": "response data",
+          "originRef": "_Page\u003cVideoDto\u003e",
+          "$ref": "#/definitions/_Page\u003cVideoDto\u003e"
         }
       }
     }
@@ -895,6 +1018,139 @@
         }
       }
     },
+    "/v1/user": {
+      "get": {
+        "summary": "查询所有用户",
+        "operationId": "-v1-user-get",
+        "tags": [
+          "User"
+        ],
+        "security": [
+          {
+            "Jwt": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "description": "请求页",
+            "format": "int32"
+          },
+          {
+            "name": "limit",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "description": "页大小",
+            "format": "int32"
+          },
+          {
+            "name": "order",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "排序"
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "originRef": "_Result<_Page<UserDto>>",
+              "$ref": "#/definitions/_Result<_Page<UserDto>>"
+            }
+          }
+        }
+      }
+    },
+    "/v1/user/": {
+      "delete": {
+        "summary": "删除用户",
+        "operationId": "-v1-user--delete",
+        "tags": [
+          "User"
+        ],
+        "security": [
+          {
+            "Jwt": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "originRef": "Result",
+              "$ref": "#/definitions/Result"
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "更新用户",
+        "operationId": "-v1-user--put",
+        "tags": [
+          "User"
+        ],
+        "security": [
+          {
+            "Jwt": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "param",
+            "in": "body",
+            "required": true,
+            "description": "用户请求参数",
+            "schema": {
+              "originRef": "UserParam",
+              "$ref": "#/definitions/UserParam"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "originRef": "_Result<UserDto>",
+              "$ref": "#/definitions/_Result<UserDto>"
+            }
+          }
+        }
+      }
+    },
+    "/v1/user/admin/{uid}": {
+      "put": {
+        "summary": "管理员删除用户",
+        "operationId": "-v1-user-admin-uid-put",
+        "tags": [
+          "User"
+        ],
+        "security": [
+          {
+            "Jwt": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "uid",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "description": "用户id",
+            "format": "int32"
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "originRef": "Result",
+              "$ref": "#/definitions/Result"
+            }
+          }
+        }
+      }
+    },
     "/v1/user/subscribing/{uid}": {
       "delete": {
         "summary": "取消关注用户",
@@ -952,6 +1208,33 @@
             "schema": {
               "originRef": "Result",
               "$ref": "#/definitions/Result"
+            }
+          }
+        }
+      }
+    },
+    "/v1/user/{uid}": {
+      "get": {
+        "summary": "查询用户",
+        "operationId": "-v1-user-uid-get",
+        "tags": [
+          "User"
+        ],
+        "parameters": [
+          {
+            "name": "uid",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "description": "用户id",
+            "format": "int32"
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "originRef": "_Result<UserDetailDto>",
+              "$ref": "#/definitions/_Result<UserDetailDto>"
             }
           }
         }
@@ -1056,6 +1339,234 @@
           }
         }
       }
+    },
+    "/v1/user/{uid}/video": {
+      "get": {
+        "summary": "查询用户发布的所有视频",
+        "operationId": "-v1-user-uid-video-get",
+        "tags": [
+          "Video"
+        ],
+        "parameters": [
+          {
+            "name": "uid",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "description": "用户id",
+            "format": "int32"
+          },
+          {
+            "name": "page",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "description": "请求页",
+            "format": "int32"
+          },
+          {
+            "name": "limit",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "description": "页大小",
+            "format": "int32"
+          },
+          {
+            "name": "order",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "排序"
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "originRef": "_Result<_Page<VideoDto>>",
+              "$ref": "#/definitions/_Result<_Page<VideoDto>>"
+            }
+          }
+        }
+      }
+    },
+    "/v1/video": {
+      "get": {
+        "summary": "管理员查询所有视频",
+        "operationId": "-v1-video-get",
+        "tags": [
+          "Video"
+        ],
+        "security": [
+          {
+            "Jwt": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "description": "请求页",
+            "format": "int32"
+          },
+          {
+            "name": "limit",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "description": "页大小",
+            "format": "int32"
+          },
+          {
+            "name": "order",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "排序"
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "originRef": "_Result<_Page<VideoDto>>",
+              "$ref": "#/definitions/_Result<_Page<VideoDto>>"
+            }
+          }
+        }
+      }
+    },
+    "/v1/video/": {
+      "post": {
+        "summary": "新建视频",
+        "operationId": "-v1-video--post",
+        "tags": [
+          "Video"
+        ],
+        "security": [
+          {
+            "Jwt": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "param",
+            "in": "body",
+            "required": true,
+            "description": "视频请求参数",
+            "schema": {
+              "originRef": "VideoParam",
+              "$ref": "#/definitions/VideoParam"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "originRef": "_Result<VideoDto>",
+              "$ref": "#/definitions/_Result<VideoDto>"
+            }
+          }
+        }
+      }
+    },
+    "/v1/video/{vid}": {
+      "delete": {
+        "summary": "删除视频",
+        "operationId": "-v1-video-vid-delete",
+        "tags": [
+          "Video"
+        ],
+        "security": [
+          {
+            "Jwt": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "vid",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "description": "视频id",
+            "format": "int32"
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "originRef": "Result",
+              "$ref": "#/definitions/Result"
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "查询视频",
+        "operationId": "-v1-video-vid-get",
+        "tags": [
+          "Video"
+        ],
+        "parameters": [
+          {
+            "name": "vid",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "description": "视频id",
+            "format": "int32"
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "originRef": "_Result<VideoDto>",
+              "$ref": "#/definitions/_Result<VideoDto>"
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "更新视频",
+        "operationId": "-v1-video-vid-put",
+        "tags": [
+          "Video"
+        ],
+        "security": [
+          {
+            "Jwt": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "vid",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "description": "视频id",
+            "format": "int32"
+          },
+          {
+            "name": "param",
+            "in": "body",
+            "required": true,
+            "description": "视频请求参数",
+            "schema": {
+              "originRef": "VideoParam",
+              "$ref": "#/definitions/VideoParam"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "originRef": "_Result<VideoDto>",
+              "$ref": "#/definitions/_Result<VideoDto>"
+            }
+          }
+        }
+      }
     }
   },
   "securityDefinitions": {
@@ -1086,10 +1597,6 @@
     {
       "name": "Policy",
       "description": "Policy-Controller"
-    },
-    {
-      "name": "Administration",
-      "description": "*-Controller"
     }
   ]
 }

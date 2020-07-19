@@ -51,6 +51,7 @@ func initRoute(engine *gin.Engine) {
 
 		policyGroup := v1.Group("/policy")
 		{
+			policyGroup.Use(adminMw)
 			policyGroup.GET("", policyCtrl.Query)
 			policyGroup.PUT("/:uid/role", policyCtrl.SetRole)
 			policyGroup.POST("", policyCtrl.Insert)

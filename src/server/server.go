@@ -30,7 +30,7 @@ func init() {
 		goapidoc.NewTag("Subscribe", "Subscribe-Controller"),
 		goapidoc.NewTag("Video", "Video-Controller"),
 		goapidoc.NewTag("Policy", "Policy-Controller"),
-		goapidoc.NewTag("Administration", "*-Controller"),
+		// goapidoc.NewTag("Administration", "*-Controller"),
 	)
 	goapidoc.SetSecurities(
 		goapidoc.NewSecurity("Jwt", "header", "Authorization"),

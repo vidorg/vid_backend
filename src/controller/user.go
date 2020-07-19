@@ -2,6 +2,7 @@ package controller
 
 import (
 	"github.com/Aoi-hosizora/ahlib/xdi"
+	"github.com/Aoi-hosizora/goapidoc"
 	"github.com/gin-gonic/gin"
 	"github.com/vidorg/vid_backend/src/common/exception"
 	"github.com/vidorg/vid_backend/src/common/result"
@@ -13,6 +14,49 @@ import (
 	"github.com/vidorg/vid_backend/src/provide/sn"
 	"github.com/vidorg/vid_backend/src/service"
 )
+
+func init() {
+	goapidoc.AddPaths(
+		goapidoc.NewPath("GET", "/v1/user", "查询所有用户").
+			WithTags("User").
+			WithSecurities("Jwt").
+			WithParams(param.ADPage, param.ADLimit, param.ADOrder).
+			WithResponses(goapidoc.NewResponse(200).WithType("_Result<_Page<UserDto>>")),
+
+		goapidoc.NewPath("GET", "/v1/user/{uid}", "查询用户").
+			WithTags("User").
+			WithParams(goapidoc.NewPathParam("uid", "integer#int32", true, "用户id")).
+			WithResponses(goapidoc.NewResponse(200).WithType("_Result<UserDetailDto>")),
+
+		goapidoc.NewPath("PUT", "/v1/user/", "更新用户").
+			WithTags("User").
+			WithSecurities("Jwt").
+			WithParams(goapidoc.NewBodyParam("param", "UserParam", true, "用户请求参数")).
+			WithResponses(goapidoc.NewResponse(200).WithType("_Result<UserDto>")),
+
+		goapidoc.NewPath("PUT", "/v1/user/admin/{uid}", "管理员更新用户").
+			WithTags("User").
+			// WithTags("Administration").
+			WithSecurities("Jwt").
+			WithParams(
+				goapidoc.NewPathParam("uid", "integer#int32", true, "用户id"),
+				goapidoc.NewBodyParam("param", "UserParam", true, "用户请求参数"),
+			).
+			WithResponses(goapidoc.NewResponse(200).WithType("_Result<UserDto>")),
+
+		goapidoc.NewPath("DELETE", "/v1/user/", "删除用户").
+			WithTags("User").
+			WithSecurities("Jwt").
+			WithResponses(goapidoc.NewResponse(200).WithType("Result")),
+
+		goapidoc.NewPath("PUT", "/v1/user/admin/{uid}", "管理员删除用户").
+			WithTags("User").
+			// WithTags("Administration").
+			WithSecurities("Jwt").
+			WithParams(goapidoc.NewPathParam("uid", "integer#int32", true, "用户id")).
+			WithResponses(goapidoc.NewResponse(200).WithType("Result")),
+	)
+}
 
 type UserController struct {
 	config           *config.Config
@@ -32,14 +76,7 @@ func NewUserController() *UserController {
 	}
 }
 
-// @Router              /v1/user [GET]
-// @Summary             查询所有用户
-// @Description         管理员权限，此处可见用户手机号码
-// @Tag                 User
-// @Tag                 Administration
-// @Security            Jwt
-// @Template            Order Page
-// @ResponseModel 200   #Result<Page<UserDto>>
+// GET /v1/user
 func (u *UserController) QueryAllUsers(c *gin.Context) {
 	pageOrder := param.BindPageOrder(c, u.config)
 	users, total := u.userService.QueryAll(pageOrder)
@@ -48,12 +85,7 @@ func (u *UserController) QueryAllUsers(c *gin.Context) {
 	result.Ok().SetPage(pageOrder.Page, pageOrder.Limit, total, ret).JSON(c)
 }
 
-// @Router              /v1/user/{uid} [GET]
-// @Summary             查询用户
-// @Description         此处用户本人可见手机号码，管理员不受限制
-// @Tag                 User
-// @Param               uid path integer true "用户id"
-// @ResponseModel 200   #Result<UserExtraDto>
+// GET /v1/user/:uid
 func (u *UserController) QueryUser(c *gin.Context) {
 	uid, ok := param.BindRouteId(c, "uid")
 	if !ok {
@@ -75,22 +107,8 @@ func (u *UserController) QueryUser(c *gin.Context) {
 	result.Ok().SetData(ret).JSON(c)
 }
 
-// @Router              /v1/user [PUT]
-// @Summary             更新用户
-// @Tag                 User
-// @Security            Jwt
-// @Param               param body #UserParam true "请求参数"
-// @ResponseModel 200   #Result<UserDto>
-//
-// @Router              /v1/user/admin/{uid} [PUT]
-// @Summary             更新用户
-// @Description         管理员权限
-// @Tag                 User
-// @Tag                 Administration
-// @Security            Jwt
-// @Param               uid   path integer    true "用户id"
-// @Param               param body #UserParam true "请求参数"
-// @ResponseModel 200   #Result<UserDto>
+// PUT /v1/user
+// PUT /v1/user/admin/:uid
 func (u *UserController) UpdateUser(isSpec bool) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		// get where parameter
@@ -135,20 +153,8 @@ func (u *UserController) UpdateUser(isSpec bool) func(c *gin.Context) {
 	}
 }
 
-// @Router              /v1/user [DELETE]
-// @Security            Jwt
-// @Summary             删除用户
-// @Tag                 User
-// @ResponseModel 200   #Result
-//
-// @Router              /v1/user/admin/{uid} [DELETE]
-// @Security            Jwt
-// @Summary             删除用户
-// @Description         管理员权限
-// @Tag                 User
-// @Tag                 Administration
-// @Param               uid path integer true "用户id"
-// @ResponseModel 200   #Result
+// DELETE /v1/user
+// DELETE /v1/user/admin/:uid
 func (u *UserController) DeleteUser(isSpec bool) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		// get delete uid param

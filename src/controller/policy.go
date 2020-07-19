@@ -18,11 +18,13 @@ func init() {
 	goapidoc.AddPaths(
 		goapidoc.NewPath("GET", "/v1/policy", "查询所有策略").
 			WithTags("Policy").
+			// WithTags("Administration").
 			WithSecurities("Jwt").
 			WithResponses(goapidoc.NewResponse(200).WithType("_Result<_Page<PolicyDto>>")),
 
 		goapidoc.NewPath("PUT", "/v1/policy/{uid}/role", "修改用户角色").
 			WithTags("Policy").
+			// WithTags("Administration").
 			WithSecurities("Jwt").
 			WithParams(
 				goapidoc.NewPathParam("uid", "integer#int32", true, "用户id"),
@@ -32,12 +34,14 @@ func init() {
 
 		goapidoc.NewPath("POST", "/v1/policy", "新建策略").
 			WithTags("Policy").
+			// WithTags("Administration").
 			WithSecurities("Jwt").
 			WithParams(goapidoc.NewBodyParam("param", "PolicyParam", true, "策略请求参数")).
 			WithResponses(goapidoc.NewResponse(200).WithType("Result")),
 
 		goapidoc.NewPath("DELETE", "/v1/policy", "删除策略").
 			WithTags("Policy").
+			// WithTags("Administration").
 			WithSecurities("Jwt").
 			WithParams(goapidoc.NewBodyParam("param", "PolicyParam", true, "策略请求参数")).
 			WithResponses(goapidoc.NewResponse(200).WithType("Result")),

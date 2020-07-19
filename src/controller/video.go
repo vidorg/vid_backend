@@ -2,6 +2,7 @@ package controller
 
 import (
 	"github.com/Aoi-hosizora/ahlib/xdi"
+	"github.com/Aoi-hosizora/goapidoc"
 	"github.com/gin-gonic/gin"
 	"github.com/vidorg/vid_backend/src/common/constant"
 	"github.com/vidorg/vid_backend/src/common/exception"
@@ -14,6 +15,53 @@ import (
 	"github.com/vidorg/vid_backend/src/provide/sn"
 	"github.com/vidorg/vid_backend/src/service"
 )
+
+func init() {
+	goapidoc.AddPaths(
+		goapidoc.NewPath("GET", "/v1/video", "管理员查询所有视频").
+			WithTags("Video").
+			// WithTags("Administration").
+			WithSecurities("Jwt").
+			WithParams(param.ADPage, param.ADLimit, param.ADOrder).
+			WithResponses(goapidoc.NewResponse(200).WithType("_Result<_Page<VideoDto>>")),
+
+		goapidoc.NewPath("GET", "/v1/user/{uid}/video", "查询用户发布的所有视频").
+			WithTags("Video").
+			WithParams(
+				goapidoc.NewPathParam("uid", "integer#int32", true, "用户id"),
+				param.ADPage, param.ADLimit, param.ADOrder,
+			).
+			WithResponses(goapidoc.NewResponse(200).WithType("_Result<_Page<VideoDto>>")),
+
+		goapidoc.NewPath("GET", "/v1/video/{vid}", "查询视频").
+			WithTags("Video").
+			WithParams(goapidoc.NewPathParam("vid", "integer#int32", true, "视频id")).
+			WithResponses(goapidoc.NewResponse(200).WithType("_Result<VideoDto>")),
+
+		goapidoc.NewPath("POST", "/v1/video/", "新建视频").
+			WithTags("Video").
+			WithSecurities("Jwt").
+			WithParams(goapidoc.NewBodyParam("param", "VideoParam", true, "视频请求参数")).
+			WithResponses(goapidoc.NewResponse(200).WithType("_Result<VideoDto>")),
+
+		goapidoc.NewPath("PUT", "/v1/video/{vid}", "更新视频").
+			WithTags("Video").
+			// WithTags("Administration").
+			WithSecurities("Jwt").
+			WithParams(
+				goapidoc.NewPathParam("vid", "integer#int32", true, "视频id"),
+				goapidoc.NewBodyParam("param", "VideoParam", true, "视频请求参数"),
+			).
+			WithResponses(goapidoc.NewResponse(200).WithType("_Result<VideoDto>")),
+
+		goapidoc.NewPath("DELETE", "/v1/video/{vid}", "删除视频").
+			WithTags("Video").
+			// WithTags("Administration").
+			WithSecurities("Jwt").
+			WithParams(goapidoc.NewPathParam("vid", "integer#int32", true, "视频id")).
+			WithResponses(goapidoc.NewResponse(200).WithType("Result")),
+	)
+}
 
 type VideoController struct {
 	config       *config.Config
@@ -29,14 +77,7 @@ func NewVideoController() *VideoController {
 	}
 }
 
-// @Router              /v1/video [GET]
-// @Summary             查询所有视频
-// @Description         管理员权限
-// @Tag                 Video
-// @Tag                 Administration
-// @Security            Jwt
-// @Template            Order Page
-// @ResponseModel 200   #Result<Page<VideoDto>>
+// GET /v1/video
 func (v *VideoController) QueryAllVideos(c *gin.Context) {
 	pageOrder := param.BindPageOrder(c, v.config)
 	videos, total := v.videoService.QueryAll(pageOrder)
@@ -45,12 +86,7 @@ func (v *VideoController) QueryAllVideos(c *gin.Context) {
 	result.Ok().SetPage(pageOrder.Page, pageOrder.Limit, total, ret).JSON(c)
 }
 
-// @Router              /v1/user/{uid}/video [GET]
-// @Summary             查询用户发布的所有视频
-// @Tag                 Video
-// @Template            Order Page
-// @Param               uid path integer true "用户id"
-// @ResponseModel 200   #Result<Page<VideoDto>>
+// GET /v1/user/:uid/video
 func (v *VideoController) QueryVideosByUid(c *gin.Context) {
 	uid, ok := param.BindRouteId(c, "uid")
 	if !ok {
@@ -69,11 +105,7 @@ func (v *VideoController) QueryVideosByUid(c *gin.Context) {
 	result.Ok().SetPage(pageOrder.Page, pageOrder.Limit, total, ret).JSON(c)
 }
 
-// @Router              /v1/video/{vid} [GET]
-// @Summary             查询视频
-// @Tag                 Video
-// @Param               vid path integer true "视频id"
-// @ResponseModel 200   #Result<VideoDto>
+// GET /v1/video/{vid}
 func (v *VideoController) QueryVideoByVid(c *gin.Context) {
 	vid, ok := param.BindRouteId(c, "vid")
 	if !ok {
@@ -91,12 +123,7 @@ func (v *VideoController) QueryVideoByVid(c *gin.Context) {
 	result.Ok().SetData(ret).JSON(c)
 }
 
-// @Router              /v1/video [POST]
-// @Summary             新建视频
-// @Tag                 Video
-// @Security            Jwt
-// @Param               param body #VideoParam true "请求参数"
-// @ResponseModel 201   #Result<VideoDto>
+// POST /v1/video
 func (v *VideoController) InsertVideo(c *gin.Context) {
 	authUser := v.jwtService.GetContextUser(c)
 	videoParam := &param.VideoParam{}
@@ -124,15 +151,7 @@ func (v *VideoController) InsertVideo(c *gin.Context) {
 	result.Created().SetData(ret).JSON(c)
 }
 
-// @Router              /v1/video/{vid} [POST]
-// @Summary             更新视频
-// @Description         管理员或者作者本人权限
-// @Tag                 Video
-// @Tag                 Administration
-// @Security            Jwt
-// @Param               vid   path string      true "视频id"
-// @Param               param body #VideoParam true "请求参数"
-// @ResponseModel 200   #Result<VideoDto>
+// PUT /v1/video/:vid
 func (v *VideoController) UpdateVideo(c *gin.Context) {
 	authUser := v.jwtService.GetContextUser(c)
 	vid, ok := param.BindRouteId(c, "vid")
@@ -173,14 +192,7 @@ func (v *VideoController) UpdateVideo(c *gin.Context) {
 	result.Ok().SetData(ret).JSON(c)
 }
 
-// @Router              /v1/video/{vid} [DELETE]
-// @Summary             删除视频
-// @Description         管理员或者作者本人权限
-// @Tag                 Video
-// @Tag                 Administration
-// @Security            Jwt
-// @Param               vid path string true "视频id"
-// @ResponseModel 200   #Result
+// DELETE /v1/video/:vid
 func (v *VideoController) DeleteVideo(c *gin.Context) {
 	authUser := v.jwtService.GetContextUser(c)
 	vid, ok := param.BindRouteId(c, "vid")
