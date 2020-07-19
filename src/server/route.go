@@ -51,10 +51,11 @@ func initRoute(engine *gin.Engine) {
 
 		policyGroup := v1.Group("/policy")
 		{
+			policyGroup.Use(adminMw)
 			policyGroup.GET("", policyCtrl.Query)
-			policyGroup.PUT("/role/:uid", policyCtrl.SetRole)
-			policyGroup.POST("/role", policyCtrl.Insert)
-			policyGroup.DELETE("/role", policyCtrl.Delete)
+			policyGroup.PUT("/:uid/role", policyCtrl.SetRole)
+			policyGroup.POST("", policyCtrl.Insert)
+			policyGroup.DELETE("", policyCtrl.Delete)
 		}
 
 		userGroup := v1.Group("/user")
@@ -66,8 +67,8 @@ func initRoute(engine *gin.Engine) {
 
 			userGroup.GET("/:uid/subscriber", subscribeCtrl.QuerySubscriberUsers)
 			userGroup.GET("/:uid/subscribing", subscribeCtrl.QuerySubscribingUsers)
-			userGroup.PUT("/subscribing", adminMw, subscribeCtrl.SubscribeUser)
-			userGroup.DELETE("/subscribing", adminMw, subscribeCtrl.UnSubscribeUser)
+			userGroup.PUT("/subscribing/:uid", adminMw, subscribeCtrl.SubscribeUser)
+			userGroup.DELETE("/subscribing/:uid", adminMw, subscribeCtrl.UnSubscribeUser)
 
 			userGroup.PUT("/admin/:uid", adminMw, userCtrl.UpdateUser(true))
 			userGroup.DELETE("/admin/:uid", adminMw, userCtrl.DeleteUser(true))

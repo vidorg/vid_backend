@@ -2,6 +2,7 @@ package controller
 
 import (
 	"github.com/Aoi-hosizora/ahlib/xdi"
+	"github.com/Aoi-hosizora/goapidoc"
 	"github.com/gin-gonic/gin"
 	"github.com/vidorg/vid_backend/src/common/exception"
 	"github.com/vidorg/vid_backend/src/common/result"
@@ -14,6 +15,36 @@ import (
 	"github.com/vidorg/vid_backend/src/service"
 	"github.com/vidorg/vid_backend/src/util"
 )
+
+func init() {
+	goapidoc.AddPaths(
+		goapidoc.NewPath("POST", "/v1/auth/login", "登录").
+			WithTags("Authorization").
+			WithParams(goapidoc.NewBodyParam("param", "LoginParam", true, "登录参数")).
+			WithResponses(goapidoc.NewResponse(200).WithType("_Result<LoginDto>")),
+
+		goapidoc.NewPath("POST", "/v1/auth/register", "注册").
+			WithTags("Authorization").
+			WithParams(goapidoc.NewBodyParam("param", "RegisterParam", true, "注册参数")).
+			WithResponses(goapidoc.NewResponse(200).WithType("_Result<UserDto>")),
+
+		goapidoc.NewPath("GET", "/v1/auth/", "当前登录用户").
+			WithTags("Authorization").
+			WithSecurities("Jwt").
+			WithResponses(goapidoc.NewResponse(200).WithType("_Result<UserDto>")),
+
+		goapidoc.NewPath("POST", "/v1/auth/logout", "注销").
+			WithTags("Authorization").
+			WithSecurities("Jwt").
+			WithResponses(goapidoc.NewResponse(200).WithType("Result")),
+
+		goapidoc.NewPath("PUT", "/v1/auth/password", "修改密码").
+			WithTags("Authorization").
+			WithSecurities("Jwt").
+			WithParams(goapidoc.NewBodyParam("param", "PasswordParam", true, "修改密码参数")).
+			WithResponses(goapidoc.NewResponse(200).WithType("Result")),
+	)
+}
 
 type AuthController struct {
 	config         *config.Config
@@ -31,11 +62,7 @@ func NewAuthController() *AuthController {
 	}
 }
 
-// @Router              /v1/auth/login [POST]
-// @Summary             登录
-// @Tag                 Authorization
-// @Param               param body #LoginParam true "请求参数"
-// @ResponseModel 200   #Result<LoginDto>
+// POST /v1/auth/login
 func (a *AuthController) Login(c *gin.Context) {
 	loginParam := &param.LoginParam{}
 	if err := c.ShouldBind(loginParam); err != nil {
@@ -68,11 +95,7 @@ func (a *AuthController) Login(c *gin.Context) {
 	result.Ok().SetData(ret).JSON(c)
 }
 
-// @Router              /v1/auth/register [POST]
-// @Summary             注册
-// @Tag                 Authorization
-// @Param               param body #RegisterParam true "请求参数"
-// @ResponseModel 201   #Result<UserDto>
+// POST /v1/auth/register
 func (a *AuthController) Register(c *gin.Context) {
 	registerParam := &param.RegisterParam{}
 	if err := c.ShouldBind(registerParam); err != nil {
@@ -107,11 +130,7 @@ func (a *AuthController) Register(c *gin.Context) {
 	result.Created().SetData(ret).JSON(c)
 }
 
-// @Router              /v1/auth [GET]
-// @Summary             当前登录用户
-// @Tag                 Authorization
-// @Security            Jwt
-// @ResponseModel 200   #Result<UserDto>
+// GET /v1/auth
 func (a *AuthController) CurrentUser(c *gin.Context) {
 	user := a.jwtService.GetContextUser(c)
 
@@ -119,11 +138,7 @@ func (a *AuthController) CurrentUser(c *gin.Context) {
 	result.Ok().SetData(ret).JSON(c)
 }
 
-// @Router              /v1/auth/logout [POST]
-// @Summary             注销
-// @Tag                 Authorization
-// @Security            Jwt
-// @ResponseModel 200   #Result
+// POST /v1/auth/logout
 func (a *AuthController) Logout(c *gin.Context) {
 	token := a.jwtService.GetToken(c)
 	ok := a.tokenService.Delete(token)
@@ -135,12 +150,7 @@ func (a *AuthController) Logout(c *gin.Context) {
 	result.Ok().JSON(c)
 }
 
-// @Router              /v1/auth/password [PUT]
-// @Summary             修改密码
-// @Tag                 Authorization
-// @Security            Jwt
-// @Param               param body #PassParam true "请求参数"
-// @ResponseModel 200   #Result
+// PUT /v1/auth/password
 func (a *AuthController) UpdatePassword(c *gin.Context) {
 	authUser := a.jwtService.GetContextUser(c)
 	passParam := &param.PassParam{}

@@ -1,0 +1,1614 @@
+{
+  "basePath": "/",
+  "definitions": {
+    "LoginDto": {
+      "type": "object",
+      "required": [
+        "user",
+        "token"
+      ],
+      "description": "登录信息",
+      "properties": {
+        "user": {
+          "required": true,
+          "description": "用户信息",
+          "originRef": "UserDto",
+          "$ref": "#/definitions/UserDto"
+        },
+        "token": {
+          "type": "string",
+          "required": true,
+          "description": "登录令牌"
+        }
+      }
+    },
+    "LoginParam": {
+      "type": "object",
+      "required": [
+        "username",
+        "password"
+      ],
+      "description": "登录请求参数",
+      "properties": {
+        "username": {
+          "type": "string",
+          "required": true,
+          "description": "用户名"
+        },
+        "password": {
+          "type": "string",
+          "required": true,
+          "description": "密码"
+        }
+      }
+    },
+    "PasswordParam": {
+      "type": "object",
+      "required": [
+        "password"
+      ],
+      "description": "修改密码请求参数",
+      "properties": {
+        "password": {
+          "type": "string",
+          "required": true,
+          "description": "密码，长度在 [8, 30] 之间"
+        }
+      }
+    },
+    "PolicyDto": {
+      "type": "object",
+      "required": [
+        "role",
+        "path",
+        "method"
+      ],
+      "description": "权限策略信息",
+      "properties": {
+        "role": {
+          "type": "string",
+          "required": true,
+          "description": "角色 (sub)"
+        },
+        "path": {
+          "type": "string",
+          "required": true,
+          "description": "路径 (obj)"
+        },
+        "method": {
+          "type": "string",
+          "required": true,
+          "description": "方法 (act)"
+        }
+      }
+    },
+    "PolicyParam": {
+      "type": "object",
+      "required": [
+        "role",
+        "path",
+        "method"
+      ],
+      "description": "权限策略参数",
+      "properties": {
+        "role": {
+          "type": "string",
+          "required": true,
+          "description": "角色"
+        },
+        "path": {
+          "type": "string",
+          "required": true,
+          "description": "路径"
+        },
+        "method": {
+          "type": "string",
+          "required": true,
+          "description": "方法"
+        }
+      }
+    },
+    "RegisterParam": {
+      "type": "object",
+      "required": [
+        "username",
+        "password"
+      ],
+      "description": "注册请求参数",
+      "properties": {
+        "username": {
+          "type": "string",
+          "required": true,
+          "description": "用户名，长度在 [5, 30] 之间"
+        },
+        "password": {
+          "type": "string",
+          "required": true,
+          "description": "密码，长度在 [8, 30] 之间"
+        }
+      }
+    },
+    "Result": {
+      "type": "object",
+      "required": [
+        "code",
+        "message"
+      ],
+      "description": "global response",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "required": true,
+          "description": "status code",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string",
+          "required": true,
+          "description": "status message"
+        }
+      }
+    },
+    "RoleParam": {
+      "type": "object",
+      "required": [
+        "role"
+      ],
+      "description": "修改角色请求参数",
+      "properties": {
+        "role": {
+          "type": "string",
+          "required": true,
+          "description": "角色"
+        }
+      }
+    },
+    "UserDetailDto": {
+      "type": "object",
+      "required": [
+        "user",
+        "extra"
+      ],
+      "description": "用户详细信息",
+      "properties": {
+        "user": {
+          "required": true,
+          "description": "用户信息",
+          "originRef": "UserDto",
+          "$ref": "#/definitions/UserDto"
+        },
+        "extra": {
+          "required": true,
+          "description": "用户额外信息",
+          "originRef": "UserExtraDto",
+          "$ref": "#/definitions/UserExtraDto"
+        }
+      }
+    },
+    "UserDto": {
+      "type": "object",
+      "required": [
+        "uid",
+        "username",
+        "gender",
+        "profile",
+        "avatar_url",
+        "birthday",
+        "role",
+        "register_time"
+      ],
+      "description": "用户信息",
+      "properties": {
+        "uid": {
+          "type": "integer",
+          "required": true,
+          "description": "用户id",
+          "format": "int32"
+        },
+        "username": {
+          "type": "string",
+          "required": true,
+          "description": "用户名"
+        },
+        "gender": {
+          "type": "string",
+          "required": true,
+          "description": "性别",
+          "enum": [
+            "male",
+            "female",
+            "unknown"
+          ]
+        },
+        "profile": {
+          "type": "string",
+          "required": true,
+          "description": "简介",
+          "allowEmptyValue": true
+        },
+        "avatar_url": {
+          "type": "string",
+          "required": true,
+          "description": "头像"
+        },
+        "birthday": {
+          "type": "string",
+          "required": true,
+          "description": "生日",
+          "format": "date"
+        },
+        "role": {
+          "type": "string",
+          "required": true,
+          "description": "角色"
+        },
+        "register_time": {
+          "type": "string",
+          "required": true,
+          "description": "注册时间",
+          "format": "date-time"
+        }
+      }
+    },
+    "UserExtraDto": {
+      "type": "object",
+      "required": [
+        "subscribing_cnt",
+        "subscriber_cnt",
+        "video_cnt"
+      ],
+      "description": "用户额外信息",
+      "properties": {
+        "subscribing_cnt": {
+          "type": "integer",
+          "required": true,
+          "description": "关注数量",
+          "format": "int32"
+        },
+        "subscriber_cnt": {
+          "type": "integer",
+          "required": true,
+          "description": "粉丝数量",
+          "format": "int32"
+        },
+        "video_cnt": {
+          "type": "integer",
+          "required": true,
+          "description": "视频数量",
+          "format": "int32"
+        }
+      }
+    },
+    "UserParam": {
+      "type": "object",
+      "required": [
+        "username",
+        "profile",
+        "gender",
+        "birthday",
+        "phone_number",
+        "avatar_url"
+      ],
+      "description": "用户请求参数",
+      "properties": {
+        "username": {
+          "type": "string",
+          "required": true,
+          "description": "用户名，长度在 [5, 30] 之间"
+        },
+        "profile": {
+          "type": "string",
+          "required": true,
+          "description": "用户简介，长度在 [0, 255] 之间",
+          "allowEmptyValue": true
+        },
+        "gender": {
+          "type": "string",
+          "required": true,
+          "description": "性别",
+          "enum": [
+            "male",
+            "female",
+            "unknown"
+          ]
+        },
+        "birthday": {
+          "type": "string",
+          "required": true,
+          "description": "生日",
+          "format": "date"
+        },
+        "phone_number": {
+          "type": "string",
+          "required": true,
+          "description": "手机号码，长度为 11，仅限中国大陆手机号码"
+        },
+        "avatar_url": {
+          "type": "string",
+          "required": true,
+          "description": "头像"
+        }
+      }
+    },
+    "VideoDto": {
+      "type": "object",
+      "required": [
+        "vid",
+        "title",
+        "description",
+        "video_url",
+        "cover_url",
+        "upload_time",
+        "update_time",
+        "author"
+      ],
+      "description": "视频信息",
+      "properties": {
+        "vid": {
+          "type": "integer",
+          "required": true,
+          "description": "视频id",
+          "format": "int32"
+        },
+        "title": {
+          "type": "string",
+          "required": true,
+          "description": "标题"
+        },
+        "description": {
+          "type": "string",
+          "required": true,
+          "description": "简介",
+          "allowEmptyValue": true
+        },
+        "video_url": {
+          "type": "string",
+          "required": true,
+          "description": "资源"
+        },
+        "cover_url": {
+          "type": "string",
+          "required": true,
+          "description": "封面"
+        },
+        "upload_time": {
+          "type": "string",
+          "required": true,
+          "description": "上传时间",
+          "format": "date-time"
+        },
+        "update_time": {
+          "type": "string",
+          "required": true,
+          "description": "修改时间",
+          "format": "date-time"
+        },
+        "author": {
+          "required": true,
+          "description": "视频作者, null 表示用户不存在",
+          "originRef": "UserDto",
+          "$ref": "#/definitions/UserDto"
+        }
+      }
+    },
+    "VideoParam": {
+      "type": "object",
+      "required": [
+        "title",
+        "description",
+        "cover_url",
+        "video_url"
+      ],
+      "description": "视频请求参数",
+      "properties": {
+        "title": {
+          "type": "string",
+          "required": true,
+          "description": "标题，长度在 [1, 100] 之间"
+        },
+        "description": {
+          "type": "string",
+          "required": true,
+          "description": "简介，长度在 [0, 255] 之间",
+          "allowEmptyValue": true
+        },
+        "cover_url": {
+          "type": "string",
+          "required": true,
+          "description": "封面"
+        },
+        "video_url": {
+          "type": "string",
+          "required": true,
+          "description": "资源"
+        }
+      }
+    },
+    "_Page<PolicyDto>": {
+      "type": "object",
+      "required": [
+        "page",
+        "limit",
+        "total",
+        "data"
+      ],
+      "description": "page response",
+      "properties": {
+        "page": {
+          "type": "integer",
+          "required": true,
+          "description": "current page",
+          "format": "int32"
+        },
+        "limit": {
+          "type": "integer",
+          "required": true,
+          "description": "page size",
+          "format": "int32"
+        },
+        "total": {
+          "type": "integer",
+          "required": true,
+          "description": "data count",
+          "format": "int32"
+        },
+        "data": {
+          "type": "array",
+          "required": true,
+          "description": "page data",
+          "items": {
+            "originRef": "PolicyDto",
+            "$ref": "#/definitions/PolicyDto"
+          }
+        }
+      }
+    },
+    "_Page<UserDto>": {
+      "type": "object",
+      "required": [
+        "page",
+        "limit",
+        "total",
+        "data"
+      ],
+      "description": "page response",
+      "properties": {
+        "page": {
+          "type": "integer",
+          "required": true,
+          "description": "current page",
+          "format": "int32"
+        },
+        "limit": {
+          "type": "integer",
+          "required": true,
+          "description": "page size",
+          "format": "int32"
+        },
+        "total": {
+          "type": "integer",
+          "required": true,
+          "description": "data count",
+          "format": "int32"
+        },
+        "data": {
+          "type": "array",
+          "required": true,
+          "description": "page data",
+          "items": {
+            "originRef": "UserDto",
+            "$ref": "#/definitions/UserDto"
+          }
+        }
+      }
+    },
+    "_Page<VideoDto>": {
+      "type": "object",
+      "required": [
+        "page",
+        "limit",
+        "total",
+        "data"
+      ],
+      "description": "page response",
+      "properties": {
+        "page": {
+          "type": "integer",
+          "required": true,
+          "description": "current page",
+          "format": "int32"
+        },
+        "limit": {
+          "type": "integer",
+          "required": true,
+          "description": "page size",
+          "format": "int32"
+        },
+        "total": {
+          "type": "integer",
+          "required": true,
+          "description": "data count",
+          "format": "int32"
+        },
+        "data": {
+          "type": "array",
+          "required": true,
+          "description": "page data",
+          "items": {
+            "originRef": "VideoDto",
+            "$ref": "#/definitions/VideoDto"
+          }
+        }
+      }
+    },
+    "_Result<LoginDto>": {
+      "type": "object",
+      "required": [
+        "code",
+        "message",
+        "data"
+      ],
+      "description": "global response",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "required": true,
+          "description": "status code",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string",
+          "required": true,
+          "description": "status message"
+        },
+        "data": {
+          "required": true,
+          "description": "response data",
+          "originRef": "LoginDto",
+          "$ref": "#/definitions/LoginDto"
+        }
+      }
+    },
+    "_Result<UserDetailDto>": {
+      "type": "object",
+      "required": [
+        "code",
+        "message",
+        "data"
+      ],
+      "description": "global response",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "required": true,
+          "description": "status code",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string",
+          "required": true,
+          "description": "status message"
+        },
+        "data": {
+          "required": true,
+          "description": "response data",
+          "originRef": "UserDetailDto",
+          "$ref": "#/definitions/UserDetailDto"
+        }
+      }
+    },
+    "_Result<UserDto>": {
+      "type": "object",
+      "required": [
+        "code",
+        "message",
+        "data"
+      ],
+      "description": "global response",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "required": true,
+          "description": "status code",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string",
+          "required": true,
+          "description": "status message"
+        },
+        "data": {
+          "required": true,
+          "description": "response data",
+          "originRef": "UserDto",
+          "$ref": "#/definitions/UserDto"
+        }
+      }
+    },
+    "_Result<VideoDto>": {
+      "type": "object",
+      "required": [
+        "code",
+        "message",
+        "data"
+      ],
+      "description": "global response",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "required": true,
+          "description": "status code",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string",
+          "required": true,
+          "description": "status message"
+        },
+        "data": {
+          "required": true,
+          "description": "response data",
+          "originRef": "VideoDto",
+          "$ref": "#/definitions/VideoDto"
+        }
+      }
+    },
+    "_Result<_Page<PolicyDto>>": {
+      "type": "object",
+      "required": [
+        "code",
+        "message",
+        "data"
+      ],
+      "description": "global response",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "required": true,
+          "description": "status code",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string",
+          "required": true,
+          "description": "status message"
+        },
+        "data": {
+          "required": true,
+          "description": "response data",
+          "originRef": "_Page\u003cPolicyDto\u003e",
+          "$ref": "#/definitions/_Page\u003cPolicyDto\u003e"
+        }
+      }
+    },
+    "_Result<_Page<UserDto>>": {
+      "type": "object",
+      "required": [
+        "code",
+        "message",
+        "data"
+      ],
+      "description": "global response",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "required": true,
+          "description": "status code",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string",
+          "required": true,
+          "description": "status message"
+        },
+        "data": {
+          "required": true,
+          "description": "response data",
+          "originRef": "_Page\u003cUserDto\u003e",
+          "$ref": "#/definitions/_Page\u003cUserDto\u003e"
+        }
+      }
+    },
+    "_Result<_Page<VideoDto>>": {
+      "type": "object",
+      "required": [
+        "code",
+        "message",
+        "data"
+      ],
+      "description": "global response",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "required": true,
+          "description": "status code",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string",
+          "required": true,
+          "description": "status message"
+        },
+        "data": {
+          "required": true,
+          "description": "response data",
+          "originRef": "_Page\u003cVideoDto\u003e",
+          "$ref": "#/definitions/_Page\u003cVideoDto\u003e"
+        }
+      }
+    }
+  },
+  "host": "localhost:3344",
+  "info": {
+    "title": "vid backend",
+    "description": "Vid backend built by golang/gin",
+    "version": "1.2",
+    "termsOfService": "https://github.com/vidorg/vid_backend/issues",
+    "license": {
+      "name": "MIT",
+      "url": "https://github.com/vidorg/vid_backend/blob/master/LICENSE"
+    },
+    "contact": {
+      "name": "vidorg",
+      "url": "https://github.com/vidorg"
+    }
+  },
+  "paths": {
+    "/v1/auth/": {
+      "get": {
+        "summary": "当前登录用户",
+        "operationId": "-v1-auth--get",
+        "tags": [
+          "Authorization"
+        ],
+        "security": [
+          {
+            "Jwt": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "originRef": "_Result<UserDto>",
+              "$ref": "#/definitions/_Result<UserDto>"
+            }
+          }
+        }
+      }
+    },
+    "/v1/auth/login": {
+      "post": {
+        "summary": "登录",
+        "operationId": "-v1-auth-login-post",
+        "tags": [
+          "Authorization"
+        ],
+        "parameters": [
+          {
+            "name": "param",
+            "in": "body",
+            "required": true,
+            "description": "登录参数",
+            "schema": {
+              "originRef": "LoginParam",
+              "$ref": "#/definitions/LoginParam"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "originRef": "_Result<LoginDto>",
+              "$ref": "#/definitions/_Result<LoginDto>"
+            }
+          }
+        }
+      }
+    },
+    "/v1/auth/logout": {
+      "post": {
+        "summary": "注销",
+        "operationId": "-v1-auth-logout-post",
+        "tags": [
+          "Authorization"
+        ],
+        "security": [
+          {
+            "Jwt": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "originRef": "Result",
+              "$ref": "#/definitions/Result"
+            }
+          }
+        }
+      }
+    },
+    "/v1/auth/password": {
+      "put": {
+        "summary": "修改密码",
+        "operationId": "-v1-auth-password-put",
+        "tags": [
+          "Authorization"
+        ],
+        "security": [
+          {
+            "Jwt": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "param",
+            "in": "body",
+            "required": true,
+            "description": "修改密码参数",
+            "schema": {
+              "originRef": "PasswordParam",
+              "$ref": "#/definitions/PasswordParam"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "originRef": "Result",
+              "$ref": "#/definitions/Result"
+            }
+          }
+        }
+      }
+    },
+    "/v1/auth/register": {
+      "post": {
+        "summary": "注册",
+        "operationId": "-v1-auth-register-post",
+        "tags": [
+          "Authorization"
+        ],
+        "parameters": [
+          {
+            "name": "param",
+            "in": "body",
+            "required": true,
+            "description": "注册参数",
+            "schema": {
+              "originRef": "RegisterParam",
+              "$ref": "#/definitions/RegisterParam"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "originRef": "_Result<UserDto>",
+              "$ref": "#/definitions/_Result<UserDto>"
+            }
+          }
+        }
+      }
+    },
+    "/v1/policy": {
+      "delete": {
+        "summary": "删除策略",
+        "operationId": "-v1-policy-delete",
+        "tags": [
+          "Policy",
+          "Administration"
+        ],
+        "security": [
+          {
+            "Jwt": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "param",
+            "in": "body",
+            "required": true,
+            "description": "策略请求参数",
+            "schema": {
+              "originRef": "PolicyParam",
+              "$ref": "#/definitions/PolicyParam"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "originRef": "Result",
+              "$ref": "#/definitions/Result"
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "查询所有策略",
+        "operationId": "-v1-policy-get",
+        "tags": [
+          "Policy",
+          "Administration"
+        ],
+        "security": [
+          {
+            "Jwt": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "originRef": "_Result<_Page<PolicyDto>>",
+              "$ref": "#/definitions/_Result<_Page<PolicyDto>>"
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "新建策略",
+        "operationId": "-v1-policy-post",
+        "tags": [
+          "Policy",
+          "Administration"
+        ],
+        "security": [
+          {
+            "Jwt": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "param",
+            "in": "body",
+            "required": true,
+            "description": "策略请求参数",
+            "schema": {
+              "originRef": "PolicyParam",
+              "$ref": "#/definitions/PolicyParam"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "originRef": "Result",
+              "$ref": "#/definitions/Result"
+            }
+          }
+        }
+      }
+    },
+    "/v1/policy/{uid}/role": {
+      "put": {
+        "summary": "修改用户角色",
+        "operationId": "-v1-policy-uid-role-put",
+        "tags": [
+          "Policy",
+          "Administration"
+        ],
+        "security": [
+          {
+            "Jwt": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "uid",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "description": "用户id",
+            "format": "int32"
+          },
+          {
+            "name": "param",
+            "in": "body",
+            "required": true,
+            "description": "修改角色请求参数",
+            "schema": {
+              "originRef": "RoleParam",
+              "$ref": "#/definitions/RoleParam"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "originRef": "Result",
+              "$ref": "#/definitions/Result"
+            }
+          }
+        }
+      }
+    },
+    "/v1/user": {
+      "get": {
+        "summary": "查询所有用户",
+        "operationId": "-v1-user-get",
+        "tags": [
+          "User"
+        ],
+        "security": [
+          {
+            "Jwt": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "description": "请求页",
+            "format": "int32"
+          },
+          {
+            "name": "limit",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "description": "页大小",
+            "format": "int32"
+          },
+          {
+            "name": "order",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "排序"
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "originRef": "_Result<_Page<UserDto>>",
+              "$ref": "#/definitions/_Result<_Page<UserDto>>"
+            }
+          }
+        }
+      }
+    },
+    "/v1/user/": {
+      "delete": {
+        "summary": "删除用户",
+        "operationId": "-v1-user--delete",
+        "tags": [
+          "User"
+        ],
+        "security": [
+          {
+            "Jwt": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "originRef": "Result",
+              "$ref": "#/definitions/Result"
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "更新用户",
+        "operationId": "-v1-user--put",
+        "tags": [
+          "User"
+        ],
+        "security": [
+          {
+            "Jwt": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "param",
+            "in": "body",
+            "required": true,
+            "description": "用户请求参数",
+            "schema": {
+              "originRef": "UserParam",
+              "$ref": "#/definitions/UserParam"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "originRef": "_Result<UserDto>",
+              "$ref": "#/definitions/_Result<UserDto>"
+            }
+          }
+        }
+      }
+    },
+    "/v1/user/admin/{uid}": {
+      "put": {
+        "summary": "管理员删除用户",
+        "operationId": "-v1-user-admin-uid-put",
+        "tags": [
+          "User",
+          "Administration"
+        ],
+        "security": [
+          {
+            "Jwt": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "uid",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "description": "用户id",
+            "format": "int32"
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "originRef": "Result",
+              "$ref": "#/definitions/Result"
+            }
+          }
+        }
+      }
+    },
+    "/v1/user/subscribing/{uid}": {
+      "delete": {
+        "summary": "取消关注用户",
+        "operationId": "-v1-user-subscribing-uid-delete",
+        "tags": [
+          "Subscribe"
+        ],
+        "security": [
+          {
+            "Jwt": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "uid",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "description": "用户id",
+            "format": "int32"
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "originRef": "Result",
+              "$ref": "#/definitions/Result"
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "关注用户",
+        "operationId": "-v1-user-subscribing-uid-put",
+        "tags": [
+          "Subscribe"
+        ],
+        "security": [
+          {
+            "Jwt": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "uid",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "description": "用户id",
+            "format": "int32"
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "originRef": "Result",
+              "$ref": "#/definitions/Result"
+            }
+          }
+        }
+      }
+    },
+    "/v1/user/{uid}": {
+      "get": {
+        "summary": "查询用户",
+        "operationId": "-v1-user-uid-get",
+        "tags": [
+          "User"
+        ],
+        "parameters": [
+          {
+            "name": "uid",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "description": "用户id",
+            "format": "int32"
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "originRef": "_Result<UserDetailDto>",
+              "$ref": "#/definitions/_Result<UserDetailDto>"
+            }
+          }
+        }
+      }
+    },
+    "/v1/user/{uid}/subscriber": {
+      "get": {
+        "summary": "查询用户粉丝",
+        "operationId": "-v1-user-uid-subscriber-get",
+        "tags": [
+          "Subscribe"
+        ],
+        "parameters": [
+          {
+            "name": "uid",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "description": "用户id",
+            "format": "int32"
+          },
+          {
+            "name": "page",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "description": "请求页",
+            "format": "int32"
+          },
+          {
+            "name": "limit",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "description": "页大小",
+            "format": "int32"
+          },
+          {
+            "name": "order",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "排序"
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "originRef": "_Result<_Page<UserDto>>",
+              "$ref": "#/definitions/_Result<_Page<UserDto>>"
+            }
+          }
+        }
+      }
+    },
+    "/v1/user/{uid}/subscribing": {
+      "get": {
+        "summary": "查询用户关注",
+        "operationId": "-v1-user-uid-subscribing-get",
+        "tags": [
+          "Subscribe"
+        ],
+        "parameters": [
+          {
+            "name": "uid",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "description": "用户id",
+            "format": "int32"
+          },
+          {
+            "name": "page",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "description": "请求页",
+            "format": "int32"
+          },
+          {
+            "name": "limit",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "description": "页大小",
+            "format": "int32"
+          },
+          {
+            "name": "order",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "排序"
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "originRef": "_Result<_Page<UserDto>>",
+              "$ref": "#/definitions/_Result<_Page<UserDto>>"
+            }
+          }
+        }
+      }
+    },
+    "/v1/user/{uid}/video": {
+      "get": {
+        "summary": "查询用户发布的所有视频",
+        "operationId": "-v1-user-uid-video-get",
+        "tags": [
+          "Video"
+        ],
+        "parameters": [
+          {
+            "name": "uid",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "description": "用户id",
+            "format": "int32"
+          },
+          {
+            "name": "page",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "description": "请求页",
+            "format": "int32"
+          },
+          {
+            "name": "limit",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "description": "页大小",
+            "format": "int32"
+          },
+          {
+            "name": "order",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "排序"
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "originRef": "_Result<_Page<VideoDto>>",
+              "$ref": "#/definitions/_Result<_Page<VideoDto>>"
+            }
+          }
+        }
+      }
+    },
+    "/v1/video": {
+      "get": {
+        "summary": "管理员查询所有视频",
+        "operationId": "-v1-video-get",
+        "tags": [
+          "Video",
+          "Administration"
+        ],
+        "security": [
+          {
+            "Jwt": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "description": "请求页",
+            "format": "int32"
+          },
+          {
+            "name": "limit",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "description": "页大小",
+            "format": "int32"
+          },
+          {
+            "name": "order",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "排序"
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "originRef": "_Result<_Page<VideoDto>>",
+              "$ref": "#/definitions/_Result<_Page<VideoDto>>"
+            }
+          }
+        }
+      }
+    },
+    "/v1/video/": {
+      "post": {
+        "summary": "新建视频",
+        "operationId": "-v1-video--post",
+        "tags": [
+          "Video"
+        ],
+        "security": [
+          {
+            "Jwt": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "param",
+            "in": "body",
+            "required": true,
+            "description": "视频请求参数",
+            "schema": {
+              "originRef": "VideoParam",
+              "$ref": "#/definitions/VideoParam"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "originRef": "_Result<VideoDto>",
+              "$ref": "#/definitions/_Result<VideoDto>"
+            }
+          }
+        }
+      }
+    },
+    "/v1/video/{vid}": {
+      "delete": {
+        "summary": "删除视频",
+        "operationId": "-v1-video-vid-delete",
+        "tags": [
+          "Video",
+          "Administration"
+        ],
+        "security": [
+          {
+            "Jwt": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "vid",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "description": "视频id",
+            "format": "int32"
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "originRef": "Result",
+              "$ref": "#/definitions/Result"
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "查询视频",
+        "operationId": "-v1-video-vid-get",
+        "tags": [
+          "Video"
+        ],
+        "parameters": [
+          {
+            "name": "vid",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "description": "视频id",
+            "format": "int32"
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "originRef": "_Result<VideoDto>",
+              "$ref": "#/definitions/_Result<VideoDto>"
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "更新视频",
+        "operationId": "-v1-video-vid-put",
+        "tags": [
+          "Video",
+          "Administration"
+        ],
+        "security": [
+          {
+            "Jwt": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "vid",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "description": "视频id",
+            "format": "int32"
+          },
+          {
+            "name": "param",
+            "in": "body",
+            "required": true,
+            "description": "视频请求参数",
+            "schema": {
+              "originRef": "VideoParam",
+              "$ref": "#/definitions/VideoParam"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "originRef": "_Result<VideoDto>",
+              "$ref": "#/definitions/_Result<VideoDto>"
+            }
+          }
+        }
+      }
+    }
+  },
+  "securityDefinitions": {
+    "Jwt": {
+      "type": "apiKey",
+      "name": "Authorization",
+      "in": "header"
+    }
+  },
+  "swagger": "2.0",
+  "tags": [
+    {
+      "name": "Authorization",
+      "description": "Auth-Controller"
+    },
+    {
+      "name": "User",
+      "description": "User-Controller"
+    },
+    {
+      "name": "Subscribe",
+      "description": "Subscribe-Controller"
+    },
+    {
+      "name": "Video",
+      "description": "Video-Controller"
+    },
+    {
+      "name": "Policy",
+      "description": "Policy-Controller"
+    },
+    {
+      "name": "Administration",
+      "description": "*-Controller"
+    }
+  ]
+}

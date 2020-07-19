@@ -2,6 +2,7 @@ package controller
 
 import (
 	"github.com/Aoi-hosizora/ahlib/xdi"
+	"github.com/Aoi-hosizora/goapidoc"
 	"github.com/gin-gonic/gin"
 	"github.com/vidorg/vid_backend/src/common/exception"
 	"github.com/vidorg/vid_backend/src/common/result"
@@ -12,6 +13,38 @@ import (
 	"github.com/vidorg/vid_backend/src/provide/sn"
 	"github.com/vidorg/vid_backend/src/service"
 )
+
+func init() {
+	goapidoc.AddPaths(
+		goapidoc.NewPath("GET", "/v1/user/{uid}/subscriber", "查询用户粉丝").
+			WithTags("Subscribe").
+			WithParams(
+				goapidoc.NewPathParam("uid", "integer#int32", true, "用户id"),
+				param.ADPage, param.ADLimit, param.ADOrder,
+			).
+			WithResponses(goapidoc.NewResponse(200).WithType("_Result<_Page<UserDto>>")),
+
+		goapidoc.NewPath("GET", "/v1/user/{uid}/subscribing", "查询用户关注").
+			WithTags("Subscribe").
+			WithParams(
+				goapidoc.NewPathParam("uid", "integer#int32", true, "用户id"),
+				param.ADPage, param.ADLimit, param.ADOrder,
+			).
+			WithResponses(goapidoc.NewResponse(200).WithType("_Result<_Page<UserDto>>")),
+
+		goapidoc.NewPath("PUT", "/v1/user/subscribing/{uid}", "关注用户").
+			WithTags("Subscribe").
+			WithSecurities("Jwt").
+			WithParams(goapidoc.NewPathParam("uid", "integer#int32", true, "用户id")).
+			WithResponses(goapidoc.NewResponse(200).WithType("Result")),
+
+		goapidoc.NewPath("DELETE", "/v1/user/subscribing/{uid}", "取消关注用户").
+			WithTags("Subscribe").
+			WithSecurities("Jwt").
+			WithParams(goapidoc.NewPathParam("uid", "integer#int32", true, "用户id")).
+			WithResponses(goapidoc.NewResponse(200).WithType("Result")),
+	)
+}
 
 type SubscribeController struct {
 	config           *config.Config
@@ -29,12 +62,7 @@ func NewSubscribeController() *SubscribeController {
 	}
 }
 
-// @Router              /v1/user/{uid}/subscriber [GET]
-// @Summary             查询用户粉丝
-// @Tag                 Subscribe
-// @Template            Order Page
-// @Param               uid path integer true "用户id"
-// @ResponseModel 200   #Result<Page<UserDto>>
+// GET /v1/user/{uid}/subscriber
 func (s *SubscribeController) QuerySubscriberUsers(c *gin.Context) {
 	uid, ok := param.BindRouteId(c, "uid")
 	if !ok {
@@ -43,22 +71,17 @@ func (s *SubscribeController) QuerySubscriberUsers(c *gin.Context) {
 	}
 	pageOrder := param.BindPageOrder(c, s.config)
 
-	users, count, status := s.subscribeService.QuerySubscriberUsers(uid, pageOrder)
+	users, total, status := s.subscribeService.QuerySubscriberUsers(uid, pageOrder)
 	if status == database.DbNotFound {
 		result.Error(exception.UserNotFoundError).JSON(c)
 		return
 	}
 
 	ret := dto.BuildUserDtos(users)
-	result.Ok().SetPage(count, pageOrder.Page, pageOrder.Limit, ret).JSON(c)
+	result.Ok().SetPage(pageOrder.Page, pageOrder.Limit, total, ret).JSON(c)
 }
 
-// @Router              /v1/user/{uid}/subscribing [GET]
-// @Summary             查询用户关注
-// @Tag                 Subscribe
-// @Template            Order Page
-// @Param               uid path integer true "用户id"
-// @ResponseModel 200   #Result<Page<UserDto>>
+// GET /v1/user/{uid}/subscribing
 func (s *SubscribeController) QuerySubscribingUsers(c *gin.Context) {
 	uid, ok := param.BindRouteId(c, "uid")
 	if !ok {
@@ -67,35 +90,30 @@ func (s *SubscribeController) QuerySubscribingUsers(c *gin.Context) {
 	}
 	pageOrder := param.BindPageOrder(c, s.config)
 
-	users, count, status := s.subscribeService.QuerySubscribingUsers(uid, pageOrder)
+	users, total, status := s.subscribeService.QuerySubscribingUsers(uid, pageOrder)
 	if status == database.DbNotFound {
 		result.Error(exception.UserNotFoundError).JSON(c)
 		return
 	}
 
 	ret := dto.BuildUserDtos(users)
-	result.Ok().SetPage(count, pageOrder.Page, pageOrder.Limit, ret).JSON(c)
+	result.Ok().SetPage(pageOrder.Page, pageOrder.Limit, total, ret).JSON(c)
 }
 
-// @Router              /v1/user/subscribing [PUT]
-// @Summary             关注用户
-// @Tag                 Subscribe
-// @Security            Jwt
-// @Param               param body #SubscribeParam true "请求参数"
-// @ResponseModel 200   #Result
+// PUT /v1/user/subscribing/:uid
 func (s *SubscribeController) SubscribeUser(c *gin.Context) {
 	authUser := s.jwtService.GetContextUser(c)
-	subParam := &param.SubscribeParam{}
-	if err := c.ShouldBind(subParam); err != nil {
-		result.Error(exception.WrapValidationError(err)).JSON(c)
+	to, ok := param.BindRouteId(c, "uid")
+	if !ok {
+		result.Error(exception.RequestParamError).JSON(c)
 		return
 	}
-	if authUser.Uid == subParam.Uid {
+	if authUser.Uid == to {
 		result.Error(exception.SubscribeSelfError).JSON(c)
 		return
 	}
 
-	status := s.subscribeService.SubscribeUser(authUser.Uid, subParam.Uid)
+	status := s.subscribeService.SubscribeUser(authUser.Uid, to)
 	if status == database.DbNotFound {
 		result.Error(exception.UserNotFoundError).JSON(c)
 		return
@@ -107,21 +125,16 @@ func (s *SubscribeController) SubscribeUser(c *gin.Context) {
 	result.Ok().JSON(c)
 }
 
-// @Router              /v1/user/subscribing [DELETE]
-// @Summary             取消关注用户
-// @Tag                 Subscribe
-// @Security            Jwt
-// @Param               param body #SubscribeParam true "请求参数"
-// @ResponseModel 200   #Result
+// PUT /v1/user/subscribing/:uid
 func (s *SubscribeController) UnSubscribeUser(c *gin.Context) {
 	authUser := s.jwtService.GetContextUser(c)
-	subParam := &param.SubscribeParam{}
-	if err := c.ShouldBind(subParam); err != nil {
-		result.Error(exception.WrapValidationError(err)).JSON(c)
+	to, ok := param.BindRouteId(c, "uid")
+	if !ok {
+		result.Error(exception.RequestParamError).JSON(c)
 		return
 	}
 
-	status := s.subscribeService.UnSubscribeUser(authUser.Uid, subParam.Uid)
+	status := s.subscribeService.UnSubscribeUser(authUser.Uid, to)
 	if status == database.DbNotFound {
 		result.Error(exception.UserNotFoundError).JSON(c)
 		return

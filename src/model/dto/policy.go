@@ -2,14 +2,21 @@ package dto
 
 import (
 	"github.com/Aoi-hosizora/ahlib/xentity"
+	"github.com/Aoi-hosizora/goapidoc"
 	"github.com/vidorg/vid_backend/src/model/po"
 )
 
-// @Model         _PolicyDto
-// @Description   policy response
-// @Property      role   string true "策略角色 (sub)"
-// @Property      path   string true "策略路径 (obj)"
-// @Property      method string true "策略方法 (act)"
+func init() {
+	goapidoc.AddDefinitions(
+		goapidoc.NewDefinition("PolicyDto", "权限策略信息").
+			WithProperties(
+				goapidoc.NewProperty("role", "string", true, "角色 (sub)"),
+				goapidoc.NewProperty("path", "string", true, "路径 (obj)"),
+				goapidoc.NewProperty("method", "string", true, "方法 (act)"),
+			),
+	)
+}
+
 type PolicyDto struct {
 	Role   string `json:"role"`
 	Path   string `json:"path"`

@@ -13,12 +13,6 @@ type MetaConfig struct {
 	MaxPageSize int32  `yaml:"max-page-size"`
 }
 
-type FileConfig struct {
-	ImagePath      string `yaml:"image-path"`
-	ImageMaxSize   int32  `yaml:"image-max-size"`
-	ImageUrlPrefix string `yaml:"image-url-prefix"`
-}
-
 type MySQLConfig struct {
 	Host     string `yaml:"host"`
 	Port     int32  `yaml:"port"`
@@ -54,7 +48,6 @@ type CasbinConfig struct {
 
 type Config struct {
 	Meta   *MetaConfig   `yaml:"meta"`
-	File   *FileConfig   `yaml:"file"`
 	MySQL  *MySQLConfig  `yaml:"mysql"`
 	Redis  *RedisConfig  `yaml:"redis"`
 	Jwt    *JwtConfig    `yaml:"jwt"`
