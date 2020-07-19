@@ -2,8 +2,15 @@ package param
 
 import (
 	"github.com/Aoi-hosizora/ahlib/xnumber"
+	"github.com/Aoi-hosizora/goapidoc"
 	"github.com/gin-gonic/gin"
 	"github.com/vidorg/vid_backend/src/config"
+)
+
+var (
+	ADPage  = goapidoc.NewPathParam("page", "integer#int32", true, "请求页")
+	ADLimit = goapidoc.NewPathParam("limit", "integer#int32", true, "页大小")
+	ADOrder = goapidoc.NewPathParam("order", "string", true, "排序")
 )
 
 func BindRouteId(c *gin.Context, field string) (int32, bool) {

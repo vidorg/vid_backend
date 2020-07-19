@@ -42,10 +42,10 @@ func NewUserController() *UserController {
 // @ResponseModel 200   #Result<Page<UserDto>>
 func (u *UserController) QueryAllUsers(c *gin.Context) {
 	pageOrder := param.BindPageOrder(c, u.config)
-	users, count := u.userService.QueryAll(pageOrder)
+	users, total := u.userService.QueryAll(pageOrder)
 
 	ret := dto.BuildUserDtos(users)
-	result.Ok().SetPage(count, pageOrder.Page, pageOrder.Limit, ret).JSON(c)
+	result.Ok().SetPage(pageOrder.Page, pageOrder.Limit, total, ret).JSON(c)
 }
 
 // @Router              /v1/user/{uid} [GET]

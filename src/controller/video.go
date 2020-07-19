@@ -39,10 +39,10 @@ func NewVideoController() *VideoController {
 // @ResponseModel 200   #Result<Page<VideoDto>>
 func (v *VideoController) QueryAllVideos(c *gin.Context) {
 	pageOrder := param.BindPageOrder(c, v.config)
-	videos, count := v.videoService.QueryAll(pageOrder)
+	videos, total := v.videoService.QueryAll(pageOrder)
 
 	ret := dto.BuildVideoDtos(videos)
-	result.Ok().SetPage(count, pageOrder.Page, pageOrder.Limit, ret).JSON(c)
+	result.Ok().SetPage(pageOrder.Page, pageOrder.Limit, total, ret).JSON(c)
 }
 
 // @Router              /v1/user/{uid}/video [GET]
@@ -59,14 +59,14 @@ func (v *VideoController) QueryVideosByUid(c *gin.Context) {
 	}
 	pageOrder := param.BindPageOrder(c, v.config)
 
-	videos, count, status := v.videoService.QueryByUid(uid, pageOrder)
+	videos, total, status := v.videoService.QueryByUid(uid, pageOrder)
 	if status == database.DbNotFound {
 		result.Error(exception.UserNotFoundError).JSON(c)
 		return
 	}
 
 	ret := dto.BuildVideoDtos(videos)
-	result.Ok().SetPage(count, pageOrder.Page, pageOrder.Limit, ret).JSON(c)
+	result.Ok().SetPage(pageOrder.Page, pageOrder.Limit, total, ret).JSON(c)
 }
 
 // @Router              /v1/video/{vid} [GET]
