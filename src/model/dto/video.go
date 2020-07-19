@@ -2,25 +2,32 @@ package dto
 
 import (
 	"github.com/Aoi-hosizora/ahlib/xentity"
+	"github.com/Aoi-hosizora/goapidoc"
 	"github.com/vidorg/vid_backend/src/model/po"
 )
 
-// @Model         _VideoDto
-// @Description   视频信息
-// @Property      vid         integer                 true "视频id"
-// @Property      title       string                  true "视频标题"
-// @Property      description string                  true "标题简介"
-// @Property      video_url   string                  true "视频资源链接"
-// @Property      cover_url   string                  true "视频封面连接"
-// @Property      upload_time string(format:datetime) true "视频上传时间"
-// @Property      update_time string(format:datetime) true "视频修改时间"
-// @Property      author      object(#_UserDto)       true "视频作者，用户id为-1表示用户已删除"
+func init() {
+	goapidoc.AddDefinitions(
+		goapidoc.NewDefinition("VideoDto", "视频信息").
+			WithProperties(
+				goapidoc.NewProperty("vid", "integer#int32", true, "视频id"),
+				goapidoc.NewProperty("title", "string", true, "标题"),
+				goapidoc.NewProperty("description", "string", true, "简介").WithAllowEmptyValue(true),
+				goapidoc.NewProperty("video_url", "string", true, "资源"),
+				goapidoc.NewProperty("cover_url", "string", true, "封面"),
+				goapidoc.NewProperty("upload_time", "string#date-time", true, "上传时间"),
+				goapidoc.NewProperty("update_time", "string#date-time", true, "修改时间"),
+				goapidoc.NewProperty("author", "UserDto", true, "视频作者, null 表示用户不存在"),
+			),
+	)
+}
+
 type VideoDto struct {
 	Vid         int32    `json:"vid"`
 	Title       string   `json:"title"`
 	Description string   `json:"description"`
-	VideoUrl    string   `json:"video_url"`
-	CoverUrl    string   `json:"cover_url"`
+	VideoUrl    string   `json:"video_url"` // TODO url
+	CoverUrl    string   `json:"cover_url"` // TODO url
 	UploadTime  string   `json:"upload_time"`
 	UpdateTime  string   `json:"update_time"`
 	Author      *UserDto `json:"author"`

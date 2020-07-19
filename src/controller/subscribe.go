@@ -90,12 +90,12 @@ func (s *SubscribeController) SubscribeUser(c *gin.Context) {
 		result.Error(exception.WrapValidationError(err)).JSON(c)
 		return
 	}
-	if authUser.Uid == subParam.Uid {
+	if authUser.Uid == subParam.To {
 		result.Error(exception.SubscribeSelfError).JSON(c)
 		return
 	}
 
-	status := s.subscribeService.SubscribeUser(authUser.Uid, subParam.Uid)
+	status := s.subscribeService.SubscribeUser(authUser.Uid, subParam.To)
 	if status == database.DbNotFound {
 		result.Error(exception.UserNotFoundError).JSON(c)
 		return
@@ -121,7 +121,7 @@ func (s *SubscribeController) UnSubscribeUser(c *gin.Context) {
 		return
 	}
 
-	status := s.subscribeService.UnSubscribeUser(authUser.Uid, subParam.Uid)
+	status := s.subscribeService.UnSubscribeUser(authUser.Uid, subParam.To)
 	if status == database.DbNotFound {
 		result.Error(exception.UserNotFoundError).JSON(c)
 		return

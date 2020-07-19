@@ -12,7 +12,7 @@ type User struct {
 	Username    string           `gorm:"not_null;type:varchar(30);unique_index:idx_user_username_deleted_at_unique"` // 30
 	Sex         constant.SexEnum `gorm:"not_null;type:enum('unknown','male','female');default:'unknown'"`
 	Profile     string           `gorm:"type:varchar(255)"`          // 255
-	AvatarUrl   string           `gorm:"not_null;type:varchar(255)"` // 255
+	AvatarUrl   string           `gorm:"not_null;type:varchar(255)"` // 255 // TODO url
 	Birthday    xtime.JsonDate   `gorm:"not_null;type:date;default:'2000-01-01'"`
 	Role        string           `gorm:"not_null;default:'normal'"`
 	RegisterIP  string           `gorm:"type:varchar(15)"` // 15

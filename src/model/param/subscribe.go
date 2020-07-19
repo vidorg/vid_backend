@@ -1,8 +1,18 @@
 package param
 
-// @Model         SubscribeParam
-// @Description   关注请求参数
-// @Property      to integer true "用户id" 1
+import (
+	"github.com/Aoi-hosizora/goapidoc"
+)
+
+func init() {
+	goapidoc.AddDefinitions(
+		goapidoc.NewDefinition("SubscribeParam", "关注请求参数").
+			WithProperties(
+				goapidoc.NewProperty("to", "integer#int32", true, "用户id"),
+			),
+	)
+}
+
 type SubscribeParam struct {
-	Uid int32 `form:"to" json:"to" binding:"required,min=1"`
+	To int32 `form:"to" json:"to" binding:"required,min=1"`
 }
