@@ -1,13 +1,13 @@
 package controller
 
 import (
+	"github.com/Aoi-hosizora/ahlib-web/xstatus"
 	"github.com/Aoi-hosizora/ahlib/xdi"
 	"github.com/Aoi-hosizora/goapidoc"
 	"github.com/gin-gonic/gin"
 	"github.com/vidorg/vid_backend/src/common/exception"
 	"github.com/vidorg/vid_backend/src/common/result"
 	"github.com/vidorg/vid_backend/src/config"
-	"github.com/vidorg/vid_backend/src/database"
 	"github.com/vidorg/vid_backend/src/model/dto"
 	"github.com/vidorg/vid_backend/src/model/param"
 	"github.com/vidorg/vid_backend/src/model/po"
@@ -76,11 +76,11 @@ func NewUserController() *UserController {
 
 // GET /v1/user
 func (u *UserController) QueryAllUsers(c *gin.Context) {
-	pageOrder := param.BindPageOrder(c, u.config)
-	users, total := u.userService.QueryAll(pageOrder)
+	pp := param.BindPageOrder(c, u.config)
+	users, total := u.userService.QueryAll(pp)
 
 	ret := dto.BuildUserDtos(users)
-	result.Ok().SetPage(pageOrder.Page, pageOrder.Limit, total, ret).JSON(c)
+	result.Ok().SetPage(pp.Page, pp.Limit, total, ret).JSON(c)
 }
 
 // GET /v1/user/:uid
@@ -135,13 +135,13 @@ func (u *UserController) UpdateUser(isSpec bool) func(c *gin.Context) {
 
 		param.MapUserParam(userParam, user)
 		status := u.userService.Update(user)
-		if status == database.DbNotFound {
+		if status == xstatus.DbNotFound {
 			result.Error(exception.UserNotFoundError).JSON(c)
 			return
-		} else if status == database.DbExisted {
+		} else if status == xstatus.DbExisted {
 			result.Error(exception.UsernameUsedError).JSON(c)
 			return
-		} else if status == database.DbFailed {
+		} else if status == xstatus.DbFailed {
 			result.Error(exception.UserUpdateError).JSON(c)
 			return
 		}
@@ -170,10 +170,10 @@ func (u *UserController) DeleteUser(isSpec bool) func(c *gin.Context) {
 
 		// Delete
 		status := u.userService.Delete(uid)
-		if status == database.DbNotFound {
+		if status == xstatus.DbNotFound {
 			result.Error(exception.UserNotFoundError).JSON(c)
 			return
-		} else if status == database.DbFailed {
+		} else if status == xstatus.DbFailed {
 			result.Error(exception.UserDeleteError).JSON(c)
 			return
 		}

@@ -1,13 +1,13 @@
 package controller
 
 import (
+	"github.com/Aoi-hosizora/ahlib-web/xstatus"
 	"github.com/Aoi-hosizora/ahlib/xdi"
 	"github.com/Aoi-hosizora/goapidoc"
 	"github.com/gin-gonic/gin"
 	"github.com/vidorg/vid_backend/src/common/exception"
 	"github.com/vidorg/vid_backend/src/common/result"
 	"github.com/vidorg/vid_backend/src/config"
-	"github.com/vidorg/vid_backend/src/database"
 	"github.com/vidorg/vid_backend/src/model/dto"
 	"github.com/vidorg/vid_backend/src/model/param"
 	"github.com/vidorg/vid_backend/src/model/po"
@@ -118,10 +118,10 @@ func (a *AuthController) Register(c *gin.Context) {
 	}
 
 	status := a.accountService.Insert(account) // cascade
-	if status == database.DbExisted {
+	if status == xstatus.DbExisted {
 		result.Error(exception.UsernameUsedError).JSON(c)
 		return
-	} else if status == database.DbFailed {
+	} else if status == xstatus.DbFailed {
 		result.Error(exception.RegisterError).JSON(c)
 		return
 	}
@@ -169,12 +169,11 @@ func (a *AuthController) UpdatePassword(c *gin.Context) {
 		EncryptedPass: encrypted,
 		Uid:           authUser.Uid,
 	}
-
 	status := a.accountService.Update(account)
-	if status == database.DbNotFound {
+	if status == xstatus.DbNotFound {
 		result.Error(exception.UserNotFoundError).JSON(c)
 		return
-	} else if status == database.DbFailed {
+	} else if status == xstatus.DbFailed {
 		result.Error(exception.UpdatePassError).JSON(c)
 		return
 	}

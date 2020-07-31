@@ -9,6 +9,7 @@ type MetaConfig struct {
 	RunMode     string `yaml:"run-mode"`
 	Port        int32  `yaml:"port"`
 	LogPath     string `yaml:"log-path"`
+	LogName     string `yaml:"log-name"`
 	DefPageSize int32  `yaml:"def-page-size"`
 	MaxPageSize int32  `yaml:"max-page-size"`
 }
@@ -20,7 +21,6 @@ type MySQLConfig struct {
 	Charset  string `yaml:"charset"`
 	User     string `yaml:"user"`
 	Password string `yaml:"password"`
-	IsLog    bool   `yaml:"log"`
 }
 
 type RedisConfig struct {

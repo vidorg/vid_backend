@@ -6,6 +6,8 @@
 
 ### Project ###
 build/
-logs/*.log
 *.rdb
 config.yaml
+logs/*.*
+logs/*
+!logs/.gitkeep

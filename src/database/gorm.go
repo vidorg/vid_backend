@@ -14,27 +14,23 @@ import (
 )
 
 func NewMySQLConn() (*gorm.DB, error) {
-	cfg := xdi.GetByNameForce(sn.SConfig).(*config.Config).MySQL
+	cfg := xdi.GetByNameForce(sn.SConfig).(*config.Config)
+	mcfg := cfg.MySQL
 	logger := xdi.GetByNameForce(sn.SLogger).(*logrus.Logger)
 
-	dbParams := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=%s&parseTime=True&loc=Local",
-		cfg.User, cfg.Password,
-		cfg.Host, cfg.Port,
-		cfg.Name, cfg.Charset,
-	)
+	dbParams := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=%s&parseTime=True&loc=Local", mcfg.User, mcfg.Password, mcfg.Host, mcfg.Port, mcfg.Name, mcfg.Charset)
 	db, err := gorm.Open("mysql", dbParams)
 	if err != nil {
 		return nil, err
 	}
 
-	db.LogMode(cfg.IsLog)
+	db.LogMode(cfg.Meta.RunMode == "debug")
 	db.SetLogger(xgorm.NewGormLogrus(logger))
-
-	xgorm.HookDeleteAtField(db, xgorm.DefaultDeleteAtTimeStamp)
 	db.SingularTable(true)
 	gorm.DefaultTableNameHandler = func(db *gorm.DB, defaultTableName string) string {
 		return "tbl_" + defaultTableName
 	}
+	xgorm.HookDeleteAtField(db, xgorm.DefaultDeleteAtTimeStamp)
 
 	err = migrate(db)
 	if err != nil {
@@ -45,8 +41,9 @@ func NewMySQLConn() (*gorm.DB, error) {
 }
 
 func migrate(db *gorm.DB) error {
-	models := []interface{}{&po.User{}, &po.Account{}, &po.Video{}}
-	for _, val := range models {
+	for _, val := range []interface{}{
+		&po.User{}, &po.Account{}, &po.Video{},
+	} {
 		rdb := db.AutoMigrate(val)
 		if rdb.Error != nil {
 			return rdb.Error

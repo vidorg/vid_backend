@@ -1,11 +1,9 @@
 package util
 
 import (
-	"github.com/Aoi-hosizora/ahlib/xcondition"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/vidorg/vid_backend/src/config"
 	"golang.org/x/crypto/bcrypt"
-	"strings"
 	"time"
 )
 
@@ -43,18 +41,18 @@ func (a *_AuthUtil) GenerateToken(uid int32, ex int64, config *config.JwtConfig)
 	if err != nil {
 		return "", err
 	}
-	return "Bearer " + t, nil
+	return t, nil
 }
 
-func (a *_AuthUtil) ParseToken(signedToken string, config *config.JwtConfig) (*userClaims, error) {
+func (a *_AuthUtil) ParseToken(signedToken string, secret string) (*userClaims, error) {
 	keyFunc := func(token *jwt.Token) (interface{}, error) {
-		return []byte(config.Secret), nil
+		return []byte(secret), nil
 	}
-	signedToken = strings.TrimPrefix(signedToken, "Bearer ")
 	token, err := jwt.ParseWithClaims(signedToken, &userClaims{}, keyFunc)
-	if err != nil || !token.Valid {
-		err = xcondition.IfThenElse(err == nil, jwt.ValidationError{}, err).(error)
+	if err != nil {
 		return nil, err
+	} else if !token.Valid {
+		return nil, jwt.ValidationError{}
 	}
 
 	claims, ok := token.Claims.(*userClaims)
@@ -65,6 +63,8 @@ func (a *_AuthUtil) ParseToken(signedToken string, config *config.JwtConfig) (*u
 }
 
 func (a *_AuthUtil) IsTokenExpireError(err error) bool {
-	str := "token is expired by"
-	return err.Error()[:len(str)] == str
+	if ve, ok := err.(*jwt.ValidationError); ok {
+		return ve.Errors&jwt.ValidationErrorExpired != 0
+	}
+	return false
 }

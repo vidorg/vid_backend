@@ -2,8 +2,8 @@ package server
 
 import (
 	"fmt"
+	"github.com/Aoi-hosizora/ahlib-web/xgin"
 	"github.com/Aoi-hosizora/ahlib-web/xtime"
-	"github.com/Aoi-hosizora/ahlib-web/xvalidator"
 	"github.com/Aoi-hosizora/ahlib/xdi"
 	"github.com/Aoi-hosizora/goapidoc"
 	"github.com/DeanThompson/ginpprof"
@@ -68,14 +68,14 @@ func NewServer() *Server {
 }
 
 func setupBinding() {
-	xvalidator.SetupRegexBinding()
+	xgin.SetupRegexBinding()
 
-	xvalidator.SetupDateTimeBinding("date", xtime.RFC3339Date)
-	xvalidator.SetupDateTimeBinding("datetime", xtime.RFC3339DateTime)
+	xgin.SetupDateTimeBinding("date", xtime.RFC3339Date)
+	xgin.SetupDateTimeBinding("datetime", xtime.RFC3339DateTime)
 
-	xvalidator.SetupSpecificRegexpBinding("name", "^[a-zA-Z0-9\u4E00-\u9FBF\u3040-\u30FF\\-_]+$")              // alphabet number character kana - _
-	xvalidator.SetupSpecificRegexpBinding("pwd", "^.+$")                                                       // all
-	xvalidator.SetupSpecificRegexpBinding("phone", "^(13[0-9]|15[012356789]|17[678]|18[0-9]|14[57])[0-9]{8}$") // 11
+	xgin.SetupSpecificRegexpBinding("name", "^[a-zA-Z0-9\u4E00-\u9FBF\u3040-\u30FF\\-_]+$")              // alphabet number character kana - _
+	xgin.SetupSpecificRegexpBinding("pwd", "^.+$")                                                       // all
+	xgin.SetupSpecificRegexpBinding("phone", "^(13[0-9]|15[012356789]|17[678]|18[0-9]|14[57])[0-9]{8}$") // 11
 }
 
 func (s *Server) Serve() error {

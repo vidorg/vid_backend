@@ -42,12 +42,12 @@ func (j *JwtService) JwtCheck(token string) (*po.User, *exception.Error) {
 	}
 
 	// parse
-	claims, err := util.AuthUtil.ParseToken(token, j.config.Jwt)
+	claims, err := util.AuthUtil.ParseToken(token, j.config.Jwt.Secret)
 	if err != nil {
 		if util.AuthUtil.IsTokenExpireError(err) {
 			return nil, exception.TokenExpiredError
 		} else {
-			return nil, exception.UnAuthorizedError
+			return nil, exception.InvalidTokenError
 		}
 	}
 
