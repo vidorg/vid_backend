@@ -76,11 +76,11 @@ func NewUserController() *UserController {
 
 // GET /v1/user
 func (u *UserController) QueryAllUsers(c *gin.Context) {
-	pageOrder := param.BindPageOrder(c, u.config)
-	users, total := u.userService.QueryAll(pageOrder)
+	pp := param.BindPageOrder(c, u.config)
+	users, total := u.userService.QueryAll(pp)
 
 	ret := dto.BuildUserDtos(users)
-	result.Ok().SetPage(pageOrder.Page, pageOrder.Limit, total, ret).JSON(c)
+	result.Ok().SetPage(pp.Page, pp.Limit, total, ret).JSON(c)
 }
 
 // GET /v1/user/:uid

@@ -21,7 +21,6 @@ type MySQLConfig struct {
 	Charset  string `yaml:"charset"`
 	User     string `yaml:"user"`
 	Password string `yaml:"password"`
-	IsLog    bool   `yaml:"log"`
 }
 
 type RedisConfig struct {

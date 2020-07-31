@@ -25,14 +25,14 @@ func NewUserService() *UserService {
 	}
 }
 
-func (u *UserService) QueryAll(pageOrder *param.PageOrderParam) (users []*po.User, total int32) {
+func (u *UserService) QueryAll(pp *param.PageOrderParam) (users []*po.User, total int32) {
 	total = 0
 	u.db.Model(&po.User{}).Count(&total)
 
 	users = make([]*po.User, 0)
-	xgorm.WithDB(u.db).Pagination(pageOrder.Limit, pageOrder.Page).
+	xgorm.WithDB(u.db).Pagination(pp.Limit, pp.Page).
 		Model(&po.User{}).
-		Order(u._orderByFunc(pageOrder.Order)).
+		Order(u._orderByFunc(pp.Order)).
 		Find(&users)
 
 	return users, total

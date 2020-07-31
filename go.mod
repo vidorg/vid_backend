@@ -3,8 +3,8 @@ module github.com/vidorg/vid_backend
 go 1.14
 
 require (
-	github.com/Aoi-hosizora/ahlib v1.2.4
-	github.com/Aoi-hosizora/ahlib-web v1.2.4
+	github.com/Aoi-hosizora/ahlib v1.2.5
+	github.com/Aoi-hosizora/ahlib-web v1.2.7
 	github.com/Aoi-hosizora/goapidoc v1.1.3
 	github.com/DeanThompson/ginpprof v0.0.0-20190408063150-3be636683586
 	github.com/casbin/casbin/v2 v2.2.2

@@ -76,11 +76,11 @@ func NewVideoController() *VideoController {
 
 // GET /v1/video
 func (v *VideoController) QueryAllVideos(c *gin.Context) {
-	pageOrder := param.BindPageOrder(c, v.config)
-	videos, total := v.videoService.QueryAll(pageOrder)
+	pp := param.BindPageOrder(c, v.config)
+	videos, total := v.videoService.QueryAll(pp)
 
 	ret := dto.BuildVideoDtos(videos)
-	result.Ok().SetPage(pageOrder.Page, pageOrder.Limit, total, ret).JSON(c)
+	result.Ok().SetPage(pp.Page, pp.Limit, total, ret).JSON(c)
 }
 
 // GET /v1/user/:uid/video
@@ -90,16 +90,16 @@ func (v *VideoController) QueryVideosByUid(c *gin.Context) {
 		result.Error(exception.RequestParamError).JSON(c)
 		return
 	}
-	pageOrder := param.BindPageOrder(c, v.config)
+	pp := param.BindPageOrder(c, v.config)
 
-	videos, total, status := v.videoService.QueryByUid(uid, pageOrder)
+	videos, total, status := v.videoService.QueryByUid(uid, pp)
 	if status == xstatus.DbNotFound {
 		result.Error(exception.UserNotFoundError).JSON(c)
 		return
 	}
 
 	ret := dto.BuildVideoDtos(videos)
-	result.Ok().SetPage(pageOrder.Page, pageOrder.Limit, total, ret).JSON(c)
+	result.Ok().SetPage(pp.Page, pp.Limit, total, ret).JSON(c)
 }
 
 // GET /v1/video/{vid}

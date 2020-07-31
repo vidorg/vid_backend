@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"github.com/Aoi-hosizora/ahlib-web/xredis"
 	"github.com/Aoi-hosizora/ahlib/xdi"
+	"github.com/Aoi-hosizora/ahlib/xnumber"
 	"github.com/gomodule/redigo/redis"
 	"github.com/vidorg/vid_backend/src/config"
 	"github.com/vidorg/vid_backend/src/provide/sn"
-	"strconv"
 )
 
 type TokenService struct {
@@ -34,7 +34,7 @@ func (t *TokenService) Query(token string) bool {
 }
 
 func (t *TokenService) Insert(token string, uid int32, ex int64) bool {
-	pattern := t.concat(strconv.Itoa(int(uid)), token)
+	pattern := t.concat(xnumber.FormatInt32(uid, 10), token)
 	_, err := t.conn.Do("SET", pattern, uid, "EX", ex)
 	return err == nil
 }
@@ -46,7 +46,7 @@ func (t *TokenService) Delete(token string) bool {
 }
 
 func (t *TokenService) DeleteAll(uid int32) bool {
-	pattern := t.concat(strconv.Itoa(int(uid)), "*")
+	pattern := t.concat(xnumber.FormatInt32(uid, 10), "*")
 	tot, del, err := xredis.WithConn(t.conn).DeleteAll(pattern)
 	return err == nil && (tot == 0 || del > 0)
 }

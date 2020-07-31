@@ -60,11 +60,11 @@ func NewPolicyController() *PolicyController {
 
 // GET /v1/policy
 func (r *PolicyController) Query(c *gin.Context) {
-	page := param.BindPage(c, r.config)
-	total, policies := r.casbinService.GetPolicies(page.Limit, page.Page)
+	pp := param.BindPage(c, r.config)
+	total, policies := r.casbinService.GetPolicies(pp.Limit, pp.Page)
 
 	ret := dto.BuildPolicyDtos(policies)
-	result.Ok().SetPage(page.Page, page.Limit, total, ret).JSON(c)
+	result.Ok().SetPage(pp.Page, pp.Limit, total, ret).JSON(c)
 }
 
 // PUT /v1/policy/:uid/role

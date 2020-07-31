@@ -27,14 +27,14 @@ func NewVideoService() *VideoService {
 	}
 }
 
-func (v *VideoService) QueryAll(pageOrder *param.PageOrderParam) (videos []*po.Video, total int32) {
+func (v *VideoService) QueryAll(pp *param.PageOrderParam) (videos []*po.Video, total int32) {
 	total = 0
 	v.db.Model(&po.Video{}).Count(&total)
 
 	videos = make([]*po.Video, 0)
-	xgorm.WithDB(v.db).Pagination(pageOrder.Limit, pageOrder.Page).
+	xgorm.WithDB(v.db).Pagination(pp.Limit, pp.Page).
 		Model(&po.Video{}).
-		Order(v._orderByFunc(pageOrder.Order)).
+		Order(v._orderByFunc(pp.Order)).
 		Find(&videos)
 
 	for _, video := range videos {
@@ -48,7 +48,7 @@ func (v *VideoService) QueryAll(pageOrder *param.PageOrderParam) (videos []*po.V
 	return videos, total
 }
 
-func (v *VideoService) QueryByUid(uid int32, pageOrder *param.PageOrderParam) (videos []*po.Video, total int32, status xstatus.DbStatus) {
+func (v *VideoService) QueryByUid(uid int32, pp *param.PageOrderParam) (videos []*po.Video, total int32, status xstatus.DbStatus) {
 	author := v.userService.QueryByUid(uid)
 	if author == nil {
 		return nil, 0, xstatus.DbNotFound
@@ -58,9 +58,9 @@ func (v *VideoService) QueryByUid(uid int32, pageOrder *param.PageOrderParam) (v
 	v.db.Model(&po.Video{}).Where(&po.Video{AuthorUid: uid}).Count(&total)
 
 	videos = make([]*po.Video, 0)
-	xgorm.WithDB(v.db).Pagination(pageOrder.Limit, pageOrder.Page).
+	xgorm.WithDB(v.db).Pagination(pp.Limit, pp.Page).
 		Model(&po.Video{}).
-		Order(v._orderByFunc(pageOrder.Order)).
+		Order(v._orderByFunc(pp.Order)).
 		Where(&po.Video{AuthorUid: uid}).
 		Find(&videos)
 

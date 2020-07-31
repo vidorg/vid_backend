@@ -69,16 +69,16 @@ func (s *SubscribeController) QuerySubscriberUsers(c *gin.Context) {
 		result.Error(exception.RequestParamError).JSON(c)
 		return
 	}
-	pageOrder := param.BindPageOrder(c, s.config)
+	pp := param.BindPageOrder(c, s.config)
 
-	users, total, status := s.subscribeService.QuerySubscriberUsers(uid, pageOrder)
+	users, total, status := s.subscribeService.QuerySubscriberUsers(uid, pp)
 	if status == xstatus.DbNotFound {
 		result.Error(exception.UserNotFoundError).JSON(c)
 		return
 	}
 
 	ret := dto.BuildUserDtos(users)
-	result.Ok().SetPage(pageOrder.Page, pageOrder.Limit, total, ret).JSON(c)
+	result.Ok().SetPage(pp.Page, pp.Limit, total, ret).JSON(c)
 }
 
 // GET /v1/user/{uid}/subscribing
@@ -88,16 +88,16 @@ func (s *SubscribeController) QuerySubscribingUsers(c *gin.Context) {
 		result.Error(exception.RequestParamError).JSON(c)
 		return
 	}
-	pageOrder := param.BindPageOrder(c, s.config)
+	pp := param.BindPageOrder(c, s.config)
 
-	users, total, status := s.subscribeService.QuerySubscribingUsers(uid, pageOrder)
+	users, total, status := s.subscribeService.QuerySubscribingUsers(uid, pp)
 	if status == xstatus.DbNotFound {
 		result.Error(exception.UserNotFoundError).JSON(c)
 		return
 	}
 
 	ret := dto.BuildUserDtos(users)
-	result.Ok().SetPage(pageOrder.Page, pageOrder.Limit, total, ret).JSON(c)
+	result.Ok().SetPage(pp.Page, pp.Limit, total, ret).JSON(c)
 }
 
 // PUT /v1/user/subscribing/:uid

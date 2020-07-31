@@ -13,7 +13,6 @@ mysql:
   charset: utf8
   user: root
   password: 123
-  log: true
 
 redis:
   conn-type: tcp

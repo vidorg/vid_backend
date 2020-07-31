@@ -35,31 +35,31 @@ func (s *SubscribeService) getSubscribingAsso(uid int32) *gorm.Association {
 	return s.db.Model(&po.User{Uid: uid}).Association("Subscribings")
 }
 
-func (s *SubscribeService) QuerySubscriberUsers(uid int32, pageOrder *param.PageOrderParam) (users []*po.User, total int32, status xstatus.DbStatus) {
+func (s *SubscribeService) QuerySubscriberUsers(uid int32, pp *param.PageOrderParam) (users []*po.User, total int32, status xstatus.DbStatus) {
 	if !s.userService.Exist(uid) {
 		return nil, 0, xstatus.DbNotFound
 	}
 
 	total = int32(s.getSubscriberAsso(uid).Count()) // association pattern
 	users = make([]*po.User, 0)
-	xgorm.WithDB(s.db).Pagination(pageOrder.Limit, pageOrder.Page).
+	xgorm.WithDB(s.db).Pagination(pp.Limit, pp.Page).
 		Model(&po.User{Uid: uid}).
-		Order(s._orderByFunc(pageOrder.Order)).
+		Order(s._orderByFunc(pp.Order)).
 		Related(&users, "Subscribers")
 
 	return users, total, xstatus.DbSuccess
 }
 
-func (s *SubscribeService) QuerySubscribingUsers(uid int32, pageOrder *param.PageOrderParam) (users []*po.User, total int32, status xstatus.DbStatus) {
+func (s *SubscribeService) QuerySubscribingUsers(uid int32, pp *param.PageOrderParam) (users []*po.User, total int32, status xstatus.DbStatus) {
 	if !s.userService.Exist(uid) {
 		return nil, 0, xstatus.DbNotFound
 	}
 
 	total = int32(s.getSubscribingAsso(uid).Count()) // association pattern
 	users = make([]*po.User, 0)
-	xgorm.WithDB(s.db).Pagination(pageOrder.Limit, pageOrder.Page).
+	xgorm.WithDB(s.db).Pagination(pp.Limit, pp.Page).
 		Model(&po.User{Uid: uid}).
-		Order(s._orderByFunc(pageOrder.Order)).
+		Order(s._orderByFunc(pp.Order)).
 		Related(&users, "Subscribings")
 
 	return users, total, xstatus.DbSuccess
