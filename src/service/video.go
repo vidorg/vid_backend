@@ -1,11 +1,11 @@
 package service
 
 import (
+	"github.com/Aoi-hosizora/ahlib-web/xgorm"
+	"github.com/Aoi-hosizora/ahlib-web/xstatus"
 	"github.com/Aoi-hosizora/ahlib/xdi"
 	"github.com/Aoi-hosizora/ahlib/xproperty"
 	"github.com/jinzhu/gorm"
-	"github.com/vidorg/vid_backend/src/database"
-	"github.com/vidorg/vid_backend/src/database/helper"
 	"github.com/vidorg/vid_backend/src/model/dto"
 	"github.com/vidorg/vid_backend/src/model/param"
 	"github.com/vidorg/vid_backend/src/model/po"
@@ -32,7 +32,7 @@ func (v *VideoService) QueryAll(pageOrder *param.PageOrderParam) (videos []*po.V
 	v.db.Model(&po.Video{}).Count(&total)
 
 	videos = make([]*po.Video, 0)
-	helper.GormPager(v.db, pageOrder.Limit, pageOrder.Page).
+	xgorm.WithDB(v.db).Pagination(pageOrder.Limit, pageOrder.Page).
 		Model(&po.Video{}).
 		Order(v._orderByFunc(pageOrder.Order)).
 		Find(&videos)
@@ -48,17 +48,17 @@ func (v *VideoService) QueryAll(pageOrder *param.PageOrderParam) (videos []*po.V
 	return videos, total
 }
 
-func (v *VideoService) QueryByUid(uid int32, pageOrder *param.PageOrderParam) (videos []*po.Video, total int32, status database.DbStatus) {
+func (v *VideoService) QueryByUid(uid int32, pageOrder *param.PageOrderParam) (videos []*po.Video, total int32, status xstatus.DbStatus) {
 	author := v.userService.QueryByUid(uid)
 	if author == nil {
-		return nil, 0, database.DbNotFound
+		return nil, 0, xstatus.DbNotFound
 	}
 
 	total = 0
 	v.db.Model(&po.Video{}).Where(&po.Video{AuthorUid: uid}).Count(&total)
 
 	videos = make([]*po.Video, 0)
-	helper.GormPager(v.db, pageOrder.Limit, pageOrder.Page).
+	xgorm.WithDB(v.db).Pagination(pageOrder.Limit, pageOrder.Page).
 		Model(&po.Video{}).
 		Order(v._orderByFunc(pageOrder.Order)).
 		Where(&po.Video{AuthorUid: uid}).
@@ -68,18 +68,18 @@ func (v *VideoService) QueryByUid(uid int32, pageOrder *param.PageOrderParam) (v
 		videos[idx].Author = author
 	}
 
-	return videos, total, database.DbSuccess
+	return videos, total, xstatus.DbSuccess
 }
 
-func (v *VideoService) QueryCountByUid(uid int32) (int32, database.DbStatus) {
+func (v *VideoService) QueryCountByUid(uid int32) (int32, xstatus.DbStatus) {
 	if !v.userService.Exist(uid) {
-		return 0, database.DbNotFound
+		return 0, xstatus.DbNotFound
 	}
 
 	total := 0
 	v.db.Model(&po.Video{}).Where(&po.Video{AuthorUid: uid}).Count(&total)
 
-	return int32(total), database.DbSuccess
+	return int32(total), xstatus.DbSuccess
 }
 
 func (v *VideoService) QueryByVid(vid int32) *po.Video {
@@ -99,21 +99,21 @@ func (v *VideoService) QueryByVid(vid int32) *po.Video {
 }
 
 func (v *VideoService) Exist(vid int32) bool {
-	return helper.GormExist(v.db, &po.Video{}, &po.Video{Vid: vid})
+	return xgorm.WithDB(v.db).Exist(&po.Video{}, &po.Video{Vid: vid})
 }
 
-func (v *VideoService) Insert(video *po.Video) database.DbStatus {
-	return helper.GormInsert(v.db, &po.Video{}, video)
+func (v *VideoService) Insert(video *po.Video) xstatus.DbStatus {
+	return xgorm.WithDB(v.db).Insert(&po.Video{}, video)
 }
 
-func (v *VideoService) Update(video *po.Video) database.DbStatus {
-	return helper.GormUpdate(v.db, &po.Video{}, video)
+func (v *VideoService) Update(video *po.Video) xstatus.DbStatus {
+	return xgorm.WithDB(v.db).Update(&po.Video{}, nil, video)
 }
 
-func (v *VideoService) Delete(vid int32) database.DbStatus {
-	return helper.GormDelete(v.db, &po.Video{}, &po.Video{Vid: vid})
+func (v *VideoService) Delete(vid int32) xstatus.DbStatus {
+	return xgorm.WithDB(v.db).Delete(&po.Video{}, nil, &po.Video{Vid: vid})
 }
 
-func (v *VideoService) DeleteBy2Id(vid int32, uid int32) database.DbStatus {
-	return helper.GormDelete(v.db, &po.Video{}, &po.Video{Vid: vid, AuthorUid: uid})
+func (v *VideoService) DeleteBy2Id(vid int32, uid int32) xstatus.DbStatus {
+	return xgorm.WithDB(v.db).Delete(&po.Video{}, nil, &po.Video{Vid: vid, AuthorUid: uid})
 }

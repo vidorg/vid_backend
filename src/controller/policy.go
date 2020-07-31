@@ -1,13 +1,13 @@
 package controller
 
 import (
+	"github.com/Aoi-hosizora/ahlib-web/xstatus"
 	"github.com/Aoi-hosizora/ahlib/xdi"
 	"github.com/Aoi-hosizora/goapidoc"
 	"github.com/gin-gonic/gin"
 	"github.com/vidorg/vid_backend/src/common/exception"
 	"github.com/vidorg/vid_backend/src/common/result"
 	"github.com/vidorg/vid_backend/src/config"
-	"github.com/vidorg/vid_backend/src/database"
 	"github.com/vidorg/vid_backend/src/model/dto"
 	"github.com/vidorg/vid_backend/src/model/param"
 	"github.com/vidorg/vid_backend/src/provide/sn"
@@ -88,10 +88,10 @@ func (r *PolicyController) SetRole(c *gin.Context) {
 	user.Role = roleParam.Role
 
 	status := r.userService.Update(user)
-	if status == database.DbNotFound {
+	if status == xstatus.DbNotFound {
 		result.Error(exception.UserNotFoundError).JSON(c)
 		return
-	} else if status == database.DbFailed {
+	} else if status == xstatus.DbFailed {
 		result.Error(exception.UserUpdateError).JSON(c)
 		return
 	}
@@ -107,10 +107,10 @@ func (r *PolicyController) Insert(c *gin.Context) {
 	}
 
 	status := r.casbinService.AddPolicy(policyParam.Role, policyParam.Path, policyParam.Method)
-	if status == database.DbExisted {
+	if status == xstatus.DbExisted {
 		result.Error(exception.PolicyExistedError).JSON(c)
 		return
-	} else if status == database.DbFailed {
+	} else if status == xstatus.DbFailed {
 		result.Error(exception.PolicyInsertError).JSON(c)
 		return
 	}
@@ -126,10 +126,10 @@ func (r *PolicyController) Delete(c *gin.Context) {
 	}
 
 	status := r.casbinService.DeletePolicy(policyParam.Role, policyParam.Path, policyParam.Method)
-	if status == database.DbNotFound {
+	if status == xstatus.DbNotFound {
 		result.Error(exception.PolicyNotFountError).JSON(c)
 		return
-	} else if status == database.DbFailed {
+	} else if status == xstatus.DbFailed {
 		result.Error(exception.PolicyDeleteError).JSON(c)
 		return
 	}

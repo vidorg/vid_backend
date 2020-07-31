@@ -1,12 +1,12 @@
 package service
 
 import (
+	"github.com/Aoi-hosizora/ahlib-web/xstatus"
 	"github.com/Aoi-hosizora/ahlib/xdi"
 	"github.com/casbin/casbin/v2"
 	"github.com/casbin/gorm-adapter/v2"
 	"github.com/jinzhu/gorm"
 	"github.com/vidorg/vid_backend/src/config"
-	"github.com/vidorg/vid_backend/src/database"
 	"github.com/vidorg/vid_backend/src/model/po"
 	"github.com/vidorg/vid_backend/src/provide/sn"
 )
@@ -69,32 +69,32 @@ func (c *CasbinService) GetPolicies(limit int32, page int32) (total int32, polic
 	return total, policies
 }
 
-func (c *CasbinService) AddPolicy(sub string, obj string, act string) database.DbStatus {
+func (c *CasbinService) AddPolicy(sub string, obj string, act string) xstatus.DbStatus {
 	enforcer, err := c.GetEnforcer()
 	if err != nil {
-		return database.DbFailed
+		return xstatus.DbFailed
 	}
 
 	ok, err := enforcer.AddPolicy(sub, obj, act)
 	if !ok {
-		return database.DbExisted
+		return xstatus.DbExisted
 	} else if err != nil {
-		return database.DbFailed
+		return xstatus.DbFailed
 	}
-	return database.DbSuccess
+	return xstatus.DbSuccess
 }
 
-func (c *CasbinService) DeletePolicy(sub string, obj string, act string) database.DbStatus {
+func (c *CasbinService) DeletePolicy(sub string, obj string, act string) xstatus.DbStatus {
 	enforcer, err := c.GetEnforcer()
 	if err != nil {
-		return database.DbFailed
+		return xstatus.DbFailed
 	}
 
 	ok, err := enforcer.RemovePolicy(sub, obj, act)
 	if !ok {
-		return database.DbNotFound
+		return xstatus.DbNotFound
 	} else if err != nil {
-		return database.DbFailed
+		return xstatus.DbFailed
 	}
-	return database.DbSuccess
+	return xstatus.DbSuccess
 }

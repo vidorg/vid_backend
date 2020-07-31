@@ -2,10 +2,10 @@ package service
 
 import (
 	"fmt"
+	"github.com/Aoi-hosizora/ahlib-web/xredis"
 	"github.com/Aoi-hosizora/ahlib/xdi"
 	"github.com/gomodule/redigo/redis"
 	"github.com/vidorg/vid_backend/src/config"
-	"github.com/vidorg/vid_backend/src/database/helper"
 	"github.com/vidorg/vid_backend/src/provide/sn"
 	"strconv"
 )
@@ -41,12 +41,12 @@ func (t *TokenService) Insert(token string, uid int32, ex int64) bool {
 
 func (t *TokenService) Delete(token string) bool {
 	pattern := t.concat("*", token)
-	_, ok := helper.RedisDeleteAll(t.conn, pattern)
-	return ok
+	tot, del, err := xredis.WithConn(t.conn).DeleteAll(pattern)
+	return err == nil && (tot == 0 || del > 0)
 }
 
 func (t *TokenService) DeleteAll(uid int32) bool {
 	pattern := t.concat(strconv.Itoa(int(uid)), "*")
-	_, ok := helper.RedisDeleteAll(t.conn, pattern)
-	return ok
+	tot, del, err := xredis.WithConn(t.conn).DeleteAll(pattern)
+	return err == nil && (tot == 0 || del > 0)
 }

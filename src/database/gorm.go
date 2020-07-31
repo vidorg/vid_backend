@@ -45,8 +45,9 @@ func NewMySQLConn() (*gorm.DB, error) {
 }
 
 func migrate(db *gorm.DB) error {
-	models := []interface{}{&po.User{}, &po.Account{}, &po.Video{}}
-	for _, val := range models {
+	for _, val := range []interface{}{
+		&po.User{}, &po.Account{}, &po.Video{},
+	} {
 		rdb := db.AutoMigrate(val)
 		if rdb.Error != nil {
 			return rdb.Error

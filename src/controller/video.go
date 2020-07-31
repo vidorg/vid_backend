@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"github.com/Aoi-hosizora/ahlib-web/xstatus"
 	"github.com/Aoi-hosizora/ahlib/xdi"
 	"github.com/Aoi-hosizora/goapidoc"
 	"github.com/gin-gonic/gin"
@@ -8,7 +9,6 @@ import (
 	"github.com/vidorg/vid_backend/src/common/exception"
 	"github.com/vidorg/vid_backend/src/common/result"
 	"github.com/vidorg/vid_backend/src/config"
-	"github.com/vidorg/vid_backend/src/database"
 	"github.com/vidorg/vid_backend/src/model/dto"
 	"github.com/vidorg/vid_backend/src/model/param"
 	"github.com/vidorg/vid_backend/src/model/po"
@@ -93,7 +93,7 @@ func (v *VideoController) QueryVideosByUid(c *gin.Context) {
 	pageOrder := param.BindPageOrder(c, v.config)
 
 	videos, total, status := v.videoService.QueryByUid(uid, pageOrder)
-	if status == database.DbNotFound {
+	if status == xstatus.DbNotFound {
 		result.Error(exception.UserNotFoundError).JSON(c)
 		return
 	}
@@ -136,10 +136,10 @@ func (v *VideoController) InsertVideo(c *gin.Context) {
 
 	param.MapVideoParam(videoParam, video)
 	status := v.videoService.Insert(video)
-	if status == database.DbExisted {
+	if status == xstatus.DbExisted {
 		result.Error(exception.VideoUrlExistError).JSON(c)
 		return
-	} else if status == database.DbFailed {
+	} else if status == xstatus.DbFailed {
 		result.Error(exception.VideoInsertError).JSON(c)
 		return
 	}
@@ -174,13 +174,13 @@ func (v *VideoController) UpdateVideo(c *gin.Context) {
 	// Update
 	param.MapVideoParam(videoParam, video)
 	status := v.videoService.Update(video)
-	if status == database.DbExisted {
+	if status == xstatus.DbExisted {
 		result.Error(exception.VideoUrlExistError).JSON(c)
 		return
-	} else if status == database.DbNotFound {
+	} else if status == xstatus.DbNotFound {
 		result.Error(exception.VideoNotFoundError).JSON(c)
 		return
-	} else if status == database.DbFailed {
+	} else if status == xstatus.DbFailed {
 		result.Error(exception.VideoUpdateError).JSON(c)
 		return
 	}
@@ -198,16 +198,16 @@ func (v *VideoController) DeleteVideo(c *gin.Context) {
 		return
 	}
 
-	var status database.DbStatus
+	var status xstatus.DbStatus
 	if authUser.Role == constant.AuthAdmin {
 		status = v.videoService.Delete(vid)
 	} else {
 		status = v.videoService.DeleteBy2Id(vid, authUser.Uid)
 	}
-	if status == database.DbNotFound {
+	if status == xstatus.DbNotFound {
 		result.Error(exception.VideoNotFoundError).JSON(c)
 		return
-	} else if status == database.DbFailed {
+	} else if status == xstatus.DbFailed {
 		result.Error(exception.VideoDeleteError).JSON(c)
 		return
 	}
