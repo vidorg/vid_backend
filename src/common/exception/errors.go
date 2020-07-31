@@ -6,16 +6,16 @@ import (
 
 // Request / Response
 var (
-	RequestParamError   = New(400, 40000, "request param error")    // 请求参数错误
-	RequestFormatError  = New(400, 40001, "request format error")   // 请求格式错误
-	RequestLargeError   = New(413, 40002, "request body too large") // 请求体过大
-	ServerRecoveryError = New(500, 50000, "server unknown error")   // 服务器未知错误
+	RequestParamError   = New(400, 40000, "request param error")  // 请求参数错误
+	RequestFormatError  = New(400, 40001, "request format error") // 请求格式错误
+	ServerRecoveryError = New(500, 50000, "server unknown error") // 服务器未知错误
 )
 
 // Authorization
 var (
-	UnAuthorizedError        = New(401, 40003, "unauthorized user")         // 未认证
-	TokenExpiredError        = New(401, 40004, "token has expired")         // 令牌过期
+	UnAuthorizedError        = New(401, 40002, "unauthorized user")         // 未认证
+	InvalidTokenError        = New(401, 40003, "token is invalid")          // 令牌无效
+	TokenExpiredError        = New(401, 40004, "token is expired")          // 令牌过期
 	CheckUserRoleError       = New(500, 50001, "failed to check user role") // 检查用户角色错误
 	RoleHasNoPermissionError = New(403, 40005, "role has no permission")    // 用户没有权限
 
@@ -50,13 +50,6 @@ var (
 	PolicyExistedError  = New(409, 40014, "policy has existed")   // 策略已存在
 	PolicyInsertError   = New(500, 50013, "insert policy failed") // 策略新建失败
 	PolicyDeleteError   = New(500, 50014, "delete policy failed") // 策略删除失败
-)
-
-// File
-var (
-	ImageNotFoundError     = New(404, 40015, "image not found")          // 图片未找到
-	ImageNotSupportedError = New(400, 40016, "image type not supported") // 不支持的图片格式
-	ImageSaveError         = New(500, 50015, "image save failed")        // 图片保存失败
 )
 
 func WrapValidationError(err error) *Error {

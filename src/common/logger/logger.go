@@ -10,24 +10,26 @@ import (
 )
 
 func Setup() (*logrus.Logger, error) {
-	cfg := xdi.GetByNameForce(sn.SConfig).(*config.Config)
+	cfg := xdi.GetByNameForce(sn.SConfig).(*config.Config).Meta
 
 	logger := logrus.New()
 	logLevel := logrus.WarnLevel
-	if cfg.Meta.RunMode == "debug" {
+	if cfg.RunMode == "debug" {
 		logLevel = logrus.DebugLevel
 	}
 
 	logger.SetLevel(logLevel)
 	logger.SetReportCaller(false)
-	logger.AddHook(xlogger.NewRotateFileHook(&xlogger.RotateFileConfig{
-		MaxSize:    20,
-		MaxAge:     30,
-		MaxBackups: 15,
-		Filename:   cfg.Meta.LogPath,
-		Level:      logLevel,
-		Formatter:  &logrus.JSONFormatter{TimestampFormat: time.RFC3339},
+	logger.AddHook(xlogger.NewRotateLogHook(&xlogger.RotateLogConfig{
+		MaxAge:       15 * 24 * time.Hour,
+		RotationTime: 24 * time.Hour,
+		LocalTime:    false,
+		Filepath:     cfg.LogPath,
+		Filename:     cfg.LogName,
+		Level:        logLevel,
+		Formatter:    &logrus.JSONFormatter{TimestampFormat: time.RFC3339},
 	}))
+
 	logger.SetFormatter(&xlogger.CustomFormatter{
 		ForceColor: true,
 	})

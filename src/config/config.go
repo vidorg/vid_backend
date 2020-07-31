@@ -9,6 +9,7 @@ type MetaConfig struct {
 	RunMode     string `yaml:"run-mode"`
 	Port        int32  `yaml:"port"`
 	LogPath     string `yaml:"log-path"`
+	LogName     string `yaml:"log-name"`
 	DefPageSize int32  `yaml:"def-page-size"`
 	MaxPageSize int32  `yaml:"max-page-size"`
 }

@@ -13,22 +13,23 @@ import (
 )
 
 func NewRedisConn() (redis.Conn, error) {
-	cfg := xdi.GetByNameForce(sn.SConfig).(*config.Config).Redis
+	cfg := xdi.GetByNameForce(sn.SConfig).(*config.Config)
+	rcfg := cfg.Redis
 	logger := xdi.GetByNameForce(sn.SLogger).(*logrus.Logger)
 
 	conn, err := redis.Dial(
-		cfg.ConnType,
-		fmt.Sprintf("%s:%d", cfg.Host, cfg.Port),
-		redis.DialPassword(cfg.Password),
-		redis.DialDatabase(int(cfg.Db)),
-		redis.DialConnectTimeout(time.Duration(cfg.ConnectTimeout)*time.Millisecond),
-		redis.DialReadTimeout(time.Duration(cfg.ReadTimeout)*time.Millisecond),
-		redis.DialWriteTimeout(time.Duration(cfg.WriteTimeout)*time.Millisecond),
+		rcfg.ConnType,
+		fmt.Sprintf("%s:%d", rcfg.Host, rcfg.Port),
+		redis.DialPassword(rcfg.Password),
+		redis.DialDatabase(int(rcfg.Db)),
+		redis.DialConnectTimeout(time.Duration(rcfg.ConnectTimeout)*time.Millisecond),
+		redis.DialReadTimeout(time.Duration(rcfg.ReadTimeout)*time.Millisecond),
+		redis.DialWriteTimeout(time.Duration(rcfg.WriteTimeout)*time.Millisecond),
 	)
 	if err != nil {
 		log.Fatalln("Failed to connect redis:", err)
 	}
 
-	connLogger := xredis.NewRedisLogrus(conn, logger)
+	connLogger := xredis.NewRedisLogrus(conn, logger, cfg.Meta.RunMode == "debug")
 	return connLogger, err
 }
