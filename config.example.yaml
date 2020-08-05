@@ -28,7 +28,6 @@ jwt:
   secret: xxx
   issuer: vid.srv.auth
   expire: 604800 # second
-  redis-fmt: vid-token-%s-%s
 
 casbin:
   config-path: ./rbac-model.conf

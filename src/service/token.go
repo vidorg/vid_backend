@@ -6,25 +6,21 @@ import (
 	"github.com/Aoi-hosizora/ahlib/xdi"
 	"github.com/Aoi-hosizora/ahlib/xnumber"
 	"github.com/gomodule/redigo/redis"
-	"github.com/vidorg/vid_backend/src/config"
 	"github.com/vidorg/vid_backend/src/provide/sn"
 )
 
 type TokenService struct {
-	config *config.Config
-	conn   redis.Conn
+	conn redis.Conn
 }
 
 func NewTokenService() *TokenService {
 	return &TokenService{
-		config: xdi.GetByNameForce(sn.SConfig).(*config.Config),
-		conn:   xdi.GetByNameForce(sn.SRedis).(redis.Conn),
+		conn: xdi.GetByNameForce(sn.SRedis).(redis.Conn),
 	}
 }
 
 func (t *TokenService) concat(uid string, token string) string {
-	// vid-token-%s-%s
-	return fmt.Sprintf(t.config.Jwt.RedisFmt, uid, token)
+	return fmt.Sprintf("vid-token-%s-%s", uid, token)
 }
 
 func (t *TokenService) Query(token string) bool {

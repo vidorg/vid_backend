@@ -36,10 +36,9 @@ type RedisConfig struct {
 }
 
 type JwtConfig struct {
-	Secret   string `yaml:"secret"`
-	Expire   int64  `yaml:"expire"`
-	Issuer   string `yaml:"issuer"`
-	RedisFmt string `yaml:"redis-fmt"`
+	Secret string `yaml:"secret"`
+	Expire int64  `yaml:"expire"`
+	Issuer string `yaml:"issuer"`
 }
 
 type CasbinConfig struct {
