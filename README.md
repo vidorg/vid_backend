@@ -8,8 +8,8 @@
 
 ### Dependencies
 
-+ [Aoi-hosizora/ahlib](https://github.com/Aoi-hosizora/ahlib) `v1.2.3`
-+ [Aoi-hosizora/ahlib-web](https://github.com/Aoi-hosizora/ahlib-web) `v1.2.0`
++ [Aoi-hosizora/ahlib](https://github.com/Aoi-hosizora/ahlib) `v1.2.7`
++ [Aoi-hosizora/ahlib-web](https://github.com/Aoi-hosizora/ahlib-web) `v1.2.10`
 + [Aoi-hosizora/goapidoc](https://github.com/Aoi-hosizora/goapidoc) `v1.1.3`
 + [gin-gonic/gin](https://github.com/gin-gonic/gin) `v1.6.3`
 + [jinzhu/gorm](https://github.com/jinzhu/gorm) `v1.9.12`

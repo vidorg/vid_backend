@@ -43,10 +43,12 @@ type Server struct {
 }
 
 func NewServer() *Server {
+	// setting
 	cfg := xdi.GetByNameForce(sn.SConfig).(*config.Config)
 	gin.SetMode(cfg.Meta.RunMode)
 	setupBinding()
 
+	// engine
 	engine := gin.New()
 
 	// mw

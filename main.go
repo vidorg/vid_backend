@@ -28,7 +28,11 @@ func run() {
 		log.Fatalln("Failed to generate swagger:", err)
 	}
 
-	provide.Provide(*fConfig)
+	err = provide.Provide(*fConfig)
+	if err != nil {
+		log.Fatalln("Failed to provide some services:", err)
+	}
+
 	s := server.NewServer()
 
 	err = s.Serve()

@@ -11,7 +11,7 @@ import (
 	"log"
 )
 
-func Provide(configPath string) {
+func Provide(configPath string) error {
 	// /src/config/config.go
 	cfg, err := config.Load(configPath)
 	if err != nil {
@@ -59,4 +59,6 @@ func Provide(configPath string) {
 	xdi.ProvideName(sn.SVideoService, service.NewVideoService())
 	xdi.ProvideName(sn.SJwtService, service.NewJwtService())
 	xdi.ProvideName(sn.SCasbinService, service.NewCasbinService())
+
+	return nil
 }
