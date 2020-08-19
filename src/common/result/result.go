@@ -38,7 +38,7 @@ type Result struct {
 
 func Status(status int32) *Result {
 	message := http.StatusText(int(status))
-	if status == 200 {
+	if status == 200 || status == 201 {
 		message = "success"
 	} else if message == "" {
 		message = "unknown"

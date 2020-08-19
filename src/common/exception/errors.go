@@ -1,7 +1,7 @@
 package exception
 
 import (
-	"github.com/Aoi-hosizora/ahlib-web/xgin"
+	"github.com/Aoi-hosizora/ahlib-web/xvalidator"
 )
 
 // Request / Response
@@ -53,10 +53,8 @@ var (
 )
 
 func WrapValidationError(err error) *Error {
-	isf := xgin.IsValidationFormatError(err)
-	if isf {
-		return RequestFormatError
-	} else {
+	if xvalidator.ValidationRequiredError(err) {
 		return RequestParamError
 	}
+	return RequestFormatError
 }

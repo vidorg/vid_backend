@@ -4,7 +4,7 @@ import (
 	"github.com/Aoi-hosizora/ahlib-web/xtime"
 	"github.com/Aoi-hosizora/ahlib/xcondition"
 	"github.com/Aoi-hosizora/ahlib/xentity"
-	"github.com/vidorg/vid_backend/src/common/constant"
+	"github.com/vidorg/vid_backend/src/model/constant"
 	"github.com/vidorg/vid_backend/src/model/dto"
 	"github.com/vidorg/vid_backend/src/model/param"
 	"github.com/vidorg/vid_backend/src/model/po"

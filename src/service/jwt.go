@@ -59,7 +59,7 @@ func (j *JwtService) JwtCheck(token string) (*po.User, *exception.Error) {
 
 	// mysql
 	user := j.userService.QueryByUid(claims.UserId)
-	if user != nil {
+	if user == nil {
 		return nil, exception.UnAuthorizedError
 	}
 

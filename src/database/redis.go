@@ -30,6 +30,6 @@ func NewRedisConn() (redis.Conn, error) {
 		log.Fatalln("Failed to connect redis:", err)
 	}
 
-	connLogger := xredis.NewRedisLogrus(conn, logger, cfg.Meta.RunMode == "debug")
+	connLogger := xredis.NewLogrusLogger(conn, logger, cfg.Meta.RunMode == "debug")
 	return connLogger, err
 }

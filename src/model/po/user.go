@@ -3,7 +3,7 @@ package po
 import (
 	"github.com/Aoi-hosizora/ahlib-web/xgorm"
 	"github.com/Aoi-hosizora/ahlib-web/xtime"
-	"github.com/vidorg/vid_backend/src/common/constant"
+	"github.com/vidorg/vid_backend/src/model/constant"
 	"time"
 )
 
