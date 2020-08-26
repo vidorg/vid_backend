@@ -9,9 +9,9 @@ import (
 func init() {
 	goapidoc.AddDefinitions(
 		goapidoc.NewDefinition("VideoParam", "视频请求参数").
-			WithProperties(
+			Properties(
 				goapidoc.NewProperty("title", "string", true, "标题，长度在 [1, 100] 之间"),
-				goapidoc.NewProperty("description", "string", true, "简介，长度在 [0, 255] 之间").WithAllowEmptyValue(true),
+				goapidoc.NewProperty("description", "string", true, "简介，长度在 [0, 255] 之间").AllowEmpty(true),
 				goapidoc.NewProperty("cover_url", "string", true, "封面"),
 				goapidoc.NewProperty("video_url", "string", true, "资源"),
 			),

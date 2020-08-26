@@ -13,14 +13,14 @@ import (
 func init() {
 	goapidoc.AddDefinitions(
 		goapidoc.NewDefinition("Result", "global response").
-			WithProperties(
+			Properties(
 				goapidoc.NewProperty("code", "integer#int32", true, "status code"),
 				goapidoc.NewProperty("message", "string", true, "status message"),
 			),
 
 		goapidoc.NewDefinition("_Result", "global response").
-			WithGenerics("T").
-			WithProperties(
+			Generics("T").
+			Properties(
 				goapidoc.NewProperty("code", "integer#int32", true, "status code"),
 				goapidoc.NewProperty("message", "string", true, "status message"),
 				goapidoc.NewProperty("data", "T", true, "response data"),

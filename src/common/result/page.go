@@ -7,8 +7,8 @@ import (
 func init() {
 	goapidoc.AddDefinitions(
 		goapidoc.NewDefinition("_Page", "page response").
-			WithGenerics("T").
-			WithProperties(
+			Generics("T").
+			Properties(
 				goapidoc.NewProperty("page", "integer", true, "current page"),
 				goapidoc.NewProperty("limit", "integer", true, "page size"),
 				goapidoc.NewProperty("total", "integer", true, "data count"),

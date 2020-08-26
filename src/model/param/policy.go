@@ -7,14 +7,14 @@ import (
 func init() {
 	goapidoc.AddDefinitions(
 		goapidoc.NewDefinition("PolicyParam", "权限策略参数").
-			WithProperties(
+			Properties(
 				goapidoc.NewProperty("role", "string", true, "角色"),
 				goapidoc.NewProperty("path", "string", true, "路径"),
 				goapidoc.NewProperty("method", "string", true, "方法"),
 			),
 
 		goapidoc.NewDefinition("RoleParam", "修改角色请求参数").
-			WithProperties(
+			Properties(
 				goapidoc.NewProperty("role", "string", true, "角色"),
 			),
 	)

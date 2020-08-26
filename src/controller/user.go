@@ -16,43 +16,43 @@ import (
 )
 
 func init() {
-	goapidoc.AddPaths(
-		goapidoc.NewPath("GET", "/v1/user", "查询所有用户").
-			WithTags("User").
-			WithSecurities("Jwt").
-			WithParams(param.ADPage, param.ADLimit, param.ADOrder).
-			WithResponses(goapidoc.NewResponse(200).WithType("_Result<_Page<UserDto>>")),
+	goapidoc.AddRoutePaths(
+		goapidoc.NewRoutePath("GET", "/v1/user", "查询所有用户").
+			Tags("User").
+			Securities("Jwt").
+			Params(param.ADPage, param.ADLimit, param.ADOrder).
+			Responses(goapidoc.NewResponse(200, "_Result<_Page<UserDto>>")),
 
-		goapidoc.NewPath("GET", "/v1/user/{uid}", "查询用户").
-			WithTags("User").
-			WithParams(goapidoc.NewPathParam("uid", "integer#int32", true, "用户id")).
-			WithResponses(goapidoc.NewResponse(200).WithType("_Result<UserDetailDto>")),
+		goapidoc.NewRoutePath("GET", "/v1/user/{uid}", "查询用户").
+			Tags("User").
+			Params(goapidoc.NewPathParam("uid", "integer#int32", true, "用户id")).
+			Responses(goapidoc.NewResponse(200, "_Result<UserDetailDto>")),
 
-		goapidoc.NewPath("PUT", "/v1/user/", "更新用户").
-			WithTags("User").
-			WithSecurities("Jwt").
-			WithParams(goapidoc.NewBodyParam("param", "UserParam", true, "用户请求参数")).
-			WithResponses(goapidoc.NewResponse(200).WithType("_Result<UserDto>")),
+		goapidoc.NewRoutePath("PUT", "/v1/user/", "更新用户").
+			Tags("User").
+			Securities("Jwt").
+			Params(goapidoc.NewBodyParam("param", "UserParam", true, "用户请求参数")).
+			Responses(goapidoc.NewResponse(200, "_Result<UserDto>")),
 
-		goapidoc.NewPath("PUT", "/v1/user/admin/{uid}", "管理员更新用户").
-			WithTags("User", "Administration").
-			WithSecurities("Jwt").
-			WithParams(
+		goapidoc.NewRoutePath("PUT", "/v1/user/admin/{uid}", "管理员更新用户").
+			Tags("User", "Administration").
+			Securities("Jwt").
+			Params(
 				goapidoc.NewPathParam("uid", "integer#int32", true, "用户id"),
 				goapidoc.NewBodyParam("param", "UserParam", true, "用户请求参数"),
 			).
-			WithResponses(goapidoc.NewResponse(200).WithType("_Result<UserDto>")),
+			Responses(goapidoc.NewResponse(200, "_Result<UserDto>")),
 
-		goapidoc.NewPath("DELETE", "/v1/user/", "删除用户").
-			WithTags("User").
-			WithSecurities("Jwt").
-			WithResponses(goapidoc.NewResponse(200).WithType("Result")),
+		goapidoc.NewRoutePath("DELETE", "/v1/user/", "删除用户").
+			Tags("User").
+			Securities("Jwt").
+			Responses(goapidoc.NewResponse(200, "Result")),
 
-		goapidoc.NewPath("PUT", "/v1/user/admin/{uid}", "管理员删除用户").
-			WithTags("User", "Administration").
-			WithSecurities("Jwt").
-			WithParams(goapidoc.NewPathParam("uid", "integer#int32", true, "用户id")).
-			WithResponses(goapidoc.NewResponse(200).WithType("Result")),
+		goapidoc.NewRoutePath("PUT", "/v1/user/admin/{uid}", "管理员删除用户").
+			Tags("User", "Administration").
+			Securities("Jwt").
+			Params(goapidoc.NewPathParam("uid", "integer#int32", true, "用户id")).
+			Responses(goapidoc.NewResponse(200, "Result")),
 	)
 }
 

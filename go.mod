@@ -3,10 +3,10 @@ module github.com/vidorg/vid_backend
 go 1.14
 
 require (
-	github.com/Aoi-hosizora/ahlib v1.3.8
+	github.com/Aoi-hosizora/ahlib v1.3.9
 	github.com/Aoi-hosizora/ahlib-more v1.0.2
-	github.com/Aoi-hosizora/ahlib-web v1.3.8
-	github.com/Aoi-hosizora/goapidoc v1.1.5
+	github.com/Aoi-hosizora/ahlib-web v1.3.12
+	github.com/Aoi-hosizora/goapidoc v1.2.0
 	github.com/casbin/casbin/v2 v2.2.2
 	github.com/casbin/gorm-adapter/v2 v2.1.0
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
@@ -17,6 +17,6 @@ require (
 	github.com/sirupsen/logrus v1.6.0
 	github.com/swaggo/gin-swagger v1.2.0
 	github.com/swaggo/swag v1.6.7
-	golang.org/x/crypto v0.0.0-20191205180655-e7c4368fe9dd
+	golang.org/x/crypto v0.0.0-20200728195943-123391ffb6de
 	gopkg.in/yaml.v2 v2.3.0
 )

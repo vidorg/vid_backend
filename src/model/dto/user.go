@@ -9,11 +9,11 @@ import (
 func init() {
 	goapidoc.AddDefinitions(
 		goapidoc.NewDefinition("UserDto", "用户信息").
-			WithProperties(
+			Properties(
 				goapidoc.NewProperty("uid", "integer#int32", true, "用户id"),
 				goapidoc.NewProperty("username", "string", true, "用户名"),
-				goapidoc.NewProperty("gender", "string", true, "性别").WithEnum("male", "female", "unknown"),
-				goapidoc.NewProperty("profile", "string", true, "简介").WithAllowEmptyValue(true),
+				goapidoc.NewProperty("gender", "string", true, "性别").Enum("male", "female", "unknown"),
+				goapidoc.NewProperty("profile", "string", true, "简介").AllowEmpty(true),
 				goapidoc.NewProperty("avatar_url", "string", true, "头像"),
 				goapidoc.NewProperty("birthday", "string#date", true, "生日"),
 				goapidoc.NewProperty("role", "string", true, "角色"),
@@ -21,20 +21,20 @@ func init() {
 			),
 
 		goapidoc.NewDefinition("LoginDto", "登录信息").
-			WithProperties(
+			Properties(
 				goapidoc.NewProperty("user", "UserDto", true, "用户信息"),
 				goapidoc.NewProperty("token", "string", true, "登录令牌"),
 			),
 
 		goapidoc.NewDefinition("UserExtraDto", "用户额外信息").
-			WithProperties(
+			Properties(
 				goapidoc.NewProperty("subscribing_cnt", "integer#int32", true, "关注数量"),
 				goapidoc.NewProperty("subscriber_cnt", "integer#int32", true, "粉丝数量"),
 				goapidoc.NewProperty("video_cnt", "integer#int32", true, "视频数量"),
 			),
 
 		goapidoc.NewDefinition("UserDetailDto", "用户详细信息").
-			WithProperties(
+			Properties(
 				goapidoc.NewProperty("user", "UserDto", true, "用户信息"),
 				goapidoc.NewProperty("extra", "UserExtraDto", true, "用户额外信息"),
 			),

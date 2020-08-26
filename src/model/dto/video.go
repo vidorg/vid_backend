@@ -9,10 +9,10 @@ import (
 func init() {
 	goapidoc.AddDefinitions(
 		goapidoc.NewDefinition("VideoDto", "视频信息").
-			WithProperties(
+			Properties(
 				goapidoc.NewProperty("vid", "integer#int32", true, "视频id"),
 				goapidoc.NewProperty("title", "string", true, "标题"),
-				goapidoc.NewProperty("description", "string", true, "简介").WithAllowEmptyValue(true),
+				goapidoc.NewProperty("description", "string", true, "简介").AllowEmpty(true),
 				goapidoc.NewProperty("video_url", "string", true, "资源"),
 				goapidoc.NewProperty("cover_url", "string", true, "封面"),
 				goapidoc.NewProperty("upload_time", "string#date-time", true, "上传时间"),

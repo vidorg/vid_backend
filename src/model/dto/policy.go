@@ -9,7 +9,7 @@ import (
 func init() {
 	goapidoc.AddDefinitions(
 		goapidoc.NewDefinition("PolicyDto", "权限策略信息").
-			WithProperties(
+			Properties(
 				goapidoc.NewProperty("role", "string", true, "角色 (sub)"),
 				goapidoc.NewProperty("path", "string", true, "路径 (obj)"),
 				goapidoc.NewProperty("method", "string", true, "方法 (act)"),

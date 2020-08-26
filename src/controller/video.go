@@ -17,46 +17,46 @@ import (
 )
 
 func init() {
-	goapidoc.AddPaths(
-		goapidoc.NewPath("GET", "/v1/video", "管理员查询所有视频").
-			WithTags("Video", "Administration").
-			WithSecurities("Jwt").
-			WithParams(param.ADPage, param.ADLimit, param.ADOrder).
-			WithResponses(goapidoc.NewResponse(200).WithType("_Result<_Page<VideoDto>>")),
+	goapidoc.AddRoutePaths(
+		goapidoc.NewRoutePath("GET", "/v1/video", "管理员查询所有视频").
+			Tags("Video", "Administration").
+			Securities("Jwt").
+			Params(param.ADPage, param.ADLimit, param.ADOrder).
+			Responses(goapidoc.NewResponse(200, "_Result<_Page<VideoDto>>")),
 
-		goapidoc.NewPath("GET", "/v1/user/{uid}/video", "查询用户发布的所有视频").
-			WithTags("Video").
-			WithParams(
+		goapidoc.NewRoutePath("GET", "/v1/user/{uid}/video", "查询用户发布的所有视频").
+			Tags("Video").
+			Params(
 				goapidoc.NewPathParam("uid", "integer#int32", true, "用户id"),
 				param.ADPage, param.ADLimit, param.ADOrder,
 			).
-			WithResponses(goapidoc.NewResponse(200).WithType("_Result<_Page<VideoDto>>")),
+			Responses(goapidoc.NewResponse(200, "_Result<_Page<VideoDto>>")),
 
-		goapidoc.NewPath("GET", "/v1/video/{vid}", "查询视频").
-			WithTags("Video").
-			WithParams(goapidoc.NewPathParam("vid", "integer#int32", true, "视频id")).
-			WithResponses(goapidoc.NewResponse(200).WithType("_Result<VideoDto>")),
+		goapidoc.NewRoutePath("GET", "/v1/video/{vid}", "查询视频").
+			Tags("Video").
+			Params(goapidoc.NewPathParam("vid", "integer#int32", true, "视频id")).
+			Responses(goapidoc.NewResponse(200, "_Result<VideoDto>")),
 
-		goapidoc.NewPath("POST", "/v1/video/", "新建视频").
-			WithTags("Video").
-			WithSecurities("Jwt").
-			WithParams(goapidoc.NewBodyParam("param", "VideoParam", true, "视频请求参数")).
-			WithResponses(goapidoc.NewResponse(200).WithType("_Result<VideoDto>")),
+		goapidoc.NewRoutePath("POST", "/v1/video/", "新建视频").
+			Tags("Video").
+			Securities("Jwt").
+			Params(goapidoc.NewBodyParam("param", "VideoParam", true, "视频请求参数")).
+			Responses(goapidoc.NewResponse(200, "_Result<VideoDto>")),
 
-		goapidoc.NewPath("PUT", "/v1/video/{vid}", "更新视频").
-			WithTags("Video", "Administration").
-			WithSecurities("Jwt").
-			WithParams(
+		goapidoc.NewRoutePath("PUT", "/v1/video/{vid}", "更新视频").
+			Tags("Video", "Administration").
+			Securities("Jwt").
+			Params(
 				goapidoc.NewPathParam("vid", "integer#int32", true, "视频id"),
 				goapidoc.NewBodyParam("param", "VideoParam", true, "视频请求参数"),
 			).
-			WithResponses(goapidoc.NewResponse(200).WithType("_Result<VideoDto>")),
+			Responses(goapidoc.NewResponse(200, "_Result<VideoDto>")),
 
-		goapidoc.NewPath("DELETE", "/v1/video/{vid}", "删除视频").
-			WithTags("Video", "Administration").
-			WithSecurities("Jwt").
-			WithParams(goapidoc.NewPathParam("vid", "integer#int32", true, "视频id")).
-			WithResponses(goapidoc.NewResponse(200).WithType("Result")),
+		goapidoc.NewRoutePath("DELETE", "/v1/video/{vid}", "删除视频").
+			Tags("Video", "Administration").
+			Securities("Jwt").
+			Params(goapidoc.NewPathParam("vid", "integer#int32", true, "视频id")).
+			Responses(goapidoc.NewResponse(200, "Result")),
 	)
 }
 

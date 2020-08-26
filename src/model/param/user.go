@@ -11,10 +11,10 @@ import (
 func init() {
 	goapidoc.AddDefinitions(
 		goapidoc.NewDefinition("UserParam", "用户请求参数").
-			WithProperties(
+			Properties(
 				goapidoc.NewProperty("username", "string", true, "用户名，长度在 [5, 30] 之间"),
-				goapidoc.NewProperty("profile", "string", true, "用户简介，长度在 [0, 255] 之间").WithAllowEmptyValue(true),
-				goapidoc.NewProperty("gender", "string", true, "性别").WithEnum("male", "female", "unknown"),
+				goapidoc.NewProperty("profile", "string", true, "用户简介，长度在 [0, 255] 之间").AllowEmpty(true),
+				goapidoc.NewProperty("gender", "string", true, "性别").Enum("male", "female", "unknown"),
 				goapidoc.NewProperty("birthday", "string#date", true, "生日"),
 				goapidoc.NewProperty("phone_number", "string", true, "手机号码，长度为 11，仅限中国大陆手机号码"),
 				goapidoc.NewProperty("avatar_url", "string", true, "头像"),

@@ -15,32 +15,32 @@ import (
 )
 
 func init() {
-	goapidoc.AddPaths(
-		goapidoc.NewPath("GET", "/v1/policy", "查询所有策略").
-			WithTags("Policy", "Administration").
-			WithSecurities("Jwt").
-			WithResponses(goapidoc.NewResponse(200).WithType("_Result<_Page<PolicyDto>>")),
+	goapidoc.AddRoutePaths(
+		goapidoc.NewRoutePath("GET", "/v1/policy", "查询所有策略").
+			Tags("Policy", "Administration").
+			Securities("Jwt").
+			Responses(goapidoc.NewResponse(200, "_Result<_Page<PolicyDto>>")),
 
-		goapidoc.NewPath("PUT", "/v1/policy/{uid}/role", "修改用户角色").
-			WithTags("Policy", "Administration").
-			WithSecurities("Jwt").
-			WithParams(
+		goapidoc.NewRoutePath("PUT", "/v1/policy/{uid}/role", "修改用户角色").
+			Tags("Policy", "Administration").
+			Securities("Jwt").
+			Params(
 				goapidoc.NewPathParam("uid", "integer#int32", true, "用户id"),
 				goapidoc.NewBodyParam("param", "RoleParam", true, "修改角色请求参数"),
 			).
-			WithResponses(goapidoc.NewResponse(200).WithType("Result")),
+			Responses(goapidoc.NewResponse(200, "Result")),
 
-		goapidoc.NewPath("POST", "/v1/policy", "新建策略").
-			WithTags("Policy", "Administration").
-			WithSecurities("Jwt").
-			WithParams(goapidoc.NewBodyParam("param", "PolicyParam", true, "策略请求参数")).
-			WithResponses(goapidoc.NewResponse(200).WithType("Result")),
+		goapidoc.NewRoutePath("POST", "/v1/policy", "新建策略").
+			Tags("Policy", "Administration").
+			Securities("Jwt").
+			Params(goapidoc.NewBodyParam("param", "PolicyParam", true, "策略请求参数")).
+			Responses(goapidoc.NewResponse(200, "Result")),
 
-		goapidoc.NewPath("DELETE", "/v1/policy", "删除策略").
-			WithTags("Policy", "Administration").
-			WithSecurities("Jwt").
-			WithParams(goapidoc.NewBodyParam("param", "PolicyParam", true, "策略请求参数")).
-			WithResponses(goapidoc.NewResponse(200).WithType("Result")),
+		goapidoc.NewRoutePath("DELETE", "/v1/policy", "删除策略").
+			Tags("Policy", "Administration").
+			Securities("Jwt").
+			Params(goapidoc.NewBodyParam("param", "PolicyParam", true, "策略请求参数")).
+			Responses(goapidoc.NewResponse(200, "Result")),
 	)
 }
 

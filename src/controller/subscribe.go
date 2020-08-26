@@ -15,34 +15,34 @@ import (
 )
 
 func init() {
-	goapidoc.AddPaths(
-		goapidoc.NewPath("GET", "/v1/user/{uid}/subscriber", "查询用户粉丝").
-			WithTags("Subscribe").
-			WithParams(
+	goapidoc.AddRoutePaths(
+		goapidoc.NewRoutePath("GET", "/v1/user/{uid}/subscriber", "查询用户粉丝").
+			Tags("Subscribe").
+			Params(
 				goapidoc.NewPathParam("uid", "integer#int32", true, "用户id"),
 				param.ADPage, param.ADLimit, param.ADOrder,
 			).
-			WithResponses(goapidoc.NewResponse(200).WithType("_Result<_Page<UserDto>>")),
+			Responses(goapidoc.NewResponse(200, "_Result<_Page<UserDto>>")),
 
-		goapidoc.NewPath("GET", "/v1/user/{uid}/subscribing", "查询用户关注").
-			WithTags("Subscribe").
-			WithParams(
+		goapidoc.NewRoutePath("GET", "/v1/user/{uid}/subscribing", "查询用户关注").
+			Tags("Subscribe").
+			Params(
 				goapidoc.NewPathParam("uid", "integer#int32", true, "用户id"),
 				param.ADPage, param.ADLimit, param.ADOrder,
 			).
-			WithResponses(goapidoc.NewResponse(200).WithType("_Result<_Page<UserDto>>")),
+			Responses(goapidoc.NewResponse(200, "_Result<_Page<UserDto>>")),
 
-		goapidoc.NewPath("PUT", "/v1/user/subscribing/{uid}", "关注用户").
-			WithTags("Subscribe").
-			WithSecurities("Jwt").
-			WithParams(goapidoc.NewPathParam("uid", "integer#int32", true, "用户id")).
-			WithResponses(goapidoc.NewResponse(200).WithType("Result")),
+		goapidoc.NewRoutePath("PUT", "/v1/user/subscribing/{uid}", "关注用户").
+			Tags("Subscribe").
+			Securities("Jwt").
+			Params(goapidoc.NewPathParam("uid", "integer#int32", true, "用户id")).
+			Responses(goapidoc.NewResponse(200, "Result")),
 
-		goapidoc.NewPath("DELETE", "/v1/user/subscribing/{uid}", "取消关注用户").
-			WithTags("Subscribe").
-			WithSecurities("Jwt").
-			WithParams(goapidoc.NewPathParam("uid", "integer#int32", true, "用户id")).
-			WithResponses(goapidoc.NewResponse(200).WithType("Result")),
+		goapidoc.NewRoutePath("DELETE", "/v1/user/subscribing/{uid}", "取消关注用户").
+			Tags("Subscribe").
+			Securities("Jwt").
+			Params(goapidoc.NewPathParam("uid", "integer#int32", true, "用户id")).
+			Responses(goapidoc.NewResponse(200, "Result")),
 	)
 }
 

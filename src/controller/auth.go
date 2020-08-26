@@ -17,32 +17,32 @@ import (
 )
 
 func init() {
-	goapidoc.AddPaths(
-		goapidoc.NewPath("POST", "/v1/auth/login", "登录").
-			WithTags("Authorization").
-			WithParams(goapidoc.NewBodyParam("param", "LoginParam", true, "登录参数")).
-			WithResponses(goapidoc.NewResponse(200).WithType("_Result<LoginDto>")),
+	goapidoc.AddRoutePaths(
+		goapidoc.NewRoutePath("POST", "/v1/auth/login", "登录").
+			Tags("Authorization").
+			Params(goapidoc.NewBodyParam("param", "LoginParam", true, "登录参数")).
+			Responses(goapidoc.NewResponse(200, "_Result<LoginDto>")),
 
-		goapidoc.NewPath("POST", "/v1/auth/register", "注册").
-			WithTags("Authorization").
-			WithParams(goapidoc.NewBodyParam("param", "RegisterParam", true, "注册参数")).
-			WithResponses(goapidoc.NewResponse(200).WithType("_Result<UserDto>")),
+		goapidoc.NewRoutePath("POST", "/v1/auth/register", "注册").
+			Tags("Authorization").
+			Params(goapidoc.NewBodyParam("param", "RegisterParam", true, "注册参数")).
+			Responses(goapidoc.NewResponse(200, "_Result<UserDto>")),
 
-		goapidoc.NewPath("GET", "/v1/auth/", "当前登录用户").
-			WithTags("Authorization").
-			WithSecurities("Jwt").
-			WithResponses(goapidoc.NewResponse(200).WithType("_Result<UserDto>")),
+		goapidoc.NewRoutePath("GET", "/v1/auth/", "当前登录用户").
+			Tags("Authorization").
+			Securities("Jwt").
+			Responses(goapidoc.NewResponse(200, "_Result<UserDto>")),
 
-		goapidoc.NewPath("POST", "/v1/auth/logout", "注销").
-			WithTags("Authorization").
-			WithSecurities("Jwt").
-			WithResponses(goapidoc.NewResponse(200).WithType("Result")),
+		goapidoc.NewRoutePath("POST", "/v1/auth/logout", "注销").
+			Tags("Authorization").
+			Securities("Jwt").
+			Responses(goapidoc.NewResponse(200, "Result")),
 
-		goapidoc.NewPath("PUT", "/v1/auth/password", "修改密码").
-			WithTags("Authorization").
-			WithSecurities("Jwt").
-			WithParams(goapidoc.NewBodyParam("param", "PasswordParam", true, "修改密码参数")).
-			WithResponses(goapidoc.NewResponse(200).WithType("Result")),
+		goapidoc.NewRoutePath("PUT", "/v1/auth/password", "修改密码").
+			Tags("Authorization").
+			Securities("Jwt").
+			Params(goapidoc.NewBodyParam("param", "PasswordParam", true, "修改密码参数")).
+			Responses(goapidoc.NewResponse(200, "Result")),
 	)
 }
 
