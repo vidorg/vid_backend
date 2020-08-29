@@ -21,18 +21,20 @@ func init() {
 	goapidoc.SetDocument(
 		"localhost:3344", "/",
 		goapidoc.NewInfo("vid backend", "Vid backend built by golang/gin", "1.2").
-			WithTermsOfService("https://github.com/vidorg/vid_backend/issues").
-			WithLicense(goapidoc.NewLicense("MIT", "https://github.com/vidorg/vid_backend/blob/master/LICENSE")).
-			WithContact(goapidoc.NewContact("vidorg", "https://github.com/vidorg", "")),
+			TermsOfService("https://github.com/vidorg/vid_backend/issues").
+			License(goapidoc.NewLicense("MIT", "https://github.com/vidorg/vid_backend/blob/master/LICENSE")).
+			Contact(goapidoc.NewContact("vidorg", "https://github.com/vidorg", "")),
 	)
+
 	goapidoc.SetTags(
-		goapidoc.NewTag("Authorization", "Auth-Controller"),
-		goapidoc.NewTag("User", "User-Controller"),
-		goapidoc.NewTag("Subscribe", "Subscribe-Controller"),
-		goapidoc.NewTag("Video", "Video-Controller"),
-		goapidoc.NewTag("Policy", "Policy-Controller"),
-		goapidoc.NewTag("Administration", "*-Controller"),
+		goapidoc.NewTag("Authorization", "auth-controller"),
+		goapidoc.NewTag("User", "user-controller"),
+		goapidoc.NewTag("Subscribe", "subscribe-controller"),
+		goapidoc.NewTag("Video", "video-controller"),
+		goapidoc.NewTag("Policy", "policy-controller"),
+		goapidoc.NewTag("Administration", "*-controller"),
 	)
+
 	goapidoc.SetSecurities(
 		goapidoc.NewSecurity("Jwt", "header", "Authorization"),
 	)

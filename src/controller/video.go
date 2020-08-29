@@ -75,58 +75,53 @@ func NewVideoController() *VideoController {
 }
 
 // GET /v1/video
-func (v *VideoController) QueryAllVideos(c *gin.Context) {
+func (v *VideoController) QueryAllVideos(c *gin.Context) *result.Result {
 	pp := param.BindPageOrder(c, v.config)
 	videos, total := v.videoService.QueryAll(pp)
 
 	ret := dto.BuildVideoDtos(videos)
-	result.Ok().SetPage(pp.Page, pp.Limit, total, ret).JSON(c)
+	return result.Ok().SetPage(pp.Page, pp.Limit, total, ret)
 }
 
 // GET /v1/user/:uid/video
-func (v *VideoController) QueryVideosByUid(c *gin.Context) {
+func (v *VideoController) QueryVideosByUid(c *gin.Context) *result.Result {
 	uid, ok := param.BindRouteId(c, "uid")
 	if !ok {
-		result.Error(exception.RequestParamError).JSON(c)
-		return
+		return result.Error(exception.RequestParamError)
 	}
 	pp := param.BindPageOrder(c, v.config)
 
 	videos, total, status := v.videoService.QueryByUid(uid, pp)
 	if status == xstatus.DbNotFound {
-		result.Error(exception.UserNotFoundError).JSON(c)
-		return
+		return result.Error(exception.UserNotFoundError)
 	}
 
 	ret := dto.BuildVideoDtos(videos)
-	result.Ok().SetPage(pp.Page, pp.Limit, total, ret).JSON(c)
+	return result.Ok().SetPage(pp.Page, pp.Limit, total, ret)
 }
 
 // GET /v1/video/{vid}
-func (v *VideoController) QueryVideoByVid(c *gin.Context) {
+func (v *VideoController) QueryVideoByVid(c *gin.Context) *result.Result {
 	vid, ok := param.BindRouteId(c, "vid")
 	if !ok {
-		result.Error(exception.RequestParamError).JSON(c)
-		return
+		return result.Error(exception.RequestParamError)
 	}
 
 	video := v.videoService.QueryByVid(vid)
 	if video == nil {
-		result.Error(exception.VideoNotFoundError).JSON(c)
-		return
+		return result.Error(exception.VideoNotFoundError)
 	}
 
 	ret := dto.BuildVideoDto(video)
-	result.Ok().SetData(ret).JSON(c)
+	return result.Ok().SetData(ret)
 }
 
 // POST /v1/video
-func (v *VideoController) InsertVideo(c *gin.Context) {
+func (v *VideoController) InsertVideo(c *gin.Context) *result.Result {
 	authUser := v.jwtService.GetContextUser(c)
 	videoParam := &param.VideoParam{}
 	if err := c.ShouldBind(videoParam); err != nil {
-		result.Error(exception.WrapValidationError(err)).JSON(c)
-		return
+		return result.Error(exception.WrapValidationError(err))
 	}
 
 	video := &po.Video{
@@ -137,65 +132,55 @@ func (v *VideoController) InsertVideo(c *gin.Context) {
 	param.MapVideoParam(videoParam, video)
 	status := v.videoService.Insert(video)
 	if status == xstatus.DbExisted {
-		result.Error(exception.VideoUrlExistError).JSON(c)
-		return
+		return result.Error(exception.VideoUrlExistError)
 	} else if status == xstatus.DbFailed {
-		result.Error(exception.VideoInsertError).JSON(c)
-		return
+		return result.Error(exception.VideoInsertError)
 	}
 
 	ret := dto.BuildVideoDto(video)
-	result.Created().SetData(ret).JSON(c)
+	return result.Created().SetData(ret)
 }
 
 // PUT /v1/video/:vid
-func (v *VideoController) UpdateVideo(c *gin.Context) {
+func (v *VideoController) UpdateVideo(c *gin.Context) *result.Result {
 	authUser := v.jwtService.GetContextUser(c)
 	vid, ok := param.BindRouteId(c, "vid")
 	if !ok {
-		result.Error(exception.RequestParamError).JSON(c)
-		return
+		return result.Error(exception.RequestParamError)
 	}
 	videoParam := &param.VideoParam{}
 	if err := c.ShouldBind(videoParam); err != nil {
-		result.Error(exception.WrapValidationError(err)).JSON(c)
-		return
+		return result.Error(exception.WrapValidationError(err))
 	}
 
 	video := v.videoService.QueryByVid(vid)
 	if video == nil {
-		result.Error(exception.VideoNotFoundError).JSON(c)
-		return
+		return result.Error(exception.VideoNotFoundError)
 	} else if authUser.Role != constant.AuthAdmin && authUser.Uid != video.AuthorUid {
-		result.Error(exception.VideoNotFoundError).JSON(c)
-		return
+		return result.Error(exception.VideoNotFoundError)
 	}
 
 	// Update
 	param.MapVideoParam(videoParam, video)
 	status := v.videoService.Update(video)
 	if status == xstatus.DbExisted {
-		result.Error(exception.VideoUrlExistError).JSON(c)
-		return
+		return result.Error(exception.VideoUrlExistError)
 	} else if status == xstatus.DbNotFound {
-		result.Error(exception.VideoNotFoundError).JSON(c)
-		return
+		return result.Error(exception.VideoNotFoundError)
 	} else if status == xstatus.DbFailed {
-		result.Error(exception.VideoUpdateError).JSON(c)
-		return
+		return result.Error(exception.VideoUpdateError)
 	}
 
 	ret := dto.BuildVideoDto(video)
-	result.Ok().SetData(ret).JSON(c)
+	return result.Ok().SetData(ret)
 }
 
 // DELETE /v1/video/:vid
-func (v *VideoController) DeleteVideo(c *gin.Context) {
+func (v *VideoController) DeleteVideo(c *gin.Context) *result.Result {
 	authUser := v.jwtService.GetContextUser(c)
 	vid, ok := param.BindRouteId(c, "vid")
 	if !ok {
-		result.Error(exception.RequestParamError).JSON(c)
-		return
+		return result.Error(exception.RequestParamError)
 	}
 
 	var status xstatus.DbStatus
@@ -205,12 +190,10 @@ func (v *VideoController) DeleteVideo(c *gin.Context) {
 		status = v.videoService.DeleteBy2Id(vid, authUser.Uid)
 	}
 	if status == xstatus.DbNotFound {
-		result.Error(exception.VideoNotFoundError).JSON(c)
-		return
+		return result.Error(exception.VideoNotFoundError)
 	} else if status == xstatus.DbFailed {
-		result.Error(exception.VideoDeleteError).JSON(c)
-		return
+		return result.Error(exception.VideoDeleteError)
 	}
 
-	result.Ok().JSON(c)
+	return result.Ok()
 }

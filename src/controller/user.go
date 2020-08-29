@@ -75,26 +75,24 @@ func NewUserController() *UserController {
 }
 
 // GET /v1/user
-func (u *UserController) QueryAllUsers(c *gin.Context) {
+func (u *UserController) QueryAllUsers(c *gin.Context) *result.Result {
 	pp := param.BindPageOrder(c, u.config)
 	users, total := u.userService.QueryAll(pp)
 
 	ret := dto.BuildUserDtos(users)
-	result.Ok().SetPage(pp.Page, pp.Limit, total, ret).JSON(c)
+	return result.Ok().SetPage(pp.Page, pp.Limit, total, ret)
 }
 
 // GET /v1/user/:uid
-func (u *UserController) QueryUser(c *gin.Context) {
+func (u *UserController) QueryUser(c *gin.Context) *result.Result {
 	uid, ok := param.BindRouteId(c, "uid")
 	if !ok {
-		result.Error(exception.RequestParamError).JSON(c)
-		return
+		return result.Error(exception.RequestParamError)
 	}
 
 	user := u.userService.QueryByUid(uid)
 	if user == nil {
-		result.Error(exception.UserNotFoundError).JSON(c)
-		return
+		return result.Error(exception.UserNotFoundError)
 	}
 
 	subscribingCnt, subscriberCnt, _ := u.subscribeService.QueryCountByUid(user.Uid)
@@ -102,13 +100,13 @@ func (u *UserController) QueryUser(c *gin.Context) {
 
 	extra := dto.BuildUserExtraDto(subscribingCnt, subscriberCnt, videoCnt)
 	ret := dto.BuildUserDetailDto(user, extra)
-	result.Ok().SetData(ret).JSON(c)
+	return result.Ok().SetData(ret)
 }
 
 // PUT /v1/user
 // PUT /v1/user/admin/:uid
-func (u *UserController) UpdateUser(isSpec bool) func(c *gin.Context) {
-	return func(c *gin.Context) {
+func (u *UserController) UpdateUser(isSpec bool) func(c *gin.Context) *result.Result {
+	return func(c *gin.Context) *result.Result {
 		// get where parameter
 		user := &po.User{}
 		if !isSpec {
@@ -116,45 +114,39 @@ func (u *UserController) UpdateUser(isSpec bool) func(c *gin.Context) {
 		} else {
 			uid, ok := param.BindRouteId(c, "uid")
 			if !ok {
-				result.Error(exception.RequestParamError).JSON(c)
-				return
+				return result.Error(exception.RequestParamError)
 			}
 			user = u.userService.QueryByUid(uid)
 			if user == nil {
-				result.Error(exception.UserNotFoundError).JSON(c)
-				return
+				return result.Error(exception.UserNotFoundError)
 			}
 		}
 
 		// Update
 		userParam := &param.UserParam{}
 		if err := c.ShouldBind(userParam); err != nil {
-			result.Error(exception.WrapValidationError(err)).JSON(c)
-			return
+			return result.Error(exception.WrapValidationError(err))
 		}
 
 		param.MapUserParam(userParam, user)
 		status := u.userService.Update(user)
 		if status == xstatus.DbNotFound {
-			result.Error(exception.UserNotFoundError).JSON(c)
-			return
+			return result.Error(exception.UserNotFoundError)
 		} else if status == xstatus.DbExisted {
-			result.Error(exception.UsernameUsedError).JSON(c)
-			return
+			return result.Error(exception.UsernameUsedError)
 		} else if status == xstatus.DbFailed {
-			result.Error(exception.UserUpdateError).JSON(c)
-			return
+			return result.Error(exception.UserUpdateError)
 		}
 
 		ret := dto.BuildUserDto(user)
-		result.Ok().SetData(ret).JSON(c)
+		return result.Ok().SetData(ret)
 	}
 }
 
 // DELETE /v1/user
 // DELETE /v1/user/admin/:uid
-func (u *UserController) DeleteUser(isSpec bool) func(c *gin.Context) {
-	return func(c *gin.Context) {
+func (u *UserController) DeleteUser(isSpec bool) func(c *gin.Context) *result.Result {
+	return func(c *gin.Context) *result.Result {
 		// get delete uid param
 		var uid int32
 		if !isSpec {
@@ -163,21 +155,18 @@ func (u *UserController) DeleteUser(isSpec bool) func(c *gin.Context) {
 			var ok bool
 			uid, ok = param.BindRouteId(c, "uid")
 			if !ok {
-				result.Error(exception.RequestParamError).JSON(c)
-				return
+				return result.Error(exception.RequestParamError)
 			}
 		}
 
 		// Delete
 		status := u.userService.Delete(uid)
 		if status == xstatus.DbNotFound {
-			result.Error(exception.UserNotFoundError).JSON(c)
-			return
+			return result.Error(exception.UserNotFoundError)
 		} else if status == xstatus.DbFailed {
-			result.Error(exception.UserDeleteError).JSON(c)
-			return
+			return result.Error(exception.UserDeleteError)
 		}
 
-		result.Ok().JSON(c)
+		return result.Ok()
 	}
 }

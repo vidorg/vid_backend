@@ -63,50 +63,43 @@ func NewAuthController() *AuthController {
 }
 
 // POST /v1/auth/login
-func (a *AuthController) Login(c *gin.Context) {
+func (a *AuthController) Login(c *gin.Context) *result.Result {
 	loginParam := &param.LoginParam{}
 	if err := c.ShouldBind(loginParam); err != nil {
-		result.Error(exception.RequestParamError).JSON(c)
-		return
+		return result.Error(exception.RequestParamError)
 	}
 
 	account := a.accountService.QueryByUsername(loginParam.Username)
 	if account == nil {
-		result.Error(exception.UserNotFoundError).JSON(c)
-		return
+		return result.Error(exception.UserNotFoundError)
 	}
 	if !util.AuthUtil.CheckPassword(loginParam.Password, account.EncryptedPass) {
-		result.Error(exception.WrongPasswordError).JSON(c)
-		return
+		return result.Error(exception.WrongPasswordError)
 	}
 
 	token, err := util.AuthUtil.GenerateToken(account.User.Uid, a.config.Jwt.Expire, a.config.Jwt)
 	if err != nil {
-		result.Error(exception.LoginError).JSON(c)
-		return
+		return result.Error(exception.LoginError)
 	}
 	ok := a.tokenService.Insert(token, account.Uid, a.config.Jwt.Expire)
 	if !ok {
-		result.Error(exception.LoginError).JSON(c)
-		return
+		return result.Error(exception.LoginError)
 	}
 
 	ret := dto.BuildLoginDto(account.User, token)
-	result.Ok().SetData(ret).JSON(c)
+	return result.Ok().SetData(ret)
 }
 
 // POST /v1/auth/register
-func (a *AuthController) Register(c *gin.Context) {
+func (a *AuthController) Register(c *gin.Context) *result.Result {
 	registerParam := &param.RegisterParam{}
 	if err := c.ShouldBind(registerParam); err != nil {
-		result.Error(exception.WrapValidationError(err)).JSON(c)
-		return
+		return result.Error(exception.WrapValidationError(err))
 	}
 
 	encrypted, err := util.AuthUtil.EncryptPassword(registerParam.Password)
 	if err != nil {
-		result.Error(exception.RegisterError).JSON(c)
-		return
+		return result.Error(exception.RegisterError)
 	}
 
 	account := &po.Account{
@@ -119,50 +112,45 @@ func (a *AuthController) Register(c *gin.Context) {
 
 	status := a.accountService.Insert(account) // cascade
 	if status == xstatus.DbExisted {
-		result.Error(exception.UsernameUsedError).JSON(c)
-		return
+		return result.Error(exception.UsernameUsedError)
 	} else if status == xstatus.DbFailed {
-		result.Error(exception.RegisterError).JSON(c)
-		return
+		return result.Error(exception.RegisterError)
 	}
 
 	ret := dto.BuildUserDto(account.User)
-	result.Created().SetData(ret).JSON(c)
+	return result.Created().SetData(ret)
 }
 
 // GET /v1/auth
-func (a *AuthController) CurrentUser(c *gin.Context) {
+func (a *AuthController) CurrentUser(c *gin.Context) *result.Result {
 	user := a.jwtService.GetContextUser(c)
 
 	ret := dto.BuildUserDto(user)
-	result.Ok().SetData(ret).JSON(c)
+	return result.Ok().SetData(ret)
 }
 
 // POST /v1/auth/logout
-func (a *AuthController) Logout(c *gin.Context) {
+func (a *AuthController) Logout(c *gin.Context) *result.Result {
 	token := a.jwtService.GetToken(c)
 	ok := a.tokenService.Delete(token)
 	if !ok {
-		result.Error(exception.LogoutError).JSON(c)
-		return
+		return result.Error(exception.LogoutError)
 	}
 
-	result.Ok().JSON(c)
+	return result.Ok()
 }
 
 // PUT /v1/auth/password
-func (a *AuthController) UpdatePassword(c *gin.Context) {
+func (a *AuthController) UpdatePassword(c *gin.Context) *result.Result {
 	authUser := a.jwtService.GetContextUser(c)
 	passParam := &param.PassParam{}
 	if err := c.ShouldBind(passParam); err != nil {
-		result.Error(exception.WrapValidationError(err)).JSON(c)
-		return
+		return result.Error(exception.WrapValidationError(err))
 	}
 
 	encrypted, err := util.AuthUtil.EncryptPassword(passParam.Password)
 	if err != nil {
-		result.Error(exception.UpdatePassError).JSON(c)
-		return
+		return result.Error(exception.UpdatePassError)
 	}
 
 	account := &po.Account{
@@ -171,13 +159,11 @@ func (a *AuthController) UpdatePassword(c *gin.Context) {
 	}
 	status := a.accountService.Update(account)
 	if status == xstatus.DbNotFound {
-		result.Error(exception.UserNotFoundError).JSON(c)
-		return
+		return result.Error(exception.UserNotFoundError)
 	} else if status == xstatus.DbFailed {
-		result.Error(exception.UpdatePassError).JSON(c)
-		return
+		return result.Error(exception.UpdatePassError)
 	}
 	_ = a.tokenService.DeleteAll(authUser.Uid)
 
-	result.Ok().JSON(c)
+	return result.Ok()
 }

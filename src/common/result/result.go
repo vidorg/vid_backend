@@ -88,7 +88,7 @@ func (r *Result) SetPage(page int32, limit int32, total int32, data interface{})
 }
 
 func (r *Result) SetError(err error, c *gin.Context) *Result {
-	if gin.Mode() == gin.DebugMode {
+	if gin.Mode() == gin.DebugMode && err != nil {
 		r.Error = xgin.BuildBasicErrorDto(err, c)
 	}
 	return r
@@ -100,4 +100,17 @@ func (r *Result) JSON(c *gin.Context) {
 
 func (r *Result) XML(c *gin.Context) {
 	c.XML(int(r.Status), r)
+}
+
+// Simplify controller's functions.
+func J(fn func(c *gin.Context) *Result) func(c *gin.Context) {
+	return func(c *gin.Context) {
+		if c.IsAborted() {
+			return
+		}
+		result := fn(c)
+		if result != nil {
+			result.JSON(c)
+		}
+	}
 }

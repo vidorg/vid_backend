@@ -63,85 +63,74 @@ func NewSubscribeController() *SubscribeController {
 }
 
 // GET /v1/user/{uid}/subscriber
-func (s *SubscribeController) QuerySubscriberUsers(c *gin.Context) {
+func (s *SubscribeController) QuerySubscriberUsers(c *gin.Context) *result.Result {
 	uid, ok := param.BindRouteId(c, "uid")
 	if !ok {
-		result.Error(exception.RequestParamError).JSON(c)
-		return
+		return result.Error(exception.RequestParamError)
 	}
 	pp := param.BindPageOrder(c, s.config)
 
 	users, total, status := s.subscribeService.QuerySubscriberUsers(uid, pp)
 	if status == xstatus.DbNotFound {
-		result.Error(exception.UserNotFoundError).JSON(c)
-		return
+		return result.Error(exception.UserNotFoundError)
 	}
 
 	ret := dto.BuildUserDtos(users)
-	result.Ok().SetPage(pp.Page, pp.Limit, total, ret).JSON(c)
+	return result.Ok().SetPage(pp.Page, pp.Limit, total, ret)
 }
 
 // GET /v1/user/{uid}/subscribing
-func (s *SubscribeController) QuerySubscribingUsers(c *gin.Context) {
+func (s *SubscribeController) QuerySubscribingUsers(c *gin.Context) *result.Result {
 	uid, ok := param.BindRouteId(c, "uid")
 	if !ok {
-		result.Error(exception.RequestParamError).JSON(c)
-		return
+		return result.Error(exception.RequestParamError)
 	}
 	pp := param.BindPageOrder(c, s.config)
 
 	users, total, status := s.subscribeService.QuerySubscribingUsers(uid, pp)
 	if status == xstatus.DbNotFound {
-		result.Error(exception.UserNotFoundError).JSON(c)
-		return
+		return result.Error(exception.UserNotFoundError)
 	}
 
 	ret := dto.BuildUserDtos(users)
-	result.Ok().SetPage(pp.Page, pp.Limit, total, ret).JSON(c)
+	return result.Ok().SetPage(pp.Page, pp.Limit, total, ret)
 }
 
 // PUT /v1/user/subscribing/:uid
-func (s *SubscribeController) SubscribeUser(c *gin.Context) {
+func (s *SubscribeController) SubscribeUser(c *gin.Context) *result.Result {
 	authUser := s.jwtService.GetContextUser(c)
 	to, ok := param.BindRouteId(c, "uid")
 	if !ok {
-		result.Error(exception.RequestParamError).JSON(c)
-		return
+		return result.Error(exception.RequestParamError)
 	}
 	if authUser.Uid == to {
-		result.Error(exception.SubscribeSelfError).JSON(c)
-		return
+		return result.Error(exception.SubscribeSelfError)
 	}
 
 	status := s.subscribeService.SubscribeUser(authUser.Uid, to)
 	if status == xstatus.DbNotFound {
-		result.Error(exception.UserNotFoundError).JSON(c)
-		return
+		return result.Error(exception.UserNotFoundError)
 	} else if status == xstatus.DbFailed {
-		result.Error(exception.SubscribeError).JSON(c)
-		return
+		return result.Error(exception.SubscribeError)
 	}
 
-	result.Ok().JSON(c)
+	return result.Ok()
 }
 
 // PUT /v1/user/subscribing/:uid
-func (s *SubscribeController) UnSubscribeUser(c *gin.Context) {
+func (s *SubscribeController) UnSubscribeUser(c *gin.Context) *result.Result {
 	authUser := s.jwtService.GetContextUser(c)
 	to, ok := param.BindRouteId(c, "uid")
 	if !ok {
-		result.Error(exception.RequestParamError).JSON(c)
-		return
+		return result.Error(exception.RequestParamError)
 	}
 
 	status := s.subscribeService.UnSubscribeUser(authUser.Uid, to)
 	if status == xstatus.DbNotFound {
-		result.Error(exception.UserNotFoundError).JSON(c)
-		return
+		return result.Error(exception.UserNotFoundError)
 	} else if status == xstatus.DbFailed {
-		result.Error(exception.UnSubscribeError).JSON(c)
-		return
+		return result.Error(exception.UnSubscribeError)
 	}
 
-	result.Ok().JSON(c)
+	return result.Ok()
 }
