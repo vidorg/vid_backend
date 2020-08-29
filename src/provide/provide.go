@@ -12,46 +12,49 @@ import (
 )
 
 func Provide(configPath string) error {
-	// /src/config/config.go
+	// *config.Config
 	cfg, err := config.Load(configPath)
 	if err != nil {
 		log.Fatalln("Failed to load config:", err)
 	}
 	xdi.ProvideName(sn.SConfig, cfg)
 
-	// /src/common/logger/logger.go
+	// *logrus.Logger
 	lgr, err := logger.Setup()
 	if err != nil {
 		log.Fatalln("Failed to setup logger:", err)
 	}
 	xdi.ProvideName(sn.SLogger, lgr)
 
-	// /src/database/gorm.go
-	mysql, err := database.NewMySQLConn()
+	// *gorm.DB
+	mysql, err := database.NewMySQLDB()
 	if err != nil {
 		log.Fatalln("Failed to setup mysql conn:", err)
 	}
 	xdi.ProvideName(sn.SGorm, mysql)
 
-	// /src/database/gorm.go
-	adapter, err := database.NewGormAdapter()
-	if err != nil {
-		log.Fatalln("Failed to setup mysql adapter:", err)
-	}
-	xdi.ProvideName(sn.SGormAdapter, adapter)
-
-	// /src/database/redis.go
-	redis, err := database.NewRedisConn()
+	// *redis.Pool
+	redis, err := database.NewRedisPool()
 	if err != nil {
 		log.Fatalln("Failed to setup redis conn:", err)
 	}
 	xdi.ProvideName(sn.SRedis, redis)
 
-	// /src/model/profile/profile.go
+	// *casbin.Enforcer
+	enforcer, err := database.NewCasbinEnforcer()
+	if err != nil {
+		log.Fatalln("Failed to setup casbin enforcer:", err)
+	}
+	xdi.ProvideName(sn.SEnforcer, enforcer)
+
+	// Profile mappers
 	profile.BuildEntityMappers()
 	profile.BuildPropertyMappers()
 
-	// /src/service/*
+	// ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	// services
+
 	xdi.ProvideName(sn.SAccountService, service.NewAccountService())
 	xdi.ProvideName(sn.STokenService, service.NewTokenService())
 	xdi.ProvideName(sn.SUserService, service.NewUserService())

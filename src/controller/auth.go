@@ -1,8 +1,8 @@
 package controller
 
 import (
-	"github.com/Aoi-hosizora/ahlib-web/xstatus"
 	"github.com/Aoi-hosizora/ahlib/xdi"
+	"github.com/Aoi-hosizora/ahlib/xstatus"
 	"github.com/Aoi-hosizora/goapidoc"
 	"github.com/gin-gonic/gin"
 	"github.com/vidorg/vid_backend/src/common/exception"

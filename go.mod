@@ -3,9 +3,9 @@ module github.com/vidorg/vid_backend
 go 1.14
 
 require (
-	github.com/Aoi-hosizora/ahlib v1.3.9
-	github.com/Aoi-hosizora/ahlib-more v1.0.2
-	github.com/Aoi-hosizora/ahlib-web v1.3.12
+	github.com/Aoi-hosizora/ahlib v1.4.0
+	github.com/Aoi-hosizora/ahlib-more v1.4.0
+	github.com/Aoi-hosizora/ahlib-web v1.4.0
 	github.com/Aoi-hosizora/goapidoc v1.2.0
 	github.com/casbin/casbin/v2 v2.2.2
 	github.com/casbin/gorm-adapter/v2 v2.1.0

@@ -15,24 +15,29 @@ type MetaConfig struct {
 }
 
 type MySQLConfig struct {
-	Host     string `yaml:"host"`
-	Port     int32  `yaml:"port"`
-	Name     string `yaml:"name"`
-	Charset  string `yaml:"charset"`
-	User     string `yaml:"user"`
-	Password string `yaml:"password"`
+	Host        string `yaml:"host"`
+	Port        int32  `yaml:"port"`
+	Name        string `yaml:"name"`
+	Charset     string `yaml:"charset"`
+	User        string `yaml:"user"`
+	Password    string `yaml:"password"`
+	MaxIdle     int32  `yaml:"max-idle"`
+	MaxActive   int32  `yaml:"max-active"`
+	MaxLifetime int32  `yaml:"max-lifetime"`
 }
 
 type RedisConfig struct {
-	ConnType string `yaml:"conn-type"`
-	Host     string `yaml:"host"`
-	Port     int32  `yaml:"port"`
-	Db       int32  `yaml:"db"`
-	Password string `yaml:"password"`
-
-	ConnectTimeout int32 `yaml:"connect-timeout"`
-	ReadTimeout    int32 `yaml:"read-timeout"`
-	WriteTimeout   int32 `yaml:"write-timeout"`
+	Host           string `yaml:"host"`
+	Port           int32  `yaml:"port"`
+	Db             int32  `yaml:"db"`
+	Password       string `yaml:"password"`
+	ConnectTimeout int32  `yaml:"connect-timeout"`
+	ReadTimeout    int32  `yaml:"read-timeout"`
+	WriteTimeout   int32  `yaml:"write-timeout"`
+	MaxIdle        int32  `yaml:"max-idle"`
+	MaxActive      int32  `yaml:"max-active"`
+	MaxLifetime    int32  `yaml:"max-lifetime"`
+	IdleTimeout    int32  `yaml:"idle-timeout"`
 }
 
 type JwtConfig struct {

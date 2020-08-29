@@ -2,8 +2,8 @@ package service
 
 import (
 	"github.com/Aoi-hosizora/ahlib-web/xgorm"
-	"github.com/Aoi-hosizora/ahlib-web/xstatus"
 	"github.com/Aoi-hosizora/ahlib/xdi"
+	"github.com/Aoi-hosizora/ahlib/xstatus"
 	"github.com/jinzhu/gorm"
 	"github.com/vidorg/vid_backend/src/model/po"
 	"github.com/vidorg/vid_backend/src/provide/sn"
@@ -37,9 +37,13 @@ func (a *AccountService) QueryByUsername(username string) *po.Account {
 }
 
 func (a *AccountService) Insert(account *po.Account) xstatus.DbStatus {
-	return xgorm.WithDB(a.db).Insert(&po.Account{}, account) // cascade create
+	rdb := a.db.Model(&po.Account{}).Create(account)
+	status, _ := xgorm.CreateErr(rdb)
+	return status
 }
 
 func (a *AccountService) Update(account *po.Account) xstatus.DbStatus {
-	return xgorm.WithDB(a.db).Update(&po.Account{}, &po.Account{Uid: account.Uid}, account)
+	rdb := a.db.Model(&po.Account{}).Where(&po.Account{Uid: account.Uid}).Update(account)
+	status, _ := xgorm.UpdateErr(rdb)
+	return status
 }

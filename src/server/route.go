@@ -29,10 +29,10 @@ func initRoute(engine *gin.Engine) {
 
 	var (
 		authCtrl      = controller.NewAuthController()
-		policyCtrl    = controller.NewPolicyController()
 		userCtrl      = controller.NewUserController()
 		subscribeCtrl = controller.NewSubscribeController()
 		videoCtrl     = controller.NewVideoController()
+		// policyCtrl    = controller.NewPolicyController()
 	)
 
 	jwtMw := middleware.JwtMiddleware()
@@ -58,14 +58,14 @@ func initRoute(engine *gin.Engine) {
 		authGroup.PUT("/password", authMw, authCtrl.UpdatePassword)
 	}
 
-	policyGroup := v1.Group("/policy")
-	{
-		policyGroup.Use(authMw)
-		policyGroup.GET("", policyCtrl.Query)
-		policyGroup.PUT("/:uid/role", policyCtrl.SetRole)
-		policyGroup.POST("", policyCtrl.Insert)
-		policyGroup.DELETE("", policyCtrl.Delete)
-	}
+	// policyGroup := v1.Group("/policy")
+	// {
+	// 	policyGroup.Use(authMw)
+	// 	policyGroup.GET("", policyCtrl.Query)
+	// 	policyGroup.PUT("/:uid/role", policyCtrl.SetRole)
+	// 	policyGroup.POST("", policyCtrl.Insert)
+	// 	policyGroup.DELETE("", policyCtrl.Delete)
+	// }
 
 	userGroup := v1.Group("/user")
 	{

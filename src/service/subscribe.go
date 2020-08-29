@@ -2,9 +2,9 @@ package service
 
 import (
 	"github.com/Aoi-hosizora/ahlib-web/xgorm"
-	"github.com/Aoi-hosizora/ahlib-web/xstatus"
 	"github.com/Aoi-hosizora/ahlib/xdi"
 	"github.com/Aoi-hosizora/ahlib/xproperty"
+	"github.com/Aoi-hosizora/ahlib/xstatus"
 	"github.com/jinzhu/gorm"
 	"github.com/vidorg/vid_backend/src/model/dto"
 	"github.com/vidorg/vid_backend/src/model/param"
@@ -23,7 +23,7 @@ func NewSubscribeService() *SubscribeService {
 	return &SubscribeService{
 		db:           xdi.GetByNameForce(sn.SGorm).(*gorm.DB),
 		userService:  xdi.GetByNameForce(sn.SUserService).(*UserService),
-		_orderByFunc: xproperty.GetMapperDefault(&dto.UserDto{}, &po.User{}).ApplyOrderBy,
+		_orderByFunc: xgorm.OrderByFunc(xproperty.GetDefaultMapper(&dto.UserDto{}, &po.User{}).GetDict()),
 	}
 }
 
@@ -42,10 +42,7 @@ func (s *SubscribeService) QuerySubscriberUsers(uid int32, pp *param.PageOrderPa
 
 	total = int32(s.getSubscriberAsso(uid).Count()) // association pattern
 	users = make([]*po.User, 0)
-	xgorm.WithDB(s.db).Pagination(pp.Limit, pp.Page).
-		Model(&po.User{Uid: uid}).
-		Order(s._orderByFunc(pp.Order)).
-		Related(&users, "Subscribers")
+	xgorm.WithDB(s.db).Pagination(pp.Limit, pp.Page).Model(&po.User{Uid: uid}).Order(s._orderByFunc(pp.Order)).Related(&users, "Subscribers")
 
 	return users, total, xstatus.DbSuccess
 }
@@ -57,10 +54,7 @@ func (s *SubscribeService) QuerySubscribingUsers(uid int32, pp *param.PageOrderP
 
 	total = int32(s.getSubscribingAsso(uid).Count()) // association pattern
 	users = make([]*po.User, 0)
-	xgorm.WithDB(s.db).Pagination(pp.Limit, pp.Page).
-		Model(&po.User{Uid: uid}).
-		Order(s._orderByFunc(pp.Order)).
-		Related(&users, "Subscribings")
+	xgorm.WithDB(s.db).Pagination(pp.Limit, pp.Page).Model(&po.User{Uid: uid}).Order(s._orderByFunc(pp.Order)).Related(&users, "Subscribings")
 
 	return users, total, xstatus.DbSuccess
 }

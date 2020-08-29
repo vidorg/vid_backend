@@ -8,9 +8,9 @@ const (
 	SConfig xdi.ServiceName = "config"
 	SLogger xdi.ServiceName = "logger"
 
-	SGorm        xdi.ServiceName = "gorm"
-	SGormAdapter xdi.ServiceName = "gorm-adapter"
-	SRedis       xdi.ServiceName = "redis"
+	SGorm     xdi.ServiceName = "gorm"
+	SRedis    xdi.ServiceName = "redis"
+	SEnforcer xdi.ServiceName = "casbin-enforcer"
 
 	SAccountService   xdi.ServiceName = "account-service"
 	STokenService     xdi.ServiceName = "token-service"
