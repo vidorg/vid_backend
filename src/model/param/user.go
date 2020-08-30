@@ -1,16 +1,14 @@
 package param
 
 import (
-	"github.com/Aoi-hosizora/ahlib/xentity"
+	"github.com/Aoi-hosizora/ahlib/xtime"
 	"github.com/Aoi-hosizora/goapidoc"
-	"github.com/vidorg/vid_backend/src/model/po"
+	"github.com/vidorg/vid_backend/src/model/constant"
 )
-
-// https://godoc.org/github.com/go-playground/validator#hdr-Baked_In_Validators_and_Tags
 
 func init() {
 	goapidoc.AddDefinitions(
-		goapidoc.NewDefinition("UserParam", "用户请求参数").
+		goapidoc.NewDefinition("UpdateUserParam", "用户请求参数").
 			Properties(
 				goapidoc.NewProperty("username", "string", true, "用户名，长度在 [5, 30] 之间"),
 				goapidoc.NewProperty("profile", "string", true, "用户简介，长度在 [0, 255] 之间").AllowEmpty(true),
@@ -22,15 +20,30 @@ func init() {
 	)
 }
 
-type UserParam struct {
-	Username    string  `form:"username"     json:"username"     binding:"required,min=5,max=30,name"`
-	Profile     *string `form:"profile"      json:"profile"      binding:"required,min=0,max=255"`
-	Gender      string  `form:"gender"       json:"gender"       binding:"required"`
-	Birthday    string  `form:"birthday"     json:"birthday"     binding:"required,date"`
-	PhoneNumber string  `form:"phone_number" json:"phone_number" binding:"required,phone"`
-	AvatarUrl   string  `form:"avatar_url"   json:"avatar_url"   binding:"required,url"` // TODO url
+type UpdateUserParam struct {
+	Username string  `form:"username"     json:"username"     binding:"required,min=5,max=30,name"` // username
+	Nickname string  `form:"nickname"     json:"nickname"     binding:"required,min=5,max=30,name"` // user nickname
+	Gender   int8    `form:"gender"       json:"gender"       binding:"required"`                   // user gender (0X, 1M, 2F)
+	Profile  *string `form:"profile"      json:"profile"      binding:"required,min=0,max=255"`     // user profile, allowempty
+	Birthday string  `form:"birthday"     json:"birthday"     binding:"required,date"`              // user birthday
+	Phone    string  `form:"phone"        json:"phone"        binding:"required,phone"`             // user phone number
+	Avatar   string  `form:"avatar"       json:"avatar"       binding:"required,url"`               // user avatar
 }
 
-func MapUserParam(param *UserParam, user *po.User) {
-	xentity.MustMapProp(param, user)
+func (u *UpdateUserParam) ToMap() map[string]interface{} {
+	m := map[string]interface{}{
+		"username":     u.Username,
+		"nickname":     u.Nickname,
+		"gender":       constant.ParseGender(u.Gender),
+		"profile":      *u.Profile,
+		"phone_number": u.Phone,
+		"avatar":       u.Avatar,
+	}
+
+	d, err := xtime.ParseRFC3339Date(u.Birthday)
+	if err == nil {
+		m["birthday"] = d
+	}
+
+	return m
 }

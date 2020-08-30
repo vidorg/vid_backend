@@ -51,10 +51,10 @@ func initRoute(engine *gin.Engine) {
 
 	authGroup := v1.Group("auth")
 	{
-		authGroup.POST("login", j(authCtrl.Login))
 		authGroup.POST("register", j(authCtrl.Register))
-		authGroup.GET("", authMw, j(authCtrl.CurrentUser))
-		authGroup.POST("logout", authMw, j(authCtrl.Logout))
+		authGroup.POST("login", j(authCtrl.Login))
+		authGroup.GET("user", authMw, j(authCtrl.CurrentUser))
+		authGroup.DELETE("logout", authMw, j(authCtrl.Logout))
 		authGroup.PUT("password", authMw, j(authCtrl.UpdatePassword))
 	}
 

@@ -107,19 +107,19 @@ type userClaims struct {
 }
 
 func (j *JwtService) GenerateToken(uid uint64) (string, error) {
-	accessClaims := &userClaims{
+	claims := &userClaims{
 		Uid: uid,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: time.Now().Unix() + j.config.Jwt.Expire,
 			Issuer:    j.config.Jwt.Issuer,
 		},
 	}
-	accessToken, err := xjwt.GenerateToken(accessClaims, []byte(j.config.Jwt.Secret))
+	token, err := xjwt.GenerateToken(claims, []byte(j.config.Jwt.Secret))
 	if err != nil {
 		return "", err
 	}
 
-	return accessToken, nil
+	return token, nil
 }
 
 func (j *JwtService) ParseToken(signedToken string) (uint64, error) {

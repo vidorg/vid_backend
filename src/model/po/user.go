@@ -8,16 +8,16 @@ import (
 )
 
 type User struct {
-	Uid         uint64          `gorm:"primary_key; auto_increment"`                           // user id
-	Username    string          `gorm:"type:varchar(127); not null; unique_index:uk_username"` // username, unique
-	Email       string          `gorm:"type:varchar(255); not null; unique_index:uk_email"`    // user email, unique
-	Nickname    string          `gorm:"type:varchar(127); not null"`                           // user nickname
-	Gender      constant.Gender `gorm:"type:tinyint;      not null; default:0"`                // user gender (0X, 1M, 2D)
-	Profile     string          `gorm:"type:varchar(255); not null"`                           // user profile, allowempty
-	Avatar      string          `gorm:"type:varchar(255); not null"`                           // user avatar url, using oss
-	Birthday    xtime.JsonDate  `gorm:"type:date;         not null; default:'2000-01-01'"`     // user birthday
-	Role        string          `gorm:"type:varchar(255); not null; default:'normal'"`         // user role, used in casbin
-	PhoneNumber string          `gorm:"type:varchar(127); not null"`                           // user phone number
+	Uid      uint64          `gorm:"primary_key; auto_increment"`                           // user id
+	Username string          `gorm:"type:varchar(127); not null; unique_index:uk_username"` // username, unique
+	Email    string          `gorm:"type:varchar(255); not null; unique_index:uk_email"`    // user email, unique
+	Nickname string          `gorm:"type:varchar(127); not null"`                           // user nickname
+	Gender   constant.Gender `gorm:"type:tinyint;      not null; default:0"`                // user gender (0X, 1M, 2D)
+	Profile  string          `gorm:"type:varchar(255); not null"`                           // user profile, allowempty
+	Avatar   string          `gorm:"type:varchar(255); not null"`                           // user avatar url, using oss
+	Birthday xtime.JsonDate  `gorm:"type:date;         not null; default:'2000-01-01'"`     // user birthday
+	Role     string          `gorm:"type:varchar(255); not null; default:'normal'"`         // user role, used in casbin
+	Phone    string          `gorm:"type:varchar(127); not null"`                           // user phone number
 
 	// tbl_subscribe
 	Subscribings []*User `gorm:"many2many:subscribe; jointable_foreignkey:subscriber_uid; association_jointable_foreignkey:up_uid"`         // up_uid -> subscriber_uid

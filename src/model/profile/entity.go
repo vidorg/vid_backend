@@ -1,32 +1,14 @@
 package profile
 
 import (
-	"github.com/Aoi-hosizora/ahlib/xcondition"
 	"github.com/Aoi-hosizora/ahlib/xentity"
 	"github.com/Aoi-hosizora/ahlib/xtime"
-	"github.com/vidorg/vid_backend/src/model/constant"
 	"github.com/vidorg/vid_backend/src/model/dto"
 	"github.com/vidorg/vid_backend/src/model/param"
 	"github.com/vidorg/vid_backend/src/model/po"
 )
 
 func addDtoMappers() {
-	// userPo -> userDto
-	xentity.AddMapper(xentity.NewMapper(&po.User{}, func() interface{} { return &dto.UserDto{} }, func(from interface{}, to interface{}) error {
-		user := from.(*po.User)
-		userDto := to.(*dto.UserDto)
-
-		userDto.Uid = user.Uid
-		userDto.Username = user.Username
-		userDto.Gender = user.Gender.String()
-		userDto.Profile = user.Profile
-		userDto.AvatarUrl = user.Avatar // TODO
-		userDto.Birthday = user.Birthday.String()
-		userDto.Role = user.Role
-		userDto.RegisterTime = xtime.NewJsonDateTime(user.CreatedAt).String()
-		return nil
-	}))
-
 	// videoPo -> videoDto
 	xentity.AddMapper(xentity.NewMapper(&po.Video{}, func() interface{} { return &dto.VideoDto{} }, func(from interface{}, to interface{}) error {
 		video := from.(*po.Video)
@@ -56,20 +38,6 @@ func addDtoMappers() {
 }
 
 func addParamMappers() {
-	// userParam -> userPo
-	xentity.AddMapper(xentity.NewMapper(&param.UserParam{}, func() interface{} { return &po.User{} }, func(from interface{}, to interface{}) error {
-		userParam := from.(*param.UserParam)
-		user := to.(*po.User)
-
-		user.Username = userParam.Username
-		user.Profile = *userParam.Profile
-		user.Gender = constant.ParseSexEnum(userParam.Gender)
-		user.Birthday = xcondition.First(xtime.ParseRFC3339Date(userParam.Birthday)).(xtime.JsonDate)
-		user.PhoneNumber = userParam.PhoneNumber
-		user.Avatar = userParam.AvatarUrl // TODO
-		return nil
-	}))
-
 	// videoParam -> videoPo
 	xentity.AddMapper(xentity.NewMapper(&param.VideoParam{}, func() interface{} { return &po.Video{} }, func(from interface{}, to interface{}) error {
 		videoParam := from.(*param.VideoParam)

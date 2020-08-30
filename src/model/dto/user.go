@@ -1,7 +1,8 @@
 package dto
 
 import (
-	"github.com/Aoi-hosizora/ahlib/xentity"
+	"github.com/Aoi-hosizora/ahlib/xproperty"
+	"github.com/Aoi-hosizora/ahlib/xtime"
 	"github.com/Aoi-hosizora/goapidoc"
 	"github.com/vidorg/vid_backend/src/model/po"
 )
@@ -42,27 +43,46 @@ func init() {
 }
 
 type UserDto struct {
-	Uid          int32  `json:"uid"`
-	Username     string `json:"username"`
-	Gender       string `json:"gender"`
-	Profile      string `json:"profile"`
-	AvatarUrl    string `json:"avatar_url"` // TODO url
-	Birthday     string `json:"birthday"`
-	Role         string `json:"role"`
-	RegisterTime string `json:"register_time"`
+	Uid          uint64        `json:"uid"`           // user uid
+	Username     string        `json:"username"`      // username
+	Email        string        `json:"email"`         // user email
+	Nickname     string        `json:"nickname"`      // user nickname
+	Gender       string        `json:"gender"`        // user gender
+	Profile      string        `json:"profile"`       // user profile, allowempty
+	Avatar       string        `json:"avatar"`        // user avatar url
+	Birthday     string        `json:"birthday"`      // user birthday
+	Role         string        `json:"role"`          // user role
+	RegisterTime string        `json:"register_time"` // user register time
+	Extra        *UserExtraDto `json:"extra"`         // user extra information
 }
 
 func BuildUserDto(user *po.User) *UserDto {
-	return xentity.MustMap(user, &UserDto{}).(*UserDto)
+	return &UserDto{
+		Uid:          user.Uid,
+		Username:     user.Username,
+		Email:        user.Email,
+		Nickname:     user.Nickname,
+		Gender:       user.Gender.String(),
+		Profile:      user.Profile,
+		Avatar:       user.Avatar,
+		Birthday:     user.Birthday.String(),
+		Role:         user.Role,
+		RegisterTime: xtime.NewJsonDateTime(user.CreatedAt).String(),
+		Extra:        nil,
+	}
 }
 
 func BuildUserDtos(users []*po.User) []*UserDto {
-	return xentity.MustMapSlice(users, &UserDto{}).([]*UserDto)
+	out := make([]*UserDto, len(users))
+	for idx, user := range users {
+		out[idx] = BuildUserDto(user)
+	}
+	return out
 }
 
 type LoginDto struct {
-	User  *UserDto `json:"user"`
-	Token string   `json:"token"`
+	User  *UserDto `json:"user"`  // authorized user
+	Token string   `json:"token"` // access token
 }
 
 func BuildLoginDto(user *po.User, token string) *LoginDto {
@@ -73,27 +93,30 @@ func BuildLoginDto(user *po.User, token string) *LoginDto {
 }
 
 type UserExtraDto struct {
-	SubscribingCount int32 `json:"subscribing_cnt"`
-	SubscriberCount  int32 `json:"subscriber_cnt"`
-	VideoCount       int32 `json:"video_cnt"`
+	Subscribings *int32 `json:"subscribings"`
+	Subscribers  *int32 `json:"subscribers"`
+	Videos       *int32 `json:"videos"`
 }
 
-func BuildUserExtraDto(subscribingCnt int32, subscriberCnt int32, videoCnt int32) *UserExtraDto {
-	return &UserExtraDto{
-		SubscribingCount: subscribingCnt,
-		SubscriberCount:  subscriberCnt,
-		VideoCount:       videoCnt,
+func BuildUserExtraDto(dto *UserExtraDto) *UserExtraDto {
+	if dto.Subscribings == nil && dto.Subscribers == nil && dto.Videos == nil {
+		return nil
 	}
+	return dto
 }
 
-type UserDetailDto struct {
-	User  *UserDto      `json:"user"`
-	Extra *UserExtraDto `json:"extra"`
-}
-
-func BuildUserDetailDto(user *po.User, extra *UserExtraDto) *UserDetailDto {
-	return &UserDetailDto{
-		User:  BuildUserDto(user),
-		Extra: extra,
+func BuildUserPropertyMapper() xproperty.PropertyDict {
+	return xproperty.PropertyDict{
+		"uid":           xproperty.NewValue(false, "uid"),
+		"username":      xproperty.NewValue(false, "username"),
+		"email":         xproperty.NewValue(false, "email"),
+		"nickname":      xproperty.NewValue(false, "nickname"),
+		"gender":        xproperty.NewValue(false, "gender"),
+		"profile":       xproperty.NewValue(false, "profile"),
+		"avatar":        xproperty.NewValue(false, "avatar"),
+		"birthday":      xproperty.NewValue(false, "birthday"),
+		"age":           xproperty.NewValue(true, "birthday"),
+		"role":          xproperty.NewValue(false, "role"),
+		"register_time": xproperty.NewValue(false, "created_at"),
 	}
 }

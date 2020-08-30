@@ -4,35 +4,67 @@ import (
 	"github.com/Aoi-hosizora/ahlib-web/xvalidator"
 )
 
-// Request / Response
 var (
-	RequestParamError   = New(400, 40000, "request param error")  // 请求参数错误
-	RequestFormatError  = New(400, 40001, "request format error") // 请求格式错误
-	ServerRecoveryError = New(500, 50000, "server unknown error") // 服务器未知错误
+	cerr = int32(40000) // client error code
+	serr = int32(50000) // server error code
 )
 
-// Authorization
-var (
-	UnAuthorizedError        = New(401, 40002, "unauthorized user")         // 未认证
-	InvalidTokenError        = New(401, 40003, "token is invalid")          // 令牌无效
-	TokenExpiredError        = New(401, 40004, "token is expired")          // 令牌过期
-	CheckUserRoleError       = New(500, 50001, "failed to check user role") // 检查用户角色错误
-	RoleHasNoPermissionError = New(403, 40005, "role has no permission")    // 用户没有权限
+// Return ++ cerr.
+func ce() int32 { cerr++; return cerr }
 
-	WrongPasswordError = New(401, 40006, "wrong password")         // 密码错误
-	LoginError         = New(500, 50002, "login failed")           // 登录失败
-	RegisterError      = New(500, 50003, "register failed")        // 注册失败
-	UpdatePassError    = New(500, 50004, "update password failed") // 修改密码失败
-	LogoutError        = New(500, 50005, "logout failed")          // 注销失败
+// Return ++ serr.
+func se() int32 { serr++; return serr }
+
+// global exceptions
+var (
+	RequestParamError   = New(400, cerr, "request param error")
+	RequestFormatError  = New(400, ce(), "request format error")
+	ServerRecoveryError = New(500, serr, "server unknown error")
+)
+
+// auth mw exceptions
+var (
+	CheckAuthorizeError = New(500, se(), "check authorize failed")
+	InvalidTokenError   = New(401, ce(), "invalid token")
+	UnAuthorizedError   = New(401, ce(), "unauthorized")
+	TokenExpiredError   = New(401, ce(), "token expired")
+	CheckRoleError      = New(500, se(), "failed to check role")
+	NoPermissionError   = New(401, ce(), "no permission")
+)
+
+// auth exceptions
+var (
+	RegisterError        = New(500, se(), "register failed")
+	EmailRegisteredError = New(409, ce(), "email has been registered")
+	LoginError           = New(500, se(), "login failed")
+	LoginParameterError  = New(401, ce(), "email, username, uid or password wrong")
+	LogoutError          = New(500, se(), "logout failed")
+
+	RefreshTokenError     = New(500, se(), "refresh token error")
+	RefreshTokenUserError = New(401, ce(), "user in two token is not the same")
+	UpdatePasswordError   = New(500, se(), "update password failed")
+	WrongPasswordError    = New(401, ce(), "password is wrong")
+
+	SendActivateEmailError = New(500, se(), "send email failed")
+	AlreadyActivatedError  = New(400, ce(), "you have been activated")
+	ActivateSuspendError   = New(400, ce(), "suspend user can not be activate")
+	ActivateUserError      = New(500, se(), "activate user error")
+	InvalidSpecError       = New(400, ce(), "invalid spec code")
+)
+
+// user exceptions
+var (
+	QueryUserError = New(500, se(), "query user failed")
+
+	UserNotFoundError   = New(404, ce(), "user not found")
+	UpdateUserError     = New(500, se(), "update user failed")
+	UsernameUsedError   = New(409, ce(), "username has been used")
+	DeleteUserError     = New(500, se(), "delete user failed")
+	UndoDeleteUserError = New(500, se(), "undo delete user failed")
 )
 
 // Model
 var (
-	// user
-	UserNotFoundError  = New(404, 40007, "user not found")            // 用户未找到
-	UserUpdateError    = New(500, 50006, "user update failed")        // 修改用户失败
-	UserDeleteError    = New(500, 50007, "user delete failed")        // 删除用户失败
-	UsernameUsedError  = New(409, 40008, "username has been used")    // 用户名已使用
 	SubscribeSelfError = New(400, 40009, "subscribe oneself invalid") // 关注自我无效
 	SubscribeError     = New(500, 50008, "subscribe failed")          // 关注失败
 	UnSubscribeError   = New(500, 50009, "unsubscribe failed")        // 取消关注失败
@@ -43,13 +75,6 @@ var (
 	VideoUpdateError   = New(500, 50011, "video update failed")     // 视频更新失败
 	VideoDeleteError   = New(500, 50012, "video delete failed")     // 视频删除失败
 	VideoUrlExistError = New(409, 40011, "video url has been used") // 视频资源已使用
-
-	// policy
-	PolicySetRoleError  = New(403, 40012, "set root role failed") // 设置角色失败
-	PolicyNotFountError = New(404, 40013, "policy not found")     // 策略未找到
-	PolicyExistedError  = New(409, 40014, "policy has existed")   // 策略已存在
-	PolicyInsertError   = New(500, 50013, "insert policy failed") // 策略新建失败
-	PolicyDeleteError   = New(500, 50014, "delete policy failed") // 策略删除失败
 )
 
 func WrapValidationError(err error) *Error {

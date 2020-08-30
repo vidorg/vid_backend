@@ -31,7 +31,7 @@ func init() {
 		goapidoc.NewRoutePath("PUT", "/v1/user/", "更新用户").
 			Tags("User").
 			Securities("Jwt").
-			Params(goapidoc.NewBodyParam("param", "UserParam", true, "用户请求参数")).
+			Params(goapidoc.NewBodyParam("param", "UpdateUserParam", true, "用户请求参数")).
 			Responses(goapidoc.NewResponse(200, "_Result<UserDto>")),
 
 		goapidoc.NewRoutePath("PUT", "/v1/user/admin/{uid}", "管理员更新用户").
@@ -39,7 +39,7 @@ func init() {
 			Securities("Jwt").
 			Params(
 				goapidoc.NewPathParam("uid", "integer#int32", true, "用户id"),
-				goapidoc.NewBodyParam("param", "UserParam", true, "用户请求参数"),
+				goapidoc.NewBodyParam("param", "UpdateUserParam", true, "用户请求参数"),
 			).
 			Responses(goapidoc.NewResponse(200, "_Result<UserDto>")),
 
@@ -123,7 +123,7 @@ func (u *UserController) UpdateUser(isSpec bool) func(c *gin.Context) *result.Re
 		}
 
 		// Update
-		userParam := &param.UserParam{}
+		userParam := &param.UpdateUserParam{}
 		if err := c.ShouldBind(userParam); err != nil {
 			return result.Error(exception.WrapValidationError(err))
 		}

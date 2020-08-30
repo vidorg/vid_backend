@@ -71,8 +71,8 @@ func (u *UserService) Existed(uid uint64) (bool, error) {
 	return cnt > 0, nil
 }
 
-func (u *UserService) Update(user *po.User) (xstatus.DbStatus, error) {
-	rdb := u.db.Model(&po.User{}).Where(&po.User{Uid: user.Uid}).Updates(user) // TODO toMap
+func (u *UserService) Update(uid uint64, user *param.UpdateUserParam) (xstatus.DbStatus, error) {
+	rdb := u.db.Model(&po.User{}).Where(&po.User{Uid: uid}).Updates(user.ToMap())
 	return xgorm.UpdateErr(rdb)
 }
 
