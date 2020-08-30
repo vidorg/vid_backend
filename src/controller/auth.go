@@ -10,6 +10,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/vidorg/vid_backend/src/common/exception"
 	"github.com/vidorg/vid_backend/src/common/result"
+	"github.com/vidorg/vid_backend/src/model/constant"
 	"github.com/vidorg/vid_backend/src/model/dto"
 	"github.com/vidorg/vid_backend/src/model/param"
 	"github.com/vidorg/vid_backend/src/model/po"
@@ -51,6 +52,8 @@ type AuthController struct {
 	accountService *service.AccountService
 	tokenService   *service.TokenService
 	jwtService     *service.JwtService
+	emailService   service.EmailService
+	userService    service.UserService
 }
 
 func NewAuthController() *AuthController {
@@ -58,6 +61,8 @@ func NewAuthController() *AuthController {
 		accountService: xdi.GetByNameForce(sn.SAccountService).(*service.AccountService),
 		tokenService:   xdi.GetByNameForce(sn.STokenService).(*service.TokenService),
 		jwtService:     xdi.GetByNameForce(sn.SJwtService).(*service.JwtService),
+		emailService:   xdi.GetByNameForce(sn.SEmailService).(service.EmailService),
+		userService:    xdi.GetByNameForce(sn.SUserService).(service.UserService),
 	}
 }
 
@@ -204,5 +209,64 @@ func (a *AuthController) UpdatePassword(c *gin.Context) *result.Result {
 	_ = a.tokenService.DeleteAll(account.Uid)
 
 	// reply
+	return result.Ok()
+}
+
+// POST /v1/auth/activate
+func (a *AuthController) ActivateUser(c *gin.Context) *result.Result {
+	user := a.jwtService.GetContextUser(c)
+	if user == nil {
+		return nil
+	}
+
+	if user.State == constant.Active {
+		return result.Error(exception.AlreadyActivatedError)
+	} else if user.State == constant.Suspend {
+		return result.Error(exception.ActivateSuspendError)
+	}
+
+	spec := a.emailService.GenerateSpec()
+	err := a.emailService.InsertSpec(user.Uid, spec)
+	if err != nil {
+		return result.Error(exception.SendActivateEmailError).SetError(err, c)
+	}
+
+	err = a.emailService.SendTo(user.Email, spec)
+	if err != nil {
+		return result.Error(exception.SendActivateEmailError).SetError(err, c)
+	}
+
+	return result.Ok()
+}
+
+// GET /v1/auth/spec/:spec
+func (a *AuthController) CheckSpec(c *gin.Context) *result.Result {
+	spec := c.Param("spec")
+	uid, ok, err := a.emailService.CheckSpec(spec)
+	if !ok {
+		return result.Error(exception.InvalidSpecError)
+	} else if err != nil {
+		return result.Error(exception.ActivateUserError).SetError(err, c)
+	}
+
+	user, err := a.userService.QueryByUid(uid)
+	if err != nil {
+		return result.Error(exception.ActivateUserError).SetError(err, c)
+	} else if user == nil {
+		return result.Error(exception.UserNotFoundError)
+	}
+
+	if user.State == constant.Active {
+		return result.Error(exception.AlreadyActivatedError)
+	} else if user.State == constant.Suspend {
+		return result.Error(exception.ActivateSuspendError)
+	}
+
+	status, err := a.userService.UpdateState(uid, constant.Active)
+	if status != xstatus.DbSuccess {
+		return result.Error(exception.ActivateUserError).SetError(err, c)
+	}
+	_ = a.emailService.DeleteSpec(spec)
+
 	return result.Ok()
 }

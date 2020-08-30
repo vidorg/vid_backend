@@ -52,6 +52,7 @@ type UserDto struct {
 	Avatar       string        `json:"avatar"`        // user avatar url
 	Birthday     string        `json:"birthday"`      // user birthday
 	Role         string        `json:"role"`          // user role
+	State        string        `json:"state"`         // user state
 	RegisterTime string        `json:"register_time"` // user register time
 	Extra        *UserExtraDto `json:"extra"`         // user extra information
 }
@@ -67,6 +68,7 @@ func BuildUserDto(user *po.User) *UserDto {
 		Avatar:       user.Avatar,
 		Birthday:     user.Birthday.String(),
 		Role:         user.Role,
+		State:        user.State.String(),
 		RegisterTime: xtime.NewJsonDateTime(user.CreatedAt).String(),
 		Extra:        nil,
 	}
@@ -117,6 +119,7 @@ func BuildUserPropertyMapper() xproperty.PropertyDict {
 		"birthday":      xproperty.NewValue(false, "birthday"),
 		"age":           xproperty.NewValue(true, "birthday"),
 		"role":          xproperty.NewValue(false, "role"),
+		"state":         xproperty.NewValue(false, "state"),
 		"register_time": xproperty.NewValue(false, "created_at"),
 	}
 }

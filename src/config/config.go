@@ -40,6 +40,15 @@ type RedisConfig struct {
 	IdleTimeout    int32  `yaml:"idle-timeout"`
 }
 
+type EmailConfig struct {
+	Name     string `yaml:"name"`
+	SmtpHost string `yaml:"smtp-host"`
+	SmtpPort int32  `yaml:"smtp-port"`
+	Username string `yaml:"username"`
+	Password string `yaml:"password"`
+	Expire   int64  `yaml:"expire"`
+}
+
 type JwtConfig struct {
 	Secret string `yaml:"secret"`
 	Expire int64  `yaml:"expire"`
@@ -54,6 +63,7 @@ type Config struct {
 	Meta   *MetaConfig   `yaml:"meta"`
 	MySQL  *MySQLConfig  `yaml:"mysql"`
 	Redis  *RedisConfig  `yaml:"redis"`
+	Email  *EmailConfig  `yaml:"email"`
 	Jwt    *JwtConfig    `yaml:"jwt"`
 	Casbin *CasbinConfig `yaml:"casbin"`
 }

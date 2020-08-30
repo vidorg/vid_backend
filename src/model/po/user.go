@@ -17,6 +17,7 @@ type User struct {
 	Avatar   string          `gorm:"type:varchar(255); not null"`                           // user avatar url, using oss
 	Birthday xtime.JsonDate  `gorm:"type:date;         not null; default:'2000-01-01'"`     // user birthday
 	Role     string          `gorm:"type:varchar(255); not null; default:'normal'"`         // user role, used in casbin
+	State    constant.UserState `gorm:"type:tinyint;      not null; default:0"`                // user state (0|1|2)
 	Phone    string          `gorm:"type:varchar(127); not null"`                           // user phone number
 
 	// tbl_subscribe

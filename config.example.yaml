@@ -30,6 +30,14 @@ redis:
   max-lifetime: 3600 # second
   idle-timeout: 300 # second
 
+email:
+  name: xxx@yyy.zzz
+  smtp-host: smtp.yyy.zzz
+  smtp-port: 465
+  username: xxx@yyy.zzz
+  password: xxx
+  expire: 3600 # second
+
 jwt:
   secret: xxx
   issuer: vid.srv.auth

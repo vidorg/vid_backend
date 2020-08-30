@@ -6,6 +6,7 @@ import (
 	"github.com/Aoi-hosizora/ahlib/xproperty"
 	"github.com/Aoi-hosizora/ahlib/xstatus"
 	"github.com/jinzhu/gorm"
+	"github.com/vidorg/vid_backend/src/model/constant"
 	"github.com/vidorg/vid_backend/src/model/dto"
 	"github.com/vidorg/vid_backend/src/model/param"
 	"github.com/vidorg/vid_backend/src/model/po"
@@ -78,6 +79,11 @@ func (u *UserService) Update(uid uint64, user *param.UpdateUserParam) (xstatus.D
 
 func (u *UserService) UpdateRole(uid uint64, role string) (xstatus.DbStatus, error) {
 	rdb := u.db.Model(&po.User{}).Where(&po.User{Uid: uid}).Update("role", role)
+	return xgorm.UpdateErr(rdb)
+}
+
+func (u *UserService) UpdateState(uid uint64, state constant.UserState) (xstatus.DbStatus, error) {
+	rdb := u.db.Model(&po.User{}).Where(&po.User{Uid: uid}).Update(map[string]interface{}{"state": state})
 	return xgorm.UpdateErr(rdb)
 }
 

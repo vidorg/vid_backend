@@ -57,6 +57,7 @@ func Provide(configPath string) error {
 	xdi.ProvideName(sn.SAccountService, service.NewAccountService())
 	xdi.ProvideName(sn.STokenService, service.NewTokenService())
 	xdi.ProvideName(sn.SUserService, service.NewUserService())
+	xdi.ProvideName(sn.SEmailService, service.NewEmailService())
 	xdi.ProvideName(sn.SSubscribeService, service.NewSubscribeService())
 	xdi.ProvideName(sn.SVideoService, service.NewVideoService())
 	xdi.ProvideName(sn.SJwtService, service.NewJwtService())

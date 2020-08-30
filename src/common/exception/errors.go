@@ -42,6 +42,12 @@ var (
 
 	UpdatePasswordError = New(500, se(), "update password failed")
 	WrongPasswordError  = New(401, ce(), "password is wrong")
+
+	SendActivateEmailError = New(500, se(), "send email failed")
+	AlreadyActivatedError  = New(400, ce(), "you have been activated")
+	ActivateSuspendError   = New(400, ce(), "suspend user can not be activate")
+	ActivateUserError      = New(500, se(), "activate user error")
+	InvalidSpecError       = New(400, ce(), "invalid spec code")
 )
 
 // user exceptions
