@@ -20,7 +20,7 @@ func addDtoMappers() {
 		userDto.Username = user.Username
 		userDto.Gender = user.Gender.String()
 		userDto.Profile = user.Profile
-		userDto.AvatarUrl = user.AvatarUrl // TODO
+		userDto.AvatarUrl = user.Avatar // TODO
 		userDto.Birthday = user.Birthday.String()
 		userDto.Role = user.Role
 		userDto.RegisterTime = xtime.NewJsonDateTime(user.CreatedAt).String()
@@ -44,8 +44,8 @@ func addDtoMappers() {
 	}))
 
 	// policyPo -> policyDto
-	xentity.AddMapper(xentity.NewMapper(&po.Policy{}, func() interface{} { return &dto.PolicyDto{} }, func(from interface{}, to interface{}) error {
-		policy := from.(*po.Policy)
+	xentity.AddMapper(xentity.NewMapper(&po.RbacRule{}, func() interface{} { return &dto.PolicyDto{} }, func(from interface{}, to interface{}) error {
+		policy := from.(*po.RbacRule)
 		policyDto := to.(*dto.PolicyDto)
 
 		policyDto.Role = policy.V0
@@ -66,7 +66,7 @@ func addParamMappers() {
 		user.Gender = constant.ParseSexEnum(userParam.Gender)
 		user.Birthday = xcondition.First(xtime.ParseRFC3339Date(userParam.Birthday)).(xtime.JsonDate)
 		user.PhoneNumber = userParam.PhoneNumber
-		user.AvatarUrl = userParam.AvatarUrl // TODO
+		user.Avatar = userParam.AvatarUrl // TODO
 		return nil
 	}))
 

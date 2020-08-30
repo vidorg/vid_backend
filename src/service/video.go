@@ -65,7 +65,7 @@ func (v *VideoService) QueryByUid(uid int32, pp *param.PageOrderParam) (videos [
 }
 
 func (v *VideoService) QueryCountByUid(uid int32) (int32, xstatus.DbStatus) {
-	if !v.userService.Exist(uid) {
+	if !v.userService.Existed(uid) {
 		return 0, xstatus.DbNotFound
 	}
 

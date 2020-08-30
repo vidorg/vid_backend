@@ -1,30 +1,39 @@
 package constant
 
-type SexEnum string
+type Gender int8
 
-func (s SexEnum) String() string {
-	return string(s)
-}
-
-// SexEnum
 const (
-	SexUnknown SexEnum = "unknown"
-	SexMale    SexEnum = "male"
-	SexFemale  SexEnum = "female"
+	Secret Gender = iota
+	Male
+	Female
 )
 
-func ParseSexEnum(sexString string) SexEnum {
-	switch sexString {
-	case SexMale.String():
-		return SexMale
-	case SexFemale.String():
-		return SexFemale
+func (g Gender) Data() int8 {
+	return int8(g)
+}
+
+func (g Gender) String() string {
+	switch g {
+	case Secret:
+		return "secret"
+	case Male:
+		return "male"
+	case Female:
+		return "female"
 	default:
-		return SexUnknown
+		return "<unknown gender>"
 	}
 }
 
-// AuthToken
-const (
-	AuthAdmin string = "admin"
-)
+func ParseGender(data int8) Gender {
+	switch data {
+	case Secret.Data():
+		return Secret
+	case Male.Data():
+		return Male
+	case Female.Data():
+		return Female
+	default:
+		return Secret
+	}
+}

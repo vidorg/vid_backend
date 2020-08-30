@@ -105,8 +105,7 @@ func (a *AuthController) Register(c *gin.Context) *result.Result {
 	account := &po.Account{
 		EncryptedPass: encrypted,
 		User: &po.User{
-			Username:   registerParam.Username,
-			RegisterIP: c.ClientIP(),
+			Username: registerParam.Username,
 		},
 	}
 

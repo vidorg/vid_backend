@@ -70,7 +70,7 @@ func (s *SubscribeController) QuerySubscriberUsers(c *gin.Context) *result.Resul
 	}
 	pp := param.BindPageOrder(c, s.config)
 
-	users, total, status := s.subscribeService.QuerySubscriberUsers(uid, pp)
+	users, total, status := s.subscribeService.QuerySubscribers(uid, pp)
 	if status == xstatus.DbNotFound {
 		return result.Error(exception.UserNotFoundError)
 	}
@@ -87,7 +87,7 @@ func (s *SubscribeController) QuerySubscribingUsers(c *gin.Context) *result.Resu
 	}
 	pp := param.BindPageOrder(c, s.config)
 
-	users, total, status := s.subscribeService.QuerySubscribingUsers(uid, pp)
+	users, total, status := s.subscribeService.QuerySubscribings(uid, pp)
 	if status == xstatus.DbNotFound {
 		return result.Error(exception.UserNotFoundError)
 	}
@@ -107,7 +107,7 @@ func (s *SubscribeController) SubscribeUser(c *gin.Context) *result.Result {
 		return result.Error(exception.SubscribeSelfError)
 	}
 
-	status := s.subscribeService.SubscribeUser(authUser.Uid, to)
+	status := s.subscribeService.InsertSubscribe(authUser.Uid, to)
 	if status == xstatus.DbNotFound {
 		return result.Error(exception.UserNotFoundError)
 	} else if status == xstatus.DbFailed {

@@ -23,6 +23,6 @@ type PolicyDto struct {
 	Method string `json:"method"`
 }
 
-func BuildPolicyDtos(policies []*po.Policy) []*PolicyDto {
+func BuildPolicyDtos(policies []*po.RbacRule) []*PolicyDto {
 	return xentity.MustMapSlice(policies, &PolicyDto{}).([]*PolicyDto)
 }

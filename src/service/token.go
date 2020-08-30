@@ -6,16 +6,19 @@ import (
 	"github.com/Aoi-hosizora/ahlib/xdi"
 	"github.com/Aoi-hosizora/ahlib/xnumber"
 	"github.com/gomodule/redigo/redis"
+	"github.com/vidorg/vid_backend/src/config"
 	"github.com/vidorg/vid_backend/src/provide/sn"
 )
 
 type TokenService struct {
-	rpool *redis.Pool
+	config *config.Config
+	rpool  *redis.Pool
 }
 
 func NewTokenService() *TokenService {
 	return &TokenService{
-		rpool: xdi.GetByNameForce(sn.SRedis).(*redis.Pool),
+		config: xdi.GetByNameForce(sn.SConfig).(*config.Config),
+		rpool:  xdi.GetByNameForce(sn.SRedis).(*redis.Pool),
 	}
 }
 
@@ -23,50 +26,67 @@ func (t *TokenService) concat(uid string, token string) string {
 	return fmt.Sprintf("vid-token-%s-%s", uid, token)
 }
 
-func (t *TokenService) Query(token string) bool {
+func (t *TokenService) Query(token string) (bool, error) {
 	conn, err := t.rpool.Dial()
 	if err != nil {
-		return false
+		return false, err
 	}
 	defer conn.Close()
 
 	pattern := t.concat("*", token)
 	keys, err := redis.Strings(conn.Do("KEYS", pattern))
-	return err == nil && len(keys) >= 1
+
+	if err != nil {
+		return false, err
+	}
+	return len(keys) >= 1, nil
 }
 
-func (t *TokenService) Insert(token string, uid int32, ex int64) bool {
+func (t *TokenService) Insert(token string, uid uint64) error {
 	conn, err := t.rpool.Dial()
 	if err != nil {
-		return false
+		return err
 	}
 	defer conn.Close()
 
-	pattern := t.concat(xnumber.FormatInt32(uid, 10), token)
-	_, err = conn.Do("SET", pattern, uid, "EX", ex)
-	return err == nil
+	pattern := t.concat(xnumber.U64toa(uid), token)
+	_, err = conn.Do("SET", pattern, uid, "EX", t.config.Jwt.Expire)
+
+	return err
 }
 
-func (t *TokenService) Delete(token string) bool {
+func (t *TokenService) Delete(token string) error {
 	conn, err := t.rpool.Dial()
 	if err != nil {
-		return false
+		return err
 	}
 	defer conn.Close()
 
 	pattern := t.concat("*", token)
 	tot, del, err := xredis.WithConn(conn).DeleteAll(pattern)
-	return err == nil && (tot == 0 || del > 0)
+
+	if err != nil {
+		return err
+	} else if tot > 0 && del == 0 {
+		return fmt.Errorf("delete token failed")
+	}
+	return nil
 }
 
-func (t *TokenService) DeleteAll(uid int32) bool {
+func (t *TokenService) DeleteAll(uid uint64) error {
 	conn, err := t.rpool.Dial()
 	if err != nil {
-		return false
+		return err
 	}
 	defer conn.Close()
 
-	pattern := t.concat(xnumber.FormatInt32(uid, 10), "*")
+	pattern := t.concat(xnumber.U64toa(uid), "*")
 	tot, del, err := xredis.WithConn(conn).DeleteAll(pattern)
-	return err == nil && (tot == 0 || del > 0)
+
+	if err != nil {
+		return err
+	} else if tot > 0 && del == 0 {
+		return fmt.Errorf("delete tokens failed")
+	}
+	return nil
 }

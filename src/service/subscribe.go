@@ -15,81 +15,110 @@ import (
 type SubscribeService struct {
 	db          *gorm.DB
 	userService *UserService
-
-	_orderByFunc func(string) string
+	orderBy     func(string) string
 }
 
 func NewSubscribeService() *SubscribeService {
 	return &SubscribeService{
-		db:           xdi.GetByNameForce(sn.SGorm).(*gorm.DB),
-		userService:  xdi.GetByNameForce(sn.SUserService).(*UserService),
-		_orderByFunc: xgorm.OrderByFunc(xproperty.GetDefaultMapper(&dto.UserDto{}, &po.User{}).GetDict()),
+		db:          xdi.GetByNameForce(sn.SGorm).(*gorm.DB),
+		userService: xdi.GetByNameForce(sn.SUserService).(*UserService),
+		orderBy:     xgorm.OrderByFunc(xproperty.GetDefaultMapper(&dto.UserDto{}, &po.User{}).GetDict()),
 	}
 }
 
-func (s *SubscribeService) getSubscriberAsso(uid int32) *gorm.Association {
+func (s *SubscribeService) subscriberAsso(uid uint64) *gorm.Association {
 	return s.db.Model(&po.User{Uid: uid}).Association("Subscribers")
 }
 
-func (s *SubscribeService) getSubscribingAsso(uid int32) *gorm.Association {
+func (s *SubscribeService) subscribingAsso(uid uint64) *gorm.Association {
 	return s.db.Model(&po.User{Uid: uid}).Association("Subscribings")
 }
 
-func (s *SubscribeService) QuerySubscriberUsers(uid int32, pp *param.PageOrderParam) (users []*po.User, total int32, status xstatus.DbStatus) {
-	if !s.userService.Exist(uid) {
-		return nil, 0, xstatus.DbNotFound
+func (s *SubscribeService) QuerySubscribers(uid uint64, pp *param.PageOrderParam) ([]*po.User, int32, error) {
+	ok, err := s.userService.Existed(uid)
+	if err != nil {
+		return nil, 0, err
+	} else if !ok {
+		return nil, 0, nil
 	}
 
-	total = int32(s.getSubscriberAsso(uid).Count()) // association pattern
-	users = make([]*po.User, 0)
-	xgorm.WithDB(s.db).Pagination(pp.Limit, pp.Page).Model(&po.User{Uid: uid}).Order(s._orderByFunc(pp.Order)).Related(&users, "Subscribers")
+	total := int32(s.subscriberAsso(uid).Count()) // association pattern
+	users := make([]*po.User, 0)
+	// TODO https://gorm.io/docs/associations.html#Find-Associations
+	rdb := xgorm.WithDB(s.db).Pagination(pp.Limit, pp.Page).Model(&po.User{Uid: uid}).Order(s.orderBy(pp.Order)).Related(&users, "Subscribers")
+	if rdb.Error != nil {
+		return nil, 0, rdb.Error
+	}
 
-	return users, total, xstatus.DbSuccess
+	return users, total, nil
 }
 
-func (s *SubscribeService) QuerySubscribingUsers(uid int32, pp *param.PageOrderParam) (users []*po.User, total int32, status xstatus.DbStatus) {
-	if !s.userService.Exist(uid) {
-		return nil, 0, xstatus.DbNotFound
+func (s *SubscribeService) QuerySubscribings(uid uint64, pp *param.PageOrderParam) ([]*po.User, int32, error) {
+	ok, err := s.userService.Existed(uid)
+	if err != nil {
+		return nil, 0, err
+	} else if !ok {
+		return nil, 0, nil
 	}
 
-	total = int32(s.getSubscribingAsso(uid).Count()) // association pattern
-	users = make([]*po.User, 0)
-	xgorm.WithDB(s.db).Pagination(pp.Limit, pp.Page).Model(&po.User{Uid: uid}).Order(s._orderByFunc(pp.Order)).Related(&users, "Subscribings")
+	total := int32(s.subscribingAsso(uid).Count()) // association pattern
+	users := make([]*po.User, 0)
+	rdb := xgorm.WithDB(s.db).Pagination(pp.Limit, pp.Page).Model(&po.User{Uid: uid}).Order(s.orderBy(pp.Order)).Related(&users, "Subscribings")
+	if rdb.Error != nil {
+		return nil, 0, rdb.Error
+	}
 
-	return users, total, xstatus.DbSuccess
+	return users, total, nil
 }
 
-func (s *SubscribeService) QueryCountByUid(uid int32) (subscribingCnt int32, subscriberCnt int32, status xstatus.DbStatus) {
-	if !s.userService.Exist(uid) {
-		return 0, 0, xstatus.DbNotFound
+func (s *SubscribeService) QueryCountByUid(uid uint64) (subscribingCnt int32, subscriberCnt int32, err error) {
+	ok, err := s.userService.Existed(uid)
+	if err != nil {
+		return 0, 0, err
+	} else if !ok {
+		return -1, -1, nil
 	}
 
-	subscribingCnt = int32(s.getSubscribingAsso(uid).Count())
-	subscriberCnt = int32(s.getSubscriberAsso(uid).Count())
+	subscribingCnt = int32(s.subscribingAsso(uid).Count())
+	subscriberCnt = int32(s.subscriberAsso(uid).Count())
 
-	return subscribingCnt, subscriberCnt, xstatus.DbSuccess
+	return subscribingCnt, subscriberCnt, nil
 }
 
-func (s *SubscribeService) SubscribeUser(meUid int32, toUid int32) xstatus.DbStatus {
-	if !s.userService.Exist(toUid) || !s.userService.Exist(meUid) {
-		return xstatus.DbNotFound
+func (s *SubscribeService) InsertSubscribe(uid uint64, to uint64) (xstatus.DbStatus, error) {
+	ok1, err1 := s.userService.Existed(uid)
+	ok2, err2 := s.userService.Existed(to)
+	if err1 != nil {
+		return xstatus.DbFailed, err1
+	} else if err2 != nil {
+		return xstatus.DbFailed, err2
+	} else if !ok1 || !ok2 {
+		return xstatus.DbNotFound, nil
 	}
 
-	asc := s.getSubscriberAsso(toUid).Append(&po.User{Uid: meUid})
-	if asc.Error != nil {
-		return xstatus.DbFailed
+	ras := s.subscriberAsso(to).Append(&po.User{Uid: uid})
+	if ras.Error != nil {
+		return xstatus.DbFailed, ras.Error
 	}
-	return xstatus.DbSuccess
+
+	return xstatus.DbSuccess, nil
 }
 
-func (s *SubscribeService) UnSubscribeUser(meUid int32, toUid int32) xstatus.DbStatus {
-	if !s.userService.Exist(toUid) || !s.userService.Exist(meUid) {
-		return xstatus.DbNotFound
+func (s *SubscribeService) UnSubscribeUser(uid uint64, to uint64) (xstatus.DbStatus, error) {
+	ok1, err1 := s.userService.Existed(uid)
+	ok2, err2 := s.userService.Existed(to)
+	if err1 != nil {
+		return xstatus.DbFailed, err1
+	} else if err2 != nil {
+		return xstatus.DbFailed, err2
+	} else if !ok1 || !ok2 {
+		return xstatus.DbNotFound, nil
 	}
 
-	asc := s.getSubscriberAsso(toUid).Delete(&po.User{Uid: meUid})
-	if asc.Error != nil {
-		return xstatus.DbFailed
+	ras := s.subscriberAsso(to).Delete(&po.User{Uid: uid})
+	if ras.Error != nil {
+		return xstatus.DbFailed, ras.Error
 	}
-	return xstatus.DbSuccess
+
+	return xstatus.DbSuccess, nil
 }

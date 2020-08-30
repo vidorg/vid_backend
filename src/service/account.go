@@ -4,6 +4,7 @@ import (
 	"github.com/Aoi-hosizora/ahlib-web/xgorm"
 	"github.com/Aoi-hosizora/ahlib/xdi"
 	"github.com/Aoi-hosizora/ahlib/xstatus"
+	"github.com/Aoi-hosizora/ahlib/xstring"
 	"github.com/jinzhu/gorm"
 	"github.com/vidorg/vid_backend/src/model/po"
 	"github.com/vidorg/vid_backend/src/provide/sn"
@@ -19,31 +20,70 @@ func NewAccountService() *AccountService {
 	}
 }
 
-func (a *AccountService) QueryByUsername(username string) *po.Account {
-	user := &po.User{}
-	rdb := a.db.Model(&po.User{}).Where(&po.User{Username: username}).First(user)
+func (a *AccountService) QueryByUser(user *po.User) (*po.Account, error) {
+	account := &po.Account{Uid: user.Uid}
+	rdb := a.db.Model(&po.Account{}).Where(&po.Account{Uid: user.Uid}).First(account)
 	if rdb.RecordNotFound() {
-		return nil
-	}
-
-	account := &po.Account{}
-	rdb = a.db.Model(&po.Account{}).Where(&po.Account{Uid: user.Uid}).First(account)
-	if rdb.RecordNotFound() {
-		return nil
+		return nil, nil
+	} else if rdb.Error != nil {
+		return nil, rdb.Error
 	}
 
 	account.User = user
-	return account
+	return account, nil
 }
 
-func (a *AccountService) Insert(account *po.Account) xstatus.DbStatus {
+func (a *AccountService) QueryByEmail(email string) (*po.Account, error) {
+	user := &po.User{}
+	rdb := a.db.Model(&po.User{}).Where(&po.User{Email: email}).First(user)
+	if rdb.RecordNotFound() {
+		return nil, nil
+	} else if rdb.Error != nil {
+		return nil, rdb.Error
+	}
+
+	return a.QueryByUser(user)
+}
+
+func (a *AccountService) QueryByUsername(username string) (*po.Account, error) {
+	user := &po.User{}
+	rdb := a.db.Model(&po.User{}).Where(&po.User{Username: username}).First(user)
+	if rdb.RecordNotFound() {
+		return nil, nil
+	} else if rdb.Error != nil {
+		return nil, rdb.Error
+	}
+
+	return a.QueryByUser(user)
+}
+
+func (a *AccountService) QueryByUid(uid uint64) (*po.Account, error) {
+	user := &po.User{}
+	rdb := a.db.Model(&po.User{}).Where(&po.User{Uid: uid}).First(user)
+	if rdb.RecordNotFound() {
+		return nil, nil
+	} else if rdb.Error != nil {
+		return nil, rdb.Error
+	}
+
+	return a.QueryByUser(user)
+}
+
+func (a *AccountService) Insert(email string, encrypted string) (xstatus.DbStatus, error) {
+	username := "user" + xstring.CurrentTimeUuid(20)
+	account := &po.Account{
+		Password: encrypted,
+		User: &po.User{
+			Email:    email,
+			Username: username,
+			Nickname: username,
+		},
+	}
 	rdb := a.db.Model(&po.Account{}).Create(account)
-	status, _ := xgorm.CreateErr(rdb)
-	return status
+	return xgorm.CreateErr(rdb)
 }
 
-func (a *AccountService) Update(account *po.Account) xstatus.DbStatus {
-	rdb := a.db.Model(&po.Account{}).Where(&po.Account{Uid: account.Uid}).Update(account)
-	status, _ := xgorm.UpdateErr(rdb)
-	return status
+func (a *AccountService) UpdatePassword(uid uint64, encrypted string) (xstatus.DbStatus, error) {
+	rdb := a.db.Model(&po.Account{}).Where(&po.Account{Uid: uid}).Update("password", encrypted)
+	return xgorm.UpdateErr(rdb)
 }

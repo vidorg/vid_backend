@@ -1,11 +1,11 @@
 package po
 
-type Policy struct {
-	PType string // p
-	V0    string // sub
-	V1    string // obj
-	V2    string // act
-	V3    string // X
-	V4    string // X
-	V5    string // X
+type RbacRule struct {
+	PType string `gorm:"column:p_type"` //  p  |  g
+	V0    string `gorm:"column:v0"`     // sub | sub
+	V1    string `gorm:"column:v1"`     // obj | sub
+	V2    string `gorm:"column:v2"`     // act |  x
+	V3    string `gorm:"column:v3"`
+	V4    string `gorm:"column:v4"`
+	V5    string `gorm:"column:v5"`
 }

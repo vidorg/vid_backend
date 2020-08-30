@@ -1,22 +1,23 @@
 package service
 
 import (
+	"github.com/Aoi-hosizora/ahlib-more/xjwt"
 	"github.com/Aoi-hosizora/ahlib/xdi"
+	"github.com/Aoi-hosizora/ahlib/xstatus"
+	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"github.com/vidorg/vid_backend/src/common/exception"
 	"github.com/vidorg/vid_backend/src/common/result"
 	"github.com/vidorg/vid_backend/src/config"
 	"github.com/vidorg/vid_backend/src/model/po"
 	"github.com/vidorg/vid_backend/src/provide/sn"
-	"github.com/vidorg/vid_backend/src/util"
+	"time"
 )
 
 type JwtService struct {
 	config       *config.Config
 	userService  *UserService
 	tokenService *TokenService
-
-	UserKey string
 }
 
 func NewJwtService() *JwtService {
@@ -24,66 +25,115 @@ func NewJwtService() *JwtService {
 		config:       xdi.GetByNameForce(sn.SConfig).(*config.Config),
 		userService:  xdi.GetByNameForce(sn.SUserService).(*UserService),
 		tokenService: xdi.GetByNameForce(sn.STokenService).(*TokenService),
-		UserKey:      "user",
 	}
+}
+
+func (j *JwtService) UserKey() string {
+	return "user"
 }
 
 func (j *JwtService) GetToken(c *gin.Context) string {
-	token := c.Request.Header.Get("Authorization")
+	token := c.GetHeader("Authorization")
 	if token != "" {
 		return token
 	}
-	return c.DefaultQuery("Authorization", "")
+	token = c.DefaultQuery("Authorization", "")
+	if token != "" {
+		return token
+	}
+	return c.DefaultQuery("token", "")
 }
 
-func (j *JwtService) JwtCheck(token string) (*po.User, *exception.Error) {
+func (j *JwtService) JwtCheck(token string) (*po.User, xstatus.JwtStatus, error) {
 	if token == "" {
-		return nil, exception.UnAuthorizedError
+		return nil, xstatus.JwtBlank, nil
 	}
 
 	// parse
-	claims, err := util.AuthUtil.ParseToken(token, j.config.Jwt.Secret)
+	uid, err := j.ParseToken(token)
 	if err != nil {
-		if util.AuthUtil.IsTokenExpireError(err) {
-			return nil, exception.TokenExpiredError
-		} else {
-			return nil, exception.InvalidTokenError
+		if xjwt.TokenExpired(err) {
+			return nil, xstatus.JwtExpired, nil
+		} else if xjwt.TokenIssuerInvalid(err) {
+			return nil, xstatus.JwtIssuer, nil
 		}
+		return nil, xstatus.JwtInvalid, nil
 	}
 
 	// redis
-	ok := j.tokenService.Query(token)
-	if !ok {
-		return nil, exception.UnAuthorizedError
+	ok, err := j.tokenService.Query(token)
+	if err != nil {
+		return nil, xstatus.JwtFailed, err
+	} else if !ok {
+		return nil, xstatus.JwtNotFound, nil
 	}
 
 	// mysql
-	user := j.userService.QueryByUid(claims.UserId)
-	if user == nil {
-		return nil, exception.UnAuthorizedError
+	user, err := j.userService.QueryByUid(uid)
+	if err != nil {
+		return nil, xstatus.JwtFailed, err
+	} else if user == nil {
+		return nil, xstatus.JwtUserErr, nil
 	}
 
-	return user, nil
+	return user, xstatus.JwtSuccess, nil
 }
 
 func (j *JwtService) GetContextUser(c *gin.Context) *po.User {
-	_user, exist := c.Get(j.UserKey)
-	if exist { // jwt middleware has checked (or this method will not be invoked)
-		user, ok := _user.(*po.User)
+	itf, exist := c.Get(j.UserKey())
+	if exist {
+		user, ok := itf.(*po.User)
 		if !ok {
 			result.Error(exception.UnAuthorizedError).JSON(c)
-			c.Abort() // abort
+			c.Abort()
 			return nil
 		}
 		return user
 	}
 
-	// otherwise, jwt is not required in this http method
 	token := j.GetToken(c)
-	user, err := j.JwtCheck(token)
-	if err != nil {
-		return nil // auth failed
+	user, status, err := j.JwtCheck(token)
+	if err != nil || status != xstatus.JwtSuccess {
+		return nil
 	}
-	c.Set(j.UserKey, user)
+
+	c.Set(j.UserKey(), user)
 	return user
+}
+
+type userClaims struct {
+	Uid uint64
+	jwt.StandardClaims
+}
+
+func (j *JwtService) GenerateToken(uid uint64) (string, error) {
+	accessClaims := &userClaims{
+		Uid: uid,
+		StandardClaims: jwt.StandardClaims{
+			ExpiresAt: time.Now().Unix() + j.config.Jwt.Expire,
+			Issuer:    j.config.Jwt.Issuer,
+		},
+	}
+	accessToken, err := xjwt.GenerateToken(accessClaims, []byte(j.config.Jwt.Secret))
+	if err != nil {
+		return "", err
+	}
+
+	return accessToken, nil
+}
+
+func (j *JwtService) ParseToken(signedToken string) (uint64, error) {
+	claims, err := xjwt.ParseToken(signedToken, []byte(j.config.Jwt.Secret), &userClaims{})
+	if err != nil {
+		return 0, err
+	}
+
+	c, ok := claims.(*userClaims)
+	if !ok {
+		return 0, xjwt.DefaultValidationError
+	} else if c.Issuer != j.config.Jwt.Issuer {
+		return 0, jwt.NewValidationError("unknown token issuer", jwt.ValidationErrorIssuer)
+	}
+
+	return c.Uid, nil
 }
