@@ -40,36 +40,35 @@ var (
 	LoginParameterError  = New(401, ce(), "email, username, uid or password wrong")
 	LogoutError          = New(500, se(), "logout failed")
 
-	RefreshTokenError     = New(500, se(), "refresh token error")
-	RefreshTokenUserError = New(401, ce(), "user in two token is not the same")
-	UpdatePasswordError   = New(500, se(), "update password failed")
-	WrongPasswordError    = New(401, ce(), "password is wrong")
-
-	SendActivateEmailError = New(500, se(), "send email failed")
-	AlreadyActivatedError  = New(400, ce(), "you have been activated")
-	ActivateSuspendError   = New(400, ce(), "suspend user can not be activate")
-	ActivateUserError      = New(500, se(), "activate user error")
-	InvalidSpecError       = New(400, ce(), "invalid spec code")
+	UpdatePasswordError = New(500, se(), "update password failed")
+	WrongPasswordError  = New(401, ce(), "password is wrong")
 )
 
 // user exceptions
 var (
 	QueryUserError = New(500, se(), "query user failed")
 
-	UserNotFoundError   = New(404, ce(), "user not found")
-	UpdateUserError     = New(500, se(), "update user failed")
-	UsernameUsedError   = New(409, ce(), "username has been used")
-	DeleteUserError     = New(500, se(), "delete user failed")
-	UndoDeleteUserError = New(500, se(), "undo delete user failed")
+	UserNotFoundError = New(404, ce(), "user not found")
+	UpdateUserError   = New(500, se(), "update user failed")
+	UsernameUsedError = New(409, ce(), "username has been used")
+	DeleteUserError   = New(500, se(), "delete user failed")
 )
 
-// Model
+// subscribe exception
 var (
-	SubscribeSelfError = New(400, 40009, "subscribe oneself invalid") // 关注自我无效
-	SubscribeError     = New(500, 50008, "subscribe failed")          // 关注失败
-	UnSubscribeError   = New(500, 50009, "unsubscribe failed")        // 取消关注失败
+	GetSubscriberListError  = New(500, se(), "get follower list failed")
+	GetSubscribingListError = New(500, se(), "get following list failed")
 
-	// video
+	SubscribeError          = New(500, se(), "follow failed")
+	SubscribeSelfError      = New(400, ce(), "could not follow self")
+	AlreadySubscribingError = New(409, ce(), "user has been followed")
+	UnSubscribeError        = New(500, se(), "unfollow failed")
+	UnSubscribeSelfError    = New(400, ce(), "could not unfollow self")
+	NotSubscribeYetError    = New(409, ce(), "user has not been followed")
+)
+
+// video exception
+var (
 	VideoNotFoundError = New(404, 40010, "video not found")         // 视频未找到
 	VideoInsertError   = New(500, 50010, "video insert failed")     // 视频插入失败
 	VideoUpdateError   = New(500, 50011, "video update failed")     // 视频更新失败

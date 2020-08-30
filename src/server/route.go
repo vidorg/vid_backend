@@ -60,16 +60,14 @@ func initRoute(engine *gin.Engine) {
 
 	userGroup := v1.Group("user")
 	{
-		userGroup.GET("", authMw, j(userCtrl.QueryAllUsers))
-		userGroup.GET(":uid", j(userCtrl.QueryUser))
-		userGroup.PUT("", authMw, j(userCtrl.UpdateUser(false)))
-		userGroup.DELETE("", authMw, j(userCtrl.DeleteUser(false)))
-		userGroup.GET(":uid/subscriber", j(subscribeCtrl.QuerySubscriberUsers))
-		userGroup.GET(":uid/subscribing", j(subscribeCtrl.QuerySubscribingUsers))
+		userGroup.GET("", authMw, j(userCtrl.QueryAll))
+		userGroup.GET(":uid", j(userCtrl.QueryByUid))
+		userGroup.PUT("", authMw, j(userCtrl.Update))
+		userGroup.DELETE("", authMw, j(userCtrl.Delete))
+		userGroup.GET(":uid/subscriber", j(subscribeCtrl.QuerySubscribers))
+		userGroup.GET(":uid/subscribing", j(subscribeCtrl.QuerySubscribings))
 		userGroup.PUT("subscribing/:uid", authMw, j(subscribeCtrl.SubscribeUser))
 		userGroup.DELETE("subscribing/:uid", authMw, j(subscribeCtrl.UnSubscribeUser))
-		userGroup.PUT("admin/:uid", authMw, j(userCtrl.UpdateUser(true)))
-		userGroup.DELETE("admin/:uid", authMw, j(userCtrl.DeleteUser(true)))
 
 		userGroup.GET(":uid/video", j(videoCtrl.QueryVideosByUid))
 	}

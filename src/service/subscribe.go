@@ -104,7 +104,7 @@ func (s *SubscribeService) InsertSubscribe(uid uint64, to uint64) (xstatus.DbSta
 	return xstatus.DbSuccess, nil
 }
 
-func (s *SubscribeService) UnSubscribeUser(uid uint64, to uint64) (xstatus.DbStatus, error) {
+func (s *SubscribeService) DeleteSubscribe(uid uint64, to uint64) (xstatus.DbStatus, error) {
 	ok1, err1 := s.userService.Existed(uid)
 	ok2, err2 := s.userService.Existed(to)
 	if err1 != nil {

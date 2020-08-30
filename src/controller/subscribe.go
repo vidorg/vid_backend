@@ -62,74 +62,99 @@ func NewSubscribeController() *SubscribeController {
 	}
 }
 
-// GET /v1/user/{uid}/subscriber
-func (s *SubscribeController) QuerySubscriberUsers(c *gin.Context) *result.Result {
-	uid, ok := param.BindRouteId(c, "uid")
-	if !ok {
-		return result.Error(exception.RequestParamError)
+// GET /v1/user/:uid/subscriber
+func (s *SubscribeController) QuerySubscribers(c *gin.Context) *result.Result {
+	uid, err := param.BindRouteId(c, "uid")
+	if err != nil {
+		return result.Error(exception.RequestParamError).SetError(err, c)
 	}
 	pp := param.BindPageOrder(c, s.config)
 
-	users, total, status := s.subscribeService.QuerySubscribers(uid, pp)
-	if status == xstatus.DbNotFound {
+	users, total, err := s.subscribeService.QuerySubscribers(uid, pp)
+	if err != nil {
+		return result.Error(exception.GetSubscriberListError).SetError(err, c)
+	} else if users == nil {
 		return result.Error(exception.UserNotFoundError)
 	}
 
-	ret := dto.BuildUserDtos(users)
-	return result.Ok().SetPage(pp.Page, pp.Limit, total, ret)
+	// TODO extra
+
+	res := dto.BuildUserDtos(users)
+	return result.Ok().SetPage(pp.Page, pp.Limit, total, res)
 }
 
 // GET /v1/user/{uid}/subscribing
-func (s *SubscribeController) QuerySubscribingUsers(c *gin.Context) *result.Result {
-	uid, ok := param.BindRouteId(c, "uid")
-	if !ok {
-		return result.Error(exception.RequestParamError)
+func (s *SubscribeController) QuerySubscribings(c *gin.Context) *result.Result {
+	uid, err := param.BindRouteId(c, "uid")
+	if err != nil {
+		return result.Error(exception.RequestParamError).SetError(err, c)
 	}
 	pp := param.BindPageOrder(c, s.config)
 
-	users, total, status := s.subscribeService.QuerySubscribings(uid, pp)
-	if status == xstatus.DbNotFound {
+	users, total, err := s.subscribeService.QuerySubscribings(uid, pp)
+	if err != nil {
+		return result.Error(exception.GetSubscribingListError).SetError(err, c)
+	} else if users == nil {
 		return result.Error(exception.UserNotFoundError)
 	}
 
-	ret := dto.BuildUserDtos(users)
-	return result.Ok().SetPage(pp.Page, pp.Limit, total, ret)
+	// TODO extra
+
+	res := dto.BuildUserDtos(users)
+	return result.Ok().SetPage(pp.Page, pp.Limit, total, res)
 }
 
-// PUT /v1/user/subscribing/:uid
+// POST /v1/user/subscribing/:uid
 func (s *SubscribeController) SubscribeUser(c *gin.Context) *result.Result {
-	authUser := s.jwtService.GetContextUser(c)
-	to, ok := param.BindRouteId(c, "uid")
-	if !ok {
-		return result.Error(exception.RequestParamError)
+	user := s.jwtService.GetContextUser(c)
+	if user == nil {
+		return nil
 	}
-	if authUser.Uid == to {
+
+	uid, err := param.BindRouteId(c, "uid")
+	if err != nil {
+		return result.Error(exception.RequestParamError).SetError(err, c)
+	}
+
+	if user.Uid == uid {
 		return result.Error(exception.SubscribeSelfError)
 	}
 
-	status := s.subscribeService.InsertSubscribe(authUser.Uid, to)
+	status, err := s.subscribeService.InsertSubscribe(user.Uid, uid)
 	if status == xstatus.DbNotFound {
 		return result.Error(exception.UserNotFoundError)
+	} else if status == xstatus.DbExisted { // TODO
+		return result.Error(exception.AlreadySubscribingError)
 	} else if status == xstatus.DbFailed {
-		return result.Error(exception.SubscribeError)
+		return result.Error(exception.SubscribeError).SetError(err, c)
 	}
 
 	return result.Ok()
 }
 
-// PUT /v1/user/subscribing/:uid
+// DELETE /v1/user/subscribing/:uid
 func (s *SubscribeController) UnSubscribeUser(c *gin.Context) *result.Result {
-	authUser := s.jwtService.GetContextUser(c)
-	to, ok := param.BindRouteId(c, "uid")
-	if !ok {
-		return result.Error(exception.RequestParamError)
+	user := s.jwtService.GetContextUser(c)
+	if user == nil {
+		return nil
 	}
 
-	status := s.subscribeService.UnSubscribeUser(authUser.Uid, to)
+	uid, err := param.BindRouteId(c, "uid")
+	if err != nil {
+		return result.Error(exception.RequestParamError).SetError(err, c)
+	}
+
+	if user.Uid == uid {
+		return result.Error(exception.UnSubscribeSelfError)
+	}
+
+	status, err := s.subscribeService.DeleteSubscribe(user.Uid, uid)
 	if status == xstatus.DbNotFound {
 		return result.Error(exception.UserNotFoundError)
+	} else if status == xstatus.DbTagA { // TODO
+		return result.Error(exception.NotSubscribeYetError)
 	} else if status == xstatus.DbFailed {
-		return result.Error(exception.UnSubscribeError)
+		return result.Error(exception.UnSubscribeError).SetError(err, c)
 	}
 
 	return result.Ok()
