@@ -36,6 +36,7 @@ func initRoute(engine *gin.Engine) {
 		userCtrl      = controller.NewUserController()
 		subscribeCtrl = controller.NewSubscribeController()
 		videoCtrl     = controller.NewVideoController()
+		rbacCtrl      = controller.NewRbacController()
 	)
 
 	jwtMw := middleware.JwtMiddleware()
@@ -79,5 +80,16 @@ func initRoute(engine *gin.Engine) {
 		videoGroup.POST("", authMw, j(videoCtrl.InsertVideo))
 		videoGroup.PUT(":vid", authMw, j(videoCtrl.UpdateVideo))
 		videoGroup.DELETE(":vid", authMw, j(videoCtrl.DeleteVideo))
+	}
+
+	rbacGroup := v1.Group("rbac")
+	{
+		rbacGroup.Use(jwtMw, casbinMw)
+		rbacGroup.GET("rule", j(rbacCtrl.GetRules))
+		rbacGroup.PUT("user/{uid}", j(rbacCtrl.ChangeRole))
+		rbacGroup.POST("subject", j(rbacCtrl.InsertSubject))
+		rbacGroup.POST("policy", j(rbacCtrl.InsertPolicy))
+		rbacGroup.DELETE("subject", j(rbacCtrl.DeleteSubject))
+		rbacGroup.DELETE("policy", j(rbacCtrl.DeletePolicy))
 	}
 }

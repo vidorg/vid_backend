@@ -76,6 +76,23 @@ var (
 	VideoUrlExistError = New(409, 40011, "video url has been used") // 视频资源已使用
 )
 
+// rbac rule exceptions
+var (
+	QueryRbacRuleError  = New(500, se(), "query rbac rule failed")
+	ChangeRoleError     = New(500, se(), "change user role failed")
+	ChangeSelfRoleError = New(400, ce(), "could not change self's role")
+
+	RbacSubjectInsertError   = New(500, se(), "insert rbac subject failed")
+	RbacSubjectExistedError  = New(409, ce(), "rbac subject exists")
+	RbacSubjectDeleteError   = New(500, se(), "delete rbac subject failed")
+	RbacSubjectNotFoundError = New(404, ce(), "rbac subject not found")
+
+	RbacPolicyInsertError   = New(500, se(), "insert rbac policy failed")
+	RbacPolicyExistedError  = New(409, ce(), "rbac policy exists")
+	RbacPolicyDeleteError   = New(500, se(), "delete rbac policy failed")
+	RbacPolicyNotFoundError = New(404, ce(), "rbac policy not found")
+)
+
 func WrapValidationError(err error) *Error {
 	if xvalidator.ValidationRequiredError(err) {
 		return RequestParamError
