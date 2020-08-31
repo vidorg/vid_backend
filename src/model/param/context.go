@@ -57,7 +57,7 @@ func BindRouteId(c *gin.Context, field string) (uint64, error) {
 		return 0, err
 	}
 	if uid <= 0 {
-		return 0, fmt.Errorf("id shoule larger than 0")
+		return 0, fmt.Errorf("id should be larger than 0")
 	}
 
 	return uid, nil

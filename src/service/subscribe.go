@@ -1,6 +1,7 @@
 package service
 
 import (
+	"fmt"
 	"github.com/Aoi-hosizora/ahlib-web/xgorm"
 	"github.com/Aoi-hosizora/ahlib/xdi"
 	"github.com/Aoi-hosizora/ahlib/xstatus"
@@ -9,6 +10,7 @@ import (
 	"github.com/vidorg/vid_backend/src/model/param"
 	"github.com/vidorg/vid_backend/src/model/po"
 	"github.com/vidorg/vid_backend/src/provide/sn"
+	"strings"
 )
 
 type SubscribeService struct {
@@ -70,20 +72,71 @@ func (s *SubscribeService) QuerySubscribings(uid uint64, pp *param.PageOrderPara
 	return users, total, nil
 }
 
+type groupByResult struct {
+	Id  uint64
+	Cnt int32
+}
+
 func (s *SubscribeService) QueryCountByUids(uids []uint64) ([]*[2]int32, error) {
-	// ok, err := s.userService.Existed(uid)
-	// if err != nil {
-	// 	return nil, err
-	// } else if !ok {
-	// 	return nil, nil
-	// }
-	//
-	// subscribingCnt = int32(s.subscribingAsso(uid).Count())
-	// subscriberCnt = int32(s.subscriberAsso(uid).Count())
-	//
-	// return subscribingCnt, subscriberCnt, nil
-	// TODO
-	return nil, nil
+	if len(uids) == 0 {
+		return []*[2]int32{}, nil
+	}
+
+	// subscribing
+	sp := strings.Builder{}
+	for _, uid := range uids {
+		sp.WriteString(fmt.Sprintf("from_uid = %d OR ", uid))
+	}
+	where := sp.String()
+	where = where[:len(where)-4]
+
+	subings := make([]*groupByResult, 0)
+	rdb := s.db.Table("tbl_subscribe").Select("from_uid as id, count(*) as cnt").Where(where).Group("from_uid").Scan(&subings)
+	if rdb.Error != nil {
+		return nil, rdb.Error
+	}
+
+	// subscriber
+	sp = strings.Builder{}
+	for _, uid := range uids {
+		sp.WriteString(fmt.Sprintf("to_uid = %d OR ", uid))
+	}
+	where = sp.String()
+	where = where[:len(where)-4]
+
+	subers := make([]*groupByResult, 0)
+	rdb = s.db.Table("tbl_subscribe").Select("to_uid as id, count(*) as cnt").Where(where).Group("to_uid").Scan(&subers)
+	if rdb.Error != nil {
+		return nil, rdb.Error
+	}
+
+	bucket := make(map[uint64][2]int32, len(uids))
+	for _, subing := range subings {
+		a, ok := bucket[subing.Id]
+		if !ok {
+			a = [2]int32{}
+		}
+		a[0] = subing.Cnt
+		bucket[subing.Id] = a
+	}
+	for _, suber := range subers {
+		a, ok := bucket[suber.Id]
+		if !ok {
+			a = [2]int32{}
+		}
+		a[1] = suber.Cnt
+		bucket[suber.Id] = a
+	}
+
+	out := make([]*[2]int32, len(uids))
+	for idx, uid := range uids {
+		arr, ok := bucket[uid]
+		if ok {
+			out[idx] = &arr
+		}
+	}
+
+	return out, nil
 }
 
 func (s *SubscribeService) CheckSubscribeByUids(me uint64, uids []uint64) ([]*[2]bool, error) {

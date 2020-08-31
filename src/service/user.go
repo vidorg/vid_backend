@@ -1,6 +1,7 @@
 package service
 
 import (
+	"fmt"
 	"github.com/Aoi-hosizora/ahlib-web/xgorm"
 	"github.com/Aoi-hosizora/ahlib/xdi"
 	"github.com/Aoi-hosizora/ahlib/xstatus"
@@ -10,6 +11,7 @@ import (
 	"github.com/vidorg/vid_backend/src/model/param"
 	"github.com/vidorg/vid_backend/src/model/po"
 	"github.com/vidorg/vid_backend/src/provide/sn"
+	"strings"
 )
 
 type UserService struct {
@@ -38,8 +40,37 @@ func (u *UserService) QueryAll(pp *param.PageOrderParam) ([]*po.User, int32, err
 }
 
 func (u *UserService) QueryByUids(uids []uint64) ([]*po.User, error) {
-	// TODO
-	return nil, nil
+	if len(uids) == 0 {
+		return []*po.User{}, nil
+	}
+
+	sp := strings.Builder{}
+	for _, uid := range uids {
+		sp.WriteString(fmt.Sprintf("uid = %d OR ", uid))
+	}
+	where := sp.String()
+	where = where[:len(where)-4]
+
+	users := make([]*po.User, 0)
+	rdb := u.db.Model(&po.User{}).Where(where).Find(&users)
+	if rdb.Error != nil {
+		return nil, rdb.Error
+	}
+
+	bucket := make(map[uint64]*po.User, len(uids))
+	for _, user := range users {
+		bucket[user.Uid] = user
+	}
+
+	out := make([]*po.User, len(uids))
+	for idx, uid := range uids {
+		user, ok := bucket[uid]
+		if ok {
+			out[idx] = user
+		}
+	}
+
+	return out, nil
 }
 
 func (u *UserService) QueryByUid(uid uint64) (*po.User, error) {

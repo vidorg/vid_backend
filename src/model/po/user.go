@@ -21,8 +21,8 @@ type User struct {
 	Phone    string             `gorm:"type:varchar(127); not null"`                           // user phone number
 
 	// tbl_subscribe
-	Subscribings []*User `gorm:"many2many:subscribe; jointable_foreignkey:subscriber_uid; association_jointable_foreignkey:up_uid"`         // up_uid -> subscriber_uid
-	Subscribers  []*User `gorm:"many2many:subscribe; jointable_foreignkey:up_uid;         association_jointable_foreignkey:subscriber_uid"` // subscriber_uid -> up_uid
+	Subscribings []*User `gorm:"many2many:subscribe; jointable_foreignkey:from_uid; association_jointable_foreignkey:to_uid"`   // to_uid -> from_uid
+	Subscribers  []*User `gorm:"many2many:subscribe; jointable_foreignkey:to_uid;   association_jointable_foreignkey:from_uid"` // from_uid -> to_uid
 
 	xgorm.GormCUTime
 	DeletedAt *time.Time `gorm:"default:'1970-01-01 00:00:00'; unique_index:uk_username,uk_email"`
