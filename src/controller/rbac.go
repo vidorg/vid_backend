@@ -123,7 +123,7 @@ func (r *RbacController) InsertSubject(c *gin.Context) *result.Result {
 		return result.Error(exception.WrapValidationError(err)).SetError(err, c)
 	}
 
-	status, err := r.casbinService.AddSubject(pa.Sub, pa.Sub2)
+	status, err := r.casbinService.AddSubject(pa.New, pa.From)
 	if status == xstatus.DbExisted {
 		return result.Error(exception.RbacSubjectExistedError)
 	} else if status == xstatus.DbFailed {
@@ -158,7 +158,7 @@ func (r *RbacController) DeleteSubject(c *gin.Context) *result.Result {
 		return result.Error(exception.WrapValidationError(err)).SetError(err, c)
 	}
 
-	status, err := r.casbinService.RemoveSubject(pa.Sub, pa.Sub2)
+	status, err := r.casbinService.RemoveSubject(pa.New, pa.From)
 	if status == xstatus.DbNotFound {
 		return result.Error(exception.RbacSubjectNotFoundError)
 	} else if status == xstatus.DbFailed {

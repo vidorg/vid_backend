@@ -21,13 +21,13 @@ func init() {
 }
 
 type UpdateUserParam struct {
-	Username string  `form:"username"     json:"username"     binding:"required,min=5,max=30,name"` // username
-	Nickname string  `form:"nickname"     json:"nickname"     binding:"required,min=5,max=30,name"` // user nickname
-	Gender   int8    `form:"gender"       json:"gender"       binding:"required"`                   // user gender (0X, 1M, 2F)
-	Profile  *string `form:"profile"      json:"profile"      binding:"required,min=0,max=255"`     // user profile, allowempty
-	Birthday string  `form:"birthday"     json:"birthday"     binding:"required,date"`              // user birthday
-	Phone    string  `form:"phone"        json:"phone"        binding:"required,phone"`             // user phone number
-	Avatar   string  `form:"avatar"       json:"avatar"       binding:"required,url"`               // user avatar
+	Username string  `json:"username"     form:"username"     binding:"required,min=5,max=30,name"` // username
+	Nickname string  `json:"nickname"     form:"nickname"     binding:"required,min=5,max=30,name"` // user nickname
+	Gender   int8    `json:"gender"       form:"gender"       binding:"required"`                   // user gender (0X, 1M, 2F)
+	Profile  *string `json:"profile"      form:"profile"      binding:"required,min=0,max=255"`     // user profile, allowempty
+	Birthday string  `json:"birthday"     form:"birthday"     binding:"required,date"`              // user birthday
+	Phone    string  `json:"phone"        form:"phone"        binding:"required,phone"`             // user phone number
+	Avatar   string  `json:"avatar"       form:"avatar"       binding:"required,url"`               // user avatar
 }
 
 func (u *UpdateUserParam) ToMap() map[string]interface{} {

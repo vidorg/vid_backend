@@ -3,7 +3,6 @@ package service
 import (
 	"github.com/Aoi-hosizora/ahlib-web/xgorm"
 	"github.com/Aoi-hosizora/ahlib/xdi"
-	"github.com/Aoi-hosizora/ahlib/xproperty"
 	"github.com/Aoi-hosizora/ahlib/xstatus"
 	"github.com/jinzhu/gorm"
 	"github.com/vidorg/vid_backend/src/model/constant"
@@ -21,7 +20,7 @@ type UserService struct {
 func NewUserService() *UserService {
 	return &UserService{
 		db:      xdi.GetByNameForce(sn.SGorm).(*gorm.DB),
-		orderBy: xgorm.OrderByFunc(xproperty.GetDefaultMapper(&dto.UserDto{}, &po.User{}).GetDict()),
+		orderBy: xgorm.OrderByFunc(dto.BuildUserPropertyMapper()),
 	}
 }
 

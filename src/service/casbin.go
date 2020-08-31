@@ -53,8 +53,7 @@ func (c *CasbinService) GetAllRules(pp *param.PageParam) ([]*po.RbacRule, int32,
 }
 
 func (c *CasbinService) addRule(rule *po.RbacRule) (xstatus.DbStatus, error) {
-	m := rule.ToMap()
-	rdb := c.db.Table(c.tblName).Where(m).First(&po.RbacRule{})
+	rdb := c.db.Table(c.tblName).Where(rule.ToMap()).First(&po.RbacRule{})
 	if !rdb.RecordNotFound() {
 		return xstatus.DbExisted, nil
 	} else if rdb.Error != nil {
@@ -69,15 +68,15 @@ func (c *CasbinService) addRule(rule *po.RbacRule) (xstatus.DbStatus, error) {
 }
 
 func (c *CasbinService) removeRule(rule *po.RbacRule) (xstatus.DbStatus, error) {
-	m := rule.ToMap()
-	rdb := c.db.Table(c.tblName).Where(m).First(&po.RbacRule{})
+	ruleMap := rule.ToMap()
+	rdb := c.db.Table(c.tblName).Where(ruleMap).First(&po.RbacRule{})
 	if rdb.RecordNotFound() {
 		return xstatus.DbNotFound, nil
 	} else if rdb.Error != nil {
 		return xstatus.DbFailed, rdb.Error
 	}
 
-	rdb = c.db.Table(c.tblName).Where(m).Delete(rule)
+	rdb = c.db.Table(c.tblName).Where(ruleMap).Delete(rule)
 	if rdb.RowsAffected == 0 || rdb.Error != nil {
 		return xstatus.DbFailed, rdb.Error
 	}

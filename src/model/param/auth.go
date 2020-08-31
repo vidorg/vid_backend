@@ -26,13 +26,13 @@ func init() {
 }
 
 type RegisterParam struct {
-	Email    string `form:"email"    json:"email"    binding:"required,min=5,max=30,email"` // register email
-	Password string `form:"password" json:"password" binding:"required,min=8,max=30,pwd"`   // register password
+	Email    string `json:"email"    form:"email"    binding:"required,min=5,max=30,email"` // register email
+	Password string `json:"password" form:"password" binding:"required,min=8,max=30,pwd"`   // register password
 }
 
 type LoginParam struct {
 	Parameter string `json:"parameter" form:"parameter" binding:"required"` // login parameter
-	Password  string `form:"password"  json:"password"  binding:"required"` // login password
+	Password  string `json:"password"  form:"password"  binding:"required"` // login password
 }
 
 type UpdatePasswordParam struct {

@@ -18,17 +18,10 @@ func init() {
 }
 
 type InsertVideoParam struct {
-	Title       string  `form:"title"       json:"title"       binding:"required,min=1,max=100"`
-	Description *string `form:"description" json:"description" binding:"required,min=0,max=255"`
-	CoverUrl    string  `form:"cover_url"   json:"cover_url"   binding:"required,url"`
-	VideoUrl    string  `form:"video_url"   json:"video_url"   binding:"required,url"`
-}
-
-type UpdateVideoParam struct {
-	Title       string  `form:"title"       json:"title"       binding:"required,min=1,max=100"`
-	Description *string `form:"description" json:"description" binding:"required,min=0,max=255"`
-	CoverUrl    string  `form:"cover_url"   json:"cover_url"   binding:"required,url"`
-	VideoUrl    string  `form:"video_url"   json:"video_url"   binding:"required,url"`
+	Title       string  `json:"title"       form:"title"       binding:"required,min=1,max=100"`
+	Description *string `json:"description" form:"description" binding:"required,min=0,max=255"`
+	CoverUrl    string  `json:"cover_url"   form:"cover_url"   binding:"required,url"`
+	VideoUrl    string  `json:"video_url"   form:"video_url"   binding:"required,url"`
 }
 
 func (i *InsertVideoParam) ToPo() *po.Video {
@@ -38,6 +31,13 @@ func (i *InsertVideoParam) ToPo() *po.Video {
 		VideoUrl:    i.VideoUrl,
 		CoverUrl:    i.CoverUrl,
 	}
+}
+
+type UpdateVideoParam struct {
+	Title       string  `json:"title"       form:"title"       binding:"required,min=1,max=100"`
+	Description *string `json:"description" form:"description" binding:"required,min=0,max=255"`
+	CoverUrl    string  `json:"cover_url"   form:"cover_url"   binding:"required,url"`
+	VideoUrl    string  `json:"video_url"   form:"video_url"   binding:"required,url"`
 }
 
 func (u *UpdateVideoParam) ToMap() map[string]interface{} {

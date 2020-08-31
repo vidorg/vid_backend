@@ -5,7 +5,6 @@ import (
 	"github.com/vidorg/vid_backend/src/common/logger"
 	"github.com/vidorg/vid_backend/src/config"
 	"github.com/vidorg/vid_backend/src/database"
-	"github.com/vidorg/vid_backend/src/model/profile"
 	"github.com/vidorg/vid_backend/src/provide/sn"
 	"github.com/vidorg/vid_backend/src/service"
 	"log"
@@ -46,10 +45,6 @@ func Provide(configPath string) error {
 		log.Fatalln("Failed to setup casbin enforcer:", err)
 	}
 	xdi.ProvideName(sn.SEnforcer, enforcer)
-
-	// Profile mappers
-	profile.BuildEntityMappers()
-	profile.BuildPropertyMappers()
 
 	// ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

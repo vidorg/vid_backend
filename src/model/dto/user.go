@@ -85,31 +85,6 @@ func BuildUserDtos(users []*po.User) []*UserDto {
 	return out
 }
 
-type LoginDto struct {
-	User  *UserDto `json:"user"`  // authorized user
-	Token string   `json:"token"` // access token
-}
-
-func BuildLoginDto(user *po.User, token string) *LoginDto {
-	return &LoginDto{
-		User:  BuildUserDto(user),
-		Token: token,
-	}
-}
-
-type UserExtraDto struct {
-	Subscribings *int32 `json:"subscribings"`
-	Subscribers  *int32 `json:"subscribers"`
-	Videos       *int32 `json:"videos"`
-}
-
-func BuildUserExtraDto(dto *UserExtraDto) *UserExtraDto {
-	if dto.Subscribings == nil && dto.Subscribers == nil && dto.Videos == nil {
-		return nil
-	}
-	return dto
-}
-
 func BuildUserPropertyMapper() xproperty.PropertyDict {
 	return xproperty.PropertyDict{
 		"uid":           xproperty.NewValue(false, "uid"),
@@ -124,5 +99,23 @@ func BuildUserPropertyMapper() xproperty.PropertyDict {
 		"role":          xproperty.NewValue(false, "role"),
 		"state":         xproperty.NewValue(false, "state"),
 		"register_time": xproperty.NewValue(false, "created_at"),
+	}
+}
+
+type UserExtraDto struct {
+	Subscribings *int32 `json:"subscribings"`
+	Subscribers  *int32 `json:"subscribers"`
+	Videos       *int32 `json:"videos"`
+}
+
+type LoginDto struct {
+	User  *UserDto `json:"user"`  // authorized user
+	Token string   `json:"token"` // access token
+}
+
+func BuildLoginDto(user *po.User, token string) *LoginDto {
+	return &LoginDto{
+		User:  BuildUserDto(user),
+		Token: token,
 	}
 }

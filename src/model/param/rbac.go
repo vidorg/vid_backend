@@ -31,8 +31,8 @@ type ChangeUserRoleParam struct {
 }
 
 type RbacSubjectParam struct {
-	Sub  string `json:"sub"  form:"sub"  binding:"required"` // sub
-	Sub2 string `json:"sub2" form:"sub2" binding:"required"` // sub2
+	New  string `json:"new"  form:"new"  binding:"required"` // new subject
+	From string `json:"from" form:"from" binding:"required"` // from subject
 }
 
 type RbacPolicyParam struct {
