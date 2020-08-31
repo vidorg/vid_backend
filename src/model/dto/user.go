@@ -103,9 +103,11 @@ func BuildUserPropertyMapper() xproperty.PropertyDict {
 }
 
 type UserExtraDto struct {
-	Subscribings *int32 `json:"subscribings"`
-	Subscribers  *int32 `json:"subscribers"`
-	Videos       *int32 `json:"videos"`
+	Subscribings  *int32 `json:"subscribings"`
+	Subscribers   *int32 `json:"subscribers"`
+	IsSubscribing *bool  `json:"is_subscribing"`
+	IsSubscriber  *bool  `json:"is_subscriber"`
+	Videos        *int32 `json:"videos"`
 }
 
 type LoginDto struct {

@@ -37,6 +37,11 @@ func (u *UserService) QueryAll(pp *param.PageOrderParam) ([]*po.User, int32, err
 	return users, total, nil
 }
 
+func (u *UserService) QueryByUids(uids []uint64) ([]*po.User, error) {
+	// TODO
+	return nil, nil
+}
+
 func (u *UserService) QueryByUid(uid uint64) (*po.User, error) {
 	user := &po.User{}
 	rdb := u.db.Model(&po.User{}).Where(&po.User{Uid: uid}).First(user)

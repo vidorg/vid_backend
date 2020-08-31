@@ -10,6 +10,7 @@ import (
 	"github.com/vidorg/vid_backend/src/config"
 	"github.com/vidorg/vid_backend/src/model/dto"
 	"github.com/vidorg/vid_backend/src/model/param"
+	"github.com/vidorg/vid_backend/src/model/po"
 	"github.com/vidorg/vid_backend/src/provide/sn"
 	"github.com/vidorg/vid_backend/src/service"
 )
@@ -46,6 +47,7 @@ type UserController struct {
 	userService      *service.UserService
 	subscribeService *service.SubscribeService
 	videoService     *service.VideoService
+	common           *CommonController
 }
 
 func NewUserController() *UserController {
@@ -55,18 +57,32 @@ func NewUserController() *UserController {
 		userService:      xdi.GetByNameForce(sn.SUserService).(*service.UserService),
 		subscribeService: xdi.GetByNameForce(sn.SSubscribeService).(*service.SubscribeService),
 		videoService:     xdi.GetByNameForce(sn.SVideoService).(*service.VideoService),
+		common:           xdi.GetByNameForce(sn.SCommonController).(*CommonController),
 	}
 }
 
 // GET /v1/user
 func (u *UserController) QueryAll(c *gin.Context) *result.Result {
+	user := u.jwtService.GetContextUser(c)
+	if user == nil {
+		return nil
+	}
+
 	pp := param.BindPageOrder(c, u.config)
 	users, total, err := u.userService.QueryAll(pp)
 	if err != nil {
 		return result.Error(exception.QueryUserError).SetError(err, c)
 	}
 
+	extras, err := u.common.getUsersExtra(c, user, users)
+	if err != nil {
+		return result.Error(exception.QueryUserError).SetError(err, c)
+	}
+
 	res := dto.BuildUserDtos(users)
+	for idx, user := range res {
+		user.Extra = extras[idx]
+	}
 	return result.Ok().SetPage(pp.Page, pp.Limit, total, res)
 }
 
@@ -84,9 +100,14 @@ func (u *UserController) QueryByUid(c *gin.Context) *result.Result {
 		return result.Error(exception.UserNotFoundError)
 	}
 
-	// TODO extra
+	authUser := u.jwtService.GetContextUser(c)
+	extras, err := u.common.getUsersExtra(c, authUser, []*po.User{user})
+	if err != nil {
+		return result.Error(exception.QueryUserError).SetError(err, c)
+	}
 
 	res := dto.BuildUserDto(user)
+	res.Extra = extras[0]
 	return result.Ok().SetData(res)
 }
 
@@ -104,9 +125,14 @@ func (u *UserController) QueryByUsername(c *gin.Context) *result.Result {
 		return result.Error(exception.UserNotFoundError)
 	}
 
-	// TODO extra
+	authUser := u.jwtService.GetContextUser(c)
+	extras, err := u.common.getUsersExtra(c, authUser, []*po.User{user})
+	if err != nil {
+		return result.Error(exception.QueryUserError).SetError(err, c)
+	}
 
 	res := dto.BuildUserDto(user)
+	res.Extra = extras[0]
 	return result.Ok().SetData(res)
 }
 

@@ -4,6 +4,7 @@ import (
 	"github.com/Aoi-hosizora/ahlib/xdi"
 	"github.com/vidorg/vid_backend/src/common/logger"
 	"github.com/vidorg/vid_backend/src/config"
+	"github.com/vidorg/vid_backend/src/controller"
 	"github.com/vidorg/vid_backend/src/database"
 	"github.com/vidorg/vid_backend/src/provide/sn"
 	"github.com/vidorg/vid_backend/src/service"
@@ -57,6 +58,9 @@ func Provide(configPath string) error {
 	xdi.ProvideName(sn.SVideoService, service.NewVideoService())
 	xdi.ProvideName(sn.SJwtService, service.NewJwtService())
 	xdi.ProvideName(sn.SCasbinService, service.NewCasbinService())
+
+	// controllers
+	xdi.ProvideName(sn.SCommonController, controller.NewCommonController())
 
 	return nil
 }

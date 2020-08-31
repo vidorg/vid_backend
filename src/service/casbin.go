@@ -1,6 +1,7 @@
 package service
 
 import (
+	"github.com/Aoi-hosizora/ahlib-web/xgorm"
 	"github.com/Aoi-hosizora/ahlib/xdi"
 	"github.com/Aoi-hosizora/ahlib/xstatus"
 	"github.com/casbin/casbin/v2"
@@ -42,9 +43,7 @@ func (c *CasbinService) GetAllRules(pp *param.PageParam) ([]*po.RbacRule, int32,
 	total := int32(0)
 	rules := make([]*po.RbacRule, 0)
 	c.db.Table(c.tblName).Count(&total)
-	rdb := c.db.Table(c.tblName).Limit(pp.Limit).Offset((pp.Page - 1) * pp.Limit).
-		Order("p_type").Order("v0").
-		Find(&rules)
+	rdb := xgorm.WithDB(c.db).Pagination(pp.Limit, pp.Page).Table(c.tblName).Order("p_type").Order("v0").Find(&rules)
 
 	if rdb.Error != nil {
 		return nil, 0, rdb.Error

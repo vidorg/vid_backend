@@ -51,6 +51,7 @@ type SubscribeController struct {
 	jwtService       *service.JwtService
 	userService      *service.UserService
 	subscribeService *service.SubscribeService
+	common           *CommonController
 }
 
 func NewSubscribeController() *SubscribeController {
@@ -59,6 +60,7 @@ func NewSubscribeController() *SubscribeController {
 		jwtService:       xdi.GetByNameForce(sn.SJwtService).(*service.JwtService),
 		userService:      xdi.GetByNameForce(sn.SUserService).(*service.UserService),
 		subscribeService: xdi.GetByNameForce(sn.SSubscribeService).(*service.SubscribeService),
+		common:           xdi.GetByNameForce(sn.SCommonController).(*CommonController),
 	}
 }
 
@@ -77,9 +79,16 @@ func (s *SubscribeController) QuerySubscribers(c *gin.Context) *result.Result {
 		return result.Error(exception.UserNotFoundError)
 	}
 
-	// TODO extra
+	authUser := s.jwtService.GetContextUser(c)
+	extras, err := s.common.getUsersExtra(c, authUser, users)
+	if err != nil {
+		return result.Error(exception.QueryUserError).SetError(err, c)
+	}
 
 	res := dto.BuildUserDtos(users)
+	for idx, user := range res {
+		user.Extra = extras[idx]
+	}
 	return result.Ok().SetPage(pp.Page, pp.Limit, total, res)
 }
 
@@ -98,9 +107,16 @@ func (s *SubscribeController) QuerySubscribings(c *gin.Context) *result.Result {
 		return result.Error(exception.UserNotFoundError)
 	}
 
-	// TODO extra
+	authUser := s.jwtService.GetContextUser(c)
+	extras, err := s.common.getUsersExtra(c, authUser, users)
+	if err != nil {
+		return result.Error(exception.QueryUserError).SetError(err, c)
+	}
 
 	res := dto.BuildUserDtos(users)
+	for idx, user := range res {
+		user.Extra = extras[idx]
+	}
 	return result.Ok().SetPage(pp.Page, pp.Limit, total, res)
 }
 

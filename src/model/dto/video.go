@@ -28,8 +28,8 @@ type VideoDto struct {
 	Description string   `json:"description"` // video description
 	VideoUrl    string   `json:"video_url"`   // video source url (oss)
 	CoverUrl    string   `json:"cover_url"`   // video cover url (oss)
-	Author      *UserDto `json:"author"`      // video author
 	UploadTime  string   `json:"upload_time"` // video upload time
+	Author      *UserDto `json:"author"`      // video author
 }
 
 func BuildVideoDto(video *po.Video) *VideoDto {

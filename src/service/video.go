@@ -35,18 +35,17 @@ func (v *VideoService) QueryAll(pp *param.PageOrderParam) ([]*po.Video, int32, e
 		return nil, 0, rdb.Error
 	}
 
-	// TODO Use OR operator
-	for _, video := range videos {
-		user := &po.User{}
-		rdb := v.db.Model(&po.User{}).Where(&po.User{Uid: video.AuthorUid}).First(user) // TODO Use Related
-		if rdb.RecordNotFound() {
-			video.Author = nil
-		} else if rdb.Error != nil {
-			return nil, 0, rdb.Error
-		} else {
-			video.Author = user
-		}
-	}
+	// for _, video := range videos {
+	// 	user := &po.User{}
+	// 	rdb := v.db.Model(&po.User{}).Where(&po.User{Uid: video.AuthorUid}).First(user)
+	// 	if rdb.RecordNotFound() {
+	// 		video.Author = nil
+	// 	} else if rdb.Error != nil {
+	// 		return nil, 0, rdb.Error
+	// 	} else {
+	// 		video.Author = user
+	// 	}
+	// }
 
 	return videos, total, nil
 }
@@ -68,9 +67,9 @@ func (v *VideoService) QueryByUid(uid uint64, pp *param.PageOrderParam) ([]*po.V
 		return nil, 0, rdb.Error
 	}
 
-	for _, video := range videos {
-		video.Author = author
-	}
+	// for _, video := range videos {
+	// 	video.Author = author
+	// }
 
 	return videos, total, nil
 }
@@ -84,34 +83,36 @@ func (v *VideoService) QueryByVid(vid uint64) (*po.Video, error) {
 		return nil, rdb.Error
 	}
 
-	user := &po.User{}
-	rdb = v.db.Model(&po.User{}).Where(&po.User{Uid: video.AuthorUid}).First(&user)
-	if rdb.RecordNotFound() {
-		video.Author = nil
-	} else if rdb.Error != nil {
-		return nil, rdb.Error
-	} else {
-		video.Author = user
-	}
+	// user := &po.User{}
+	// rdb = v.db.Model(&po.User{}).Where(&po.User{Uid: video.AuthorUid}).First(&user)
+	// if rdb.RecordNotFound() {
+	// 	video.Author = nil
+	// } else if rdb.Error != nil {
+	// 	return nil, rdb.Error
+	// } else {
+	// 	video.Author = user
+	// }
 
 	return video, nil
 }
 
-func (v *VideoService) QueryCountByUid(uid uint64) (int32, error) {
-	ok, err := v.userService.Existed(uid)
-	if err != nil {
-		return 0, err
-	} else if !ok {
-		return -1, nil
-	}
-
-	total := int32(0)
-	rdb := v.db.Model(&po.Video{}).Where(&po.Video{AuthorUid: uid}).Count(&total)
-	if rdb.Error != nil {
-		return 0, rdb.Error
-	}
-
-	return total, nil
+func (v *VideoService) QueryCountByUids(uids []uint64) ([]int32, error) {
+	// ok, err := v.userService.Existed(uid)
+	// if err != nil {
+	// 	return 0, err
+	// } else if !ok {
+	// 	return -1, nil
+	// }
+	//
+	// total := int32(0)
+	// rdb := v.db.Model(&po.Video{}).Where(&po.Video{AuthorUid: uid}).Count(&total)
+	// if rdb.Error != nil {
+	// 	return 0, rdb.Error
+	// }
+	//
+	// return total, nil
+	// TODO
+	return nil, nil
 }
 
 func (v *VideoService) Existed(vid uint64) (bool, error) {

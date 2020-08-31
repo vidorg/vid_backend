@@ -10,6 +10,7 @@ import (
 	"github.com/vidorg/vid_backend/src/config"
 	"github.com/vidorg/vid_backend/src/model/dto"
 	"github.com/vidorg/vid_backend/src/model/param"
+	"github.com/vidorg/vid_backend/src/model/po"
 	"github.com/vidorg/vid_backend/src/provide/sn"
 	"github.com/vidorg/vid_backend/src/service"
 )
@@ -62,6 +63,7 @@ type VideoController struct {
 	config       *config.Config
 	jwtService   *service.JwtService
 	videoService *service.VideoService
+	common       *CommonController
 }
 
 func NewVideoController() *VideoController {
@@ -69,6 +71,7 @@ func NewVideoController() *VideoController {
 		config:       xdi.GetByNameForce(sn.SConfig).(*config.Config),
 		jwtService:   xdi.GetByNameForce(sn.SJwtService).(*service.JwtService),
 		videoService: xdi.GetByNameForce(sn.SVideoService).(*service.VideoService),
+		common:       xdi.GetByNameForce(sn.SCommonController).(*CommonController),
 	}
 }
 
@@ -80,7 +83,15 @@ func (v *VideoController) QueryAllVideos(c *gin.Context) *result.Result {
 		return result.Error(exception.QueryVideoError).SetError(err, c)
 	}
 
+	authors, err := v.common.getVideosAuthor(c, videos)
+	if err != nil {
+		return result.Error(exception.QueryVideoError).SetError(err, c)
+	}
+
 	res := dto.BuildVideoDtos(videos)
+	for idx, video := range res {
+		video.Author = dto.BuildUserDto(authors[idx])
+	}
 	return result.Ok().SetPage(pp.Page, pp.Limit, total, res)
 }
 
@@ -99,7 +110,15 @@ func (v *VideoController) QueryVideosByUid(c *gin.Context) *result.Result {
 		return result.Error(exception.UserNotFoundError)
 	}
 
+	authors, err := v.common.getVideosAuthor(c, videos)
+	if err != nil {
+		return result.Error(exception.QueryVideoError).SetError(err, c)
+	}
+
 	res := dto.BuildVideoDtos(videos)
+	for idx, video := range res {
+		video.Author = dto.BuildUserDto(authors[idx])
+	}
 	return result.Ok().SetPage(pp.Page, pp.Limit, total, res)
 }
 
@@ -117,7 +136,13 @@ func (v *VideoController) QueryVideoByVid(c *gin.Context) *result.Result {
 		return result.Error(exception.VideoNotFoundError)
 	}
 
+	authors, err := v.common.getVideosAuthor(c, []*po.Video{video})
+	if err != nil {
+		return result.Error(exception.QueryVideoError).SetError(err, c)
+	}
+
 	res := dto.BuildVideoDto(video)
+	res.Author = dto.BuildUserDto(authors[0])
 	return result.Ok().SetData(res)
 }
 

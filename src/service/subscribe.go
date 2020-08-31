@@ -70,18 +70,25 @@ func (s *SubscribeService) QuerySubscribings(uid uint64, pp *param.PageOrderPara
 	return users, total, nil
 }
 
-func (s *SubscribeService) QueryCountByUid(uid uint64) (subscribingCnt int32, subscriberCnt int32, err error) {
-	ok, err := s.userService.Existed(uid)
-	if err != nil {
-		return 0, 0, err
-	} else if !ok {
-		return -1, -1, nil
-	}
+func (s *SubscribeService) QueryCountByUids(uids []uint64) ([]*[2]int32, error) {
+	// ok, err := s.userService.Existed(uid)
+	// if err != nil {
+	// 	return nil, err
+	// } else if !ok {
+	// 	return nil, nil
+	// }
+	//
+	// subscribingCnt = int32(s.subscribingAsso(uid).Count())
+	// subscriberCnt = int32(s.subscriberAsso(uid).Count())
+	//
+	// return subscribingCnt, subscriberCnt, nil
+	// TODO
+	return nil, nil
+}
 
-	subscribingCnt = int32(s.subscribingAsso(uid).Count())
-	subscriberCnt = int32(s.subscriberAsso(uid).Count())
-
-	return subscribingCnt, subscriberCnt, nil
+func (s *SubscribeService) CheckSubscribeByUids(me uint64, uids []uint64) ([]*[2]bool, error) {
+	// TODO
+	return nil, nil
 }
 
 func (s *SubscribeService) InsertSubscribe(uid uint64, to uint64) (xstatus.DbStatus, error) {
