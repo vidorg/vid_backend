@@ -40,7 +40,7 @@ func (e *EmailService) SendTo(to string, spec string) error {
 	message := gomail.NewMessage()
 	message.SetHeader("From", cfg.Name)
 	message.SetHeader("To", to)
-	message.SetHeader("Subject", "Active fom-backend account")
+	message.SetHeader("Subject", "Active your vid account")
 
 	body := "Please visit the next link to active your account:\n"
 	body += "http://localhost:3344/v1/auth/spec/" + spec

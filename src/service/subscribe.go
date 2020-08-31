@@ -86,6 +86,7 @@ func (s *SubscribeService) QueryCountByUid(uid uint64) (subscribingCnt int32, su
 }
 
 func (s *SubscribeService) InsertSubscribe(uid uint64, to uint64) (xstatus.DbStatus, error) {
+	// TODO
 	ok1, err1 := s.userService.Existed(uid)
 	ok2, err2 := s.userService.Existed(to)
 	if err1 != nil {
@@ -105,6 +106,7 @@ func (s *SubscribeService) InsertSubscribe(uid uint64, to uint64) (xstatus.DbSta
 }
 
 func (s *SubscribeService) DeleteSubscribe(uid uint64, to uint64) (xstatus.DbStatus, error) {
+	// TODO
 	ok1, err1 := s.userService.Existed(uid)
 	ok2, err2 := s.userService.Existed(to)
 	if err1 != nil {

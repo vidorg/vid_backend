@@ -83,7 +83,7 @@ func (u *UserService) UpdateRole(uid uint64, role string) (xstatus.DbStatus, err
 }
 
 func (u *UserService) UpdateState(uid uint64, state constant.UserState) (xstatus.DbStatus, error) {
-	rdb := u.db.Model(&po.User{}).Where(&po.User{Uid: uid}).Update(map[string]interface{}{"state": state})
+	rdb := u.db.Model(&po.User{}).Where(&po.User{Uid: uid}).Update("state", state)
 	return xgorm.UpdateErr(rdb)
 }
 

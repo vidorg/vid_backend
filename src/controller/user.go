@@ -60,11 +60,6 @@ func NewUserController() *UserController {
 
 // GET /v1/user
 func (u *UserController) QueryAll(c *gin.Context) *result.Result {
-	user := u.jwtService.GetContextUser(c)
-	if user == nil {
-		return nil
-	}
-
 	pp := param.BindPageOrder(c, u.config)
 	users, total, err := u.userService.QueryAll(pp)
 	if err != nil {

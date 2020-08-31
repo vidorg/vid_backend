@@ -144,10 +144,6 @@ func (s *SubscribeController) UnSubscribeUser(c *gin.Context) *result.Result {
 		return result.Error(exception.RequestParamError).SetError(err, c)
 	}
 
-	if user.Uid == uid {
-		return result.Error(exception.UnSubscribeSelfError)
-	}
-
 	status, err := s.subscribeService.DeleteSubscribe(user.Uid, uid)
 	if status == xstatus.DbNotFound {
 		return result.Error(exception.UserNotFoundError)

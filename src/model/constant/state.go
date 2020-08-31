@@ -21,7 +21,7 @@ func (u UserState) String() string {
 	case Suspend:
 		return "suspend"
 	default:
-		return "<unknown state>"
+		return "<unknown user state>"
 	}
 }
 

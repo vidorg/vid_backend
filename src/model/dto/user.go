@@ -58,6 +58,9 @@ type UserDto struct {
 }
 
 func BuildUserDto(user *po.User) *UserDto {
+	if user == nil {
+		return nil
+	}
 	return &UserDto{
 		Uid:          user.Uid,
 		Username:     user.Username,
