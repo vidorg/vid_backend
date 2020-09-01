@@ -75,9 +75,18 @@ func setupBinding() {
 	_ = xgin.EnableRFC3339DateBinding()
 	_ = xgin.EnableRFC3339DateTimeBinding()
 
-	_ = xgin.AddBinding("name", xvalidator.RegexpValidator(regexp.MustCompile(`^[a-zA-Z0-9\-_]+$`)))                                         // a-z A-Z 0-9 - _
-	_ = xgin.AddBinding("pwd", xvalidator.RegexpValidator(regexp.MustCompile(`^.+$`)))                                                       // all
-	_ = xgin.AddBinding("phone", xvalidator.RegexpValidator(regexp.MustCompile(`^(13[0-9]|15[012356789]|17[678]|18[0-9]|14[57])[0-9]{8}$`))) // 11
+	_ = xgin.AddBinding("r_name", xvalidator.RegexpValidator(regexp.MustCompile(`^[A-Za-z][0-9A-Za-z\-_]+$`)))     // 0-9 a-z A-Z - _
+	_ = xgin.AddBinding("r_pwd", xvalidator.RegexpValidator(regexp.MustCompile(`^[0-9A-Za-z\-_!@#$%^&*=+/\\]+$`))) // 0-9 z-z A-Z - _ ! @ # $ % ^ & * + = / \
+	_ = xgin.AddBinding("r_phone", xvalidator.RegexpValidator(regexp.MustCompile(`^(13[0-9]|15[012356789]|17[678]|18[0-9]|14[57])[0-9]{8}$`)))
+
+	_ = xgin.AddBinding("l_name", xvalidator.LengthRangeValidator(4, 63))
+	_ = xgin.AddBinding("l_pwd", xvalidator.LengthRangeValidator(4, 25))
+	_ = xgin.AddBinding("l_email", xvalidator.LengthRangeValidator(3, 255))
+	_ = xgin.AddBinding("l_profile", xvalidator.LengthRangeValidator(0, 255))
+	_ = xgin.AddBinding("l_title", xvalidator.LengthRangeValidator(4, 63))
+	_ = xgin.AddBinding("l_description", xvalidator.LengthRangeValidator(0, 255))
+
+	_ = xgin.AddBinding("o_gender", xvalidator.OneofValidator(0, 1, 2))
 }
 
 func (s *Server) Serve() error {

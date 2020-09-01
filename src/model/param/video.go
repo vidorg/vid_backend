@@ -18,8 +18,8 @@ func init() {
 }
 
 type InsertVideoParam struct {
-	Title       string `json:"title"       form:"title"       binding:"required,min=1,max=100"` // video title
-	Description string `json:"description" form:"description" binding:"required,min=1,max=255"` // video description
+	Title       string `json:"title"       form:"title"       binding:"required,l_title"`       // video title
+	Description string `json:"description" form:"description" binding:"required,l_description"` // video description
 	VideoUrl    string `json:"video_url"   form:"video_url"   binding:"required,url"`           // video source url (oss)
 	CoverUrl    string `json:"cover_url"   form:"cover_url"   binding:"required,url"`           // video cover url (oss)
 }
@@ -34,16 +34,16 @@ func (i *InsertVideoParam) ToPo() *po.Video {
 }
 
 type UpdateVideoParam struct {
-	Title       string  `json:"title"       form:"title"       binding:"required,min=1,max=100"` // video title
-	Description *string `json:"description" form:"description" binding:"required,min=0,max=255"` // video description
-	VideoUrl    string  `json:"video_url"   form:"video_url"   binding:"required,url"`           // video source url (oss)
-	CoverUrl    string  `json:"cover_url"   form:"cover_url"   binding:"required,url"`           // video cover url (oss)
+	Title       string `json:"title"       form:"title"       binding:"required,l_title"`       // video title
+	Description string `json:"description" form:"description" binding:"required,l_description"` // video description
+	VideoUrl    string `json:"video_url"   form:"video_url"   binding:"required,url"`           // video source url (oss)
+	CoverUrl    string `json:"cover_url"   form:"cover_url"   binding:"required,url"`           // video cover url (oss)
 }
 
 func (u *UpdateVideoParam) ToMap() map[string]interface{} {
 	return map[string]interface{}{
 		"title":       u.Title,
-		"description": *u.Description,
+		"description": u.Description,
 		"video_url":   u.VideoUrl,
 		"cover_url":   u.CoverUrl,
 	}

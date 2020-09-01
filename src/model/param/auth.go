@@ -27,8 +27,8 @@ func init() {
 }
 
 type RegisterParam struct {
-	Email    string `json:"email"    form:"email"    binding:"required,min=5,max=30,email"` // register email
-	Password string `json:"password" form:"password" binding:"required,min=8,max=30,pwd"`   // register password
+	Email    string `json:"email"    form:"email"    binding:"required,l_email,email"` // register email
+	Password string `json:"password" form:"password" binding:"required,l_pwd,r_pwd"`   // register password
 }
 
 type LoginParam struct {
@@ -37,6 +37,6 @@ type LoginParam struct {
 }
 
 type UpdatePasswordParam struct {
-	Old string `json:"old" form:"old" binding:"required,pwd"` // old password
-	New string `json:"new" form:"new" binding:"required,pwd"` // new password
+	Old string `json:"old" form:"old" binding:"required,l_pwd,r_pwd"` // old password
+	New string `json:"new" form:"new" binding:"required,l_pwd,r_pwd"` // new password
 }
