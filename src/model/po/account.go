@@ -5,9 +5,9 @@ import (
 )
 
 type Account struct {
-	Uid           int32  `gorm:"primary_key"`
-	User          *User  `gorm:"foreignkey:To"`
-	EncryptedPass string `gorm:"type:varchar(255);not null"`
+	Uid      uint64 `gorm:"primary_key;       not null"`                // user id (foreigner key)
+	Password string `gorm:"type:varchar(255); not null"`                // encrypted password
+	User     *User  `gorm:"foreignkey:Uid; association_foreignkey:Uid"` // po.Account belongs to po.User
 
 	xgorm.GormTime
 }

@@ -6,84 +6,93 @@ import (
 	"github.com/vidorg/vid_backend/src/common/result"
 	"github.com/vidorg/vid_backend/src/controller"
 	"github.com/vidorg/vid_backend/src/middleware"
-	"net/http"
 )
+
+func j(fn func(c *gin.Context) *result.Result) func(c *gin.Context) {
+	return result.J(fn)
+}
 
 func initRoute(engine *gin.Engine) {
 	// common api
 	engine.HandleMethodNotAllowed = true
-	engine.NoMethod(func(c *gin.Context) {
-		result.Status(http.StatusMethodNotAllowed).JSON(c)
-	})
 	engine.NoRoute(func(c *gin.Context) {
-		result.Status(http.StatusNotFound).SetMessage(fmt.Sprintf("route %s is not found", c.Request.URL.Path)).JSON(c)
+		result.Status(404).SetMessage(fmt.Sprintf("route %s is not found", c.Request.URL.Path)).JSON(c)
 	})
-	engine.GET("/ping", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{"ping": "pong"})
+	engine.NoMethod(func(c *gin.Context) {
+		result.Status(405).SetMessage("method not allowed").JSON(c)
+	})
+	engine.GET("", func(c *gin.Context) {
+		c.JSON(200, &gin.H{"message": "Welcome to vid API."})
+	})
+	engine.GET("ping", func(c *gin.Context) {
+		c.JSON(200, &gin.H{"ping": "pong"})
 	})
 
-	// service api
-	jwtMw := middleware.JwtMiddleware()
-	casbinMw := middleware.CasbinMiddleware()
-	adminMw := func(c *gin.Context) {
-		jwtMw(c)
-		casbinMw(c)
-		c.Next()
-	}
+	// controller
+	v1 := engine.Group("v1")
 
 	var (
 		authCtrl      = controller.NewAuthController()
-		policyCtrl    = controller.NewPolicyController()
 		userCtrl      = controller.NewUserController()
 		subscribeCtrl = controller.NewSubscribeController()
 		videoCtrl     = controller.NewVideoController()
+		rbacCtrl      = controller.NewRbacController()
 	)
-	v1 := engine.Group("/v1")
+
+	jwtMw := middleware.JwtMiddleware()
+	casbinMw := middleware.CasbinMiddleware()
+	authMw := func(c *gin.Context) {
+		if !c.IsAborted() {
+			jwtMw(c)
+			if !c.IsAborted() {
+				casbinMw(c)
+			}
+		}
+	}
+
+	authGroup := v1.Group("auth")
 	{
-		authGroup := v1.Group("/auth")
-		{
-			authGroup.POST("/login", authCtrl.Login)
-			authGroup.POST("/register", authCtrl.Register)
-			authGroup.GET("", adminMw, authCtrl.CurrentUser)
-			authGroup.POST("/logout", adminMw, authCtrl.Logout)
-			authGroup.PUT("/password", adminMw, authCtrl.UpdatePassword)
-		}
+		authGroup.POST("register", j(authCtrl.Register))
+		authGroup.POST("login", j(authCtrl.Login))
+		authGroup.GET("user", authMw, j(authCtrl.CurrentUser))
+		authGroup.DELETE("logout", authMw, j(authCtrl.Logout))
+		authGroup.PUT("password", authMw, j(authCtrl.UpdatePassword))
+		authGroup.POST("activate", authMw, j(authCtrl.ActivateUser))
+		authGroup.GET("spec/:spec", j(authCtrl.CheckSpec))
+	}
 
-		policyGroup := v1.Group("/policy")
-		{
-			policyGroup.Use(adminMw)
-			policyGroup.GET("", policyCtrl.Query)
-			policyGroup.PUT("/:uid/role", policyCtrl.SetRole)
-			policyGroup.POST("", policyCtrl.Insert)
-			policyGroup.DELETE("", policyCtrl.Delete)
-		}
+	userGroup := v1.Group("user")
+	{
+		userGroup.GET("", authMw, j(userCtrl.QueryAll))
+		userGroup.GET(":uid", j(userCtrl.QueryByUid))
+		userGroup.PUT("", authMw, j(userCtrl.Update))
+		userGroup.DELETE("", authMw, j(userCtrl.Delete))
 
-		userGroup := v1.Group("/user")
-		{
-			userGroup.GET("", adminMw, userCtrl.QueryAllUsers)
-			userGroup.GET("/:uid", userCtrl.QueryUser)
-			userGroup.PUT("", adminMw, userCtrl.UpdateUser(false))
-			userGroup.DELETE("", adminMw, userCtrl.DeleteUser(false))
+		userGroup.GET(":uid/subscriber", j(subscribeCtrl.QuerySubscribers))
+		userGroup.GET(":uid/subscribing", j(subscribeCtrl.QuerySubscribings))
+		userGroup.POST("subscribing/:uid", authMw, j(subscribeCtrl.SubscribeUser))
+		userGroup.DELETE("subscribing/:uid", authMw, j(subscribeCtrl.UnSubscribeUser))
 
-			userGroup.GET("/:uid/subscriber", subscribeCtrl.QuerySubscriberUsers)
-			userGroup.GET("/:uid/subscribing", subscribeCtrl.QuerySubscribingUsers)
-			userGroup.PUT("/subscribing/:uid", adminMw, subscribeCtrl.SubscribeUser)
-			userGroup.DELETE("/subscribing/:uid", adminMw, subscribeCtrl.UnSubscribeUser)
+		userGroup.GET(":uid/video", j(videoCtrl.QueryVideosByUid))
+	}
 
-			userGroup.PUT("/admin/:uid", adminMw, userCtrl.UpdateUser(true))
-			userGroup.DELETE("/admin/:uid", adminMw, userCtrl.DeleteUser(true))
+	videoGroup := v1.Group("video")
+	{
+		videoGroup.GET("", authMw, j(videoCtrl.QueryAllVideos))
+		videoGroup.GET(":vid", j(videoCtrl.QueryVideoByVid))
+		videoGroup.POST("", authMw, j(videoCtrl.InsertVideo))
+		videoGroup.PUT(":vid", authMw, j(videoCtrl.UpdateVideo))
+		videoGroup.DELETE(":vid", authMw, j(videoCtrl.DeleteVideo))
+	}
 
-			userGroup.GET("/:uid/video", videoCtrl.QueryVideosByUid)
-		}
-
-		videoGroup := v1.Group("/video")
-		{
-			videoGroup.GET("", adminMw, videoCtrl.QueryAllVideos)
-			videoGroup.GET("/:vid", videoCtrl.QueryVideoByVid)
-
-			videoGroup.POST("", adminMw, videoCtrl.InsertVideo)
-			videoGroup.PUT("/:vid", adminMw, videoCtrl.UpdateVideo)
-			videoGroup.DELETE("/:vid", adminMw, videoCtrl.DeleteVideo)
-		}
+	rbacGroup := v1.Group("rbac")
+	{
+		rbacGroup.Use(authMw)
+		rbacGroup.GET("rule", j(rbacCtrl.GetRules))
+		rbacGroup.PUT("user/:uid", j(rbacCtrl.ChangeRole))
+		rbacGroup.POST("subject", j(rbacCtrl.InsertSubject))
+		rbacGroup.POST("policy", j(rbacCtrl.InsertPolicy))
+		rbacGroup.DELETE("subject", j(rbacCtrl.DeleteSubject))
+		rbacGroup.DELETE("policy", j(rbacCtrl.DeletePolicy))
 	}
 }

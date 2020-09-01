@@ -6,35 +6,37 @@ import (
 
 func init() {
 	goapidoc.AddDefinitions(
-		goapidoc.NewDefinition("LoginParam", "登录请求参数").
-			WithProperties(
-				goapidoc.NewProperty("username", "string", true, "用户名"),
-				goapidoc.NewProperty("password", "string", true, "密码"),
+		goapidoc.NewDefinition("RegisterParam", "register parameter").
+			Properties(
+				goapidoc.NewProperty("email", "string", true, "register email").Example("aaa@bbb.ccc"),
+				goapidoc.NewProperty("password", "string", true, "register password"),
 			),
 
-		goapidoc.NewDefinition("RegisterParam", "注册请求参数").
-			WithProperties(
-				goapidoc.NewProperty("username", "string", true, "用户名，长度在 [5, 30] 之间"),
-				goapidoc.NewProperty("password", "string", true, "密码，长度在 [8, 30] 之间"),
+		goapidoc.NewDefinition("LoginParam", "login parameter").
+			Properties(
+				goapidoc.NewProperty("parameter", "string", true, "login parameter, support uid | username | email"),
+				goapidoc.NewProperty("password", "string", true, "login password"),
 			),
 
-		goapidoc.NewDefinition("PasswordParam", "修改密码请求参数").
-			WithProperties(
-				goapidoc.NewProperty("password", "string", true, "密码，长度在 [8, 30] 之间"),
+		goapidoc.NewDefinition("UpdatePasswordParam", "update password parameter").
+			Properties(
+				goapidoc.NewProperty("old", "string", true, "old password"),
+				goapidoc.NewProperty("new", "string", true, "new password"),
 			),
 	)
 }
 
-type LoginParam struct {
-	Username string `form:"username" json:"username" binding:"required"`
-	Password string `form:"password" json:"password" binding:"required"`
-}
-
 type RegisterParam struct {
-	Username string `form:"username" json:"username" binding:"required,min=5,max=30,name"`
-	Password string `form:"password" json:"password" binding:"required,min=8,max=30,pwd"`
+	Email    string `json:"email"    form:"email"    binding:"required,l_email,email"` // register email
+	Password string `json:"password" form:"password" binding:"required,l_pwd,r_pwd"`   // register password
 }
 
-type PassParam struct {
-	Password string `form:"password" json:"password" binding:"required,min=8,max=30,pwd"`
+type LoginParam struct {
+	Parameter string `json:"parameter" form:"parameter" binding:"required"` // login parameter
+	Password  string `json:"password"  form:"password"  binding:"required"` // login password
+}
+
+type UpdatePasswordParam struct {
+	Old string `json:"old" form:"old" binding:"required,l_pwd,r_pwd"` // old password
+	New string `json:"new" form:"new" binding:"required,l_pwd,r_pwd"` // new password
 }

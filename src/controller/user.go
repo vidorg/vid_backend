@@ -1,8 +1,8 @@
 package controller
 
 import (
-	"github.com/Aoi-hosizora/ahlib-web/xstatus"
 	"github.com/Aoi-hosizora/ahlib/xdi"
+	"github.com/Aoi-hosizora/ahlib/xstatus"
 	"github.com/Aoi-hosizora/goapidoc"
 	"github.com/gin-gonic/gin"
 	"github.com/vidorg/vid_backend/src/common/exception"
@@ -16,43 +16,34 @@ import (
 )
 
 func init() {
-	goapidoc.AddPaths(
-		goapidoc.NewPath("GET", "/v1/user", "查询所有用户").
-			WithTags("User").
-			WithSecurities("Jwt").
-			WithParams(param.ADPage, param.ADLimit, param.ADOrder).
-			WithResponses(goapidoc.NewResponse(200).WithType("_Result<_Page<UserDto>>")),
-
-		goapidoc.NewPath("GET", "/v1/user/{uid}", "查询用户").
-			WithTags("User").
-			WithParams(goapidoc.NewPathParam("uid", "integer#int32", true, "用户id")).
-			WithResponses(goapidoc.NewResponse(200).WithType("_Result<UserDetailDto>")),
-
-		goapidoc.NewPath("PUT", "/v1/user/", "更新用户").
-			WithTags("User").
-			WithSecurities("Jwt").
-			WithParams(goapidoc.NewBodyParam("param", "UserParam", true, "用户请求参数")).
-			WithResponses(goapidoc.NewResponse(200).WithType("_Result<UserDto>")),
-
-		goapidoc.NewPath("PUT", "/v1/user/admin/{uid}", "管理员更新用户").
-			WithTags("User", "Administration").
-			WithSecurities("Jwt").
-			WithParams(
-				goapidoc.NewPathParam("uid", "integer#int32", true, "用户id"),
-				goapidoc.NewBodyParam("param", "UserParam", true, "用户请求参数"),
+	goapidoc.AddRoutePaths(
+		goapidoc.NewRoutePath("GET", "/v1/user", "query all user").
+			Tags("User", "Administration").
+			Securities("Jwt").
+			Params(
+				param.ADPage, param.ADLimit, param.ADOrder,
+				adNeedSubscribeCount, adNeedIsSubscribe, adNeedVideoCount,
 			).
-			WithResponses(goapidoc.NewResponse(200).WithType("_Result<UserDto>")),
+			Responses(goapidoc.NewResponse(200, "_Result<_Page<UserDto>>")),
 
-		goapidoc.NewPath("DELETE", "/v1/user/", "删除用户").
-			WithTags("User").
-			WithSecurities("Jwt").
-			WithResponses(goapidoc.NewResponse(200).WithType("Result")),
+		goapidoc.NewRoutePath("GET", "/v1/user/{uid}", "query a user by uid").
+			Tags("User").
+			Params(
+				goapidoc.NewPathParam("uid", "integer#int64", true, "user id"),
+				adNeedSubscribeCount, adNeedIsSubscribe, adNeedVideoCount,
+			).
+			Responses(goapidoc.NewResponse(200, "_Result<UserDto>")),
 
-		goapidoc.NewPath("PUT", "/v1/user/admin/{uid}", "管理员删除用户").
-			WithTags("User", "Administration").
-			WithSecurities("Jwt").
-			WithParams(goapidoc.NewPathParam("uid", "integer#int32", true, "用户id")).
-			WithResponses(goapidoc.NewResponse(200).WithType("Result")),
+		goapidoc.NewRoutePath("PUT", "/v1/user", "update a user").
+			Tags("User").
+			Securities("Jwt").
+			Params(goapidoc.NewBodyParam("param", "UpdateUserParam", true, "update user parameter")).
+			Responses(goapidoc.NewResponse(200, "Result")),
+
+		goapidoc.NewRoutePath("DELETE", "/v1/user", "delete a user").
+			Tags("User").
+			Securities("Jwt").
+			Responses(goapidoc.NewResponse(200, "Result")),
 	)
 }
 
@@ -62,6 +53,7 @@ type UserController struct {
 	userService      *service.UserService
 	subscribeService *service.SubscribeService
 	videoService     *service.VideoService
+	common           *CommonController
 }
 
 func NewUserController() *UserController {
@@ -71,113 +63,97 @@ func NewUserController() *UserController {
 		userService:      xdi.GetByNameForce(sn.SUserService).(*service.UserService),
 		subscribeService: xdi.GetByNameForce(sn.SSubscribeService).(*service.SubscribeService),
 		videoService:     xdi.GetByNameForce(sn.SVideoService).(*service.VideoService),
+		common:           xdi.GetByNameForce(sn.SCommonController).(*CommonController),
 	}
 }
 
 // GET /v1/user
-func (u *UserController) QueryAllUsers(c *gin.Context) {
-	pp := param.BindPageOrder(c, u.config)
-	users, total := u.userService.QueryAll(pp)
+func (u *UserController) QueryAll(c *gin.Context) *result.Result {
+	user := u.jwtService.GetContextUser(c)
+	if user == nil {
+		return nil
+	}
 
-	ret := dto.BuildUserDtos(users)
-	result.Ok().SetPage(pp.Page, pp.Limit, total, ret).JSON(c)
+	pp := param.BindPageOrder(c, u.config)
+	users, total, err := u.userService.QueryAll(pp)
+	if err != nil {
+		return result.Error(exception.QueryUserError).SetError(err, c)
+	}
+
+	extras, err := u.common.getUsersExtra(c, user, users)
+	if err != nil {
+		return result.Error(exception.QueryUserError).SetError(err, c)
+	}
+
+	res := dto.BuildUserDtos(users)
+	for idx, user := range res {
+		user.Extra = extras[idx]
+	}
+	return result.Ok().SetPage(pp.Page, pp.Limit, total, res)
 }
 
-// GET /v1/user/:uid
-func (u *UserController) QueryUser(c *gin.Context) {
-	uid, ok := param.BindRouteId(c, "uid")
-	if !ok {
-		result.Error(exception.RequestParamError).JSON(c)
-		return
+// GET /v1/user/uid/:uid
+func (u *UserController) QueryByUid(c *gin.Context) *result.Result {
+	uid, err := param.BindRouteId(c, "uid")
+	if err != nil {
+		return result.Error(exception.RequestParamError).SetError(err, c)
 	}
 
-	user := u.userService.QueryByUid(uid)
-	if user == nil {
-		result.Error(exception.UserNotFoundError).JSON(c)
-		return
+	user, err := u.userService.QueryByUid(uid)
+	if err != nil {
+		result.Error(exception.QueryUserError).SetError(err, c)
+	} else if user == nil {
+		return result.Error(exception.UserNotFoundError)
 	}
 
-	subscribingCnt, subscriberCnt, _ := u.subscribeService.QueryCountByUid(user.Uid)
-	videoCnt, _ := u.videoService.QueryCountByUid(user.Uid)
+	authUser := u.jwtService.GetContextUser(c)
+	extras, err := u.common.getUsersExtra(c, authUser, []*po.User{user})
+	if err != nil {
+		return result.Error(exception.QueryUserError).SetError(err, c)
+	}
 
-	extra := dto.BuildUserExtraDto(subscribingCnt, subscriberCnt, videoCnt)
-	ret := dto.BuildUserDetailDto(user, extra)
-	result.Ok().SetData(ret).JSON(c)
+	res := dto.BuildUserDto(user)
+	res.Extra = extras[0]
+	return result.Ok().SetData(res)
 }
 
 // PUT /v1/user
-// PUT /v1/user/admin/:uid
-func (u *UserController) UpdateUser(isSpec bool) func(c *gin.Context) {
-	return func(c *gin.Context) {
-		// get where parameter
-		user := &po.User{}
-		if !isSpec {
-			user = u.jwtService.GetContextUser(c)
-		} else {
-			uid, ok := param.BindRouteId(c, "uid")
-			if !ok {
-				result.Error(exception.RequestParamError).JSON(c)
-				return
-			}
-			user = u.userService.QueryByUid(uid)
-			if user == nil {
-				result.Error(exception.UserNotFoundError).JSON(c)
-				return
-			}
-		}
-
-		// Update
-		userParam := &param.UserParam{}
-		if err := c.ShouldBind(userParam); err != nil {
-			result.Error(exception.WrapValidationError(err)).JSON(c)
-			return
-		}
-
-		param.MapUserParam(userParam, user)
-		status := u.userService.Update(user)
-		if status == xstatus.DbNotFound {
-			result.Error(exception.UserNotFoundError).JSON(c)
-			return
-		} else if status == xstatus.DbExisted {
-			result.Error(exception.UsernameUsedError).JSON(c)
-			return
-		} else if status == xstatus.DbFailed {
-			result.Error(exception.UserUpdateError).JSON(c)
-			return
-		}
-
-		ret := dto.BuildUserDto(user)
-		result.Ok().SetData(ret).JSON(c)
+func (u *UserController) Update(c *gin.Context) *result.Result {
+	user := u.jwtService.GetContextUser(c)
+	if user == nil {
+		return nil
 	}
+
+	pa := &param.UpdateUserParam{}
+	if err := c.ShouldBind(pa); err != nil {
+		return result.Error(exception.WrapValidationError(err)).SetError(err, c)
+	}
+
+	status, err := u.userService.Update(user.Uid, pa)
+	if status == xstatus.DbNotFound {
+		return result.Error(exception.UserNotFoundError)
+	} else if status == xstatus.DbExisted {
+		return result.Error(exception.UsernameUsedError)
+	} else if status == xstatus.DbFailed {
+		return result.Error(exception.UpdateUserError).SetError(err, c)
+	}
+
+	return result.Ok()
 }
 
 // DELETE /v1/user
-// DELETE /v1/user/admin/:uid
-func (u *UserController) DeleteUser(isSpec bool) func(c *gin.Context) {
-	return func(c *gin.Context) {
-		// get delete uid param
-		var uid int32
-		if !isSpec {
-			uid = u.jwtService.GetContextUser(c).Uid
-		} else {
-			var ok bool
-			uid, ok = param.BindRouteId(c, "uid")
-			if !ok {
-				result.Error(exception.RequestParamError).JSON(c)
-				return
-			}
-		}
-
-		// Delete
-		status := u.userService.Delete(uid)
-		if status == xstatus.DbNotFound {
-			result.Error(exception.UserNotFoundError).JSON(c)
-			return
-		} else if status == xstatus.DbFailed {
-			result.Error(exception.UserDeleteError).JSON(c)
-			return
-		}
-
-		result.Ok().JSON(c)
+func (u *UserController) Delete(c *gin.Context) *result.Result {
+	user := u.jwtService.GetContextUser(c)
+	if user == nil {
+		return nil
 	}
+
+	status, err := u.userService.Delete(user.Uid)
+	if status == xstatus.DbNotFound {
+		return result.Error(exception.UserNotFoundError)
+	} else if status == xstatus.DbFailed {
+		return result.Error(exception.DeleteUserError).SetError(err, c)
+	}
+
+	return result.Ok()
 }

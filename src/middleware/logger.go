@@ -15,6 +15,6 @@ func LoggerMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		start := time.Now()
 		c.Next()
-		xgin.LoggerWithLogrus(logger, start, c)
+		xgin.WithLogrus(logger, start, c)
 	}
 }

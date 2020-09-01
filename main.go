@@ -23,7 +23,7 @@ func main() {
 }
 
 func run() {
-	_, err := goapidoc.GenerateJsonWithSwagger2("./docs/doc.json")
+	_, err := goapidoc.GenerateSwaggerJson("./docs/doc.json")
 	if err != nil {
 		log.Fatalln("Failed to generate swagger:", err)
 	}

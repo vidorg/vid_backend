@@ -3,10 +3,9 @@ package server
 import (
 	"fmt"
 	"github.com/Aoi-hosizora/ahlib-web/xgin"
-	"github.com/Aoi-hosizora/ahlib-web/xtime"
+	"github.com/Aoi-hosizora/ahlib-web/xvalidator"
 	"github.com/Aoi-hosizora/ahlib/xdi"
 	"github.com/Aoi-hosizora/goapidoc"
-	"github.com/DeanThompson/ginpprof"
 	"github.com/gin-gonic/gin"
 	"github.com/swaggo/gin-swagger"
 	"github.com/swaggo/gin-swagger/swaggerFiles"
@@ -14,24 +13,28 @@ import (
 	"github.com/vidorg/vid_backend/src/config"
 	"github.com/vidorg/vid_backend/src/middleware"
 	"github.com/vidorg/vid_backend/src/provide/sn"
+	"net/http"
+	"regexp"
 )
 
 func init() {
 	goapidoc.SetDocument(
 		"localhost:3344", "/",
 		goapidoc.NewInfo("vid backend", "Vid backend built by golang/gin", "1.2").
-			WithTermsOfService("https://github.com/vidorg/vid_backend/issues").
-			WithLicense(goapidoc.NewLicense("MIT", "https://github.com/vidorg/vid_backend/blob/master/LICENSE")).
-			WithContact(goapidoc.NewContact("vidorg", "https://github.com/vidorg", "")),
+			TermsOfService("https://github.com/vidorg/vid_backend/issues").
+			License(goapidoc.NewLicense("MIT", "https://github.com/vidorg/vid_backend/blob/master/LICENSE")).
+			Contact(goapidoc.NewContact("vidorg", "https://github.com/vidorg", "")),
 	)
+
 	goapidoc.SetTags(
-		goapidoc.NewTag("Authorization", "Auth-Controller"),
-		goapidoc.NewTag("User", "User-Controller"),
-		goapidoc.NewTag("Subscribe", "Subscribe-Controller"),
-		goapidoc.NewTag("Video", "Video-Controller"),
-		goapidoc.NewTag("Policy", "Policy-Controller"),
-		goapidoc.NewTag("Administration", "*-Controller"),
+		goapidoc.NewTag("Authorization", "auth-controller"),
+		goapidoc.NewTag("User", "user-controller"),
+		goapidoc.NewTag("Subscribe", "subscribe-controller"),
+		goapidoc.NewTag("Video", "video-controller"),
+		goapidoc.NewTag("Rbac", "rbac-controller"),
+		goapidoc.NewTag("Administration", "*-controller"),
 	)
+
 	goapidoc.SetSecurities(
 		goapidoc.NewSecurity("Jwt", "header", "Authorization"),
 	)
@@ -43,13 +46,10 @@ type Server struct {
 }
 
 func NewServer() *Server {
-	// setting
 	cfg := xdi.GetByNameForce(sn.SConfig).(*config.Config)
 	gin.SetMode(cfg.Meta.RunMode)
-	setupBinding()
-
-	// engine
 	engine := gin.New()
+	setupBinding()
 
 	// mw
 	engine.Use(middleware.LoggerMiddleware())
@@ -58,11 +58,12 @@ func NewServer() *Server {
 
 	// route
 	if cfg.Meta.RunMode == "debug" {
-		ginpprof.Wrap(engine)
+		xgin.PprofWrap(engine)
 	}
 	docs.RegisterSwag()
 	swaggerUrl := ginSwagger.URL(fmt.Sprintf("http://localhost:%d/v1/swagger/doc.json", cfg.Meta.Port))
 	engine.GET("/v1/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, swaggerUrl))
+	engine.GET("/v1/swagger", func(c *gin.Context) { c.Redirect(http.StatusPermanentRedirect, "/v1/swagger/index.html") })
 	initRoute(engine)
 
 	// server
@@ -70,14 +71,22 @@ func NewServer() *Server {
 }
 
 func setupBinding() {
-	xgin.SetupRegexBinding()
+	_ = xgin.EnableRegexpBinding()
+	_ = xgin.EnableRFC3339DateBinding()
+	_ = xgin.EnableRFC3339DateTimeBinding()
 
-	xgin.SetupDateTimeBinding("date", xtime.RFC3339Date)
-	xgin.SetupDateTimeBinding("datetime", xtime.RFC3339DateTime)
+	_ = xgin.AddBinding("r_name", xvalidator.RegexpValidator(regexp.MustCompile(`^[A-Za-z][0-9A-Za-z\-_]+$`)))     // 0-9 a-z A-Z - _
+	_ = xgin.AddBinding("r_pwd", xvalidator.RegexpValidator(regexp.MustCompile(`^[0-9A-Za-z\-_!@#$%^&*=+/\\]+$`))) // 0-9 z-z A-Z - _ ! @ # $ % ^ & * + = / \
+	_ = xgin.AddBinding("r_phone", xvalidator.RegexpValidator(regexp.MustCompile(`^(13[0-9]|15[012356789]|17[678]|18[0-9]|14[57])[0-9]{8}$`)))
 
-	xgin.SetupSpecificRegexpBinding("name", "^[a-zA-Z0-9\u4E00-\u9FBF\u3040-\u30FF\\-_]+$")              // alphabet number character kana - _
-	xgin.SetupSpecificRegexpBinding("pwd", "^.+$")                                                       // all
-	xgin.SetupSpecificRegexpBinding("phone", "^(13[0-9]|15[012356789]|17[678]|18[0-9]|14[57])[0-9]{8}$") // 11
+	_ = xgin.AddBinding("l_name", xvalidator.LengthRangeValidator(4, 63))
+	_ = xgin.AddBinding("l_pwd", xvalidator.LengthRangeValidator(4, 25))
+	_ = xgin.AddBinding("l_email", xvalidator.LengthRangeValidator(3, 255))
+	_ = xgin.AddBinding("l_profile", xvalidator.LengthRangeValidator(0, 255))
+	_ = xgin.AddBinding("l_title", xvalidator.LengthRangeValidator(4, 63))
+	_ = xgin.AddBinding("l_description", xvalidator.LengthRangeValidator(0, 255))
+
+	_ = xgin.AddBinding("o_gender", xvalidator.OneofValidator(0, 1, 2))
 }
 
 func (s *Server) Serve() error {

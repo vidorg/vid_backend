@@ -1,8 +1,8 @@
 package controller
 
 import (
-	"github.com/Aoi-hosizora/ahlib-web/xstatus"
 	"github.com/Aoi-hosizora/ahlib/xdi"
+	"github.com/Aoi-hosizora/ahlib/xstatus"
 	"github.com/Aoi-hosizora/goapidoc"
 	"github.com/gin-gonic/gin"
 	"github.com/vidorg/vid_backend/src/common/exception"
@@ -15,34 +15,36 @@ import (
 )
 
 func init() {
-	goapidoc.AddPaths(
-		goapidoc.NewPath("GET", "/v1/user/{uid}/subscriber", "查询用户粉丝").
-			WithTags("Subscribe").
-			WithParams(
-				goapidoc.NewPathParam("uid", "integer#int32", true, "用户id"),
+	goapidoc.AddRoutePaths(
+		goapidoc.NewRoutePath("GET", "/v1/user/{uid}/subscriber", "query user subscribers").
+			Tags("Subscribe").
+			Params(
+				goapidoc.NewPathParam("uid", "integer#int64", true, "user id"),
 				param.ADPage, param.ADLimit, param.ADOrder,
+				adNeedSubscribeCount, adNeedIsSubscribe, adNeedVideoCount,
 			).
-			WithResponses(goapidoc.NewResponse(200).WithType("_Result<_Page<UserDto>>")),
+			Responses(goapidoc.NewResponse(200, "_Result<_Page<UserDto>>")),
 
-		goapidoc.NewPath("GET", "/v1/user/{uid}/subscribing", "查询用户关注").
-			WithTags("Subscribe").
-			WithParams(
-				goapidoc.NewPathParam("uid", "integer#int32", true, "用户id"),
+		goapidoc.NewRoutePath("GET", "/v1/user/{uid}/subscribing", "query user subscribings").
+			Tags("Subscribe").
+			Params(
+				goapidoc.NewPathParam("uid", "integer#int64", true, "user id"),
 				param.ADPage, param.ADLimit, param.ADOrder,
+				adNeedSubscribeCount, adNeedIsSubscribe, adNeedVideoCount,
 			).
-			WithResponses(goapidoc.NewResponse(200).WithType("_Result<_Page<UserDto>>")),
+			Responses(goapidoc.NewResponse(200, "_Result<_Page<UserDto>>")),
 
-		goapidoc.NewPath("PUT", "/v1/user/subscribing/{uid}", "关注用户").
-			WithTags("Subscribe").
-			WithSecurities("Jwt").
-			WithParams(goapidoc.NewPathParam("uid", "integer#int32", true, "用户id")).
-			WithResponses(goapidoc.NewResponse(200).WithType("Result")),
+		goapidoc.NewRoutePath("POST", "/v1/user/subscribing/{uid}", "subscribe user").
+			Tags("Subscribe").
+			Securities("Jwt").
+			Params(goapidoc.NewPathParam("uid", "integer#int64", true, "user id")).
+			Responses(goapidoc.NewResponse(200, "Result")),
 
-		goapidoc.NewPath("DELETE", "/v1/user/subscribing/{uid}", "取消关注用户").
-			WithTags("Subscribe").
-			WithSecurities("Jwt").
-			WithParams(goapidoc.NewPathParam("uid", "integer#int32", true, "用户id")).
-			WithResponses(goapidoc.NewResponse(200).WithType("Result")),
+		goapidoc.NewRoutePath("DELETE", "/v1/user/subscribing/{uid}", "unsubscribe user").
+			Tags("Subscribe").
+			Securities("Jwt").
+			Params(goapidoc.NewPathParam("uid", "integer#int64", true, "user id")).
+			Responses(goapidoc.NewResponse(200, "Result")),
 	)
 }
 
@@ -51,6 +53,7 @@ type SubscribeController struct {
 	jwtService       *service.JwtService
 	userService      *service.UserService
 	subscribeService *service.SubscribeService
+	common           *CommonController
 }
 
 func NewSubscribeController() *SubscribeController {
@@ -59,89 +62,114 @@ func NewSubscribeController() *SubscribeController {
 		jwtService:       xdi.GetByNameForce(sn.SJwtService).(*service.JwtService),
 		userService:      xdi.GetByNameForce(sn.SUserService).(*service.UserService),
 		subscribeService: xdi.GetByNameForce(sn.SSubscribeService).(*service.SubscribeService),
+		common:           xdi.GetByNameForce(sn.SCommonController).(*CommonController),
 	}
 }
 
-// GET /v1/user/{uid}/subscriber
-func (s *SubscribeController) QuerySubscriberUsers(c *gin.Context) {
-	uid, ok := param.BindRouteId(c, "uid")
-	if !ok {
-		result.Error(exception.RequestParamError).JSON(c)
-		return
+// GET /v1/user/:uid/subscriber
+func (s *SubscribeController) QuerySubscribers(c *gin.Context) *result.Result {
+	uid, err := param.BindRouteId(c, "uid")
+	if err != nil {
+		return result.Error(exception.RequestParamError).SetError(err, c)
 	}
 	pp := param.BindPageOrder(c, s.config)
 
-	users, total, status := s.subscribeService.QuerySubscriberUsers(uid, pp)
-	if status == xstatus.DbNotFound {
-		result.Error(exception.UserNotFoundError).JSON(c)
-		return
+	users, total, err := s.subscribeService.QuerySubscribers(uid, pp)
+	if err != nil {
+		return result.Error(exception.GetSubscriberListError).SetError(err, c)
+	} else if users == nil {
+		return result.Error(exception.UserNotFoundError)
 	}
 
-	ret := dto.BuildUserDtos(users)
-	result.Ok().SetPage(pp.Page, pp.Limit, total, ret).JSON(c)
+	authUser := s.jwtService.GetContextUser(c)
+	extras, err := s.common.getUsersExtra(c, authUser, users)
+	if err != nil {
+		return result.Error(exception.QueryUserError).SetError(err, c)
+	}
+
+	res := dto.BuildUserDtos(users)
+	for idx, user := range res {
+		user.Extra = extras[idx]
+	}
+	return result.Ok().SetPage(pp.Page, pp.Limit, total, res)
 }
 
 // GET /v1/user/{uid}/subscribing
-func (s *SubscribeController) QuerySubscribingUsers(c *gin.Context) {
-	uid, ok := param.BindRouteId(c, "uid")
-	if !ok {
-		result.Error(exception.RequestParamError).JSON(c)
-		return
+func (s *SubscribeController) QuerySubscribings(c *gin.Context) *result.Result {
+	uid, err := param.BindRouteId(c, "uid")
+	if err != nil {
+		return result.Error(exception.RequestParamError).SetError(err, c)
 	}
 	pp := param.BindPageOrder(c, s.config)
 
-	users, total, status := s.subscribeService.QuerySubscribingUsers(uid, pp)
-	if status == xstatus.DbNotFound {
-		result.Error(exception.UserNotFoundError).JSON(c)
-		return
+	users, total, err := s.subscribeService.QuerySubscribings(uid, pp)
+	if err != nil {
+		return result.Error(exception.GetSubscribingListError).SetError(err, c)
+	} else if users == nil {
+		return result.Error(exception.UserNotFoundError)
 	}
 
-	ret := dto.BuildUserDtos(users)
-	result.Ok().SetPage(pp.Page, pp.Limit, total, ret).JSON(c)
+	authUser := s.jwtService.GetContextUser(c)
+	extras, err := s.common.getUsersExtra(c, authUser, users)
+	if err != nil {
+		return result.Error(exception.QueryUserError).SetError(err, c)
+	}
+
+	res := dto.BuildUserDtos(users)
+	for idx, user := range res {
+		user.Extra = extras[idx]
+	}
+	return result.Ok().SetPage(pp.Page, pp.Limit, total, res)
 }
 
-// PUT /v1/user/subscribing/:uid
-func (s *SubscribeController) SubscribeUser(c *gin.Context) {
-	authUser := s.jwtService.GetContextUser(c)
-	to, ok := param.BindRouteId(c, "uid")
-	if !ok {
-		result.Error(exception.RequestParamError).JSON(c)
-		return
-	}
-	if authUser.Uid == to {
-		result.Error(exception.SubscribeSelfError).JSON(c)
-		return
+// POST /v1/user/subscribing/:uid
+func (s *SubscribeController) SubscribeUser(c *gin.Context) *result.Result {
+	user := s.jwtService.GetContextUser(c)
+	if user == nil {
+		return nil
 	}
 
-	status := s.subscribeService.SubscribeUser(authUser.Uid, to)
+	uid, err := param.BindRouteId(c, "uid")
+	if err != nil {
+		return result.Error(exception.RequestParamError).SetError(err, c)
+	}
+
+	if user.Uid == uid {
+		return result.Error(exception.SubscribeSelfError)
+	}
+
+	status, err := s.subscribeService.InsertSubscribe(user.Uid, uid)
 	if status == xstatus.DbNotFound {
-		result.Error(exception.UserNotFoundError).JSON(c)
-		return
+		return result.Error(exception.UserNotFoundError)
+	} else if status == xstatus.DbExisted {
+		return result.Error(exception.AlreadySubscribingError)
 	} else if status == xstatus.DbFailed {
-		result.Error(exception.SubscribeError).JSON(c)
-		return
+		return result.Error(exception.SubscribeError).SetError(err, c)
 	}
 
-	result.Ok().JSON(c)
+	return result.Ok()
 }
 
-// PUT /v1/user/subscribing/:uid
-func (s *SubscribeController) UnSubscribeUser(c *gin.Context) {
-	authUser := s.jwtService.GetContextUser(c)
-	to, ok := param.BindRouteId(c, "uid")
-	if !ok {
-		result.Error(exception.RequestParamError).JSON(c)
-		return
+// DELETE /v1/user/subscribing/:uid
+func (s *SubscribeController) UnSubscribeUser(c *gin.Context) *result.Result {
+	user := s.jwtService.GetContextUser(c)
+	if user == nil {
+		return nil
 	}
 
-	status := s.subscribeService.UnSubscribeUser(authUser.Uid, to)
+	uid, err := param.BindRouteId(c, "uid")
+	if err != nil {
+		return result.Error(exception.RequestParamError).SetError(err, c)
+	}
+
+	status, err := s.subscribeService.DeleteSubscribe(user.Uid, uid)
 	if status == xstatus.DbNotFound {
-		result.Error(exception.UserNotFoundError).JSON(c)
-		return
+		return result.Error(exception.UserNotFoundError)
+	} else if status == xstatus.DbTagA {
+		return result.Error(exception.NotSubscribeYetError)
 	} else if status == xstatus.DbFailed {
-		result.Error(exception.UnSubscribeError).JSON(c)
-		return
+		return result.Error(exception.UnSubscribeError).SetError(err, c)
 	}
 
-	result.Ok().JSON(c)
+	return result.Ok()
 }

@@ -1,99 +1,123 @@
 package dto
 
 import (
-	"github.com/Aoi-hosizora/ahlib/xentity"
+	"github.com/Aoi-hosizora/ahlib/xproperty"
+	"github.com/Aoi-hosizora/ahlib/xtime"
 	"github.com/Aoi-hosizora/goapidoc"
 	"github.com/vidorg/vid_backend/src/model/po"
 )
 
 func init() {
 	goapidoc.AddDefinitions(
-		goapidoc.NewDefinition("UserDto", "用户信息").
-			WithProperties(
-				goapidoc.NewProperty("uid", "integer#int32", true, "用户id"),
-				goapidoc.NewProperty("username", "string", true, "用户名"),
-				goapidoc.NewProperty("gender", "string", true, "性别").WithEnum("male", "female", "unknown"),
-				goapidoc.NewProperty("profile", "string", true, "简介").WithAllowEmptyValue(true),
-				goapidoc.NewProperty("avatar_url", "string", true, "头像"),
-				goapidoc.NewProperty("birthday", "string#date", true, "生日"),
-				goapidoc.NewProperty("role", "string", true, "角色"),
-				goapidoc.NewProperty("register_time", "string#date-time", true, "注册时间"),
+		goapidoc.NewDefinition("UserDto", "user response").
+			Properties(
+				goapidoc.NewProperty("uid", "integer#int64", true, "user id"),
+				goapidoc.NewProperty("username", "string", true, "username"),
+				goapidoc.NewProperty("email", "string", true, "user email"),
+				goapidoc.NewProperty("nickname", "string", true, "user nickname"),
+				goapidoc.NewProperty("gender", "string", true, "user gender").Enum("secret", "male", "female"),
+				goapidoc.NewProperty("profile", "string", true, "user profile").AllowEmpty(true),
+				goapidoc.NewProperty("avatar", "string", true, "user avatar"),
+				goapidoc.NewProperty("birthday", "string#date", true, "user birthday"),
+				goapidoc.NewProperty("role", "string", true, "user role"),
+				goapidoc.NewProperty("state", "string", true, "user state"),
+				goapidoc.NewProperty("register_time", "string#date-time", true, "user register time"),
+				goapidoc.NewProperty("extra", "UserExtraDto", true, "user extra information"),
 			),
 
-		goapidoc.NewDefinition("LoginDto", "登录信息").
-			WithProperties(
-				goapidoc.NewProperty("user", "UserDto", true, "用户信息"),
-				goapidoc.NewProperty("token", "string", true, "登录令牌"),
+		goapidoc.NewDefinition("UserExtraDto", "user extra response").
+			Properties(
+				goapidoc.NewProperty("subscribings", "integer#int32", true, "user subscribing count"),
+				goapidoc.NewProperty("subscribers", "integer#int32", true, "user subscriber count"),
+				goapidoc.NewProperty("is_subscribing", "boolean", true, "authorized user is subscribing"),
+				goapidoc.NewProperty("is_subscribed", "boolean", true, "authorized user is subscribed"),
+				goapidoc.NewProperty("videos", "integer#int32", true, "user video count"),
 			),
 
-		goapidoc.NewDefinition("UserExtraDto", "用户额外信息").
-			WithProperties(
-				goapidoc.NewProperty("subscribing_cnt", "integer#int32", true, "关注数量"),
-				goapidoc.NewProperty("subscriber_cnt", "integer#int32", true, "粉丝数量"),
-				goapidoc.NewProperty("video_cnt", "integer#int32", true, "视频数量"),
-			),
-
-		goapidoc.NewDefinition("UserDetailDto", "用户详细信息").
-			WithProperties(
-				goapidoc.NewProperty("user", "UserDto", true, "用户信息"),
-				goapidoc.NewProperty("extra", "UserExtraDto", true, "用户额外信息"),
+		goapidoc.NewDefinition("LoginDto", "login response").
+			Properties(
+				goapidoc.NewProperty("user", "UserDto", true, "authorized user"),
+				goapidoc.NewProperty("token", "string", true, "access token"),
 			),
 	)
 }
 
 type UserDto struct {
-	Uid          int32  `json:"uid"`
-	Username     string `json:"username"`
-	Gender       string `json:"gender"`
-	Profile      string `json:"profile"`
-	AvatarUrl    string `json:"avatar_url"` // TODO url
-	Birthday     string `json:"birthday"`
-	Role         string `json:"role"`
-	RegisterTime string `json:"register_time"`
+	Uid          uint64        `json:"uid"`           // user uid
+	Username     string        `json:"username"`      // username
+	Email        string        `json:"email"`         // user email
+	Nickname     string        `json:"nickname"`      // user nickname
+	Gender       string        `json:"gender"`        // user gender
+	Profile      string        `json:"profile"`       // user profile, allowempty
+	Avatar       string        `json:"avatar"`        // user avatar url
+	Birthday     string        `json:"birthday"`      // user birthday
+	Role         string        `json:"role"`          // user role
+	State        string        `json:"state"`         // user state
+	RegisterTime string        `json:"register_time"` // user register time
+	Extra        *UserExtraDto `json:"extra"`         // user extra information
 }
 
 func BuildUserDto(user *po.User) *UserDto {
-	return xentity.MustMap(user, &UserDto{}).(*UserDto)
+	if user == nil {
+		return nil
+	}
+	return &UserDto{
+		Uid:          user.Uid,
+		Username:     user.Username,
+		Email:        user.Email,
+		Nickname:     user.Nickname,
+		Gender:       user.Gender.String(),
+		Profile:      user.Profile,
+		Avatar:       user.Avatar,
+		Birthday:     user.Birthday.String(),
+		Role:         user.Role,
+		State:        user.State.String(),
+		RegisterTime: xtime.NewJsonDateTime(user.CreatedAt).String(),
+		Extra:        nil,
+	}
 }
 
 func BuildUserDtos(users []*po.User) []*UserDto {
-	return xentity.MustMapSlice(users, &UserDto{}).([]*UserDto)
+	out := make([]*UserDto, len(users))
+	for idx, user := range users {
+		out[idx] = BuildUserDto(user)
+	}
+	return out
+}
+
+func BuildUserPropertyMapper() xproperty.PropertyDict {
+	return xproperty.PropertyDict{
+		"uid":           xproperty.NewValue(false, "uid"),
+		"username":      xproperty.NewValue(false, "username"),
+		"email":         xproperty.NewValue(false, "email"),
+		"nickname":      xproperty.NewValue(false, "nickname"),
+		"gender":        xproperty.NewValue(false, "gender"),
+		"profile":       xproperty.NewValue(false, "profile"),
+		"avatar":        xproperty.NewValue(false, "avatar"),
+		"birthday":      xproperty.NewValue(false, "birthday"),
+		"age":           xproperty.NewValue(true, "birthday"),
+		"role":          xproperty.NewValue(false, "role"),
+		"state":         xproperty.NewValue(false, "state"),
+		"register_time": xproperty.NewValue(false, "created_at"),
+	}
+}
+
+type UserExtraDto struct {
+	Subscribings  *int32 `json:"subscribings"`
+	Subscribers   *int32 `json:"subscribers"`
+	IsSubscribing *bool  `json:"is_subscribing"`
+	IsSubscribed  *bool  `json:"is_subscribed"`
+	Videos        *int32 `json:"videos"`
 }
 
 type LoginDto struct {
-	User  *UserDto `json:"user"`
-	Token string   `json:"token"`
+	User  *UserDto `json:"user"`  // authorized user
+	Token string   `json:"token"` // access token
 }
 
 func BuildLoginDto(user *po.User, token string) *LoginDto {
 	return &LoginDto{
 		User:  BuildUserDto(user),
 		Token: token,
-	}
-}
-
-type UserExtraDto struct {
-	SubscribingCount int32 `json:"subscribing_cnt"`
-	SubscriberCount  int32 `json:"subscriber_cnt"`
-	VideoCount       int32 `json:"video_cnt"`
-}
-
-func BuildUserExtraDto(subscribingCnt int32, subscriberCnt int32, videoCnt int32) *UserExtraDto {
-	return &UserExtraDto{
-		SubscribingCount: subscribingCnt,
-		SubscriberCount:  subscriberCnt,
-		VideoCount:       videoCnt,
-	}
-}
-
-type UserDetailDto struct {
-	User  *UserDto      `json:"user"`
-	Extra *UserExtraDto `json:"extra"`
-}
-
-func BuildUserDetailDto(user *po.User, extra *UserExtraDto) *UserDetailDto {
-	return &UserDetailDto{
-		User:  BuildUserDto(user),
-		Extra: extra,
 	}
 }

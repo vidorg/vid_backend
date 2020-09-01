@@ -4,22 +4,22 @@ import (
 	"fmt"
 	"github.com/Aoi-hosizora/ahlib-web/xgorm"
 	"github.com/Aoi-hosizora/ahlib/xdi"
-	gormadapter "github.com/casbin/gorm-adapter/v2"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 	"github.com/sirupsen/logrus"
 	"github.com/vidorg/vid_backend/src/config"
 	"github.com/vidorg/vid_backend/src/model/po"
 	"github.com/vidorg/vid_backend/src/provide/sn"
+	"time"
 )
 
-func NewMySQLConn() (*gorm.DB, error) {
+func NewMySQLDB() (*gorm.DB, error) {
 	cfg := xdi.GetByNameForce(sn.SConfig).(*config.Config)
 	mcfg := cfg.MySQL
 	logger := xdi.GetByNameForce(sn.SLogger).(*logrus.Logger)
 
-	dbParams := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=%s&parseTime=True&loc=Local", mcfg.User, mcfg.Password, mcfg.Host, mcfg.Port, mcfg.Name, mcfg.Charset)
-	db, err := gorm.Open("mysql", dbParams)
+	params := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=%s&parseTime=True&loc=Local", mcfg.User, mcfg.Password, mcfg.Host, mcfg.Port, mcfg.Name, mcfg.Charset)
+	db, err := gorm.Open("mysql", params)
 	if err != nil {
 		return nil, err
 	}
@@ -31,6 +31,10 @@ func NewMySQLConn() (*gorm.DB, error) {
 		return "tbl_" + defaultTableName
 	}
 	xgorm.HookDeleteAtField(db, xgorm.DefaultDeleteAtTimeStamp)
+
+	db.DB().SetMaxIdleConns(int(mcfg.MaxIdle))
+	db.DB().SetMaxOpenConns(int(mcfg.MaxActive))
+	db.DB().SetConnMaxLifetime(time.Duration(mcfg.MaxLifetime) * time.Second)
 
 	err = migrate(db)
 	if err != nil {
@@ -50,14 +54,4 @@ func migrate(db *gorm.DB) error {
 		}
 	}
 	return nil
-}
-
-func NewGormAdapter() (*gormadapter.Adapter, error) {
-	db := xdi.GetByNameForce(sn.SGorm).(*gorm.DB)
-
-	adapter, err := gormadapter.NewAdapterByDBUsePrefix(db, "tbl_")
-	if err != nil {
-		return nil, err
-	}
-	return adapter, nil
 }

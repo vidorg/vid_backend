@@ -1,36 +1,50 @@
 package param
 
 import (
-	"github.com/Aoi-hosizora/ahlib/xentity"
+	"github.com/Aoi-hosizora/ahlib/xtime"
 	"github.com/Aoi-hosizora/goapidoc"
-	"github.com/vidorg/vid_backend/src/model/po"
+	"github.com/vidorg/vid_backend/src/model/constant"
 )
-
-// https://godoc.org/github.com/go-playground/validator#hdr-Baked_In_Validators_and_Tags
 
 func init() {
 	goapidoc.AddDefinitions(
-		goapidoc.NewDefinition("UserParam", "用户请求参数").
-			WithProperties(
-				goapidoc.NewProperty("username", "string", true, "用户名，长度在 [5, 30] 之间"),
-				goapidoc.NewProperty("profile", "string", true, "用户简介，长度在 [0, 255] 之间").WithAllowEmptyValue(true),
-				goapidoc.NewProperty("gender", "string", true, "性别").WithEnum("male", "female", "unknown"),
-				goapidoc.NewProperty("birthday", "string#date", true, "生日"),
-				goapidoc.NewProperty("phone_number", "string", true, "手机号码，长度为 11，仅限中国大陆手机号码"),
-				goapidoc.NewProperty("avatar_url", "string", true, "头像"),
+		goapidoc.NewDefinition("UpdateUserParam", "update user parameter").
+			Properties(
+				goapidoc.NewProperty("username", "string", true, "username"),
+				goapidoc.NewProperty("nickname", "string", true, "user nickname"),
+				goapidoc.NewProperty("gender", "integer#int32", true, "user gender, 0X | 1M | 2F").Enum(0, 1, 2),
+				goapidoc.NewProperty("profile", "string", true, "user profile").AllowEmpty(true),
+				goapidoc.NewProperty("birthday", "string#date", true, "user birthday").Example("2000-01-01"),
+				goapidoc.NewProperty("phone", "string", true, "user phone number").Example("13512345678"),
+				goapidoc.NewProperty("avatar", "string", true, "user avatar").Example("https://aaa.bbb.ccc"),
 			),
 	)
 }
 
-type UserParam struct {
-	Username    string  `form:"username"     json:"username"     binding:"required,min=5,max=30,name"`
-	Profile     *string `form:"profile"      json:"profile"      binding:"required,min=0,max=255"`
-	Gender      string  `form:"gender"       json:"gender"       binding:"required"`
-	Birthday    string  `form:"birthday"     json:"birthday"     binding:"required,date"`
-	PhoneNumber string  `form:"phone_number" json:"phone_number" binding:"required,phone"`
-	AvatarUrl   string  `form:"avatar_url"   json:"avatar_url"   binding:"required,url"` // TODO url
+type UpdateUserParam struct {
+	Username string  `json:"username"     form:"username"     binding:"required,l_name,r_name"` // username
+	Nickname string  `json:"nickname"     form:"nickname"     binding:"required,l_name"`        // user nickname
+	Gender   int8    `json:"gender"       form:"gender"       binding:"required,o_gender"`      // user gender (0X, 1M, 2F)
+	Profile  *string `json:"profile"      form:"profile"      binding:"required,l_profile"`     // user profile, allowempty
+	Birthday string  `json:"birthday"     form:"birthday"     binding:"required,date"`          // user birthday
+	Phone    string  `json:"phone"        form:"phone"        binding:"required,r_phone"`       // user phone number
+	Avatar   string  `json:"avatar"       form:"avatar"       binding:"required,url"`           // user avatar
 }
 
-func MapUserParam(param *UserParam, user *po.User) {
-	xentity.MustMapProp(param, user)
+func (u *UpdateUserParam) ToMap() map[string]interface{} {
+	m := map[string]interface{}{
+		"username": u.Username,
+		"nickname": u.Nickname,
+		"gender":   constant.ParseGender(u.Gender),
+		"profile":  *u.Profile,
+		"phone":    u.Phone,
+		"avatar":   u.Avatar,
+	}
+
+	d, err := xtime.ParseRFC3339Date(u.Birthday)
+	if err == nil {
+		m["birthday"] = d
+	}
+
+	return m
 }
