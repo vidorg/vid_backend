@@ -87,7 +87,7 @@ func initRoute(engine *gin.Engine) {
 
 	rbacGroup := v1.Group("rbac")
 	{
-		rbacGroup.Use(jwtMw, casbinMw)
+		rbacGroup.Use(authMw)
 		rbacGroup.GET("rule", j(rbacCtrl.GetRules))
 		rbacGroup.PUT("user/:uid", j(rbacCtrl.ChangeRole))
 		rbacGroup.POST("subject", j(rbacCtrl.InsertSubject))

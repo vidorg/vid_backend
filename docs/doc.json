@@ -140,7 +140,7 @@
             "name": "param",
             "in": "body",
             "required": true,
-            "description": "修改密码参数",
+            "description": "update password parameter",
             "schema": {
               "originRef": "UpdatePasswordParam",
               "$ref": "#/definitions/UpdatePasswordParam"
@@ -186,10 +186,10 @@
         }
       }
     },
-    "/v1/auth/spec/:spec": {
+    "/v1/auth/spec/{spec}": {
       "get": {
         "summary": "activate account with spec",
-        "operationId": "-v1-auth-spec-:spec-get",
+        "operationId": "-v1-auth-spec-spec-get",
         "tags": [
           "Authorization"
         ],
@@ -318,16 +318,16 @@
         "parameters": [
           {
             "name": "page",
-            "in": "path",
-            "required": true,
+            "in": "query",
+            "required": false,
             "type": "integer",
             "description": "current page",
             "format": "int32"
           },
           {
             "name": "limit",
-            "in": "path",
-            "required": true,
+            "in": "query",
+            "required": false,
             "type": "integer",
             "description": "page size",
             "format": "int32"
@@ -490,24 +490,24 @@
         "parameters": [
           {
             "name": "page",
-            "in": "path",
-            "required": true,
+            "in": "query",
+            "required": false,
             "type": "integer",
             "description": "current page",
             "format": "int32"
           },
           {
             "name": "limit",
-            "in": "path",
-            "required": true,
+            "in": "query",
+            "required": false,
             "type": "integer",
             "description": "page size",
             "format": "int32"
           },
           {
             "name": "order",
-            "in": "path",
-            "required": true,
+            "in": "query",
+            "required": false,
             "type": "string",
             "description": "order string"
           },
@@ -637,148 +637,6 @@
         }
       }
     },
-    "/v1/user/uid/{uid}/subscriber": {
-      "get": {
-        "summary": "query user subscribers",
-        "operationId": "-v1-user-uid-uid-subscriber-get",
-        "tags": [
-          "Subscribe"
-        ],
-        "parameters": [
-          {
-            "name": "uid",
-            "in": "path",
-            "required": true,
-            "type": "integer",
-            "description": "user id",
-            "format": "int64"
-          },
-          {
-            "name": "page",
-            "in": "path",
-            "required": true,
-            "type": "integer",
-            "description": "current page",
-            "format": "int32"
-          },
-          {
-            "name": "limit",
-            "in": "path",
-            "required": true,
-            "type": "integer",
-            "description": "page size",
-            "format": "int32"
-          },
-          {
-            "name": "order",
-            "in": "path",
-            "required": true,
-            "type": "string",
-            "description": "order string"
-          },
-          {
-            "name": "need_subscribe_count",
-            "in": "query",
-            "required": false,
-            "type": "boolean",
-            "description": "need subscribe count (user)"
-          },
-          {
-            "name": "need_is_subscribe",
-            "in": "query",
-            "required": false,
-            "type": "boolean",
-            "description": "need is subscribe (user)"
-          },
-          {
-            "name": "need_video_count",
-            "in": "query",
-            "required": false,
-            "type": "boolean",
-            "description": "need video count (user)"
-          }
-        ],
-        "responses": {
-          "200": {
-            "schema": {
-              "originRef": "_Result<_Page<UserDto>>",
-              "$ref": "#/definitions/_Result<_Page<UserDto>>"
-            }
-          }
-        }
-      }
-    },
-    "/v1/user/uid/{uid}/subscribing": {
-      "get": {
-        "summary": "query user subscribings",
-        "operationId": "-v1-user-uid-uid-subscribing-get",
-        "tags": [
-          "Subscribe"
-        ],
-        "parameters": [
-          {
-            "name": "uid",
-            "in": "path",
-            "required": true,
-            "type": "integer",
-            "description": "user id",
-            "format": "int64"
-          },
-          {
-            "name": "page",
-            "in": "path",
-            "required": true,
-            "type": "integer",
-            "description": "current page",
-            "format": "int32"
-          },
-          {
-            "name": "limit",
-            "in": "path",
-            "required": true,
-            "type": "integer",
-            "description": "page size",
-            "format": "int32"
-          },
-          {
-            "name": "order",
-            "in": "path",
-            "required": true,
-            "type": "string",
-            "description": "order string"
-          },
-          {
-            "name": "need_subscribe_count",
-            "in": "query",
-            "required": false,
-            "type": "boolean",
-            "description": "need subscribe count (user)"
-          },
-          {
-            "name": "need_is_subscribe",
-            "in": "query",
-            "required": false,
-            "type": "boolean",
-            "description": "need is subscribe (user)"
-          },
-          {
-            "name": "need_video_count",
-            "in": "query",
-            "required": false,
-            "type": "boolean",
-            "description": "need video count (user)"
-          }
-        ],
-        "responses": {
-          "200": {
-            "schema": {
-              "originRef": "_Result<_Page<UserDto>>",
-              "$ref": "#/definitions/_Result<_Page<UserDto>>"
-            }
-          }
-        }
-      }
-    },
     "/v1/user/{uid}": {
       "get": {
         "summary": "query a user by uid",
@@ -788,6 +646,14 @@
         ],
         "parameters": [
           {
+            "name": "uid",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "description": "user id",
+            "format": "int64"
+          },
+          {
             "name": "need_subscribe_count",
             "in": "query",
             "required": false,
@@ -807,14 +673,6 @@
             "required": false,
             "type": "boolean",
             "description": "need video count (user)"
-          },
-          {
-            "name": "uid",
-            "in": "path",
-            "required": true,
-            "type": "integer",
-            "description": "user id",
-            "format": "int64"
           }
         ],
         "responses": {
@@ -822,6 +680,148 @@
             "schema": {
               "originRef": "_Result<UserDto>",
               "$ref": "#/definitions/_Result<UserDto>"
+            }
+          }
+        }
+      }
+    },
+    "/v1/user/{uid}/subscriber": {
+      "get": {
+        "summary": "query user subscribers",
+        "operationId": "-v1-user-uid-subscriber-get",
+        "tags": [
+          "Subscribe"
+        ],
+        "parameters": [
+          {
+            "name": "uid",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "description": "user id",
+            "format": "int64"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "description": "current page",
+            "format": "int32"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "description": "page size",
+            "format": "int32"
+          },
+          {
+            "name": "order",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "description": "order string"
+          },
+          {
+            "name": "need_subscribe_count",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need subscribe count (user)"
+          },
+          {
+            "name": "need_is_subscribe",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need is subscribe (user)"
+          },
+          {
+            "name": "need_video_count",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need video count (user)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "originRef": "_Result<_Page<UserDto>>",
+              "$ref": "#/definitions/_Result<_Page<UserDto>>"
+            }
+          }
+        }
+      }
+    },
+    "/v1/user/{uid}/subscribing": {
+      "get": {
+        "summary": "query user subscribings",
+        "operationId": "-v1-user-uid-subscribing-get",
+        "tags": [
+          "Subscribe"
+        ],
+        "parameters": [
+          {
+            "name": "uid",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "description": "user id",
+            "format": "int64"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "description": "current page",
+            "format": "int32"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "description": "page size",
+            "format": "int32"
+          },
+          {
+            "name": "order",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "description": "order string"
+          },
+          {
+            "name": "need_subscribe_count",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need subscribe count (user)"
+          },
+          {
+            "name": "need_is_subscribe",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need is subscribe (user)"
+          },
+          {
+            "name": "need_video_count",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need video count (user)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "originRef": "_Result<_Page<UserDto>>",
+              "$ref": "#/definitions/_Result<_Page<UserDto>>"
             }
           }
         }
@@ -845,24 +845,24 @@
           },
           {
             "name": "page",
-            "in": "path",
-            "required": true,
+            "in": "query",
+            "required": false,
             "type": "integer",
             "description": "current page",
             "format": "int32"
           },
           {
             "name": "limit",
-            "in": "path",
-            "required": true,
+            "in": "query",
+            "required": false,
             "type": "integer",
             "description": "page size",
             "format": "int32"
           },
           {
             "name": "order",
-            "in": "path",
-            "required": true,
+            "in": "query",
+            "required": false,
             "type": "string",
             "description": "order string"
           },
@@ -900,24 +900,24 @@
         "parameters": [
           {
             "name": "page",
-            "in": "path",
-            "required": true,
+            "in": "query",
+            "required": false,
             "type": "integer",
             "description": "current page",
             "format": "int32"
           },
           {
             "name": "limit",
-            "in": "path",
-            "required": true,
+            "in": "query",
+            "required": false,
             "type": "integer",
             "description": "page size",
             "format": "int32"
           },
           {
             "name": "order",
-            "in": "path",
-            "required": true,
+            "in": "query",
+            "required": false,
             "type": "string",
             "description": "order string"
           },
@@ -1114,12 +1114,14 @@
         "video_url": {
           "type": "string",
           "required": true,
-          "description": "video source url"
+          "description": "video source url",
+          "example": "https://aaa.bbb.ccc"
         },
         "cover_url": {
           "type": "string",
           "required": true,
-          "description": "video cover url"
+          "description": "video cover url",
+          "example": "https://aaa.bbb.ccc"
         }
       }
     },
@@ -1271,7 +1273,8 @@
         "email": {
           "type": "string",
           "required": true,
-          "description": "register email"
+          "description": "register email",
+          "example": "aaa@bbb.ccc"
         },
         "password": {
           "type": "string",
@@ -1365,17 +1368,20 @@
           "type": "string",
           "required": true,
           "description": "user birthday",
-          "format": "date"
+          "format": "date",
+          "example": "2000-01-01"
         },
         "phone": {
           "type": "string",
           "required": true,
-          "description": "user phone number"
+          "description": "user phone number",
+          "example": "13512345678"
         },
         "avatar": {
           "type": "string",
           "required": true,
-          "description": "user avatar"
+          "description": "user avatar",
+          "example": "https://aaa.bbb.ccc"
         }
       }
     },

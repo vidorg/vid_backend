@@ -85,12 +85,12 @@ func (cmn *CommonController) getUsersExtra(c *gin.Context, authUser *po.User, us
 // Get po.Video author for video list.
 func (cmn *CommonController) getVideosAuthor(c *gin.Context, videos []*po.Video) ([]*po.User, error) {
 	authors := make([]*po.User, len(videos))
+	uids := make([]uint64, len(videos))
+	for idx, video := range videos {
+		uids[idx] = video.AuthorUid
+	}
 
 	if param.BindQueryBool(c, "need_author") {
-		uids := make([]uint64, len(videos))
-		for idx, video := range videos {
-			uids[idx] = video.AuthorUid
-		}
 
 		var err error
 		authors, err = cmn.userService.QueryByUids(uids)

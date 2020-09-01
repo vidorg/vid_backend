@@ -43,7 +43,7 @@ func init() {
 		goapidoc.NewRoutePath("PUT", "/v1/auth/password", "update password").
 			Tags("Authorization").
 			Securities("Jwt").
-			Params(goapidoc.NewBodyParam("param", "UpdatePasswordParam", true, "修改密码参数")).
+			Params(goapidoc.NewBodyParam("param", "UpdatePasswordParam", true, "update password parameter")).
 			Responses(goapidoc.NewResponse(200, "Result")),
 
 		goapidoc.NewRoutePath("POST", "/v1/auth/activate", "send email to activate account").
@@ -51,7 +51,7 @@ func init() {
 			Securities("Jwt").
 			Responses(goapidoc.NewResponse(200, "Result")),
 
-		goapidoc.NewRoutePath("GET", "/v1/auth/spec/:spec", "activate account with spec").
+		goapidoc.NewRoutePath("GET", "/v1/auth/spec/{spec}", "activate account with spec").
 			Tags("Authorization").
 			Params(goapidoc.NewPathParam("spec", "string", true, "spec code")).
 			Responses(goapidoc.NewResponse(200, "Result")),
@@ -253,10 +253,10 @@ func (a *AuthController) ActivateUser(c *gin.Context) *result.Result {
 func (a *AuthController) CheckSpec(c *gin.Context) *result.Result {
 	spec := c.Param("spec")
 	uid, ok, err := a.emailService.CheckSpec(spec)
-	if !ok {
-		return result.Error(exception.InvalidSpecError)
-	} else if err != nil {
+	if err != nil {
 		return result.Error(exception.ActivateUserError).SetError(err, c)
+	} else if !ok {
+		return result.Error(exception.InvalidSpecError)
 	}
 
 	user, err := a.userService.QueryByUid(uid)

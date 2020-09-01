@@ -11,8 +11,8 @@ func init() {
 			Properties(
 				goapidoc.NewProperty("title", "string", true, "video title"),
 				goapidoc.NewProperty("description", "string", true, "video description"),
-				goapidoc.NewProperty("video_url", "string", true, "video source url"),
-				goapidoc.NewProperty("cover_url", "string", true, "video cover url"),
+				goapidoc.NewProperty("video_url", "string", true, "video source url").Example("https://aaa.bbb.ccc"),
+				goapidoc.NewProperty("cover_url", "string", true, "video cover url").Example("https://aaa.bbb.ccc"),
 			),
 	)
 }

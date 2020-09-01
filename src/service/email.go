@@ -63,7 +63,7 @@ func (e *EmailService) SendTo(to string, spec string) error {
 }
 
 func (e *EmailService) concat(spec string) string {
-	return fmt.Sprintf("fom-spec-%s", spec)
+	return fmt.Sprintf("vid-spec-%s", spec)
 }
 
 func (e *EmailService) CheckSpec(spec string) (uint64, bool, error) {

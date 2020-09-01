@@ -29,8 +29,8 @@ func init() {
 		goapidoc.NewRoutePath("GET", "/v1/user/{uid}", "query a user by uid").
 			Tags("User").
 			Params(
-				adNeedSubscribeCount, adNeedIsSubscribe, adNeedVideoCount,
 				goapidoc.NewPathParam("uid", "integer#int64", true, "user id"),
+				adNeedSubscribeCount, adNeedIsSubscribe, adNeedVideoCount,
 			).
 			Responses(goapidoc.NewResponse(200, "_Result<UserDto>")),
 

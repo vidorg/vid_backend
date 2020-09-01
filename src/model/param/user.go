@@ -14,9 +14,9 @@ func init() {
 				goapidoc.NewProperty("nickname", "string", true, "user nickname"),
 				goapidoc.NewProperty("gender", "integer#int32", true, "user gender, 0X | 1M | 2F").Enum(0, 1, 2),
 				goapidoc.NewProperty("profile", "string", true, "user profile").AllowEmpty(true),
-				goapidoc.NewProperty("birthday", "string#date", true, "user birthday"),
-				goapidoc.NewProperty("phone", "string", true, "user phone number"),
-				goapidoc.NewProperty("avatar", "string", true, "user avatar"),
+				goapidoc.NewProperty("birthday", "string#date", true, "user birthday").Example("2000-01-01"),
+				goapidoc.NewProperty("phone", "string", true, "user phone number").Example("13512345678"),
+				goapidoc.NewProperty("avatar", "string", true, "user avatar").Example("https://aaa.bbb.ccc"),
 			),
 	)
 }
@@ -33,12 +33,12 @@ type UpdateUserParam struct {
 
 func (u *UpdateUserParam) ToMap() map[string]interface{} {
 	m := map[string]interface{}{
-		"username":     u.Username,
-		"nickname":     u.Nickname,
-		"gender":       constant.ParseGender(u.Gender),
-		"profile":      *u.Profile,
-		"phone_number": u.Phone,
-		"avatar":       u.Avatar,
+		"username": u.Username,
+		"nickname": u.Nickname,
+		"gender":   constant.ParseGender(u.Gender),
+		"profile":  *u.Profile,
+		"phone":    u.Phone,
+		"avatar":   u.Avatar,
 	}
 
 	d, err := xtime.ParseRFC3339Date(u.Birthday)

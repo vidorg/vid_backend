@@ -53,7 +53,8 @@ func (c *CasbinService) GetAllRules(pp *param.PageParam) ([]*po.RbacRule, int32,
 
 func (c *CasbinService) addRule(rule *po.RbacRule) (xstatus.DbStatus, error) {
 	rdb := c.db.Table(c.tblName).Where(rule.ToMap()).First(&po.RbacRule{})
-	if !rdb.RecordNotFound() {
+	if rdb.RecordNotFound() {
+	} else if !rdb.RecordNotFound() {
 		return xstatus.DbExisted, nil
 	} else if rdb.Error != nil {
 		return xstatus.DbFailed, rdb.Error

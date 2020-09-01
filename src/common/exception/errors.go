@@ -68,7 +68,7 @@ var (
 	SubscribeSelfError      = New(400, ce(), "could not follow self")      // 无法关注自己
 	AlreadySubscribingError = New(409, ce(), "user has been followed")     // 已经关注的用户
 	UnSubscribeError        = New(500, se(), "unfollow failed")            // 取消关注用户失败
-	NotSubscribeYetError    = New(409, ce(), "user has not been followed") // 还没有关注的用户
+	NotSubscribeYetError    = New(404, ce(), "user has not been followed") // 还没有关注的用户
 )
 
 // video exception
