@@ -50,8 +50,8 @@ func (cmn *CommonController) getUsersExtra(c *gin.Context, authUser *po.User, us
 			return nil, err
 		}
 		for idx, cnt := range arr {
-			extras[idx].Subscribers = &cnt[0]
-			extras[idx].Subscribings = &cnt[1]
+			extras[idx].Subscribings = &cnt[0]
+			extras[idx].Subscribers = &cnt[1]
 		}
 	}
 
@@ -62,8 +62,8 @@ func (cmn *CommonController) getUsersExtra(c *gin.Context, authUser *po.User, us
 			return nil, err
 		}
 		for idx, is := range arr {
-			extras[idx].IsSubscriber = &is[0]
-			extras[idx].IsSubscribing = &is[1]
+			extras[idx].IsSubscribing = &is[0]
+			extras[idx].IsSubscribed = &is[1]
 		}
 	}
 
@@ -83,21 +83,29 @@ func (cmn *CommonController) getUsersExtra(c *gin.Context, authUser *po.User, us
 }
 
 // Get po.Video author for video list.
-func (cmn *CommonController) getVideosAuthor(c *gin.Context, videos []*po.Video) ([]*po.User, error) {
+func (cmn *CommonController) getVideosAuthor(c *gin.Context, authUser *po.User, videos []*po.Video) ([]*po.User, []*dto.UserExtraDto, error) {
 	authors := make([]*po.User, len(videos))
+	extras := make([]*dto.UserExtraDto, len(videos))
+	for idx := range extras {
+		extras[idx] = &dto.UserExtraDto{}
+	}
 	uids := make([]uint64, len(videos))
 	for idx, video := range videos {
 		uids[idx] = video.AuthorUid
 	}
 
 	if param.BindQueryBool(c, "need_author") {
-
 		var err error
 		authors, err = cmn.userService.QueryByUids(uids)
 		if err != nil {
-			return nil, err
+			return nil, nil, err
+		}
+
+		extras, err = cmn.getUsersExtra(c, authUser, authors)
+		if err != nil {
+			return nil, nil, err
 		}
 	}
 
-	return authors, nil
+	return authors, extras, nil
 }

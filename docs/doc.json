@@ -867,6 +867,27 @@
             "description": "order string"
           },
           {
+            "name": "need_subscribe_count",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need subscribe count (user)"
+          },
+          {
+            "name": "need_is_subscribe",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need is subscribe (user)"
+          },
+          {
+            "name": "need_video_count",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need video count (user)"
+          },
+          {
             "name": "need_author",
             "in": "query",
             "required": false,
@@ -920,6 +941,27 @@
             "required": false,
             "type": "string",
             "description": "order string"
+          },
+          {
+            "name": "need_subscribe_count",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need subscribe count (user)"
+          },
+          {
+            "name": "need_is_subscribe",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need is subscribe (user)"
+          },
+          {
+            "name": "need_video_count",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need video count (user)"
           },
           {
             "name": "need_author",
@@ -1016,6 +1058,27 @@
             "type": "integer",
             "description": "video id",
             "format": "int64"
+          },
+          {
+            "name": "need_subscribe_count",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need subscribe count (user)"
+          },
+          {
+            "name": "need_is_subscribe",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need is subscribe (user)"
+          },
+          {
+            "name": "need_video_count",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need video count (user)"
           },
           {
             "name": "need_author",
@@ -1481,7 +1544,7 @@
         "subscribings",
         "subscribers",
         "is_subscribing",
-        "is_subscriber",
+        "is_subscribed",
         "videos"
       ],
       "description": "user extra response",
@@ -1503,7 +1566,7 @@
           "required": true,
           "description": "authorized user is subscribing"
         },
-        "is_subscriber": {
+        "is_subscribed": {
           "type": "boolean",
           "required": true,
           "description": "authorized user is subscribed"

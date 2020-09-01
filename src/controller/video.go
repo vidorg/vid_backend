@@ -22,7 +22,7 @@ func init() {
 			Securities("Jwt").
 			Params(
 				param.ADPage, param.ADLimit, param.ADOrder,
-				adNeedAuthor,
+				adNeedSubscribeCount, adNeedIsSubscribe, adNeedVideoCount, adNeedAuthor,
 			).
 			Responses(goapidoc.NewResponse(200, "_Result<_Page<VideoDto>>")),
 
@@ -31,7 +31,7 @@ func init() {
 			Params(
 				goapidoc.NewPathParam("uid", "integer#int64", true, "user id"),
 				param.ADPage, param.ADLimit, param.ADOrder,
-				adNeedAuthor,
+				adNeedSubscribeCount, adNeedIsSubscribe, adNeedVideoCount, adNeedAuthor,
 			).
 			Responses(goapidoc.NewResponse(200, "_Result<_Page<VideoDto>>")),
 
@@ -39,7 +39,7 @@ func init() {
 			Tags("Video").
 			Params(
 				goapidoc.NewPathParam("vid", "integer#int64", true, "video id"),
-				adNeedAuthor,
+				adNeedSubscribeCount, adNeedIsSubscribe, adNeedVideoCount, adNeedAuthor,
 			).
 			Responses(goapidoc.NewResponse(200, "_Result<VideoDto>")),
 
@@ -90,7 +90,8 @@ func (v *VideoController) QueryAllVideos(c *gin.Context) *result.Result {
 		return result.Error(exception.QueryVideoError).SetError(err, c)
 	}
 
-	authors, err := v.common.getVideosAuthor(c, videos)
+	authUser := v.jwtService.GetContextUser(c)
+	authors, extras, err := v.common.getVideosAuthor(c, authUser, videos)
 	if err != nil {
 		return result.Error(exception.QueryVideoError).SetError(err, c)
 	}
@@ -98,6 +99,9 @@ func (v *VideoController) QueryAllVideos(c *gin.Context) *result.Result {
 	res := dto.BuildVideoDtos(videos)
 	for idx, video := range res {
 		video.Author = dto.BuildUserDto(authors[idx])
+		if video.Author != nil {
+			video.Author.Extra = extras[idx]
+		}
 	}
 	return result.Ok().SetPage(pp.Page, pp.Limit, total, res)
 }
@@ -117,7 +121,8 @@ func (v *VideoController) QueryVideosByUid(c *gin.Context) *result.Result {
 		return result.Error(exception.UserNotFoundError)
 	}
 
-	authors, err := v.common.getVideosAuthor(c, videos)
+	authUser := v.jwtService.GetContextUser(c)
+	authors, extras, err := v.common.getVideosAuthor(c, authUser, videos)
 	if err != nil {
 		return result.Error(exception.QueryVideoError).SetError(err, c)
 	}
@@ -125,6 +130,9 @@ func (v *VideoController) QueryVideosByUid(c *gin.Context) *result.Result {
 	res := dto.BuildVideoDtos(videos)
 	for idx, video := range res {
 		video.Author = dto.BuildUserDto(authors[idx])
+		if video.Author != nil {
+			video.Author.Extra = extras[idx]
+		}
 	}
 	return result.Ok().SetPage(pp.Page, pp.Limit, total, res)
 }
@@ -143,13 +151,17 @@ func (v *VideoController) QueryVideoByVid(c *gin.Context) *result.Result {
 		return result.Error(exception.VideoNotFoundError)
 	}
 
-	authors, err := v.common.getVideosAuthor(c, []*po.Video{video})
+	authUser := v.jwtService.GetContextUser(c)
+	authors, extras, err := v.common.getVideosAuthor(c, authUser, []*po.Video{video})
 	if err != nil {
 		return result.Error(exception.QueryVideoError).SetError(err, c)
 	}
 
 	res := dto.BuildVideoDto(video)
 	res.Author = dto.BuildUserDto(authors[0])
+	if res.Author != nil {
+		res.Author.Extra = extras[0]
+	}
 	return result.Ok().SetData(res)
 }
 

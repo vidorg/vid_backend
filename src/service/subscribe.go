@@ -189,6 +189,8 @@ func (s *SubscribeService) CheckSubscribeByUids(me uint64, uids []uint64) ([]*[2
 		arr, ok := bucket[uid]
 		if ok {
 			out[idx] = &arr
+		} else {
+			out[idx] = &[2]bool{}
 		}
 	}
 

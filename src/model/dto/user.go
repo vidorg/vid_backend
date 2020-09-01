@@ -30,7 +30,7 @@ func init() {
 				goapidoc.NewProperty("subscribings", "integer#int32", true, "user subscribing count"),
 				goapidoc.NewProperty("subscribers", "integer#int32", true, "user subscriber count"),
 				goapidoc.NewProperty("is_subscribing", "boolean", true, "authorized user is subscribing"),
-				goapidoc.NewProperty("is_subscriber", "boolean", true, "authorized user is subscribed"),
+				goapidoc.NewProperty("is_subscribed", "boolean", true, "authorized user is subscribed"),
 				goapidoc.NewProperty("videos", "integer#int32", true, "user video count"),
 			),
 
@@ -106,7 +106,7 @@ type UserExtraDto struct {
 	Subscribings  *int32 `json:"subscribings"`
 	Subscribers   *int32 `json:"subscribers"`
 	IsSubscribing *bool  `json:"is_subscribing"`
-	IsSubscriber  *bool  `json:"is_subscriber"`
+	IsSubscribed  *bool  `json:"is_subscribed"`
 	Videos        *int32 `json:"videos"`
 }
 
