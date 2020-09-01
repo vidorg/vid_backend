@@ -34,8 +34,12 @@
       "description": "video-controller"
     },
     {
-      "name": "Policy",
-      "description": "policy-controller"
+      "name": "Rbac",
+      "description": "rbac-controller"
+    },
+    {
+      "name": "Administration",
+      "description": "*-controller"
     }
   ],
   "securityDefinitions": {
@@ -475,7 +479,8 @@
         "summary": "query all user",
         "operationId": "-v1-user-get",
         "tags": [
-          "User"
+          "User",
+          "Administration"
         ],
         "security": [
           {
@@ -510,31 +515,22 @@
             "name": "need_subscribe_count",
             "in": "query",
             "required": false,
-            "description": "need subscribe count (user)",
-            "schema": {
-              "originRef": "bool",
-              "$ref": "#/definitions/bool"
-            }
+            "type": "boolean",
+            "description": "need subscribe count (user)"
           },
           {
             "name": "need_is_subscribe",
             "in": "query",
             "required": false,
-            "description": "need is subscribe (user)",
-            "schema": {
-              "originRef": "bool",
-              "$ref": "#/definitions/bool"
-            }
+            "type": "boolean",
+            "description": "need is subscribe (user)"
           },
           {
             "name": "need_video_count",
             "in": "query",
             "required": false,
-            "description": "need video count (user)",
-            "schema": {
-              "originRef": "bool",
-              "$ref": "#/definitions/bool"
-            }
+            "type": "boolean",
+            "description": "need video count (user)"
           }
         ],
         "responses": {
@@ -641,124 +637,10 @@
         }
       }
     },
-    "/v1/user/uid/{uid}": {
-      "get": {
-        "summary": "query a user by uid",
-        "operationId": "-v1-user-uid-uid-get",
-        "tags": [
-          "User"
-        ],
-        "parameters": [
-          {
-            "name": "need_subscribe_count",
-            "in": "query",
-            "required": false,
-            "description": "need subscribe count (user)",
-            "schema": {
-              "originRef": "bool",
-              "$ref": "#/definitions/bool"
-            }
-          },
-          {
-            "name": "need_is_subscribe",
-            "in": "query",
-            "required": false,
-            "description": "need is subscribe (user)",
-            "schema": {
-              "originRef": "bool",
-              "$ref": "#/definitions/bool"
-            }
-          },
-          {
-            "name": "need_video_count",
-            "in": "query",
-            "required": false,
-            "description": "need video count (user)",
-            "schema": {
-              "originRef": "bool",
-              "$ref": "#/definitions/bool"
-            }
-          },
-          {
-            "name": "uid",
-            "in": "path",
-            "required": true,
-            "type": "integer",
-            "description": "user id",
-            "format": "int64"
-          }
-        ],
-        "responses": {
-          "200": {
-            "schema": {
-              "originRef": "_Result<UserDetailDto>",
-              "$ref": "#/definitions/_Result<UserDetailDto>"
-            }
-          }
-        }
-      }
-    },
-    "/v1/user/username/{username}": {
-      "get": {
-        "summary": "query a user by username",
-        "operationId": "-v1-user-username-username-get",
-        "tags": [
-          "User"
-        ],
-        "parameters": [
-          {
-            "name": "need_subscribe_count",
-            "in": "query",
-            "required": false,
-            "description": "need subscribe count (user)",
-            "schema": {
-              "originRef": "bool",
-              "$ref": "#/definitions/bool"
-            }
-          },
-          {
-            "name": "need_is_subscribe",
-            "in": "query",
-            "required": false,
-            "description": "need is subscribe (user)",
-            "schema": {
-              "originRef": "bool",
-              "$ref": "#/definitions/bool"
-            }
-          },
-          {
-            "name": "need_video_count",
-            "in": "query",
-            "required": false,
-            "description": "need video count (user)",
-            "schema": {
-              "originRef": "bool",
-              "$ref": "#/definitions/bool"
-            }
-          },
-          {
-            "name": "uid",
-            "in": "path",
-            "required": true,
-            "type": "integer",
-            "description": "user id",
-            "format": "int64"
-          }
-        ],
-        "responses": {
-          "200": {
-            "schema": {
-              "originRef": "_Result<UserDetailDto>",
-              "$ref": "#/definitions/_Result<UserDetailDto>"
-            }
-          }
-        }
-      }
-    },
-    "/v1/user/{uid}/subscriber": {
+    "/v1/user/uid/{uid}/subscriber": {
       "get": {
         "summary": "query user subscribers",
-        "operationId": "-v1-user-uid-subscriber-get",
+        "operationId": "-v1-user-uid-uid-subscriber-get",
         "tags": [
           "Subscribe"
         ],
@@ -798,31 +680,22 @@
             "name": "need_subscribe_count",
             "in": "query",
             "required": false,
-            "description": "need subscribe count (user)",
-            "schema": {
-              "originRef": "bool",
-              "$ref": "#/definitions/bool"
-            }
+            "type": "boolean",
+            "description": "need subscribe count (user)"
           },
           {
             "name": "need_is_subscribe",
             "in": "query",
             "required": false,
-            "description": "need is subscribe (user)",
-            "schema": {
-              "originRef": "bool",
-              "$ref": "#/definitions/bool"
-            }
+            "type": "boolean",
+            "description": "need is subscribe (user)"
           },
           {
             "name": "need_video_count",
             "in": "query",
             "required": false,
-            "description": "need video count (user)",
-            "schema": {
-              "originRef": "bool",
-              "$ref": "#/definitions/bool"
-            }
+            "type": "boolean",
+            "description": "need video count (user)"
           }
         ],
         "responses": {
@@ -835,10 +708,10 @@
         }
       }
     },
-    "/v1/user/{uid}/subscribing": {
+    "/v1/user/uid/{uid}/subscribing": {
       "get": {
         "summary": "query user subscribings",
-        "operationId": "-v1-user-uid-subscribing-get",
+        "operationId": "-v1-user-uid-uid-subscribing-get",
         "tags": [
           "Subscribe"
         ],
@@ -878,31 +751,22 @@
             "name": "need_subscribe_count",
             "in": "query",
             "required": false,
-            "description": "need subscribe count (user)",
-            "schema": {
-              "originRef": "bool",
-              "$ref": "#/definitions/bool"
-            }
+            "type": "boolean",
+            "description": "need subscribe count (user)"
           },
           {
             "name": "need_is_subscribe",
             "in": "query",
             "required": false,
-            "description": "need is subscribe (user)",
-            "schema": {
-              "originRef": "bool",
-              "$ref": "#/definitions/bool"
-            }
+            "type": "boolean",
+            "description": "need is subscribe (user)"
           },
           {
             "name": "need_video_count",
             "in": "query",
             "required": false,
-            "description": "need video count (user)",
-            "schema": {
-              "originRef": "bool",
-              "$ref": "#/definitions/bool"
-            }
+            "type": "boolean",
+            "description": "need video count (user)"
           }
         ],
         "responses": {
@@ -910,6 +774,54 @@
             "schema": {
               "originRef": "_Result<_Page<UserDto>>",
               "$ref": "#/definitions/_Result<_Page<UserDto>>"
+            }
+          }
+        }
+      }
+    },
+    "/v1/user/{uid}": {
+      "get": {
+        "summary": "query a user by uid",
+        "operationId": "-v1-user-uid-get",
+        "tags": [
+          "User"
+        ],
+        "parameters": [
+          {
+            "name": "need_subscribe_count",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need subscribe count (user)"
+          },
+          {
+            "name": "need_is_subscribe",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need is subscribe (user)"
+          },
+          {
+            "name": "need_video_count",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need video count (user)"
+          },
+          {
+            "name": "uid",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "description": "user id",
+            "format": "int64"
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "originRef": "_Result<UserDto>",
+              "$ref": "#/definitions/_Result<UserDto>"
             }
           }
         }
@@ -958,11 +870,8 @@
             "name": "need_author",
             "in": "query",
             "required": false,
-            "description": "need video author (video)",
-            "schema": {
-              "originRef": "bool",
-              "$ref": "#/definitions/bool"
-            }
+            "type": "boolean",
+            "description": "need video author (video)"
           }
         ],
         "responses": {
@@ -980,7 +889,8 @@
         "summary": "query all videos",
         "operationId": "-v1-video-get",
         "tags": [
-          "Video"
+          "Video",
+          "Administration"
         ],
         "security": [
           {
@@ -1015,11 +925,8 @@
             "name": "need_author",
             "in": "query",
             "required": false,
-            "description": "need video author (video)",
-            "schema": {
-              "originRef": "bool",
-              "$ref": "#/definitions/bool"
-            }
+            "type": "boolean",
+            "description": "need video author (video)"
           }
         ],
         "responses": {
@@ -1114,11 +1021,8 @@
             "name": "need_author",
             "in": "query",
             "required": false,
-            "description": "need video author (video)",
-            "schema": {
-              "originRef": "bool",
-              "$ref": "#/definitions/bool"
-            }
+            "type": "boolean",
+            "description": "need video author (video)"
           }
         ],
         "responses": {
@@ -1589,16 +1493,14 @@
           "format": "int32"
         },
         "is_subscribing": {
+          "type": "boolean",
           "required": true,
-          "description": "authorized user is subscribing",
-          "originRef": "bool",
-          "$ref": "#/definitions/bool"
+          "description": "authorized user is subscribing"
         },
         "is_subscriber": {
+          "type": "boolean",
           "required": true,
-          "description": "authorized user is subscribed",
-          "originRef": "bool",
-          "$ref": "#/definitions/bool"
+          "description": "authorized user is subscribed"
         },
         "videos": {
           "type": "integer",
@@ -1803,34 +1705,6 @@
           "description": "response data",
           "originRef": "LoginDto",
           "$ref": "#/definitions/LoginDto"
-        }
-      }
-    },
-    "_Result<UserDetailDto>": {
-      "type": "object",
-      "required": [
-        "code",
-        "message",
-        "data"
-      ],
-      "description": "global response",
-      "properties": {
-        "code": {
-          "type": "integer",
-          "required": true,
-          "description": "status code",
-          "format": "int32"
-        },
-        "message": {
-          "type": "string",
-          "required": true,
-          "description": "status message"
-        },
-        "data": {
-          "required": true,
-          "description": "response data",
-          "originRef": "UserDetailDto",
-          "$ref": "#/definitions/UserDetailDto"
         }
       }
     },

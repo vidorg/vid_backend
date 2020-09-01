@@ -83,18 +83,6 @@ func (u *UserService) QueryByUid(uid uint64) (*po.User, error) {
 	return user, nil
 }
 
-func (u *UserService) QueryByUsername(username string) (*po.User, error) {
-	user := &po.User{}
-	rdb := u.db.Model(&po.User{}).Where(&po.User{Username: username}).First(user)
-	if rdb.RecordNotFound() {
-		return nil, nil
-	} else if rdb.Error != nil {
-		return nil, rdb.Error
-	}
-
-	return user, nil
-}
-
 func (u *UserService) Existed(uid uint64) (bool, error) {
 	cnt := 0
 	rdb := u.db.Model(&po.User{}).Where(&po.User{Uid: uid}).Count(&cnt)

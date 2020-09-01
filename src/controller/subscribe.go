@@ -16,7 +16,7 @@ import (
 
 func init() {
 	goapidoc.AddRoutePaths(
-		goapidoc.NewRoutePath("GET", "/v1/user/{uid}/subscriber", "query user subscribers").
+		goapidoc.NewRoutePath("GET", "/v1/user/uid/{uid}/subscriber", "query user subscribers").
 			Tags("Subscribe").
 			Params(
 				goapidoc.NewPathParam("uid", "integer#int64", true, "user id"),
@@ -25,7 +25,7 @@ func init() {
 			).
 			Responses(goapidoc.NewResponse(200, "_Result<_Page<UserDto>>")),
 
-		goapidoc.NewRoutePath("GET", "/v1/user/{uid}/subscribing", "query user subscribings").
+		goapidoc.NewRoutePath("GET", "/v1/user/uid/{uid}/subscribing", "query user subscribings").
 			Tags("Subscribe").
 			Params(
 				goapidoc.NewPathParam("uid", "integer#int64", true, "user id"),

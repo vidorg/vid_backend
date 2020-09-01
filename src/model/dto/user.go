@@ -29,8 +29,8 @@ func init() {
 			Properties(
 				goapidoc.NewProperty("subscribings", "integer#int32", true, "user subscribing count"),
 				goapidoc.NewProperty("subscribers", "integer#int32", true, "user subscriber count"),
-				goapidoc.NewProperty("is_subscribing", "bool", true, "authorized user is subscribing"),
-				goapidoc.NewProperty("is_subscriber", "bool", true, "authorized user is subscribed"),
+				goapidoc.NewProperty("is_subscribing", "boolean", true, "authorized user is subscribing"),
+				goapidoc.NewProperty("is_subscriber", "boolean", true, "authorized user is subscribed"),
 				goapidoc.NewProperty("videos", "integer#int32", true, "user video count"),
 			),
 

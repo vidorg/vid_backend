@@ -12,10 +12,10 @@ import (
 )
 
 var (
-	adNeedSubscribeCount = goapidoc.NewQueryParam("need_subscribe_count", "bool", false, "need subscribe count (user)")
-	adNeedIsSubscribe    = goapidoc.NewQueryParam("need_is_subscribe", "bool", false, "need is subscribe (user)")
-	adNeedVideoCount     = goapidoc.NewQueryParam("need_video_count", "bool", false, "need video count (user)")
-	adNeedAuthor         = goapidoc.NewQueryParam("need_author", "bool", false, "need video author (video)")
+	adNeedSubscribeCount = goapidoc.NewQueryParam("need_subscribe_count", "boolean", false, "need subscribe count (user)")
+	adNeedIsSubscribe    = goapidoc.NewQueryParam("need_is_subscribe", "boolean", false, "need is subscribe (user)")
+	adNeedVideoCount     = goapidoc.NewQueryParam("need_video_count", "boolean", false, "need video count (user)")
+	adNeedAuthor         = goapidoc.NewQueryParam("need_author", "boolean", false, "need video author (video)")
 )
 
 type CommonController struct {

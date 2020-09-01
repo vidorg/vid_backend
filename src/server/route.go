@@ -64,8 +64,7 @@ func initRoute(engine *gin.Engine) {
 	userGroup := v1.Group("user")
 	{
 		userGroup.GET("", authMw, j(userCtrl.QueryAll))
-		userGroup.GET("uid/:uid", j(userCtrl.QueryByUid))
-		userGroup.GET("username/:username", j(userCtrl.QueryByUsername))
+		userGroup.GET(":uid", j(userCtrl.QueryByUid))
 		userGroup.PUT("", authMw, j(userCtrl.Update))
 		userGroup.DELETE("", authMw, j(userCtrl.Delete))
 

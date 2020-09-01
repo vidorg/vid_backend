@@ -18,7 +18,7 @@ import (
 func init() {
 	goapidoc.AddRoutePaths(
 		goapidoc.NewRoutePath("GET", "/v1/user", "query all user").
-			Tags("User").
+			Tags("User", "Administration").
 			Securities("Jwt").
 			Params(
 				param.ADPage, param.ADLimit, param.ADOrder,
@@ -26,21 +26,13 @@ func init() {
 			).
 			Responses(goapidoc.NewResponse(200, "_Result<_Page<UserDto>>")),
 
-		goapidoc.NewRoutePath("GET", "/v1/user/uid/{uid}", "query a user by uid").
+		goapidoc.NewRoutePath("GET", "/v1/user/{uid}", "query a user by uid").
 			Tags("User").
 			Params(
 				adNeedSubscribeCount, adNeedIsSubscribe, adNeedVideoCount,
 				goapidoc.NewPathParam("uid", "integer#int64", true, "user id"),
 			).
-			Responses(goapidoc.NewResponse(200, "_Result<UserDetailDto>")),
-
-		goapidoc.NewRoutePath("GET", "/v1/user/username/{username}", "query a user by username").
-			Tags("User").
-			Params(
-				adNeedSubscribeCount, adNeedIsSubscribe, adNeedVideoCount,
-				goapidoc.NewPathParam("uid", "integer#int64", true, "user id"),
-			).
-			Responses(goapidoc.NewResponse(200, "_Result<UserDetailDto>")),
+			Responses(goapidoc.NewResponse(200, "_Result<UserDto>")),
 
 		goapidoc.NewRoutePath("PUT", "/v1/user", "update a user").
 			Tags("User").
@@ -108,31 +100,6 @@ func (u *UserController) QueryByUid(c *gin.Context) *result.Result {
 	}
 
 	user, err := u.userService.QueryByUid(uid)
-	if err != nil {
-		result.Error(exception.QueryUserError).SetError(err, c)
-	} else if user == nil {
-		return result.Error(exception.UserNotFoundError)
-	}
-
-	authUser := u.jwtService.GetContextUser(c)
-	extras, err := u.common.getUsersExtra(c, authUser, []*po.User{user})
-	if err != nil {
-		return result.Error(exception.QueryUserError).SetError(err, c)
-	}
-
-	res := dto.BuildUserDto(user)
-	res.Extra = extras[0]
-	return result.Ok().SetData(res)
-}
-
-// GET /v1/user/username/:username
-func (u *UserController) QueryByUsername(c *gin.Context) *result.Result {
-	username := c.Param("username")
-	if username == "" {
-		return result.Error(exception.RequestParamError)
-	}
-
-	user, err := u.userService.QueryByUsername(username)
 	if err != nil {
 		result.Error(exception.QueryUserError).SetError(err, c)
 	} else if user == nil {

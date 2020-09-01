@@ -18,7 +18,7 @@ import (
 func init() {
 	goapidoc.AddRoutePaths(
 		goapidoc.NewRoutePath("GET", "/v1/video", "query all videos").
-			Tags("Video").
+			Tags("Video", "Administration").
 			Securities("Jwt").
 			Params(
 				param.ADPage, param.ADLimit, param.ADOrder,
