@@ -426,6 +426,101 @@ subscribe-controller
 
     + Body
 
+# Group Block
+
+block-controller
+
+## query user blockings [/v1/user/{uid}/blocking{?page,limit,order,need_subscribe_count,need_is_subscribe,need_video_count}]
+
+### query user blockings [GET]
+
+`GET /v1/user/{uid}/blocking`
+
++ Parameters
+
+    + uid (number, required) - user id
+        (format: int64)
+    + page (number, optional) - current page
+        (format: int32)
+    + limit (number, optional) - page size
+        (format: int32)
+    + order (string, optional) - order string
+    + need_subscribe_count (boolean, optional) - need subscribe count (user)
+    + need_is_subscribe (boolean, optional) - need is subscribe (user)
+    + need_video_count (boolean, optional) - need video count (user)
+
++ Request (application/json)
+
+    + Attributes
+
+    + Headers
+
+    + Body
+
++ Response 200 (application/json)
+
+    + Attributes (_Result<_Page<UserDto>>)
+
+    + Headers
+
+    + Body
+
+## block user, unblock user [/v1/user/blocking/{uid}]
+
+### block user [POST]
+
+`POST /v1/user/blocking/{uid}`
+
++ Parameters
+
+    + uid (number, required) - user id
+        (format: int64)
+
++ Request (application/json)
+
+    + Attributes
+
+    + Headers
+
+            Authorization: Jwt apiKey (string, optional)
+
+    + Body
+
++ Response 200 (application/json)
+
+    + Attributes (Result)
+
+    + Headers
+
+    + Body
+
+### unblock user [DELETE]
+
+`DELETE /v1/user/blocking/{uid}`
+
++ Parameters
+
+    + uid (number, required) - user id
+        (format: int64)
+
++ Request (application/json)
+
+    + Attributes
+
+    + Headers
+
+            Authorization: Jwt apiKey (string, optional)
+
+    + Body
+
++ Response 200 (application/json)
+
+    + Attributes (Result)
+
+    + Headers
+
+    + Body
+
 # Group Video
 
 video-controller
@@ -775,6 +870,25 @@ rbac-controller
 
 # Data Structures
 
+## Result (object)
+
++ code (number, required) - status code
+    (format: int32)
++ message (string, required) - status message
+
+## RbacPolicyParam (object)
+
++ sub (string, required) - new subject
++ obj (string, required) - new object
++ act (string, required) - new action
+
+## InsertVideoParam (object)
+
++ title (string, required) - video title
++ description (string, required) - video description
++ video_url: `https://aaa.bbb.ccc` (string, required) - video source url
++ cover_url: `https://aaa.bbb.ccc` (string, required) - video cover url
+
 ## VideoDto (object)
 
 + vid (number, required) - video id
@@ -786,11 +900,6 @@ rbac-controller
 + upload_time (string, required) - video upload time
     (format: date-time)
 + author (UserDto, required) - video author
-
-## LoginDto (object)
-
-+ user (UserDto, required) - authorized user
-+ token (string, required) - access token
 
 ## LoginParam (object)
 
@@ -805,49 +914,6 @@ rbac-controller
 ## ChangeUserRoleParam (object)
 
 + sub (string, required) - new subject
-
-## RbacPolicyParam (object)
-
-+ sub (string, required) - new subject
-+ obj (string, required) - new object
-+ act (string, required) - new action
-
-## Result (object)
-
-+ code (number, required) - status code
-    (format: int32)
-+ message (string, required) - status message
-
-## RbacRuleDto (object)
-
-+ p_type (string, required) - rule type
-+ v0 (string, required) - v0
-+ v1 (string, required) - v1
-+ v2 (string, required) - v2
-+ v3 (string, required) - v3
-+ v4 (string, required) - v4
-+ v5 (string, required) - v5
-
-## UserExtraDto (object)
-
-+ subscribings (number, required) - user subscribing count
-    (format: int32)
-+ subscribers (number, required) - user subscriber count
-    (format: int32)
-+ is_subscribing (boolean, required) - authorized user is subscribing
-+ is_subscribed (boolean, required) - authorized user is subscribed
-+ videos (number, required) - user video count
-    (format: int32)
-
-## RegisterParam (object)
-
-+ email: `aaa@bbb.ccc` (string, required) - register email
-+ password (string, required) - register password
-
-## RbacSubjectParam (object)
-
-+ new (string, required) - new subject
-+ from (string, required) - subject inherited from
 
 ## UpdateUserParam (object)
 
@@ -889,12 +955,41 @@ rbac-controller
     (format: date-time)
 + extra (UserExtraDto, required) - user extra information
 
-## InsertVideoParam (object)
+## LoginDto (object)
 
-+ title (string, required) - video title
-+ description (string, required) - video description
-+ video_url: `https://aaa.bbb.ccc` (string, required) - video source url
-+ cover_url: `https://aaa.bbb.ccc` (string, required) - video cover url
++ user (UserDto, required) - authorized user
++ token (string, required) - access token
+
+## RegisterParam (object)
+
++ email: `aaa@bbb.ccc` (string, required) - register email
++ password (string, required) - register password
+
+## RbacRuleDto (object)
+
++ p_type (string, required) - rule type
++ v0 (string, required) - v0
++ v1 (string, required) - v1
++ v2 (string, required) - v2
++ v3 (string, required) - v3
++ v4 (string, required) - v4
++ v5 (string, required) - v5
+
+## UserExtraDto (object)
+
++ subscribings (number, required) - user subscribing count
+    (format: int32)
++ subscribers (number, required) - user subscriber count
+    (format: int32)
++ is_subscribing (boolean, required) - authorized user is subscribing
++ is_subscribed (boolean, required) - authorized user is subscribed
++ videos (number, required) - user video count
+    (format: int32)
+
+## RbacSubjectParam (object)
+
++ new (string, required) - new subject
++ from (string, required) - subject inherited from
 
 ## _Result<LoginDto> (object)
 
@@ -909,23 +1004,6 @@ rbac-controller
     (format: int32)
 + message (string, required) - status message
 + data (UserDto, required) - response data
-
-## _Result<_Page<RbacRuleDto>> (object)
-
-+ code (number, required) - status code
-    (format: int32)
-+ message (string, required) - status message
-+ data (_Page<RbacRuleDto>, required) - response data
-
-## _Page<RbacRuleDto> (object)
-
-+ page (number, required) - current page
-    (format: int32)
-+ limit (number, required) - page size
-    (format: int32)
-+ total (number, required) - data count
-    (format: int32)
-+ data (array[RbacRuleDto], required) - page data
 
 ## _Result<_Page<UserDto>> (object)
 
@@ -943,6 +1021,23 @@ rbac-controller
 + total (number, required) - data count
     (format: int32)
 + data (array[UserDto], required) - page data
+
+## _Result<_Page<RbacRuleDto>> (object)
+
++ code (number, required) - status code
+    (format: int32)
++ message (string, required) - status message
++ data (_Page<RbacRuleDto>, required) - response data
+
+## _Page<RbacRuleDto> (object)
+
++ page (number, required) - current page
+    (format: int32)
++ limit (number, required) - page size
+    (format: int32)
++ total (number, required) - data count
+    (format: int32)
++ data (array[RbacRuleDto], required) - page data
 
 ## _Result<_Page<VideoDto>> (object)
 
