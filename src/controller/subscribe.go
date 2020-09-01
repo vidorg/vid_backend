@@ -139,7 +139,7 @@ func (s *SubscribeController) SubscribeUser(c *gin.Context) *result.Result {
 	status, err := s.subscribeService.InsertSubscribe(user.Uid, uid)
 	if status == xstatus.DbNotFound {
 		return result.Error(exception.UserNotFoundError)
-	} else if status == xstatus.DbExisted { // TODO
+	} else if status == xstatus.DbExisted {
 		return result.Error(exception.AlreadySubscribingError)
 	} else if status == xstatus.DbFailed {
 		return result.Error(exception.SubscribeError).SetError(err, c)
@@ -163,7 +163,7 @@ func (s *SubscribeController) UnSubscribeUser(c *gin.Context) *result.Result {
 	status, err := s.subscribeService.DeleteSubscribe(user.Uid, uid)
 	if status == xstatus.DbNotFound {
 		return result.Error(exception.UserNotFoundError)
-	} else if status == xstatus.DbTagA { // TODO
+	} else if status == xstatus.DbTagA {
 		return result.Error(exception.NotSubscribeYetError)
 	} else if status == xstatus.DbFailed {
 		return result.Error(exception.UnSubscribeError).SetError(err, c)

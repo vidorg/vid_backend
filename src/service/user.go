@@ -48,9 +48,7 @@ func (u *UserService) QueryByUids(uids []uint64) ([]*po.User, error) {
 	for _, uid := range uids {
 		sp.WriteString(fmt.Sprintf("uid = %d OR ", uid))
 	}
-	where := sp.String()
-	where = where[:len(where)-4]
-
+	where := sp.String()[:sp.Len()-4]
 	users := make([]*po.User, 0)
 	rdb := u.db.Model(&po.User{}).Where(where).Find(&users)
 	if rdb.Error != nil {

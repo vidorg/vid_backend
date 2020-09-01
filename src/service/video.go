@@ -1,6 +1,7 @@
 package service
 
 import (
+	"fmt"
 	"github.com/Aoi-hosizora/ahlib-web/xgorm"
 	"github.com/Aoi-hosizora/ahlib/xdi"
 	"github.com/Aoi-hosizora/ahlib/xstatus"
@@ -9,6 +10,7 @@ import (
 	"github.com/vidorg/vid_backend/src/model/param"
 	"github.com/vidorg/vid_backend/src/model/po"
 	"github.com/vidorg/vid_backend/src/provide/sn"
+	"strings"
 )
 
 type VideoService struct {
@@ -35,18 +37,6 @@ func (v *VideoService) QueryAll(pp *param.PageOrderParam) ([]*po.Video, int32, e
 		return nil, 0, rdb.Error
 	}
 
-	// for _, video := range videos {
-	// 	user := &po.User{}
-	// 	rdb := v.db.Model(&po.User{}).Where(&po.User{Uid: video.AuthorUid}).First(user)
-	// 	if rdb.RecordNotFound() {
-	// 		video.Author = nil
-	// 	} else if rdb.Error != nil {
-	// 		return nil, 0, rdb.Error
-	// 	} else {
-	// 		video.Author = user
-	// 	}
-	// }
-
 	return videos, total, nil
 }
 
@@ -67,10 +57,6 @@ func (v *VideoService) QueryByUid(uid uint64, pp *param.PageOrderParam) ([]*po.V
 		return nil, 0, rdb.Error
 	}
 
-	// for _, video := range videos {
-	// 	video.Author = author
-	// }
-
 	return videos, total, nil
 }
 
@@ -83,36 +69,43 @@ func (v *VideoService) QueryByVid(vid uint64) (*po.Video, error) {
 		return nil, rdb.Error
 	}
 
-	// user := &po.User{}
-	// rdb = v.db.Model(&po.User{}).Where(&po.User{Uid: video.AuthorUid}).First(&user)
-	// if rdb.RecordNotFound() {
-	// 	video.Author = nil
-	// } else if rdb.Error != nil {
-	// 	return nil, rdb.Error
-	// } else {
-	// 	video.Author = user
-	// }
-
 	return video, nil
 }
 
 func (v *VideoService) QueryCountByUids(uids []uint64) ([]int32, error) {
-	// ok, err := v.userService.Existed(uid)
-	// if err != nil {
-	// 	return 0, err
-	// } else if !ok {
-	// 	return -1, nil
-	// }
-	//
-	// total := int32(0)
-	// rdb := v.db.Model(&po.Video{}).Where(&po.Video{AuthorUid: uid}).Count(&total)
-	// if rdb.Error != nil {
-	// 	return 0, rdb.Error
-	// }
-	//
-	// return total, nil
-	// TODO
-	return nil, nil
+	if len(uids) == 0 {
+		return []int32{}, nil
+	}
+
+	type result struct {
+		Id  uint64
+		Cnt int32
+	}
+
+	sp := strings.Builder{}
+	for _, uid := range uids {
+		sp.WriteString(fmt.Sprintf("author_uid = %d OR ", uid))
+	}
+	where := sp.String()[:sp.Len()-4]
+	counts := make([]*result, 0)
+	rdb := v.db.Model(&po.Video{}).Select("author_uid as id, count(*) as cnt").Where(where).Group("author_uid").Scan(&counts)
+	if rdb.Error != nil {
+		return nil, rdb.Error
+	}
+
+	bucket := make(map[uint64]int32)
+	for _, cnt := range counts {
+		bucket[cnt.Id] = cnt.Cnt
+	}
+
+	out := make([]int32, len(uids))
+	for idx, uid := range uids {
+		cnt, ok := bucket[uid]
+		if ok {
+			out[idx] = cnt
+		}
+	}
+	return out, nil
 }
 
 func (v *VideoService) Existed(vid uint64) (bool, error) {
