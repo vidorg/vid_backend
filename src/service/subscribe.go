@@ -103,7 +103,7 @@ func (s *SubscribeService) QueryCountByUids(uids []uint64) ([]*[2]int32, error) 
 		return nil, rdb.Error
 	}
 
-	out := s.common.PreserveIdCntPairs(&[2][]*_IdCntPair{subings, subers}, uids)
+	out := s.common.MergeIdCntPairs(&[2][]*_IdCntPair{subings, subers}, uids)
 	return out, nil
 }
 
@@ -128,7 +128,7 @@ func (s *SubscribeService) CheckSubscribeByUids(me uint64, uids []uint64) ([]*[2
 		return nil, rdb.Error
 	}
 
-	out := s.common.PreserveFromToUidPairs(&[2][]*_FromToUidPair{subings, subers}, uids)
+	out := s.common.MergeFromToUidPairs(&[2][]*_FromToUidPair{subings, subers}, uids)
 	return out, nil
 }
 

@@ -22,7 +22,7 @@ func (cmn *CommonService) BuildOrExp(tok string, ids []uint64) string {
 }
 
 // Merge 2 `[]*_IdCntPair` slices to `[]*[2]int32`, using bucket.
-func (cmn *CommonService) PreserveIdCntPairs(pairs *[2][]*_IdCntPair, uids []uint64) []*[2]int32 {
+func (cmn *CommonService) MergeIdCntPairs(pairs *[2][]*_IdCntPair, uids []uint64) []*[2]int32 {
 	// bucket
 	bucket := make(map[uint64][2]int32, len(uids))
 	for _, subing := range pairs[0] {
@@ -51,7 +51,7 @@ func (cmn *CommonService) PreserveIdCntPairs(pairs *[2][]*_IdCntPair, uids []uin
 }
 
 // Merge 2 `[]*_FromToUidPair` slices to `[]*[2]bool`, using bucket.
-func (cmn *CommonService) PreserveFromToUidPairs(pairs *[2][]*_FromToUidPair, uids []uint64) []*[2]bool {
+func (cmn *CommonService) MergeFromToUidPairs(pairs *[2][]*_FromToUidPair, uids []uint64) []*[2]bool {
 	// bucket
 	bucket := make(map[uint64][2]bool, len(uids))
 	for _, subing := range pairs[0] {

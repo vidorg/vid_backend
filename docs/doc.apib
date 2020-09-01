@@ -1,0 +1,969 @@
+FORMAT: 1A
+HOST: localhost:3344/
+
+# vid backend (1.2)
+
+Vid backend built by golang/gin
+
+[Terms of service](https://github.com/vidorg/vid_backend/issues)
+
+[License: MIT](https://github.com/vidorg/vid_backend/blob/master/LICENSE)
+
+[vidorg - Website](https://github.com/vidorg)
+
+# Group Authorization
+
+auth-controller
+
+## register [/v1/auth/register]
+
+### register [POST]
+
+`POST /v1/auth/register`
+
++ Request (application/json)
+
+    + Attributes (RegisterParam)
+
+    + Headers
+
+    + Body
+
++ Response 201 (application/json)
+
+    + Attributes (Result)
+
+    + Headers
+
+    + Body
+
+## login [/v1/auth/login]
+
+### login [POST]
+
+`POST /v1/auth/login`
+
++ Request (application/json)
+
+    + Attributes (LoginParam)
+
+    + Headers
+
+    + Body
+
++ Response 200 (application/json)
+
+    + Attributes (_Result<LoginDto>)
+
+    + Headers
+
+    + Body
+
+## current user [/v1/auth/user]
+
+### current user [GET]
+
+`GET /v1/auth/user`
+
++ Request (application/json)
+
+    + Attributes
+
+    + Headers
+
+            Authorization: Jwt apiKey (string, optional)
+
+    + Body
+
++ Response 200 (application/json)
+
+    + Attributes (_Result<UserDto>)
+
+    + Headers
+
+    + Body
+
+## logout [/v1/auth/logout]
+
+### logout [DELETE]
+
+`DELETE /v1/auth/logout`
+
++ Request (application/json)
+
+    + Attributes
+
+    + Headers
+
+            Authorization: Jwt apiKey (string, optional)
+
+    + Body
+
++ Response 200 (application/json)
+
+    + Attributes (Result)
+
+    + Headers
+
+    + Body
+
+## update password [/v1/auth/password]
+
+### update password [PUT]
+
+`PUT /v1/auth/password`
+
++ Request (application/json)
+
+    + Attributes (UpdatePasswordParam)
+
+    + Headers
+
+            Authorization: Jwt apiKey (string, optional)
+
+    + Body
+
++ Response 200 (application/json)
+
+    + Attributes (Result)
+
+    + Headers
+
+    + Body
+
+## send email to activate account [/v1/auth/activate]
+
+### send email to activate account [POST]
+
+`POST /v1/auth/activate`
+
++ Request (application/json)
+
+    + Attributes
+
+    + Headers
+
+            Authorization: Jwt apiKey (string, optional)
+
+    + Body
+
++ Response 200 (application/json)
+
+    + Attributes (Result)
+
+    + Headers
+
+    + Body
+
+## activate account with spec [/v1/auth/spec/{spec}]
+
+### activate account with spec [GET]
+
+`GET /v1/auth/spec/{spec}`
+
++ Parameters
+
+    + spec (string, required) - spec code
+
++ Request (application/json)
+
+    + Attributes
+
+    + Headers
+
+    + Body
+
++ Response 200 (application/json)
+
+    + Attributes (Result)
+
+    + Headers
+
+    + Body
+
+# Group User
+
+user-controller
+
+## query all user [/v1/user{?page,limit,order,need_subscribe_count,need_is_subscribe,need_video_count}]
+
+### query all user [GET]
+
+`GET /v1/user`
+
++ Parameters
+
+    + page (number, optional) - current page
+        (format: int32)
+    + limit (number, optional) - page size
+        (format: int32)
+    + order (string, optional) - order string
+    + need_subscribe_count (boolean, optional) - need subscribe count (user)
+    + need_is_subscribe (boolean, optional) - need is subscribe (user)
+    + need_video_count (boolean, optional) - need video count (user)
+
++ Request (application/json)
+
+    + Attributes
+
+    + Headers
+
+            Authorization: Jwt apiKey (string, optional)
+
+    + Body
+
++ Response 200 (application/json)
+
+    + Attributes (_Result<_Page<UserDto>>)
+
+    + Headers
+
+    + Body
+
+## query a user by uid [/v1/user/{uid}{?need_subscribe_count,need_is_subscribe,need_video_count}]
+
+### query a user by uid [GET]
+
+`GET /v1/user/{uid}`
+
++ Parameters
+
+    + uid (number, required) - user id
+        (format: int64)
+    + need_subscribe_count (boolean, optional) - need subscribe count (user)
+    + need_is_subscribe (boolean, optional) - need is subscribe (user)
+    + need_video_count (boolean, optional) - need video count (user)
+
++ Request (application/json)
+
+    + Attributes
+
+    + Headers
+
+    + Body
+
++ Response 200 (application/json)
+
+    + Attributes (_Result<UserDto>)
+
+    + Headers
+
+    + Body
+
+## update a user, delete a user [/v1/user]
+
+### update a user [PUT]
+
+`PUT /v1/user`
+
++ Request (application/json)
+
+    + Attributes (UpdateUserParam)
+
+    + Headers
+
+            Authorization: Jwt apiKey (string, optional)
+
+    + Body
+
++ Response 200 (application/json)
+
+    + Attributes (Result)
+
+    + Headers
+
+    + Body
+
+### delete a user [DELETE]
+
+`DELETE /v1/user`
+
++ Request (application/json)
+
+    + Attributes
+
+    + Headers
+
+            Authorization: Jwt apiKey (string, optional)
+
+    + Body
+
++ Response 200 (application/json)
+
+    + Attributes (Result)
+
+    + Headers
+
+    + Body
+
+# Group Subscribe
+
+subscribe-controller
+
+## query user subscribers [/v1/user/{uid}/subscriber{?page,limit,order,need_subscribe_count,need_is_subscribe,need_video_count}]
+
+### query user subscribers [GET]
+
+`GET /v1/user/{uid}/subscriber`
+
++ Parameters
+
+    + uid (number, required) - user id
+        (format: int64)
+    + page (number, optional) - current page
+        (format: int32)
+    + limit (number, optional) - page size
+        (format: int32)
+    + order (string, optional) - order string
+    + need_subscribe_count (boolean, optional) - need subscribe count (user)
+    + need_is_subscribe (boolean, optional) - need is subscribe (user)
+    + need_video_count (boolean, optional) - need video count (user)
+
++ Request (application/json)
+
+    + Attributes
+
+    + Headers
+
+    + Body
+
++ Response 200 (application/json)
+
+    + Attributes (_Result<_Page<UserDto>>)
+
+    + Headers
+
+    + Body
+
+## query user subscribings [/v1/user/{uid}/subscribing{?page,limit,order,need_subscribe_count,need_is_subscribe,need_video_count}]
+
+### query user subscribings [GET]
+
+`GET /v1/user/{uid}/subscribing`
+
++ Parameters
+
+    + uid (number, required) - user id
+        (format: int64)
+    + page (number, optional) - current page
+        (format: int32)
+    + limit (number, optional) - page size
+        (format: int32)
+    + order (string, optional) - order string
+    + need_subscribe_count (boolean, optional) - need subscribe count (user)
+    + need_is_subscribe (boolean, optional) - need is subscribe (user)
+    + need_video_count (boolean, optional) - need video count (user)
+
++ Request (application/json)
+
+    + Attributes
+
+    + Headers
+
+    + Body
+
++ Response 200 (application/json)
+
+    + Attributes (_Result<_Page<UserDto>>)
+
+    + Headers
+
+    + Body
+
+## subscribe user, unsubscribe user [/v1/user/subscribing/{uid}]
+
+### subscribe user [POST]
+
+`POST /v1/user/subscribing/{uid}`
+
++ Parameters
+
+    + uid (number, required) - user id
+        (format: int64)
+
++ Request (application/json)
+
+    + Attributes
+
+    + Headers
+
+            Authorization: Jwt apiKey (string, optional)
+
+    + Body
+
++ Response 200 (application/json)
+
+    + Attributes (Result)
+
+    + Headers
+
+    + Body
+
+### unsubscribe user [DELETE]
+
+`DELETE /v1/user/subscribing/{uid}`
+
++ Parameters
+
+    + uid (number, required) - user id
+        (format: int64)
+
++ Request (application/json)
+
+    + Attributes
+
+    + Headers
+
+            Authorization: Jwt apiKey (string, optional)
+
+    + Body
+
++ Response 200 (application/json)
+
+    + Attributes (Result)
+
+    + Headers
+
+    + Body
+
+# Group Video
+
+video-controller
+
+## query all videos [/v1/video{?page,limit,order,need_subscribe_count,need_is_subscribe,need_video_count,need_author}]
+
+### query all videos [GET]
+
+`GET /v1/video`
+
++ Parameters
+
+    + page (number, optional) - current page
+        (format: int32)
+    + limit (number, optional) - page size
+        (format: int32)
+    + order (string, optional) - order string
+    + need_subscribe_count (boolean, optional) - need subscribe count (user)
+    + need_is_subscribe (boolean, optional) - need is subscribe (user)
+    + need_video_count (boolean, optional) - need video count (user)
+    + need_author (boolean, optional) - need video author (video)
+
++ Request (application/json)
+
+    + Attributes
+
+    + Headers
+
+            Authorization: Jwt apiKey (string, optional)
+
+    + Body
+
++ Response 200 (application/json)
+
+    + Attributes (_Result<_Page<VideoDto>>)
+
+    + Headers
+
+    + Body
+
+## query videos from user [/v1/user/{uid}/video{?page,limit,order,need_subscribe_count,need_is_subscribe,need_video_count,need_author}]
+
+### query videos from user [GET]
+
+`GET /v1/user/{uid}/video`
+
++ Parameters
+
+    + uid (number, required) - user id
+        (format: int64)
+    + page (number, optional) - current page
+        (format: int32)
+    + limit (number, optional) - page size
+        (format: int32)
+    + order (string, optional) - order string
+    + need_subscribe_count (boolean, optional) - need subscribe count (user)
+    + need_is_subscribe (boolean, optional) - need is subscribe (user)
+    + need_video_count (boolean, optional) - need video count (user)
+    + need_author (boolean, optional) - need video author (video)
+
++ Request (application/json)
+
+    + Attributes
+
+    + Headers
+
+    + Body
+
++ Response 200 (application/json)
+
+    + Attributes (_Result<_Page<VideoDto>>)
+
+    + Headers
+
+    + Body
+
+## query a video [/v1/video/{vid}{?need_subscribe_count,need_is_subscribe,need_video_count,need_author}]
+
+### query a video [GET]
+
+`GET /v1/video/{vid}`
+
++ Parameters
+
+    + vid (number, required) - video id
+        (format: int64)
+    + need_subscribe_count (boolean, optional) - need subscribe count (user)
+    + need_is_subscribe (boolean, optional) - need is subscribe (user)
+    + need_video_count (boolean, optional) - need video count (user)
+    + need_author (boolean, optional) - need video author (video)
+
++ Request (application/json)
+
+    + Attributes
+
+    + Headers
+
+    + Body
+
++ Response 200 (application/json)
+
+    + Attributes (_Result<VideoDto>)
+
+    + Headers
+
+    + Body
+
+## create a video [/v1/video]
+
+### create a video [POST]
+
+`POST /v1/video`
+
++ Request (application/json)
+
+    + Attributes (InsertVideoParam)
+
+    + Headers
+
+            Authorization: Jwt apiKey (string, optional)
+
+    + Body
+
++ Response 201 (application/json)
+
+    + Attributes (Result)
+
+    + Headers
+
+    + Body
+
+## update a video, delete a video [/v1/video/{vid}]
+
+### update a video [PUT]
+
+`PUT /v1/video/{vid}`
+
++ Parameters
+
+    + vid (number, required) - video id
+        (format: int64)
+
++ Request (application/json)
+
+    + Attributes (InsertVideoParam)
+
+    + Headers
+
+            Authorization: Jwt apiKey (string, optional)
+
+    + Body
+
++ Response 200 (application/json)
+
+    + Attributes (Result)
+
+    + Headers
+
+    + Body
+
+### delete a video [DELETE]
+
+`DELETE /v1/video/{vid}`
+
++ Parameters
+
+    + vid (number, required) - video id
+        (format: int64)
+
++ Request (application/json)
+
+    + Attributes
+
+    + Headers
+
+            Authorization: Jwt apiKey (string, optional)
+
+    + Body
+
++ Response 200 (application/json)
+
+    + Attributes (Result)
+
+    + Headers
+
+    + Body
+
+# Group Rbac
+
+rbac-controller
+
+## Get rbac rules [/v1/rbac/rule{?page,limit}]
+
+### Get rbac rules [GET]
+
+`GET /v1/rbac/rule`
+
++ Parameters
+
+    + page (number, optional) - current page
+        (format: int32)
+    + limit (number, optional) - page size
+        (format: int32)
+
++ Request (application/json)
+
+    + Attributes
+
+    + Headers
+
+            Authorization: Jwt apiKey (string, optional)
+
+    + Body
+
++ Response 200 (application/json)
+
+    + Attributes (_Result<_Page<RbacRuleDto>>)
+
+    + Headers
+
+    + Body
+
+## Change user role [/v1/rbac/user/{uid}]
+
+### Change user role [PUT]
+
+`PUT /v1/rbac/user/{uid}`
+
++ Parameters
+
+    + uid (number, required) - user id
+        (format: int64)
+
++ Request (application/json)
+
+    + Attributes (ChangeUserRoleParam)
+
+    + Headers
+
+            Authorization: Jwt apiKey (string, optional)
+
+    + Body
+
++ Response 200 (application/json)
+
+    + Attributes (Result)
+
+    + Headers
+
+    + Body
+
+## Insert subject, Delete subject [/v1/rbac/subject]
+
+### Insert subject [POST]
+
+`POST /v1/rbac/subject`
+
++ Request (application/json)
+
+    + Attributes (RbacSubjectParam)
+
+    + Headers
+
+            Authorization: Jwt apiKey (string, optional)
+
+    + Body
+
++ Response 201 (application/json)
+
+    + Attributes (Result)
+
+    + Headers
+
+    + Body
+
+### Delete subject [DELETE]
+
+`DELETE /v1/rbac/subject`
+
++ Request (application/json)
+
+    + Attributes (RbacSubjectParam)
+
+    + Headers
+
+            Authorization: Jwt apiKey (string, optional)
+
+    + Body
+
++ Response 200 (application/json)
+
+    + Attributes (Result)
+
+    + Headers
+
+    + Body
+
+## Insert policy, Delete policy [/v1/rbac/policy]
+
+### Insert policy [POST]
+
+`POST /v1/rbac/policy`
+
++ Request (application/json)
+
+    + Attributes (RbacPolicyParam)
+
+    + Headers
+
+            Authorization: Jwt apiKey (string, optional)
+
+    + Body
+
++ Response 201 (application/json)
+
+    + Attributes (Result)
+
+    + Headers
+
+    + Body
+
+### Delete policy [DELETE]
+
+`DELETE /v1/rbac/policy`
+
++ Request (application/json)
+
+    + Attributes (RbacPolicyParam)
+
+    + Headers
+
+            Authorization: Jwt apiKey (string, optional)
+
+    + Body
+
++ Response 200 (application/json)
+
+    + Attributes (Result)
+
+    + Headers
+
+    + Body
+
+# Group Administration
+
+*-controller
+
+# Data Structures
+
+## VideoDto (object)
+
++ vid (number, required) - video id
+    (format: int64)
++ title (string, required) - video title
++ description (string, required) - video description
++ video_url (string, required) - video source url
++ cover_url (string, required) - video cover url
++ upload_time (string, required) - video upload time
+    (format: date-time)
++ author (UserDto, required) - video author
+
+## LoginDto (object)
+
++ user (UserDto, required) - authorized user
++ token (string, required) - access token
+
+## LoginParam (object)
+
++ parameter (string, required) - login parameter, support uid | username | email
++ password (string, required) - login password
+
+## UpdatePasswordParam (object)
+
++ old (string, required) - old password
++ new (string, required) - new password
+
+## ChangeUserRoleParam (object)
+
++ sub (string, required) - new subject
+
+## RbacPolicyParam (object)
+
++ sub (string, required) - new subject
++ obj (string, required) - new object
++ act (string, required) - new action
+
+## Result (object)
+
++ code (number, required) - status code
+    (format: int32)
++ message (string, required) - status message
+
+## RbacRuleDto (object)
+
++ p_type (string, required) - rule type
++ v0 (string, required) - v0
++ v1 (string, required) - v1
++ v2 (string, required) - v2
++ v3 (string, required) - v3
++ v4 (string, required) - v4
++ v5 (string, required) - v5
+
+## UserExtraDto (object)
+
++ subscribings (number, required) - user subscribing count
+    (format: int32)
++ subscribers (number, required) - user subscriber count
+    (format: int32)
++ is_subscribing (boolean, required) - authorized user is subscribing
++ is_subscribed (boolean, required) - authorized user is subscribed
++ videos (number, required) - user video count
+    (format: int32)
+
+## RegisterParam (object)
+
++ email: `aaa@bbb.ccc` (string, required) - register email
++ password (string, required) - register password
+
+## RbacSubjectParam (object)
+
++ new (string, required) - new subject
++ from (string, required) - subject inherited from
+
+## UpdateUserParam (object)
+
++ username (string, required) - username
++ nickname (string, required) - user nickname
++ gender (enum[number], required) - user gender, 0X | 1M | 2F
+    (format: int32)
+    + Members
+        + `0`
+        + `1`
+        + `2`
++ profile (string, required) - user profile
+    (allow empty)
++ birthday: `2000-01-01` (string, required) - user birthday
+    (format: date)
++ phone: `13512345678` (string, required) - user phone number
++ avatar: `https://aaa.bbb.ccc` (string, required) - user avatar
+
+## UserDto (object)
+
++ uid (number, required) - user id
+    (format: int64)
++ username (string, required) - username
++ email (string, required) - user email
++ nickname (string, required) - user nickname
++ gender (enum[string], required) - user gender
+    + Members
+        + `secret`
+        + `male`
+        + `female`
++ profile (string, required) - user profile
+    (allow empty)
++ avatar (string, required) - user avatar
++ birthday (string, required) - user birthday
+    (format: date)
++ role (string, required) - user role
++ state (string, required) - user state
++ register_time (string, required) - user register time
+    (format: date-time)
++ extra (UserExtraDto, required) - user extra information
+
+## InsertVideoParam (object)
+
++ title (string, required) - video title
++ description (string, required) - video description
++ video_url: `https://aaa.bbb.ccc` (string, required) - video source url
++ cover_url: `https://aaa.bbb.ccc` (string, required) - video cover url
+
+## _Result<LoginDto> (object)
+
++ code (number, required) - status code
+    (format: int32)
++ message (string, required) - status message
++ data (LoginDto, required) - response data
+
+## _Result<UserDto> (object)
+
++ code (number, required) - status code
+    (format: int32)
++ message (string, required) - status message
++ data (UserDto, required) - response data
+
+## _Result<_Page<RbacRuleDto>> (object)
+
++ code (number, required) - status code
+    (format: int32)
++ message (string, required) - status message
++ data (_Page<RbacRuleDto>, required) - response data
+
+## _Page<RbacRuleDto> (object)
+
++ page (number, required) - current page
+    (format: int32)
++ limit (number, required) - page size
+    (format: int32)
++ total (number, required) - data count
+    (format: int32)
++ data (array[RbacRuleDto], required) - page data
+
+## _Result<_Page<UserDto>> (object)
+
++ code (number, required) - status code
+    (format: int32)
++ message (string, required) - status message
++ data (_Page<UserDto>, required) - response data
+
+## _Page<UserDto> (object)
+
++ page (number, required) - current page
+    (format: int32)
++ limit (number, required) - page size
+    (format: int32)
++ total (number, required) - data count
+    (format: int32)
++ data (array[UserDto], required) - page data
+
+## _Result<_Page<VideoDto>> (object)
+
++ code (number, required) - status code
+    (format: int32)
++ message (string, required) - status message
++ data (_Page<VideoDto>, required) - response data
+
+## _Page<VideoDto> (object)
+
++ page (number, required) - current page
+    (format: int32)
++ limit (number, required) - page size
+    (format: int32)
++ total (number, required) - data count
+    (format: int32)
++ data (array[VideoDto], required) - page data
+
+## _Result<VideoDto> (object)
+
++ code (number, required) - status code
+    (format: int32)
++ message (string, required) - status message
++ data (VideoDto, required) - response data

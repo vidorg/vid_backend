@@ -1,6 +1,7 @@
 # vid_backend
 
 + Vid backend built by golang/gin
++ Document see https://localhost:3344/v1/swagger/index.html or https://vidbackend.docs.apiary.io/
 
 ### Environment
 
