@@ -20,30 +20,40 @@ import (
 
 func init() {
 	goapidoc.AddRoutePaths(
-		goapidoc.NewRoutePath("POST", "/v1/auth/login", "登录").
+		goapidoc.NewRoutePath("POST", "/v1/auth/register", "register").
 			Tags("Authorization").
-			Params(goapidoc.NewBodyParam("param", "LoginParam", true, "登录参数")).
+			Params(goapidoc.NewBodyParam("param", "RegisterParam", true, "register parameter")).
+			Responses(goapidoc.NewResponse(201, "Result")),
+
+		goapidoc.NewRoutePath("POST", "/v1/auth/login", "login").
+			Tags("Authorization").
+			Params(goapidoc.NewBodyParam("param", "LoginParam", true, "login parameter")).
 			Responses(goapidoc.NewResponse(200, "_Result<LoginDto>")),
 
-		goapidoc.NewRoutePath("POST", "/v1/auth/register", "注册").
-			Tags("Authorization").
-			Params(goapidoc.NewBodyParam("param", "RegisterParam", true, "注册参数")).
-			Responses(goapidoc.NewResponse(200, "_Result<UserDto>")),
-
-		goapidoc.NewRoutePath("GET", "/v1/auth/user", "当前登录用户").
+		goapidoc.NewRoutePath("GET", "/v1/auth/user", "current user").
 			Tags("Authorization").
 			Securities("Jwt").
 			Responses(goapidoc.NewResponse(200, "_Result<UserDto>")),
 
-		goapidoc.NewRoutePath("DELETE", "/v1/auth/logout", "注销").
+		goapidoc.NewRoutePath("DELETE", "/v1/auth/logout", "logout").
 			Tags("Authorization").
 			Securities("Jwt").
 			Responses(goapidoc.NewResponse(200, "Result")),
 
-		goapidoc.NewRoutePath("PUT", "/v1/auth/password", "修改密码").
+		goapidoc.NewRoutePath("PUT", "/v1/auth/password", "update password").
 			Tags("Authorization").
 			Securities("Jwt").
-			Params(goapidoc.NewBodyParam("param", "PasswordParam", true, "修改密码参数")).
+			Params(goapidoc.NewBodyParam("param", "UpdatePasswordParam", true, "修改密码参数")).
+			Responses(goapidoc.NewResponse(200, "Result")),
+
+		goapidoc.NewRoutePath("POST", "/v1/auth/activate", "send email to activate account").
+			Tags("Authorization").
+			Securities("Jwt").
+			Responses(goapidoc.NewResponse(200, "Result")),
+
+		goapidoc.NewRoutePath("GET", "/v1/auth/spec/:spec", "activate account with spec").
+			Tags("Authorization").
+			Params(goapidoc.NewPathParam("spec", "string", true, "spec code")).
 			Responses(goapidoc.NewResponse(200, "Result")),
 	)
 }
@@ -52,8 +62,8 @@ type AuthController struct {
 	accountService *service.AccountService
 	tokenService   *service.TokenService
 	jwtService     *service.JwtService
-	emailService   service.EmailService
-	userService    service.UserService
+	emailService   *service.EmailService
+	userService    *service.UserService
 }
 
 func NewAuthController() *AuthController {
@@ -61,8 +71,8 @@ func NewAuthController() *AuthController {
 		accountService: xdi.GetByNameForce(sn.SAccountService).(*service.AccountService),
 		tokenService:   xdi.GetByNameForce(sn.STokenService).(*service.TokenService),
 		jwtService:     xdi.GetByNameForce(sn.SJwtService).(*service.JwtService),
-		emailService:   xdi.GetByNameForce(sn.SEmailService).(service.EmailService),
-		userService:    xdi.GetByNameForce(sn.SUserService).(service.UserService),
+		emailService:   xdi.GetByNameForce(sn.SEmailService).(*service.EmailService),
+		userService:    xdi.GetByNameForce(sn.SUserService).(*service.UserService),
 	}
 }
 

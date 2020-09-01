@@ -2,12 +2,20 @@ package controller
 
 import (
 	"github.com/Aoi-hosizora/ahlib/xdi"
+	"github.com/Aoi-hosizora/goapidoc"
 	"github.com/gin-gonic/gin"
 	"github.com/vidorg/vid_backend/src/model/dto"
 	"github.com/vidorg/vid_backend/src/model/param"
 	"github.com/vidorg/vid_backend/src/model/po"
 	"github.com/vidorg/vid_backend/src/provide/sn"
 	"github.com/vidorg/vid_backend/src/service"
+)
+
+var (
+	adNeedSubscribeCount = goapidoc.NewQueryParam("need_subscribe_count", "bool", false, "need subscribe count (user)")
+	adNeedIsSubscribe    = goapidoc.NewQueryParam("need_is_subscribe", "bool", false, "need is subscribe (user)")
+	adNeedVideoCount     = goapidoc.NewQueryParam("need_video_count", "bool", false, "need video count (user)")
+	adNeedAuthor         = goapidoc.NewQueryParam("need_author", "bool", false, "need video author (video)")
 )
 
 type CommonController struct {

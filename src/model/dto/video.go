@@ -11,13 +11,13 @@ func init() {
 	goapidoc.AddDefinitions(
 		goapidoc.NewDefinition("VideoDto", "视频信息").
 			Properties(
-				goapidoc.NewProperty("vid", "integer#int32", true, "视频id"),
-				goapidoc.NewProperty("title", "string", true, "标题"),
-				goapidoc.NewProperty("description", "string", true, "简介").AllowEmpty(true),
-				goapidoc.NewProperty("video_url", "string", true, "资源"),
-				goapidoc.NewProperty("cover_url", "string", true, "封面"),
-				goapidoc.NewProperty("upload_time", "string#date-time", true, "上传时间"),
-				goapidoc.NewProperty("author", "UserDto", true, "视频作者, null 表示用户不存在"),
+				goapidoc.NewProperty("vid", "integer#int64", true, "video id"),
+				goapidoc.NewProperty("title", "string", true, "video title"),
+				goapidoc.NewProperty("description", "string", true, "video description"),
+				goapidoc.NewProperty("video_url", "string", true, "video source url"),
+				goapidoc.NewProperty("cover_url", "string", true, "video cover url"),
+				goapidoc.NewProperty("upload_time", "string#date-time", true, "video upload time"),
+				goapidoc.NewProperty("author", "UserDto", true, "video author"),
 			),
 	)
 }

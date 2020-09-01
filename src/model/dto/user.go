@@ -9,35 +9,35 @@ import (
 
 func init() {
 	goapidoc.AddDefinitions(
-		goapidoc.NewDefinition("UserDto", "用户信息").
+		goapidoc.NewDefinition("UserDto", "user response").
 			Properties(
-				goapidoc.NewProperty("uid", "integer#int32", true, "用户id"),
-				goapidoc.NewProperty("username", "string", true, "用户名"),
-				goapidoc.NewProperty("gender", "string", true, "性别").Enum("male", "female", "unknown"),
-				goapidoc.NewProperty("profile", "string", true, "简介").AllowEmpty(true),
-				goapidoc.NewProperty("avatar_url", "string", true, "头像"),
-				goapidoc.NewProperty("birthday", "string#date", true, "生日"),
-				goapidoc.NewProperty("role", "string", true, "角色"),
-				goapidoc.NewProperty("register_time", "string#date-time", true, "注册时间"),
+				goapidoc.NewProperty("uid", "integer#int64", true, "user id"),
+				goapidoc.NewProperty("username", "string", true, "username"),
+				goapidoc.NewProperty("email", "string", true, "user email"),
+				goapidoc.NewProperty("nickname", "string", true, "user nickname"),
+				goapidoc.NewProperty("gender", "string", true, "user gender").Enum("secret", "male", "female"),
+				goapidoc.NewProperty("profile", "string", true, "user profile").AllowEmpty(true),
+				goapidoc.NewProperty("avatar", "string", true, "user avatar"),
+				goapidoc.NewProperty("birthday", "string#date", true, "user birthday"),
+				goapidoc.NewProperty("role", "string", true, "user role"),
+				goapidoc.NewProperty("state", "string", true, "user state"),
+				goapidoc.NewProperty("register_time", "string#date-time", true, "user register time"),
+				goapidoc.NewProperty("extra", "UserExtraDto", true, "user extra information"),
 			),
 
-		goapidoc.NewDefinition("LoginDto", "登录信息").
+		goapidoc.NewDefinition("UserExtraDto", "user extra response").
 			Properties(
-				goapidoc.NewProperty("user", "UserDto", true, "用户信息"),
-				goapidoc.NewProperty("token", "string", true, "登录令牌"),
+				goapidoc.NewProperty("subscribings", "integer#int32", true, "user subscribing count"),
+				goapidoc.NewProperty("subscribers", "integer#int32", true, "user subscriber count"),
+				goapidoc.NewProperty("is_subscribing", "bool", true, "authorized user is subscribing"),
+				goapidoc.NewProperty("is_subscriber", "bool", true, "authorized user is subscribed"),
+				goapidoc.NewProperty("videos", "integer#int32", true, "user video count"),
 			),
 
-		goapidoc.NewDefinition("UserExtraDto", "用户额外信息").
+		goapidoc.NewDefinition("LoginDto", "login response").
 			Properties(
-				goapidoc.NewProperty("subscribing_cnt", "integer#int32", true, "关注数量"),
-				goapidoc.NewProperty("subscriber_cnt", "integer#int32", true, "粉丝数量"),
-				goapidoc.NewProperty("video_cnt", "integer#int32", true, "视频数量"),
-			),
-
-		goapidoc.NewDefinition("UserDetailDto", "用户详细信息").
-			Properties(
-				goapidoc.NewProperty("user", "UserDto", true, "用户信息"),
-				goapidoc.NewProperty("extra", "UserExtraDto", true, "用户额外信息"),
+				goapidoc.NewProperty("user", "UserDto", true, "authorized user"),
+				goapidoc.NewProperty("token", "string", true, "access token"),
 			),
 	)
 }

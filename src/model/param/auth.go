@@ -6,21 +6,22 @@ import (
 
 func init() {
 	goapidoc.AddDefinitions(
-		goapidoc.NewDefinition("LoginParam", "登录请求参数").
+		goapidoc.NewDefinition("RegisterParam", "register parameter").
 			Properties(
-				goapidoc.NewProperty("username", "string", true, "用户名"),
-				goapidoc.NewProperty("password", "string", true, "密码"),
+				goapidoc.NewProperty("email", "string", true, "register email"),
+				goapidoc.NewProperty("password", "string", true, "register password"),
 			),
 
-		goapidoc.NewDefinition("RegisterParam", "注册请求参数").
+		goapidoc.NewDefinition("LoginParam", "login parameter").
 			Properties(
-				goapidoc.NewProperty("username", "string", true, "用户名，长度在 [5, 30] 之间"),
-				goapidoc.NewProperty("password", "string", true, "密码，长度在 [8, 30] 之间"),
+				goapidoc.NewProperty("parameter", "string", true, "login parameter, support uid | username | email"),
+				goapidoc.NewProperty("password", "string", true, "login password"),
 			),
 
-		goapidoc.NewDefinition("PasswordParam", "修改密码请求参数").
+		goapidoc.NewDefinition("UpdatePasswordParam", "update password parameter").
 			Properties(
-				goapidoc.NewProperty("password", "string", true, "密码，长度在 [8, 30] 之间"),
+				goapidoc.NewProperty("old", "string", true, "old password"),
+				goapidoc.NewProperty("new", "string", true, "new password"),
 			),
 	)
 }

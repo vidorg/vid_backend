@@ -32,7 +32,6 @@ func init() {
 		goapidoc.NewTag("Subscribe", "subscribe-controller"),
 		goapidoc.NewTag("Video", "video-controller"),
 		goapidoc.NewTag("Policy", "policy-controller"),
-		goapidoc.NewTag("Administration", "*-controller"),
 	)
 
 	goapidoc.SetSecurities(
@@ -75,7 +74,7 @@ func setupBinding() {
 	_ = xgin.EnableRFC3339DateBinding()
 	_ = xgin.EnableRFC3339DateTimeBinding()
 
-	_ = xgin.AddBinding("name", xvalidator.RegexpValidator(regexp.MustCompile(`^[a-zA-Z0-9\u4E00-\u9FBF\u3040-\u30FF\-_]+$`)))               // alphabet number character kana - _
+	_ = xgin.AddBinding("name", xvalidator.RegexpValidator(regexp.MustCompile(`^[a-zA-Z0-9\-_]+$`)))                                         // a-z A-Z 0-9 - _
 	_ = xgin.AddBinding("pwd", xvalidator.RegexpValidator(regexp.MustCompile(`^.+$`)))                                                       // all
 	_ = xgin.AddBinding("phone", xvalidator.RegexpValidator(regexp.MustCompile(`^(13[0-9]|15[012356789]|17[678]|18[0-9]|14[57])[0-9]{8}$`))) // 11
 }

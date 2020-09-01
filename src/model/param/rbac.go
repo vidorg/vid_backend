@@ -13,8 +13,8 @@ func init() {
 
 		goapidoc.NewDefinition("RbacSubjectParam", "insert / delete rbac subject param").
 			Properties(
-				goapidoc.NewProperty("sub", "string", true, "new subject"),
-				goapidoc.NewProperty("sub2", "string", true, "subject inherited from"),
+				goapidoc.NewProperty("new", "string", true, "new subject"),
+				goapidoc.NewProperty("from", "string", true, "subject inherited from"),
 			),
 
 		goapidoc.NewDefinition("RbacPolicyParam", "insert / delete rbac policy param").
@@ -32,7 +32,7 @@ type ChangeUserRoleParam struct {
 
 type RbacSubjectParam struct {
 	New  string `json:"new"  form:"new"  binding:"required"` // new subject
-	From string `json:"from" form:"from" binding:"required"` // from subject
+	From string `json:"from" form:"from" binding:"required"` // subject inherited from
 }
 
 type RbacPolicyParam struct {

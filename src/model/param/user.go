@@ -8,14 +8,15 @@ import (
 
 func init() {
 	goapidoc.AddDefinitions(
-		goapidoc.NewDefinition("UpdateUserParam", "用户请求参数").
+		goapidoc.NewDefinition("UpdateUserParam", "update user parameter").
 			Properties(
-				goapidoc.NewProperty("username", "string", true, "用户名，长度在 [5, 30] 之间"),
-				goapidoc.NewProperty("profile", "string", true, "用户简介，长度在 [0, 255] 之间").AllowEmpty(true),
-				goapidoc.NewProperty("gender", "string", true, "性别").Enum("male", "female", "unknown"),
-				goapidoc.NewProperty("birthday", "string#date", true, "生日"),
-				goapidoc.NewProperty("phone_number", "string", true, "手机号码，长度为 11，仅限中国大陆手机号码"),
-				goapidoc.NewProperty("avatar_url", "string", true, "头像"),
+				goapidoc.NewProperty("username", "string", true, "username"),
+				goapidoc.NewProperty("nickname", "string", true, "user nickname"),
+				goapidoc.NewProperty("gender", "integer#int32", true, "user gender, 0X | 1M | 2F").Enum(0, 1, 2),
+				goapidoc.NewProperty("profile", "string", true, "user profile").AllowEmpty(true),
+				goapidoc.NewProperty("birthday", "string#date", true, "user birthday"),
+				goapidoc.NewProperty("phone", "string", true, "user phone number"),
+				goapidoc.NewProperty("avatar", "string", true, "user avatar"),
 			),
 	)
 }

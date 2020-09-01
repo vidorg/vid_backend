@@ -24,8 +24,3 @@ func (u UserState) String() string {
 		return "<unknown user state>"
 	}
 }
-
-type _ interface {
-	Data() int8
-	String() string
-}

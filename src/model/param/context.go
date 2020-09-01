@@ -10,9 +10,9 @@ import (
 )
 
 var (
-	ADPage  = goapidoc.NewPathParam("page", "integer#int32", true, "请求页")
-	ADLimit = goapidoc.NewPathParam("limit", "integer#int32", true, "页大小")
-	ADOrder = goapidoc.NewPathParam("order", "string", true, "排序")
+	ADPage  = goapidoc.NewPathParam("page", "integer#int32", true, "current page")
+	ADLimit = goapidoc.NewPathParam("limit", "integer#int32", true, "page size")
+	ADOrder = goapidoc.NewPathParam("order", "string", true, "order string")
 )
 
 type PageParam struct {

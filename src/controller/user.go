@@ -17,24 +17,38 @@ import (
 
 func init() {
 	goapidoc.AddRoutePaths(
-		goapidoc.NewRoutePath("GET", "/v1/user", "查询所有用户").
+		goapidoc.NewRoutePath("GET", "/v1/user", "query all user").
 			Tags("User").
 			Securities("Jwt").
-			Params(param.ADPage, param.ADLimit, param.ADOrder).
+			Params(
+				param.ADPage, param.ADLimit, param.ADOrder,
+				adNeedSubscribeCount, adNeedIsSubscribe, adNeedVideoCount,
+			).
 			Responses(goapidoc.NewResponse(200, "_Result<_Page<UserDto>>")),
 
-		goapidoc.NewRoutePath("GET", "/v1/user/{uid}", "查询用户").
+		goapidoc.NewRoutePath("GET", "/v1/user/uid/{uid}", "query a user by uid").
 			Tags("User").
-			Params(goapidoc.NewPathParam("uid", "integer#int32", true, "用户id")).
+			Params(
+				adNeedSubscribeCount, adNeedIsSubscribe, adNeedVideoCount,
+				goapidoc.NewPathParam("uid", "integer#int64", true, "user id"),
+			).
 			Responses(goapidoc.NewResponse(200, "_Result<UserDetailDto>")),
 
-		goapidoc.NewRoutePath("PUT", "/v1/user/", "更新用户").
+		goapidoc.NewRoutePath("GET", "/v1/user/username/{username}", "query a user by username").
+			Tags("User").
+			Params(
+				adNeedSubscribeCount, adNeedIsSubscribe, adNeedVideoCount,
+				goapidoc.NewPathParam("uid", "integer#int64", true, "user id"),
+			).
+			Responses(goapidoc.NewResponse(200, "_Result<UserDetailDto>")),
+
+		goapidoc.NewRoutePath("PUT", "/v1/user", "update a user").
 			Tags("User").
 			Securities("Jwt").
-			Params(goapidoc.NewBodyParam("param", "UpdateUserParam", true, "用户请求参数")).
-			Responses(goapidoc.NewResponse(200, "_Result<UserDto>")),
+			Params(goapidoc.NewBodyParam("param", "UpdateUserParam", true, "update user parameter")).
+			Responses(goapidoc.NewResponse(200, "Result")),
 
-		goapidoc.NewRoutePath("DELETE", "/v1/user/", "删除用户").
+		goapidoc.NewRoutePath("DELETE", "/v1/user", "delete a user").
 			Tags("User").
 			Securities("Jwt").
 			Responses(goapidoc.NewResponse(200, "Result")),
@@ -111,7 +125,7 @@ func (u *UserController) QueryByUid(c *gin.Context) *result.Result {
 	return result.Ok().SetData(res)
 }
 
-// GET /v1/user/username/:uid
+// GET /v1/user/username/:username
 func (u *UserController) QueryByUsername(c *gin.Context) *result.Result {
 	username := c.Param("username")
 	if username == "" {

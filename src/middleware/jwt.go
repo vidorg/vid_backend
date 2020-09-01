@@ -11,7 +11,7 @@ import (
 )
 
 func JwtMiddleware() gin.HandlerFunc {
-	jwtService := xdi.GetByNameForce(sn.SJwtService).(service.JwtService)
+	jwtService := xdi.GetByNameForce(sn.SJwtService).(*service.JwtService)
 
 	return func(c *gin.Context) {
 		token := jwtService.GetToken(c)

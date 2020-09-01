@@ -57,17 +57,21 @@ func initRoute(engine *gin.Engine) {
 		authGroup.GET("user", authMw, j(authCtrl.CurrentUser))
 		authGroup.DELETE("logout", authMw, j(authCtrl.Logout))
 		authGroup.PUT("password", authMw, j(authCtrl.UpdatePassword))
+		authGroup.POST("activate", authMw, j(authCtrl.ActivateUser))
+		authGroup.GET("spec/:spec", j(authCtrl.CheckSpec))
 	}
 
 	userGroup := v1.Group("user")
 	{
 		userGroup.GET("", authMw, j(userCtrl.QueryAll))
-		userGroup.GET(":uid", j(userCtrl.QueryByUid))
+		userGroup.GET("uid/:uid", j(userCtrl.QueryByUid))
+		userGroup.GET("username/:username", j(userCtrl.QueryByUsername))
 		userGroup.PUT("", authMw, j(userCtrl.Update))
 		userGroup.DELETE("", authMw, j(userCtrl.Delete))
+
 		userGroup.GET(":uid/subscriber", j(subscribeCtrl.QuerySubscribers))
 		userGroup.GET(":uid/subscribing", j(subscribeCtrl.QuerySubscribings))
-		userGroup.PUT("subscribing/:uid", authMw, j(subscribeCtrl.SubscribeUser))
+		userGroup.POST("subscribing/:uid", authMw, j(subscribeCtrl.SubscribeUser))
 		userGroup.DELETE("subscribing/:uid", authMw, j(subscribeCtrl.UnSubscribeUser))
 
 		userGroup.GET(":uid/video", j(videoCtrl.QueryVideosByUid))
@@ -86,7 +90,7 @@ func initRoute(engine *gin.Engine) {
 	{
 		rbacGroup.Use(jwtMw, casbinMw)
 		rbacGroup.GET("rule", j(rbacCtrl.GetRules))
-		rbacGroup.PUT("user/{uid}", j(rbacCtrl.ChangeRole))
+		rbacGroup.PUT("user/:uid", j(rbacCtrl.ChangeRole))
 		rbacGroup.POST("subject", j(rbacCtrl.InsertSubject))
 		rbacGroup.POST("policy", j(rbacCtrl.InsertPolicy))
 		rbacGroup.DELETE("subject", j(rbacCtrl.DeleteSubject))

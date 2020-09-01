@@ -16,32 +16,34 @@ import (
 
 func init() {
 	goapidoc.AddRoutePaths(
-		goapidoc.NewRoutePath("GET", "/v1/user/{uid}/subscriber", "查询用户粉丝").
+		goapidoc.NewRoutePath("GET", "/v1/user/{uid}/subscriber", "query user subscribers").
 			Tags("Subscribe").
 			Params(
-				goapidoc.NewPathParam("uid", "integer#int32", true, "用户id"),
+				goapidoc.NewPathParam("uid", "integer#int64", true, "user id"),
 				param.ADPage, param.ADLimit, param.ADOrder,
+				adNeedSubscribeCount, adNeedIsSubscribe, adNeedVideoCount,
 			).
 			Responses(goapidoc.NewResponse(200, "_Result<_Page<UserDto>>")),
 
-		goapidoc.NewRoutePath("GET", "/v1/user/{uid}/subscribing", "查询用户关注").
+		goapidoc.NewRoutePath("GET", "/v1/user/{uid}/subscribing", "query user subscribings").
 			Tags("Subscribe").
 			Params(
-				goapidoc.NewPathParam("uid", "integer#int32", true, "用户id"),
+				goapidoc.NewPathParam("uid", "integer#int64", true, "user id"),
 				param.ADPage, param.ADLimit, param.ADOrder,
+				adNeedSubscribeCount, adNeedIsSubscribe, adNeedVideoCount,
 			).
 			Responses(goapidoc.NewResponse(200, "_Result<_Page<UserDto>>")),
 
-		goapidoc.NewRoutePath("PUT", "/v1/user/subscribing/{uid}", "关注用户").
+		goapidoc.NewRoutePath("POST", "/v1/user/subscribing/{uid}", "subscribe user").
 			Tags("Subscribe").
 			Securities("Jwt").
-			Params(goapidoc.NewPathParam("uid", "integer#int32", true, "用户id")).
+			Params(goapidoc.NewPathParam("uid", "integer#int64", true, "user id")).
 			Responses(goapidoc.NewResponse(200, "Result")),
 
-		goapidoc.NewRoutePath("DELETE", "/v1/user/subscribing/{uid}", "取消关注用户").
+		goapidoc.NewRoutePath("DELETE", "/v1/user/subscribing/{uid}", "unsubscribe user").
 			Tags("Subscribe").
 			Securities("Jwt").
-			Params(goapidoc.NewPathParam("uid", "integer#int32", true, "用户id")).
+			Params(goapidoc.NewPathParam("uid", "integer#int64", true, "user id")).
 			Responses(goapidoc.NewResponse(200, "Result")),
 	)
 }

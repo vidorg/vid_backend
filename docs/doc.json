@@ -1,130 +1,1378 @@
 {
+  "swagger": "2.0",
+  "host": "localhost:3344",
   "basePath": "/",
+  "info": {
+    "title": "vid backend",
+    "description": "Vid backend built by golang/gin",
+    "version": "1.2",
+    "termsOfService": "https://github.com/vidorg/vid_backend/issues",
+    "license": {
+      "name": "MIT",
+      "url": "https://github.com/vidorg/vid_backend/blob/master/LICENSE"
+    },
+    "contact": {
+      "name": "vidorg",
+      "url": "https://github.com/vidorg"
+    }
+  },
+  "tags": [
+    {
+      "name": "Authorization",
+      "description": "auth-controller"
+    },
+    {
+      "name": "User",
+      "description": "user-controller"
+    },
+    {
+      "name": "Subscribe",
+      "description": "subscribe-controller"
+    },
+    {
+      "name": "Video",
+      "description": "video-controller"
+    },
+    {
+      "name": "Policy",
+      "description": "policy-controller"
+    }
+  ],
+  "securityDefinitions": {
+    "Jwt": {
+      "type": "apiKey",
+      "name": "Authorization",
+      "in": "header"
+    }
+  },
+  "paths": {
+    "/v1/auth/activate": {
+      "post": {
+        "summary": "send email to activate account",
+        "operationId": "-v1-auth-activate-post",
+        "tags": [
+          "Authorization"
+        ],
+        "security": [
+          {
+            "Jwt": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "originRef": "Result",
+              "$ref": "#/definitions/Result"
+            }
+          }
+        }
+      }
+    },
+    "/v1/auth/login": {
+      "post": {
+        "summary": "login",
+        "operationId": "-v1-auth-login-post",
+        "tags": [
+          "Authorization"
+        ],
+        "parameters": [
+          {
+            "name": "param",
+            "in": "body",
+            "required": true,
+            "description": "login parameter",
+            "schema": {
+              "originRef": "LoginParam",
+              "$ref": "#/definitions/LoginParam"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "originRef": "_Result<LoginDto>",
+              "$ref": "#/definitions/_Result<LoginDto>"
+            }
+          }
+        }
+      }
+    },
+    "/v1/auth/logout": {
+      "delete": {
+        "summary": "logout",
+        "operationId": "-v1-auth-logout-delete",
+        "tags": [
+          "Authorization"
+        ],
+        "security": [
+          {
+            "Jwt": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "originRef": "Result",
+              "$ref": "#/definitions/Result"
+            }
+          }
+        }
+      }
+    },
+    "/v1/auth/password": {
+      "put": {
+        "summary": "update password",
+        "operationId": "-v1-auth-password-put",
+        "tags": [
+          "Authorization"
+        ],
+        "security": [
+          {
+            "Jwt": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "param",
+            "in": "body",
+            "required": true,
+            "description": "修改密码参数",
+            "schema": {
+              "originRef": "UpdatePasswordParam",
+              "$ref": "#/definitions/UpdatePasswordParam"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "originRef": "Result",
+              "$ref": "#/definitions/Result"
+            }
+          }
+        }
+      }
+    },
+    "/v1/auth/register": {
+      "post": {
+        "summary": "register",
+        "operationId": "-v1-auth-register-post",
+        "tags": [
+          "Authorization"
+        ],
+        "parameters": [
+          {
+            "name": "param",
+            "in": "body",
+            "required": true,
+            "description": "register parameter",
+            "schema": {
+              "originRef": "RegisterParam",
+              "$ref": "#/definitions/RegisterParam"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "schema": {
+              "originRef": "Result",
+              "$ref": "#/definitions/Result"
+            }
+          }
+        }
+      }
+    },
+    "/v1/auth/spec/:spec": {
+      "get": {
+        "summary": "activate account with spec",
+        "operationId": "-v1-auth-spec-:spec-get",
+        "tags": [
+          "Authorization"
+        ],
+        "parameters": [
+          {
+            "name": "spec",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "spec code"
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "originRef": "Result",
+              "$ref": "#/definitions/Result"
+            }
+          }
+        }
+      }
+    },
+    "/v1/auth/user": {
+      "get": {
+        "summary": "current user",
+        "operationId": "-v1-auth-user-get",
+        "tags": [
+          "Authorization"
+        ],
+        "security": [
+          {
+            "Jwt": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "originRef": "_Result<UserDto>",
+              "$ref": "#/definitions/_Result<UserDto>"
+            }
+          }
+        }
+      }
+    },
+    "/v1/rbac/policy": {
+      "delete": {
+        "summary": "Delete policy",
+        "operationId": "-v1-rbac-policy-delete",
+        "tags": [
+          "Rbac",
+          "Administration"
+        ],
+        "security": [
+          {
+            "Jwt": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "description": "delete policy param",
+            "schema": {
+              "originRef": "RbacPolicyParam",
+              "$ref": "#/definitions/RbacPolicyParam"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "originRef": "Result",
+              "$ref": "#/definitions/Result"
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Insert policy",
+        "operationId": "-v1-rbac-policy-post",
+        "tags": [
+          "Rbac",
+          "Administration"
+        ],
+        "security": [
+          {
+            "Jwt": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "description": "insert policy param",
+            "schema": {
+              "originRef": "RbacPolicyParam",
+              "$ref": "#/definitions/RbacPolicyParam"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "schema": {
+              "originRef": "Result",
+              "$ref": "#/definitions/Result"
+            }
+          }
+        }
+      }
+    },
+    "/v1/rbac/rule": {
+      "get": {
+        "summary": "Get rbac rules",
+        "operationId": "-v1-rbac-rule-get",
+        "tags": [
+          "Rbac",
+          "Administration"
+        ],
+        "security": [
+          {
+            "Jwt": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "description": "current page",
+            "format": "int32"
+          },
+          {
+            "name": "limit",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "description": "page size",
+            "format": "int32"
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "originRef": "_Result<_Page<RbacRuleDto>>",
+              "$ref": "#/definitions/_Result<_Page<RbacRuleDto>>"
+            }
+          }
+        }
+      }
+    },
+    "/v1/rbac/subject": {
+      "delete": {
+        "summary": "Delete subject",
+        "operationId": "-v1-rbac-subject-delete",
+        "tags": [
+          "Rbac",
+          "Administration"
+        ],
+        "security": [
+          {
+            "Jwt": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "description": "delete subject param",
+            "schema": {
+              "originRef": "RbacSubjectParam",
+              "$ref": "#/definitions/RbacSubjectParam"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "originRef": "Result",
+              "$ref": "#/definitions/Result"
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Insert subject",
+        "operationId": "-v1-rbac-subject-post",
+        "tags": [
+          "Rbac",
+          "Administration"
+        ],
+        "security": [
+          {
+            "Jwt": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "description": "insert subject param",
+            "schema": {
+              "originRef": "RbacSubjectParam",
+              "$ref": "#/definitions/RbacSubjectParam"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "schema": {
+              "originRef": "Result",
+              "$ref": "#/definitions/Result"
+            }
+          }
+        }
+      }
+    },
+    "/v1/rbac/user/{uid}": {
+      "put": {
+        "summary": "Change user role",
+        "operationId": "-v1-rbac-user-uid-put",
+        "tags": [
+          "Rbac",
+          "Administration"
+        ],
+        "security": [
+          {
+            "Jwt": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "uid",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "description": "user id",
+            "format": "int64"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "description": "change role param",
+            "schema": {
+              "originRef": "ChangeUserRoleParam",
+              "$ref": "#/definitions/ChangeUserRoleParam"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "originRef": "Result",
+              "$ref": "#/definitions/Result"
+            }
+          }
+        }
+      }
+    },
+    "/v1/user": {
+      "delete": {
+        "summary": "delete a user",
+        "operationId": "-v1-user-delete",
+        "tags": [
+          "User"
+        ],
+        "security": [
+          {
+            "Jwt": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "originRef": "Result",
+              "$ref": "#/definitions/Result"
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "query all user",
+        "operationId": "-v1-user-get",
+        "tags": [
+          "User"
+        ],
+        "security": [
+          {
+            "Jwt": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "description": "current page",
+            "format": "int32"
+          },
+          {
+            "name": "limit",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "description": "page size",
+            "format": "int32"
+          },
+          {
+            "name": "order",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "order string"
+          },
+          {
+            "name": "need_subscribe_count",
+            "in": "query",
+            "required": false,
+            "description": "need subscribe count (user)",
+            "schema": {
+              "originRef": "bool",
+              "$ref": "#/definitions/bool"
+            }
+          },
+          {
+            "name": "need_is_subscribe",
+            "in": "query",
+            "required": false,
+            "description": "need is subscribe (user)",
+            "schema": {
+              "originRef": "bool",
+              "$ref": "#/definitions/bool"
+            }
+          },
+          {
+            "name": "need_video_count",
+            "in": "query",
+            "required": false,
+            "description": "need video count (user)",
+            "schema": {
+              "originRef": "bool",
+              "$ref": "#/definitions/bool"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "originRef": "_Result<_Page<UserDto>>",
+              "$ref": "#/definitions/_Result<_Page<UserDto>>"
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "update a user",
+        "operationId": "-v1-user-put",
+        "tags": [
+          "User"
+        ],
+        "security": [
+          {
+            "Jwt": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "param",
+            "in": "body",
+            "required": true,
+            "description": "update user parameter",
+            "schema": {
+              "originRef": "UpdateUserParam",
+              "$ref": "#/definitions/UpdateUserParam"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "originRef": "Result",
+              "$ref": "#/definitions/Result"
+            }
+          }
+        }
+      }
+    },
+    "/v1/user/subscribing/{uid}": {
+      "delete": {
+        "summary": "unsubscribe user",
+        "operationId": "-v1-user-subscribing-uid-delete",
+        "tags": [
+          "Subscribe"
+        ],
+        "security": [
+          {
+            "Jwt": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "uid",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "description": "user id",
+            "format": "int64"
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "originRef": "Result",
+              "$ref": "#/definitions/Result"
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "subscribe user",
+        "operationId": "-v1-user-subscribing-uid-post",
+        "tags": [
+          "Subscribe"
+        ],
+        "security": [
+          {
+            "Jwt": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "uid",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "description": "user id",
+            "format": "int64"
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "originRef": "Result",
+              "$ref": "#/definitions/Result"
+            }
+          }
+        }
+      }
+    },
+    "/v1/user/uid/{uid}": {
+      "get": {
+        "summary": "query a user by uid",
+        "operationId": "-v1-user-uid-uid-get",
+        "tags": [
+          "User"
+        ],
+        "parameters": [
+          {
+            "name": "need_subscribe_count",
+            "in": "query",
+            "required": false,
+            "description": "need subscribe count (user)",
+            "schema": {
+              "originRef": "bool",
+              "$ref": "#/definitions/bool"
+            }
+          },
+          {
+            "name": "need_is_subscribe",
+            "in": "query",
+            "required": false,
+            "description": "need is subscribe (user)",
+            "schema": {
+              "originRef": "bool",
+              "$ref": "#/definitions/bool"
+            }
+          },
+          {
+            "name": "need_video_count",
+            "in": "query",
+            "required": false,
+            "description": "need video count (user)",
+            "schema": {
+              "originRef": "bool",
+              "$ref": "#/definitions/bool"
+            }
+          },
+          {
+            "name": "uid",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "description": "user id",
+            "format": "int64"
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "originRef": "_Result<UserDetailDto>",
+              "$ref": "#/definitions/_Result<UserDetailDto>"
+            }
+          }
+        }
+      }
+    },
+    "/v1/user/username/{username}": {
+      "get": {
+        "summary": "query a user by username",
+        "operationId": "-v1-user-username-username-get",
+        "tags": [
+          "User"
+        ],
+        "parameters": [
+          {
+            "name": "need_subscribe_count",
+            "in": "query",
+            "required": false,
+            "description": "need subscribe count (user)",
+            "schema": {
+              "originRef": "bool",
+              "$ref": "#/definitions/bool"
+            }
+          },
+          {
+            "name": "need_is_subscribe",
+            "in": "query",
+            "required": false,
+            "description": "need is subscribe (user)",
+            "schema": {
+              "originRef": "bool",
+              "$ref": "#/definitions/bool"
+            }
+          },
+          {
+            "name": "need_video_count",
+            "in": "query",
+            "required": false,
+            "description": "need video count (user)",
+            "schema": {
+              "originRef": "bool",
+              "$ref": "#/definitions/bool"
+            }
+          },
+          {
+            "name": "uid",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "description": "user id",
+            "format": "int64"
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "originRef": "_Result<UserDetailDto>",
+              "$ref": "#/definitions/_Result<UserDetailDto>"
+            }
+          }
+        }
+      }
+    },
+    "/v1/user/{uid}/subscriber": {
+      "get": {
+        "summary": "query user subscribers",
+        "operationId": "-v1-user-uid-subscriber-get",
+        "tags": [
+          "Subscribe"
+        ],
+        "parameters": [
+          {
+            "name": "uid",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "description": "user id",
+            "format": "int64"
+          },
+          {
+            "name": "page",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "description": "current page",
+            "format": "int32"
+          },
+          {
+            "name": "limit",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "description": "page size",
+            "format": "int32"
+          },
+          {
+            "name": "order",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "order string"
+          },
+          {
+            "name": "need_subscribe_count",
+            "in": "query",
+            "required": false,
+            "description": "need subscribe count (user)",
+            "schema": {
+              "originRef": "bool",
+              "$ref": "#/definitions/bool"
+            }
+          },
+          {
+            "name": "need_is_subscribe",
+            "in": "query",
+            "required": false,
+            "description": "need is subscribe (user)",
+            "schema": {
+              "originRef": "bool",
+              "$ref": "#/definitions/bool"
+            }
+          },
+          {
+            "name": "need_video_count",
+            "in": "query",
+            "required": false,
+            "description": "need video count (user)",
+            "schema": {
+              "originRef": "bool",
+              "$ref": "#/definitions/bool"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "originRef": "_Result<_Page<UserDto>>",
+              "$ref": "#/definitions/_Result<_Page<UserDto>>"
+            }
+          }
+        }
+      }
+    },
+    "/v1/user/{uid}/subscribing": {
+      "get": {
+        "summary": "query user subscribings",
+        "operationId": "-v1-user-uid-subscribing-get",
+        "tags": [
+          "Subscribe"
+        ],
+        "parameters": [
+          {
+            "name": "uid",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "description": "user id",
+            "format": "int64"
+          },
+          {
+            "name": "page",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "description": "current page",
+            "format": "int32"
+          },
+          {
+            "name": "limit",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "description": "page size",
+            "format": "int32"
+          },
+          {
+            "name": "order",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "order string"
+          },
+          {
+            "name": "need_subscribe_count",
+            "in": "query",
+            "required": false,
+            "description": "need subscribe count (user)",
+            "schema": {
+              "originRef": "bool",
+              "$ref": "#/definitions/bool"
+            }
+          },
+          {
+            "name": "need_is_subscribe",
+            "in": "query",
+            "required": false,
+            "description": "need is subscribe (user)",
+            "schema": {
+              "originRef": "bool",
+              "$ref": "#/definitions/bool"
+            }
+          },
+          {
+            "name": "need_video_count",
+            "in": "query",
+            "required": false,
+            "description": "need video count (user)",
+            "schema": {
+              "originRef": "bool",
+              "$ref": "#/definitions/bool"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "originRef": "_Result<_Page<UserDto>>",
+              "$ref": "#/definitions/_Result<_Page<UserDto>>"
+            }
+          }
+        }
+      }
+    },
+    "/v1/user/{uid}/video": {
+      "get": {
+        "summary": "query videos from user",
+        "operationId": "-v1-user-uid-video-get",
+        "tags": [
+          "Video"
+        ],
+        "parameters": [
+          {
+            "name": "uid",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "description": "user id",
+            "format": "int64"
+          },
+          {
+            "name": "page",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "description": "current page",
+            "format": "int32"
+          },
+          {
+            "name": "limit",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "description": "page size",
+            "format": "int32"
+          },
+          {
+            "name": "order",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "order string"
+          },
+          {
+            "name": "need_author",
+            "in": "query",
+            "required": false,
+            "description": "need video author (video)",
+            "schema": {
+              "originRef": "bool",
+              "$ref": "#/definitions/bool"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "originRef": "_Result<_Page<VideoDto>>",
+              "$ref": "#/definitions/_Result<_Page<VideoDto>>"
+            }
+          }
+        }
+      }
+    },
+    "/v1/video": {
+      "get": {
+        "summary": "query all videos",
+        "operationId": "-v1-video-get",
+        "tags": [
+          "Video"
+        ],
+        "security": [
+          {
+            "Jwt": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "description": "current page",
+            "format": "int32"
+          },
+          {
+            "name": "limit",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "description": "page size",
+            "format": "int32"
+          },
+          {
+            "name": "order",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "order string"
+          },
+          {
+            "name": "need_author",
+            "in": "query",
+            "required": false,
+            "description": "need video author (video)",
+            "schema": {
+              "originRef": "bool",
+              "$ref": "#/definitions/bool"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "originRef": "_Result<_Page<VideoDto>>",
+              "$ref": "#/definitions/_Result<_Page<VideoDto>>"
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "create a video",
+        "operationId": "-v1-video-post",
+        "tags": [
+          "Video"
+        ],
+        "security": [
+          {
+            "Jwt": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "param",
+            "in": "body",
+            "required": true,
+            "description": "create video parameter",
+            "schema": {
+              "originRef": "InsertVideoParam",
+              "$ref": "#/definitions/InsertVideoParam"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "schema": {
+              "originRef": "Result",
+              "$ref": "#/definitions/Result"
+            }
+          }
+        }
+      }
+    },
+    "/v1/video/{vid}": {
+      "delete": {
+        "summary": "delete a video",
+        "operationId": "-v1-video-vid-delete",
+        "tags": [
+          "Video"
+        ],
+        "security": [
+          {
+            "Jwt": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "vid",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "description": "video id",
+            "format": "int64"
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "originRef": "Result",
+              "$ref": "#/definitions/Result"
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "query a video",
+        "operationId": "-v1-video-vid-get",
+        "tags": [
+          "Video"
+        ],
+        "parameters": [
+          {
+            "name": "vid",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "description": "video id",
+            "format": "int64"
+          },
+          {
+            "name": "need_author",
+            "in": "query",
+            "required": false,
+            "description": "need video author (video)",
+            "schema": {
+              "originRef": "bool",
+              "$ref": "#/definitions/bool"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "originRef": "_Result<VideoDto>",
+              "$ref": "#/definitions/_Result<VideoDto>"
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "update a video",
+        "operationId": "-v1-video-vid-put",
+        "tags": [
+          "Video"
+        ],
+        "security": [
+          {
+            "Jwt": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "vid",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "description": "video id",
+            "format": "int64"
+          },
+          {
+            "name": "param",
+            "in": "body",
+            "required": true,
+            "description": "update video parameter",
+            "schema": {
+              "originRef": "InsertVideoParam",
+              "$ref": "#/definitions/InsertVideoParam"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "originRef": "Result",
+              "$ref": "#/definitions/Result"
+            }
+          }
+        }
+      }
+    }
+  },
   "definitions": {
+    "ChangeUserRoleParam": {
+      "type": "object",
+      "required": [
+        "sub"
+      ],
+      "description": "change role param",
+      "properties": {
+        "sub": {
+          "type": "string",
+          "required": true,
+          "description": "new subject"
+        }
+      }
+    },
+    "InsertVideoParam": {
+      "type": "object",
+      "required": [
+        "title",
+        "description",
+        "video_url",
+        "cover_url"
+      ],
+      "description": "insert video parameter",
+      "properties": {
+        "title": {
+          "type": "string",
+          "required": true,
+          "description": "video title"
+        },
+        "description": {
+          "type": "string",
+          "required": true,
+          "description": "video description"
+        },
+        "video_url": {
+          "type": "string",
+          "required": true,
+          "description": "video source url"
+        },
+        "cover_url": {
+          "type": "string",
+          "required": true,
+          "description": "video cover url"
+        }
+      }
+    },
     "LoginDto": {
       "type": "object",
       "required": [
         "user",
         "token"
       ],
-      "description": "登录信息",
+      "description": "login response",
       "properties": {
         "user": {
           "required": true,
-          "description": "用户信息",
+          "description": "authorized user",
           "originRef": "UserDto",
           "$ref": "#/definitions/UserDto"
         },
         "token": {
           "type": "string",
           "required": true,
-          "description": "登录令牌"
+          "description": "access token"
         }
       }
     },
     "LoginParam": {
       "type": "object",
       "required": [
-        "username",
+        "parameter",
         "password"
       ],
-      "description": "登录请求参数",
+      "description": "login parameter",
       "properties": {
-        "username": {
+        "parameter": {
           "type": "string",
           "required": true,
-          "description": "用户名"
+          "description": "login parameter, support uid | username | email"
         },
         "password": {
           "type": "string",
           "required": true,
-          "description": "密码"
+          "description": "login password"
         }
       }
     },
-    "PasswordParam": {
+    "RbacPolicyParam": {
       "type": "object",
       "required": [
-        "password"
+        "sub",
+        "obj",
+        "act"
       ],
-      "description": "修改密码请求参数",
+      "description": "insert / delete rbac policy param",
       "properties": {
-        "password": {
+        "sub": {
           "type": "string",
           "required": true,
-          "description": "密码，长度在 [8, 30] 之间"
+          "description": "new subject"
+        },
+        "obj": {
+          "type": "string",
+          "required": true,
+          "description": "new object"
+        },
+        "act": {
+          "type": "string",
+          "required": true,
+          "description": "new action"
         }
       }
     },
-    "PolicyDto": {
+    "RbacRuleDto": {
       "type": "object",
       "required": [
-        "role",
-        "path",
-        "method"
+        "p_type",
+        "v0",
+        "v1",
+        "v2",
+        "v3",
+        "v4",
+        "v5"
       ],
-      "description": "权限策略信息",
+      "description": "rbac rule response",
       "properties": {
-        "role": {
+        "p_type": {
           "type": "string",
           "required": true,
-          "description": "角色 (sub)"
+          "description": "rule type"
         },
-        "path": {
+        "v0": {
           "type": "string",
           "required": true,
-          "description": "路径 (obj)"
+          "description": "v0"
         },
-        "method": {
+        "v1": {
           "type": "string",
           "required": true,
-          "description": "方法 (act)"
+          "description": "v1"
+        },
+        "v2": {
+          "type": "string",
+          "required": true,
+          "description": "v2"
+        },
+        "v3": {
+          "type": "string",
+          "required": true,
+          "description": "v3"
+        },
+        "v4": {
+          "type": "string",
+          "required": true,
+          "description": "v4"
+        },
+        "v5": {
+          "type": "string",
+          "required": true,
+          "description": "v5"
         }
       }
     },
-    "PolicyParam": {
+    "RbacSubjectParam": {
       "type": "object",
       "required": [
-        "role",
-        "path",
-        "method"
+        "new",
+        "from"
       ],
-      "description": "权限策略参数",
+      "description": "insert / delete rbac subject param",
       "properties": {
-        "role": {
+        "new": {
           "type": "string",
           "required": true,
-          "description": "角色"
+          "description": "new subject"
         },
-        "path": {
+        "from": {
           "type": "string",
           "required": true,
-          "description": "路径"
-        },
-        "method": {
-          "type": "string",
-          "required": true,
-          "description": "方法"
+          "description": "subject inherited from"
         }
       }
     },
     "RegisterParam": {
       "type": "object",
       "required": [
-        "username",
+        "email",
         "password"
       ],
-      "description": "注册请求参数",
+      "description": "register parameter",
       "properties": {
-        "username": {
+        "email": {
           "type": "string",
           "required": true,
-          "description": "用户名，长度在 [5, 30] 之间"
+          "description": "register email"
         },
         "password": {
           "type": "string",
           "required": true,
-          "description": "密码，长度在 [8, 30] 之间"
+          "description": "register password"
         }
       }
     },
@@ -149,39 +1397,81 @@
         }
       }
     },
-    "RoleParam": {
+    "UpdatePasswordParam": {
       "type": "object",
       "required": [
-        "role"
+        "old",
+        "new"
       ],
-      "description": "修改角色请求参数",
+      "description": "update password parameter",
       "properties": {
-        "role": {
+        "old": {
           "type": "string",
           "required": true,
-          "description": "角色"
+          "description": "old password"
+        },
+        "new": {
+          "type": "string",
+          "required": true,
+          "description": "new password"
         }
       }
     },
-    "UserDetailDto": {
+    "UpdateUserParam": {
       "type": "object",
       "required": [
-        "user",
-        "extra"
+        "username",
+        "nickname",
+        "gender",
+        "profile",
+        "birthday",
+        "phone",
+        "avatar"
       ],
-      "description": "用户详细信息",
+      "description": "update user parameter",
       "properties": {
-        "user": {
+        "username": {
+          "type": "string",
           "required": true,
-          "description": "用户信息",
-          "originRef": "UserDto",
-          "$ref": "#/definitions/UserDto"
+          "description": "username"
         },
-        "extra": {
+        "nickname": {
+          "type": "string",
           "required": true,
-          "description": "用户额外信息",
-          "originRef": "UserExtraDto",
-          "$ref": "#/definitions/UserExtraDto"
+          "description": "user nickname"
+        },
+        "gender": {
+          "type": "integer",
+          "required": true,
+          "description": "user gender, 0X | 1M | 2F",
+          "format": "int32",
+          "enum": [
+            0,
+            1,
+            2
+          ]
+        },
+        "profile": {
+          "type": "string",
+          "required": true,
+          "description": "user profile",
+          "allowEmptyValue": true
+        },
+        "birthday": {
+          "type": "string",
+          "required": true,
+          "description": "user birthday",
+          "format": "date"
+        },
+        "phone": {
+          "type": "string",
+          "required": true,
+          "description": "user phone number"
+        },
+        "avatar": {
+          "type": "string",
+          "required": true,
+          "description": "user avatar"
         }
       }
     },
@@ -190,143 +1480,131 @@
       "required": [
         "uid",
         "username",
+        "email",
+        "nickname",
         "gender",
         "profile",
-        "avatar_url",
+        "avatar",
         "birthday",
         "role",
-        "register_time"
+        "state",
+        "register_time",
+        "extra"
       ],
-      "description": "用户信息",
+      "description": "user response",
       "properties": {
         "uid": {
           "type": "integer",
           "required": true,
-          "description": "用户id",
-          "format": "int32"
+          "description": "user id",
+          "format": "int64"
         },
         "username": {
           "type": "string",
           "required": true,
-          "description": "用户名"
+          "description": "username"
+        },
+        "email": {
+          "type": "string",
+          "required": true,
+          "description": "user email"
+        },
+        "nickname": {
+          "type": "string",
+          "required": true,
+          "description": "user nickname"
         },
         "gender": {
           "type": "string",
           "required": true,
-          "description": "性别",
+          "description": "user gender",
           "enum": [
+            "secret",
             "male",
-            "female",
-            "unknown"
+            "female"
           ]
         },
         "profile": {
           "type": "string",
           "required": true,
-          "description": "简介",
+          "description": "user profile",
           "allowEmptyValue": true
         },
-        "avatar_url": {
+        "avatar": {
           "type": "string",
           "required": true,
-          "description": "头像"
+          "description": "user avatar"
         },
         "birthday": {
           "type": "string",
           "required": true,
-          "description": "生日",
+          "description": "user birthday",
           "format": "date"
         },
         "role": {
           "type": "string",
           "required": true,
-          "description": "角色"
+          "description": "user role"
+        },
+        "state": {
+          "type": "string",
+          "required": true,
+          "description": "user state"
         },
         "register_time": {
           "type": "string",
           "required": true,
-          "description": "注册时间",
+          "description": "user register time",
           "format": "date-time"
+        },
+        "extra": {
+          "required": true,
+          "description": "user extra information",
+          "originRef": "UserExtraDto",
+          "$ref": "#/definitions/UserExtraDto"
         }
       }
     },
     "UserExtraDto": {
       "type": "object",
       "required": [
-        "subscribing_cnt",
-        "subscriber_cnt",
-        "video_cnt"
+        "subscribings",
+        "subscribers",
+        "is_subscribing",
+        "is_subscriber",
+        "videos"
       ],
-      "description": "用户额外信息",
+      "description": "user extra response",
       "properties": {
-        "subscribing_cnt": {
+        "subscribings": {
           "type": "integer",
           "required": true,
-          "description": "关注数量",
+          "description": "user subscribing count",
           "format": "int32"
         },
-        "subscriber_cnt": {
+        "subscribers": {
           "type": "integer",
           "required": true,
-          "description": "粉丝数量",
+          "description": "user subscriber count",
           "format": "int32"
         },
-        "video_cnt": {
+        "is_subscribing": {
+          "required": true,
+          "description": "authorized user is subscribing",
+          "originRef": "bool",
+          "$ref": "#/definitions/bool"
+        },
+        "is_subscriber": {
+          "required": true,
+          "description": "authorized user is subscribed",
+          "originRef": "bool",
+          "$ref": "#/definitions/bool"
+        },
+        "videos": {
           "type": "integer",
           "required": true,
-          "description": "视频数量",
+          "description": "user video count",
           "format": "int32"
-        }
-      }
-    },
-    "UserParam": {
-      "type": "object",
-      "required": [
-        "username",
-        "profile",
-        "gender",
-        "birthday",
-        "phone_number",
-        "avatar_url"
-      ],
-      "description": "用户请求参数",
-      "properties": {
-        "username": {
-          "type": "string",
-          "required": true,
-          "description": "用户名，长度在 [5, 30] 之间"
-        },
-        "profile": {
-          "type": "string",
-          "required": true,
-          "description": "用户简介，长度在 [0, 255] 之间",
-          "allowEmptyValue": true
-        },
-        "gender": {
-          "type": "string",
-          "required": true,
-          "description": "性别",
-          "enum": [
-            "male",
-            "female",
-            "unknown"
-          ]
-        },
-        "birthday": {
-          "type": "string",
-          "required": true,
-          "description": "生日",
-          "format": "date"
-        },
-        "phone_number": {
-          "type": "string",
-          "required": true,
-          "description": "手机号码，长度为 11，仅限中国大陆手机号码"
-        },
-        "avatar_url": {
-          "type": "string",
-          "required": true,
-          "description": "头像"
         }
       }
     },
@@ -339,7 +1617,6 @@
         "video_url",
         "cover_url",
         "upload_time",
-        "update_time",
         "author"
       ],
       "description": "视频信息",
@@ -347,84 +1624,44 @@
         "vid": {
           "type": "integer",
           "required": true,
-          "description": "视频id",
-          "format": "int32"
+          "description": "video id",
+          "format": "int64"
         },
         "title": {
           "type": "string",
           "required": true,
-          "description": "标题"
+          "description": "video title"
         },
         "description": {
           "type": "string",
           "required": true,
-          "description": "简介",
-          "allowEmptyValue": true
+          "description": "video description"
         },
         "video_url": {
           "type": "string",
           "required": true,
-          "description": "资源"
+          "description": "video source url"
         },
         "cover_url": {
           "type": "string",
           "required": true,
-          "description": "封面"
+          "description": "video cover url"
         },
         "upload_time": {
           "type": "string",
           "required": true,
-          "description": "上传时间",
-          "format": "date-time"
-        },
-        "update_time": {
-          "type": "string",
-          "required": true,
-          "description": "修改时间",
+          "description": "video upload time",
           "format": "date-time"
         },
         "author": {
           "required": true,
-          "description": "视频作者, null 表示用户不存在",
+          "description": "video author",
           "originRef": "UserDto",
           "$ref": "#/definitions/UserDto"
         }
       }
     },
-    "VideoParam": {
-      "type": "object",
-      "required": [
-        "title",
-        "description",
-        "cover_url",
-        "video_url"
-      ],
-      "description": "视频请求参数",
-      "properties": {
-        "title": {
-          "type": "string",
-          "required": true,
-          "description": "标题，长度在 [1, 100] 之间"
-        },
-        "description": {
-          "type": "string",
-          "required": true,
-          "description": "简介，长度在 [0, 255] 之间",
-          "allowEmptyValue": true
-        },
-        "cover_url": {
-          "type": "string",
-          "required": true,
-          "description": "封面"
-        },
-        "video_url": {
-          "type": "string",
-          "required": true,
-          "description": "资源"
-        }
-      }
-    },
-    "_Page<PolicyDto>": {
+    "_Page<RbacRuleDto>": {
       "type": "object",
       "required": [
         "page",
@@ -457,8 +1694,8 @@
           "required": true,
           "description": "page data",
           "items": {
-            "originRef": "PolicyDto",
-            "$ref": "#/definitions/PolicyDto"
+            "originRef": "RbacRuleDto",
+            "$ref": "#/definitions/RbacRuleDto"
           }
         }
       }
@@ -653,7 +1890,7 @@
         }
       }
     },
-    "_Result<_Page<PolicyDto>>": {
+    "_Result<_Page<RbacRuleDto>>": {
       "type": "object",
       "required": [
         "code",
@@ -676,8 +1913,8 @@
         "data": {
           "required": true,
           "description": "response data",
-          "originRef": "_Page\u003cPolicyDto\u003e",
-          "$ref": "#/definitions/_Page\u003cPolicyDto\u003e"
+          "originRef": "_Page\u003cRbacRuleDto\u003e",
+          "$ref": "#/definitions/_Page\u003cRbacRuleDto\u003e"
         }
       }
     },
@@ -737,878 +1974,5 @@
         }
       }
     }
-  },
-  "host": "localhost:3344",
-  "info": {
-    "title": "vid backend",
-    "description": "Vid backend built by golang/gin",
-    "version": "1.2",
-    "termsOfService": "https://github.com/vidorg/vid_backend/issues",
-    "license": {
-      "name": "MIT",
-      "url": "https://github.com/vidorg/vid_backend/blob/master/LICENSE"
-    },
-    "contact": {
-      "name": "vidorg",
-      "url": "https://github.com/vidorg"
-    }
-  },
-  "paths": {
-    "/v1/auth/": {
-      "get": {
-        "summary": "当前登录用户",
-        "operationId": "-v1-auth--get",
-        "tags": [
-          "Authorization"
-        ],
-        "security": [
-          {
-            "Jwt": []
-          }
-        ],
-        "responses": {
-          "200": {
-            "schema": {
-              "originRef": "_Result<UserDto>",
-              "$ref": "#/definitions/_Result<UserDto>"
-            }
-          }
-        }
-      }
-    },
-    "/v1/auth/login": {
-      "post": {
-        "summary": "登录",
-        "operationId": "-v1-auth-login-post",
-        "tags": [
-          "Authorization"
-        ],
-        "parameters": [
-          {
-            "name": "param",
-            "in": "body",
-            "required": true,
-            "description": "登录参数",
-            "schema": {
-              "originRef": "LoginParam",
-              "$ref": "#/definitions/LoginParam"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "schema": {
-              "originRef": "_Result<LoginDto>",
-              "$ref": "#/definitions/_Result<LoginDto>"
-            }
-          }
-        }
-      }
-    },
-    "/v1/auth/logout": {
-      "post": {
-        "summary": "注销",
-        "operationId": "-v1-auth-logout-post",
-        "tags": [
-          "Authorization"
-        ],
-        "security": [
-          {
-            "Jwt": []
-          }
-        ],
-        "responses": {
-          "200": {
-            "schema": {
-              "originRef": "Result",
-              "$ref": "#/definitions/Result"
-            }
-          }
-        }
-      }
-    },
-    "/v1/auth/password": {
-      "put": {
-        "summary": "修改密码",
-        "operationId": "-v1-auth-password-put",
-        "tags": [
-          "Authorization"
-        ],
-        "security": [
-          {
-            "Jwt": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "param",
-            "in": "body",
-            "required": true,
-            "description": "修改密码参数",
-            "schema": {
-              "originRef": "PasswordParam",
-              "$ref": "#/definitions/PasswordParam"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "schema": {
-              "originRef": "Result",
-              "$ref": "#/definitions/Result"
-            }
-          }
-        }
-      }
-    },
-    "/v1/auth/register": {
-      "post": {
-        "summary": "注册",
-        "operationId": "-v1-auth-register-post",
-        "tags": [
-          "Authorization"
-        ],
-        "parameters": [
-          {
-            "name": "param",
-            "in": "body",
-            "required": true,
-            "description": "注册参数",
-            "schema": {
-              "originRef": "RegisterParam",
-              "$ref": "#/definitions/RegisterParam"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "schema": {
-              "originRef": "_Result<UserDto>",
-              "$ref": "#/definitions/_Result<UserDto>"
-            }
-          }
-        }
-      }
-    },
-    "/v1/policy": {
-      "delete": {
-        "summary": "删除策略",
-        "operationId": "-v1-policy-delete",
-        "tags": [
-          "Policy",
-          "Administration"
-        ],
-        "security": [
-          {
-            "Jwt": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "param",
-            "in": "body",
-            "required": true,
-            "description": "策略请求参数",
-            "schema": {
-              "originRef": "PolicyParam",
-              "$ref": "#/definitions/PolicyParam"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "schema": {
-              "originRef": "Result",
-              "$ref": "#/definitions/Result"
-            }
-          }
-        }
-      },
-      "get": {
-        "summary": "查询所有策略",
-        "operationId": "-v1-policy-get",
-        "tags": [
-          "Policy",
-          "Administration"
-        ],
-        "security": [
-          {
-            "Jwt": []
-          }
-        ],
-        "responses": {
-          "200": {
-            "schema": {
-              "originRef": "_Result<_Page<PolicyDto>>",
-              "$ref": "#/definitions/_Result<_Page<PolicyDto>>"
-            }
-          }
-        }
-      },
-      "post": {
-        "summary": "新建策略",
-        "operationId": "-v1-policy-post",
-        "tags": [
-          "Policy",
-          "Administration"
-        ],
-        "security": [
-          {
-            "Jwt": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "param",
-            "in": "body",
-            "required": true,
-            "description": "策略请求参数",
-            "schema": {
-              "originRef": "PolicyParam",
-              "$ref": "#/definitions/PolicyParam"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "schema": {
-              "originRef": "Result",
-              "$ref": "#/definitions/Result"
-            }
-          }
-        }
-      }
-    },
-    "/v1/policy/{uid}/role": {
-      "put": {
-        "summary": "修改用户角色",
-        "operationId": "-v1-policy-uid-role-put",
-        "tags": [
-          "Policy",
-          "Administration"
-        ],
-        "security": [
-          {
-            "Jwt": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "uid",
-            "in": "path",
-            "required": true,
-            "type": "integer",
-            "description": "用户id",
-            "format": "int32"
-          },
-          {
-            "name": "param",
-            "in": "body",
-            "required": true,
-            "description": "修改角色请求参数",
-            "schema": {
-              "originRef": "RoleParam",
-              "$ref": "#/definitions/RoleParam"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "schema": {
-              "originRef": "Result",
-              "$ref": "#/definitions/Result"
-            }
-          }
-        }
-      }
-    },
-    "/v1/user": {
-      "get": {
-        "summary": "查询所有用户",
-        "operationId": "-v1-user-get",
-        "tags": [
-          "User"
-        ],
-        "security": [
-          {
-            "Jwt": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "page",
-            "in": "path",
-            "required": true,
-            "type": "integer",
-            "description": "请求页",
-            "format": "int32"
-          },
-          {
-            "name": "limit",
-            "in": "path",
-            "required": true,
-            "type": "integer",
-            "description": "页大小",
-            "format": "int32"
-          },
-          {
-            "name": "order",
-            "in": "path",
-            "required": true,
-            "type": "string",
-            "description": "排序"
-          }
-        ],
-        "responses": {
-          "200": {
-            "schema": {
-              "originRef": "_Result<_Page<UserDto>>",
-              "$ref": "#/definitions/_Result<_Page<UserDto>>"
-            }
-          }
-        }
-      }
-    },
-    "/v1/user/": {
-      "delete": {
-        "summary": "删除用户",
-        "operationId": "-v1-user--delete",
-        "tags": [
-          "User"
-        ],
-        "security": [
-          {
-            "Jwt": []
-          }
-        ],
-        "responses": {
-          "200": {
-            "schema": {
-              "originRef": "Result",
-              "$ref": "#/definitions/Result"
-            }
-          }
-        }
-      },
-      "put": {
-        "summary": "更新用户",
-        "operationId": "-v1-user--put",
-        "tags": [
-          "User"
-        ],
-        "security": [
-          {
-            "Jwt": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "param",
-            "in": "body",
-            "required": true,
-            "description": "用户请求参数",
-            "schema": {
-              "originRef": "UserParam",
-              "$ref": "#/definitions/UserParam"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "schema": {
-              "originRef": "_Result<UserDto>",
-              "$ref": "#/definitions/_Result<UserDto>"
-            }
-          }
-        }
-      }
-    },
-    "/v1/user/admin/{uid}": {
-      "put": {
-        "summary": "管理员删除用户",
-        "operationId": "-v1-user-admin-uid-put",
-        "tags": [
-          "User",
-          "Administration"
-        ],
-        "security": [
-          {
-            "Jwt": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "uid",
-            "in": "path",
-            "required": true,
-            "type": "integer",
-            "description": "用户id",
-            "format": "int32"
-          }
-        ],
-        "responses": {
-          "200": {
-            "schema": {
-              "originRef": "Result",
-              "$ref": "#/definitions/Result"
-            }
-          }
-        }
-      }
-    },
-    "/v1/user/subscribing/{uid}": {
-      "delete": {
-        "summary": "取消关注用户",
-        "operationId": "-v1-user-subscribing-uid-delete",
-        "tags": [
-          "Subscribe"
-        ],
-        "security": [
-          {
-            "Jwt": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "uid",
-            "in": "path",
-            "required": true,
-            "type": "integer",
-            "description": "用户id",
-            "format": "int32"
-          }
-        ],
-        "responses": {
-          "200": {
-            "schema": {
-              "originRef": "Result",
-              "$ref": "#/definitions/Result"
-            }
-          }
-        }
-      },
-      "put": {
-        "summary": "关注用户",
-        "operationId": "-v1-user-subscribing-uid-put",
-        "tags": [
-          "Subscribe"
-        ],
-        "security": [
-          {
-            "Jwt": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "uid",
-            "in": "path",
-            "required": true,
-            "type": "integer",
-            "description": "用户id",
-            "format": "int32"
-          }
-        ],
-        "responses": {
-          "200": {
-            "schema": {
-              "originRef": "Result",
-              "$ref": "#/definitions/Result"
-            }
-          }
-        }
-      }
-    },
-    "/v1/user/{uid}": {
-      "get": {
-        "summary": "查询用户",
-        "operationId": "-v1-user-uid-get",
-        "tags": [
-          "User"
-        ],
-        "parameters": [
-          {
-            "name": "uid",
-            "in": "path",
-            "required": true,
-            "type": "integer",
-            "description": "用户id",
-            "format": "int32"
-          }
-        ],
-        "responses": {
-          "200": {
-            "schema": {
-              "originRef": "_Result<UserDetailDto>",
-              "$ref": "#/definitions/_Result<UserDetailDto>"
-            }
-          }
-        }
-      }
-    },
-    "/v1/user/{uid}/subscriber": {
-      "get": {
-        "summary": "查询用户粉丝",
-        "operationId": "-v1-user-uid-subscriber-get",
-        "tags": [
-          "Subscribe"
-        ],
-        "parameters": [
-          {
-            "name": "uid",
-            "in": "path",
-            "required": true,
-            "type": "integer",
-            "description": "用户id",
-            "format": "int32"
-          },
-          {
-            "name": "page",
-            "in": "path",
-            "required": true,
-            "type": "integer",
-            "description": "请求页",
-            "format": "int32"
-          },
-          {
-            "name": "limit",
-            "in": "path",
-            "required": true,
-            "type": "integer",
-            "description": "页大小",
-            "format": "int32"
-          },
-          {
-            "name": "order",
-            "in": "path",
-            "required": true,
-            "type": "string",
-            "description": "排序"
-          }
-        ],
-        "responses": {
-          "200": {
-            "schema": {
-              "originRef": "_Result<_Page<UserDto>>",
-              "$ref": "#/definitions/_Result<_Page<UserDto>>"
-            }
-          }
-        }
-      }
-    },
-    "/v1/user/{uid}/subscribing": {
-      "get": {
-        "summary": "查询用户关注",
-        "operationId": "-v1-user-uid-subscribing-get",
-        "tags": [
-          "Subscribe"
-        ],
-        "parameters": [
-          {
-            "name": "uid",
-            "in": "path",
-            "required": true,
-            "type": "integer",
-            "description": "用户id",
-            "format": "int32"
-          },
-          {
-            "name": "page",
-            "in": "path",
-            "required": true,
-            "type": "integer",
-            "description": "请求页",
-            "format": "int32"
-          },
-          {
-            "name": "limit",
-            "in": "path",
-            "required": true,
-            "type": "integer",
-            "description": "页大小",
-            "format": "int32"
-          },
-          {
-            "name": "order",
-            "in": "path",
-            "required": true,
-            "type": "string",
-            "description": "排序"
-          }
-        ],
-        "responses": {
-          "200": {
-            "schema": {
-              "originRef": "_Result<_Page<UserDto>>",
-              "$ref": "#/definitions/_Result<_Page<UserDto>>"
-            }
-          }
-        }
-      }
-    },
-    "/v1/user/{uid}/video": {
-      "get": {
-        "summary": "查询用户发布的所有视频",
-        "operationId": "-v1-user-uid-video-get",
-        "tags": [
-          "Video"
-        ],
-        "parameters": [
-          {
-            "name": "uid",
-            "in": "path",
-            "required": true,
-            "type": "integer",
-            "description": "用户id",
-            "format": "int32"
-          },
-          {
-            "name": "page",
-            "in": "path",
-            "required": true,
-            "type": "integer",
-            "description": "请求页",
-            "format": "int32"
-          },
-          {
-            "name": "limit",
-            "in": "path",
-            "required": true,
-            "type": "integer",
-            "description": "页大小",
-            "format": "int32"
-          },
-          {
-            "name": "order",
-            "in": "path",
-            "required": true,
-            "type": "string",
-            "description": "排序"
-          }
-        ],
-        "responses": {
-          "200": {
-            "schema": {
-              "originRef": "_Result<_Page<VideoDto>>",
-              "$ref": "#/definitions/_Result<_Page<VideoDto>>"
-            }
-          }
-        }
-      }
-    },
-    "/v1/video": {
-      "get": {
-        "summary": "管理员查询所有视频",
-        "operationId": "-v1-video-get",
-        "tags": [
-          "Video",
-          "Administration"
-        ],
-        "security": [
-          {
-            "Jwt": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "page",
-            "in": "path",
-            "required": true,
-            "type": "integer",
-            "description": "请求页",
-            "format": "int32"
-          },
-          {
-            "name": "limit",
-            "in": "path",
-            "required": true,
-            "type": "integer",
-            "description": "页大小",
-            "format": "int32"
-          },
-          {
-            "name": "order",
-            "in": "path",
-            "required": true,
-            "type": "string",
-            "description": "排序"
-          }
-        ],
-        "responses": {
-          "200": {
-            "schema": {
-              "originRef": "_Result<_Page<VideoDto>>",
-              "$ref": "#/definitions/_Result<_Page<VideoDto>>"
-            }
-          }
-        }
-      }
-    },
-    "/v1/video/": {
-      "post": {
-        "summary": "新建视频",
-        "operationId": "-v1-video--post",
-        "tags": [
-          "Video"
-        ],
-        "security": [
-          {
-            "Jwt": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "param",
-            "in": "body",
-            "required": true,
-            "description": "视频请求参数",
-            "schema": {
-              "originRef": "VideoParam",
-              "$ref": "#/definitions/VideoParam"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "schema": {
-              "originRef": "_Result<VideoDto>",
-              "$ref": "#/definitions/_Result<VideoDto>"
-            }
-          }
-        }
-      }
-    },
-    "/v1/video/{vid}": {
-      "delete": {
-        "summary": "删除视频",
-        "operationId": "-v1-video-vid-delete",
-        "tags": [
-          "Video",
-          "Administration"
-        ],
-        "security": [
-          {
-            "Jwt": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "vid",
-            "in": "path",
-            "required": true,
-            "type": "integer",
-            "description": "视频id",
-            "format": "int32"
-          }
-        ],
-        "responses": {
-          "200": {
-            "schema": {
-              "originRef": "Result",
-              "$ref": "#/definitions/Result"
-            }
-          }
-        }
-      },
-      "get": {
-        "summary": "查询视频",
-        "operationId": "-v1-video-vid-get",
-        "tags": [
-          "Video"
-        ],
-        "parameters": [
-          {
-            "name": "vid",
-            "in": "path",
-            "required": true,
-            "type": "integer",
-            "description": "视频id",
-            "format": "int32"
-          }
-        ],
-        "responses": {
-          "200": {
-            "schema": {
-              "originRef": "_Result<VideoDto>",
-              "$ref": "#/definitions/_Result<VideoDto>"
-            }
-          }
-        }
-      },
-      "put": {
-        "summary": "更新视频",
-        "operationId": "-v1-video-vid-put",
-        "tags": [
-          "Video",
-          "Administration"
-        ],
-        "security": [
-          {
-            "Jwt": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "vid",
-            "in": "path",
-            "required": true,
-            "type": "integer",
-            "description": "视频id",
-            "format": "int32"
-          },
-          {
-            "name": "param",
-            "in": "body",
-            "required": true,
-            "description": "视频请求参数",
-            "schema": {
-              "originRef": "VideoParam",
-              "$ref": "#/definitions/VideoParam"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "schema": {
-              "originRef": "_Result<VideoDto>",
-              "$ref": "#/definitions/_Result<VideoDto>"
-            }
-          }
-        }
-      }
-    }
-  },
-  "securityDefinitions": {
-    "Jwt": {
-      "type": "apiKey",
-      "name": "Authorization",
-      "in": "header"
-    }
-  },
-  "swagger": "2.0",
-  "tags": [
-    {
-      "name": "Authorization",
-      "description": "Auth-Controller"
-    },
-    {
-      "name": "User",
-      "description": "User-Controller"
-    },
-    {
-      "name": "Subscribe",
-      "description": "Subscribe-Controller"
-    },
-    {
-      "name": "Video",
-      "description": "Video-Controller"
-    },
-    {
-      "name": "Policy",
-      "description": "Policy-Controller"
-    },
-    {
-      "name": "Administration",
-      "description": "*-Controller"
-    }
-  ]
+  }
 }

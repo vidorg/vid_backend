@@ -10,8 +10,8 @@ import (
 )
 
 func CasbinMiddleware() gin.HandlerFunc {
-	jwtService := xdi.GetByNameForce(sn.SJwtService).(service.JwtService)
-	casbinService := xdi.GetByNameForce(sn.SCasbinService).(service.CasbinService)
+	jwtService := xdi.GetByNameForce(sn.SJwtService).(*service.JwtService)
+	casbinService := xdi.GetByNameForce(sn.SCasbinService).(*service.CasbinService)
 
 	return func(c *gin.Context) {
 		user := jwtService.GetContextUser(c)
