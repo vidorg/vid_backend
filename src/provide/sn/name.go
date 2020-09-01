@@ -15,6 +15,7 @@ const (
 	SEnforcer xdi.ServiceName = "casbin-enforcer" // *casbin.Enforcer
 
 	// services
+	SCommonService    xdi.ServiceName = "common-service"    // *service.CommonService
 	SAccountService   xdi.ServiceName = "account-service"   // *service.AccountService
 	STokenService     xdi.ServiceName = "token-service"     // *service.TokenService
 	SUserService      xdi.ServiceName = "user-service"      // *service.UserService

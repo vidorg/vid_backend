@@ -50,6 +50,7 @@ func Provide(configPath string) error {
 	// ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	// services
+	xdi.ProvideName(sn.SCommonService, service.NewCommonService())
 	xdi.ProvideName(sn.SAccountService, service.NewAccountService())
 	xdi.ProvideName(sn.STokenService, service.NewTokenService())
 	xdi.ProvideName(sn.SUserService, service.NewUserService())

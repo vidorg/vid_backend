@@ -1,7 +1,6 @@
 package service
 
 import (
-	"fmt"
 	"github.com/Aoi-hosizora/ahlib-web/xgorm"
 	"github.com/Aoi-hosizora/ahlib/xdi"
 	"github.com/Aoi-hosizora/ahlib/xstatus"
@@ -10,12 +9,12 @@ import (
 	"github.com/vidorg/vid_backend/src/model/param"
 	"github.com/vidorg/vid_backend/src/model/po"
 	"github.com/vidorg/vid_backend/src/provide/sn"
-	"strings"
 )
 
 type VideoService struct {
 	db          *gorm.DB
 	userService *UserService
+	common      *CommonService
 	orderBy     func(string) string
 }
 
@@ -23,6 +22,7 @@ func NewVideoService() *VideoService {
 	return &VideoService{
 		db:          xdi.GetByNameForce(sn.SGorm).(*gorm.DB),
 		userService: xdi.GetByNameForce(sn.SUserService).(*UserService),
+		common:      xdi.GetByNameForce(sn.SCommonService).(*CommonService),
 		orderBy:     xgorm.OrderByFunc(dto.BuildVideoPropertyMapper()),
 	}
 }
@@ -77,17 +77,8 @@ func (v *VideoService) QueryCountByUids(uids []uint64) ([]int32, error) {
 		return []int32{}, nil
 	}
 
-	type result struct {
-		Id  uint64
-		Cnt int32
-	}
-
-	sp := strings.Builder{}
-	for _, uid := range uids {
-		sp.WriteString(fmt.Sprintf("author_uid = %d OR ", uid))
-	}
-	where := sp.String()[:sp.Len()-4]
-	counts := make([]*result, 0)
+	counts := make([]*_IdCntPair, 0)
+	where := v.common.BuildOrExp("author_uid", uids)
 	rdb := v.db.Model(&po.Video{}).Select("author_uid as id, count(*) as cnt").Where(where).Group("author_uid").Scan(&counts)
 	if rdb.Error != nil {
 		return nil, rdb.Error
@@ -97,7 +88,6 @@ func (v *VideoService) QueryCountByUids(uids []uint64) ([]int32, error) {
 	for _, cnt := range counts {
 		bucket[cnt.Id] = cnt.Cnt
 	}
-
 	out := make([]int32, len(uids))
 	for idx, uid := range uids {
 		cnt, ok := bucket[uid]

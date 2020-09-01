@@ -1,7 +1,6 @@
 package service
 
 import (
-	"fmt"
 	"github.com/Aoi-hosizora/ahlib-web/xgorm"
 	"github.com/Aoi-hosizora/ahlib/xdi"
 	"github.com/Aoi-hosizora/ahlib/xstatus"
@@ -11,17 +10,18 @@ import (
 	"github.com/vidorg/vid_backend/src/model/param"
 	"github.com/vidorg/vid_backend/src/model/po"
 	"github.com/vidorg/vid_backend/src/provide/sn"
-	"strings"
 )
 
 type UserService struct {
 	db      *gorm.DB
+	common  *CommonService
 	orderBy func(string) string
 }
 
 func NewUserService() *UserService {
 	return &UserService{
 		db:      xdi.GetByNameForce(sn.SGorm).(*gorm.DB),
+		common:  xdi.GetByNameForce(sn.SCommonService).(*CommonService),
 		orderBy: xgorm.OrderByFunc(dto.BuildUserPropertyMapper()),
 	}
 }
@@ -44,12 +44,8 @@ func (u *UserService) QueryByUids(uids []uint64) ([]*po.User, error) {
 		return []*po.User{}, nil
 	}
 
-	sp := strings.Builder{}
-	for _, uid := range uids {
-		sp.WriteString(fmt.Sprintf("uid = %d OR ", uid))
-	}
-	where := sp.String()[:sp.Len()-4]
 	users := make([]*po.User, 0)
+	where := u.common.BuildOrExp("uid", uids)
 	rdb := u.db.Model(&po.User{}).Where(where).Find(&users)
 	if rdb.Error != nil {
 		return nil, rdb.Error
@@ -59,7 +55,6 @@ func (u *UserService) QueryByUids(uids []uint64) ([]*po.User, error) {
 	for _, user := range users {
 		bucket[user.Uid] = user
 	}
-
 	out := make([]*po.User, len(uids))
 	for idx, uid := range uids {
 		user, ok := bucket[uid]
@@ -67,7 +62,6 @@ func (u *UserService) QueryByUids(uids []uint64) ([]*po.User, error) {
 			out[idx] = user
 		}
 	}
-
 	return out, nil
 }
 
