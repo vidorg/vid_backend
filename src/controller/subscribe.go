@@ -21,7 +21,7 @@ func init() {
 			Params(
 				goapidoc.NewPathParam("uid", "integer#int64", true, "user id"),
 				param.ADPage, param.ADLimit, param.ADOrder,
-				_adNeedSubscribeCount, _adNeedIsSubscribe, _adNeedBlockCount, _adNeedVideoCount,
+				_adNeedSubscribeCount, _adNeedIsSubscribe, _adNeedIsBlock, _adNeedVideoCount, _adNeedFavoriteCount,
 			).
 			Responses(goapidoc.NewResponse(200, "_Result<_Page<UserDto>>")),
 
@@ -30,7 +30,7 @@ func init() {
 			Params(
 				goapidoc.NewPathParam("uid", "integer#int64", true, "user id"),
 				param.ADPage, param.ADLimit, param.ADOrder,
-				_adNeedSubscribeCount, _adNeedIsSubscribe, _adNeedBlockCount, _adNeedVideoCount,
+				_adNeedSubscribeCount, _adNeedIsSubscribe, _adNeedIsBlock, _adNeedVideoCount, _adNeedFavoriteCount,
 			).
 			Responses(goapidoc.NewResponse(200, "_Result<_Page<UserDto>>")),
 
@@ -84,7 +84,7 @@ func (s *SubscribeController) QuerySubscribers(c *gin.Context) *result.Result {
 	authUser := s.jwtService.GetContextUser(c)
 	extras, err := s.common.getUsersExtra(c, authUser, users)
 	if err != nil {
-		return result.Error(exception.QueryUserError).SetError(err, c)
+		return result.Error(exception.GetSubscriberListError).SetError(err, c)
 	}
 
 	res := dto.BuildUserDtos(users)
@@ -112,7 +112,7 @@ func (s *SubscribeController) QuerySubscribings(c *gin.Context) *result.Result {
 	authUser := s.jwtService.GetContextUser(c)
 	extras, err := s.common.getUsersExtra(c, authUser, users)
 	if err != nil {
-		return result.Error(exception.QueryUserError).SetError(err, c)
+		return result.Error(exception.GetSubscribingListError).SetError(err, c)
 	}
 
 	res := dto.BuildUserDtos(users)

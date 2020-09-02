@@ -21,7 +21,7 @@ func init() {
 			Securities("Jwt").
 			Params(
 				param.ADPage, param.ADLimit, param.ADOrder,
-				_adNeedSubscribeCount, _adNeedIsSubscribe, _adNeedBlockCount, _adNeedVideoCount,
+				_adNeedSubscribeCount, _adNeedIsSubscribe, _adNeedIsBlock, _adNeedVideoCount, _adNeedFavoriteCount,
 			).
 			Responses(goapidoc.NewResponse(200, "_Result<_Page<UserDto>>")),
 
@@ -75,7 +75,7 @@ func (b *BlockController) QueryBlockings(c *gin.Context) *result.Result {
 	authUser := b.jwtService.GetContextUser(c)
 	extras, err := b.common.getUsersExtra(c, authUser, users)
 	if err != nil {
-		return result.Error(exception.QueryUserError).SetError(err, c)
+		return result.Error(exception.GetBlockingListError).SetError(err, c)
 	}
 
 	res := dto.BuildUserDtos(users)

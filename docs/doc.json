@@ -34,6 +34,10 @@
       "description": "video-controller"
     },
     {
+      "name": "Favorite",
+      "description": "favorite-controller"
+    },
+    {
       "name": "Block",
       "description": "block-controller"
     },
@@ -289,7 +293,7 @@
             "description": "need is subscribe (user)"
           },
           {
-            "name": "need_block_count",
+            "name": "need_is_block",
             "in": "query",
             "required": false,
             "type": "boolean",
@@ -301,6 +305,13 @@
             "required": false,
             "type": "boolean",
             "description": "need video count (user)"
+          },
+          {
+            "name": "need_favorite_count",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need favorite count (user)"
           }
         ],
         "responses": {
@@ -667,7 +678,7 @@
             "description": "need is subscribe (user)"
           },
           {
-            "name": "need_block_count",
+            "name": "need_is_block",
             "in": "query",
             "required": false,
             "type": "boolean",
@@ -679,6 +690,13 @@
             "required": false,
             "type": "boolean",
             "description": "need video count (user)"
+          },
+          {
+            "name": "need_favorite_count",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need favorite count (user)"
           }
         ],
         "responses": {
@@ -711,6 +729,68 @@
               "originRef": "UpdateUserParam",
               "$ref": "#/definitions/UpdateUserParam"
             }
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "originRef": "Result",
+              "$ref": "#/definitions/Result"
+            }
+          }
+        }
+      }
+    },
+    "/v1/user/favorite/{vid}": {
+      "delete": {
+        "summary": "remove video from favorite",
+        "operationId": "-v1-user-favorite-vid-delete",
+        "tags": [
+          "Favorite"
+        ],
+        "security": [
+          {
+            "Jwt": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "vid",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "description": "vid id",
+            "format": "int64"
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "originRef": "Result",
+              "$ref": "#/definitions/Result"
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "add video to favorite",
+        "operationId": "-v1-user-favorite-vid-post",
+        "tags": [
+          "Favorite"
+        ],
+        "security": [
+          {
+            "Jwt": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "vid",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "description": "vid id",
+            "format": "int64"
           }
         ],
         "responses": {
@@ -816,7 +896,7 @@
             "description": "need is subscribe (user)"
           },
           {
-            "name": "need_block_count",
+            "name": "need_is_block",
             "in": "query",
             "required": false,
             "type": "boolean",
@@ -828,6 +908,13 @@
             "required": false,
             "type": "boolean",
             "description": "need video count (user)"
+          },
+          {
+            "name": "need_favorite_count",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need favorite count (user)"
           }
         ],
         "responses": {
@@ -835,6 +922,112 @@
             "schema": {
               "originRef": "_Result<UserDto>",
               "$ref": "#/definitions/_Result<UserDto>"
+            }
+          }
+        }
+      }
+    },
+    "/v1/user/{uid}/favorite": {
+      "get": {
+        "summary": "query user favorites",
+        "operationId": "-v1-user-uid-favorite-get",
+        "tags": [
+          "Favorite"
+        ],
+        "parameters": [
+          {
+            "name": "uid",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "description": "user id",
+            "format": "int64"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "description": "current page",
+            "format": "int32"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "description": "page size",
+            "format": "int32"
+          },
+          {
+            "name": "order",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "description": "order string"
+          },
+          {
+            "name": "need_author",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need video author (video)"
+          },
+          {
+            "name": "need_favored_count",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need favored user count (video)"
+          },
+          {
+            "name": "need_is_favorite",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need is favorite (video)"
+          },
+          {
+            "name": "need_subscribe_count",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need subscribe count (user)"
+          },
+          {
+            "name": "need_is_subscribe",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need is subscribe (user)"
+          },
+          {
+            "name": "need_is_block",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need block count (user)"
+          },
+          {
+            "name": "need_video_count",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need video count (user)"
+          },
+          {
+            "name": "need_favorite_count",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need favorite count (user)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "originRef": "_Result<_Page<VideoDto>>",
+              "$ref": "#/definitions/_Result<_Page<VideoDto>>"
             }
           }
         }
@@ -894,7 +1087,7 @@
             "description": "need is subscribe (user)"
           },
           {
-            "name": "need_block_count",
+            "name": "need_is_block",
             "in": "query",
             "required": false,
             "type": "boolean",
@@ -906,6 +1099,13 @@
             "required": false,
             "type": "boolean",
             "description": "need video count (user)"
+          },
+          {
+            "name": "need_favorite_count",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need favorite count (user)"
           }
         ],
         "responses": {
@@ -972,7 +1172,7 @@
             "description": "need is subscribe (user)"
           },
           {
-            "name": "need_block_count",
+            "name": "need_is_block",
             "in": "query",
             "required": false,
             "type": "boolean",
@@ -984,6 +1184,13 @@
             "required": false,
             "type": "boolean",
             "description": "need video count (user)"
+          },
+          {
+            "name": "need_favorite_count",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need favorite count (user)"
           }
         ],
         "responses": {
@@ -1036,6 +1243,27 @@
             "description": "order string"
           },
           {
+            "name": "need_author",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need video author (video)"
+          },
+          {
+            "name": "need_favored_count",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need favored user count (video)"
+          },
+          {
+            "name": "need_is_favorite",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need is favorite (video)"
+          },
+          {
             "name": "need_subscribe_count",
             "in": "query",
             "required": false,
@@ -1050,7 +1278,7 @@
             "description": "need is subscribe (user)"
           },
           {
-            "name": "need_block_count",
+            "name": "need_is_block",
             "in": "query",
             "required": false,
             "type": "boolean",
@@ -1064,11 +1292,11 @@
             "description": "need video count (user)"
           },
           {
-            "name": "need_author",
+            "name": "need_favorite_count",
             "in": "query",
             "required": false,
             "type": "boolean",
-            "description": "need video author (video)"
+            "description": "need favorite count (user)"
           }
         ],
         "responses": {
@@ -1119,6 +1347,27 @@
             "description": "order string"
           },
           {
+            "name": "need_author",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need video author (video)"
+          },
+          {
+            "name": "need_favored_count",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need favored user count (video)"
+          },
+          {
+            "name": "need_is_favorite",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need is favorite (video)"
+          },
+          {
             "name": "need_subscribe_count",
             "in": "query",
             "required": false,
@@ -1133,7 +1382,7 @@
             "description": "need is subscribe (user)"
           },
           {
-            "name": "need_block_count",
+            "name": "need_is_block",
             "in": "query",
             "required": false,
             "type": "boolean",
@@ -1147,11 +1396,11 @@
             "description": "need video count (user)"
           },
           {
-            "name": "need_author",
+            "name": "need_favorite_count",
             "in": "query",
             "required": false,
             "type": "boolean",
-            "description": "need video author (video)"
+            "description": "need favorite count (user)"
           }
         ],
         "responses": {
@@ -1243,6 +1492,27 @@
             "format": "int64"
           },
           {
+            "name": "need_author",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need video author (video)"
+          },
+          {
+            "name": "need_favored_count",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need favored user count (video)"
+          },
+          {
+            "name": "need_is_favorite",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need is favorite (video)"
+          },
+          {
             "name": "need_subscribe_count",
             "in": "query",
             "required": false,
@@ -1257,7 +1527,7 @@
             "description": "need is subscribe (user)"
           },
           {
-            "name": "need_block_count",
+            "name": "need_is_block",
             "in": "query",
             "required": false,
             "type": "boolean",
@@ -1271,11 +1541,11 @@
             "description": "need video count (user)"
           },
           {
-            "name": "need_author",
+            "name": "need_favorite_count",
             "in": "query",
             "required": false,
             "type": "boolean",
-            "description": "need video author (video)"
+            "description": "need favorite count (user)"
           }
         ],
         "responses": {
@@ -1323,6 +1593,91 @@
             "schema": {
               "originRef": "Result",
               "$ref": "#/definitions/Result"
+            }
+          }
+        }
+      }
+    },
+    "/v1/video/{vid}/favored": {
+      "get": {
+        "summary": "query video favored users",
+        "operationId": "-v1-video-vid-favored-get",
+        "tags": [
+          "Favorite"
+        ],
+        "parameters": [
+          {
+            "name": "vid",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "description": "vid id",
+            "format": "int64"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "description": "current page",
+            "format": "int32"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "description": "page size",
+            "format": "int32"
+          },
+          {
+            "name": "order",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "description": "order string"
+          },
+          {
+            "name": "need_subscribe_count",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need subscribe count (user)"
+          },
+          {
+            "name": "need_is_subscribe",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need is subscribe (user)"
+          },
+          {
+            "name": "need_is_block",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need block count (user)"
+          },
+          {
+            "name": "need_video_count",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need video count (user)"
+          },
+          {
+            "name": "need_favorite_count",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need favorite count (user)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "originRef": "_Result<_Page<UserDto>>",
+              "$ref": "#/definitions/_Result<_Page<UserDto>>"
             }
           }
         }
@@ -1736,7 +2091,8 @@
         "is_subscribing",
         "is_subscribed",
         "is_blocking",
-        "videos"
+        "videos",
+        "favorites"
       ],
       "description": "user extra response",
       "properties": {
@@ -1772,6 +2128,12 @@
           "required": true,
           "description": "user video count",
           "format": "int32"
+        },
+        "favorites": {
+          "type": "integer",
+          "required": true,
+          "description": "user favorite count",
+          "format": "int32"
         }
       }
     },
@@ -1784,7 +2146,8 @@
         "video_url",
         "cover_url",
         "upload_time",
-        "author"
+        "author",
+        "extra"
       ],
       "description": "视频信息",
       "properties": {
@@ -1825,6 +2188,33 @@
           "description": "video author",
           "originRef": "UserDto",
           "$ref": "#/definitions/UserDto"
+        },
+        "extra": {
+          "required": true,
+          "description": "video extra information",
+          "originRef": "VideoExtraDto",
+          "$ref": "#/definitions/VideoExtraDto"
+        }
+      }
+    },
+    "VideoExtraDto": {
+      "type": "object",
+      "required": [
+        "favoreds",
+        "is_favorite"
+      ],
+      "description": "video extra response",
+      "properties": {
+        "favoreds": {
+          "type": "integer",
+          "required": true,
+          "description": "video favored user count",
+          "format": "int32"
+        },
+        "is_favorite": {
+          "type": "boolean",
+          "required": true,
+          "description": "this video is in authorized user favorite list"
         }
       }
     },

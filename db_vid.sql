@@ -1,5 +1,5 @@
 ﻿-- Host: localhost  (Version 8.0.15)
--- Date: 2020-09-01 11:28:49
+-- Date: 2020-09-02 22:25:42
 -- Generator: MySQL-Front 6.0  (Build 2.20)
 
 
@@ -42,6 +42,29 @@ VALUES (1, '$2a$10$.PQPJREfWgtXM/PGTselSeHb5pzcHbtsNFF1sKCEZAmu3.YK/8duS', '2020
         '1970-01-01 00:00:00');
 
 --
+-- Structure for table "tbl_block"
+--
+
+CREATE TABLE `tbl_block`
+(
+    `from_uid` bigint(20) unsigned NOT NULL,
+    `to_uid`   bigint(20) unsigned NOT NULL,
+    PRIMARY KEY (`from_uid`, `to_uid`)
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8;
+
+--
+-- Data for table "tbl_block"
+--
+
+INSERT INTO `tbl_block`
+VALUES (1, 2),
+       (1, 4),
+       (1, 6),
+       (1, 8),
+       (3, 1);
+
+--
 -- Structure for table "tbl_casbin_rule"
 --
 
@@ -78,6 +101,38 @@ VALUES ('g', 'sub_root', 'normal', '', '', '', ''),
        ('p', 'sub_root', '/v1/user', 'GET', '', '', '');
 
 --
+-- Structure for table "tbl_favorite"
+--
+
+CREATE TABLE `tbl_favorite`
+(
+    `uid` bigint(20) unsigned NOT NULL,
+    `vid` bigint(20) unsigned NOT NULL,
+    PRIMARY KEY (`uid`, `vid`)
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8;
+
+--
+-- Data for table "tbl_favorite"
+--
+
+INSERT INTO `tbl_favorite`
+VALUES (1, 1),
+       (1, 4),
+       (2, 1),
+       (2, 2),
+       (2, 4),
+       (3, 1),
+       (3, 2),
+       (3, 4),
+       (4, 2),
+       (4, 5),
+       (5, 2),
+       (5, 3),
+       (5, 4),
+       (5, 5);
+
+--
 -- Structure for table "tbl_subscribe"
 --
 
@@ -106,6 +161,7 @@ VALUES (1, 2),
        (3, 5),
        (3, 6),
        (3, 8),
+       (5, 1),
        (5, 2),
        (5, 4),
        (5, 8),
@@ -137,7 +193,7 @@ CREATE TABLE `tbl_user`
     UNIQUE KEY `uk_username` (`username`, `deleted_at`),
     UNIQUE KEY `uk_email` (`email`, `deleted_at`)
 ) ENGINE = InnoDB
-  AUTO_INCREMENT = 4
+  AUTO_INCREMENT = 9
   DEFAULT CHARSET = utf8;
 
 --
@@ -193,7 +249,7 @@ VALUES (1, 'string', 'string', 'https://aaa.bbb.ccc', 'https://aaa.bbb.ccc', 1, 
         '2020-09-01 11:11:39', '1970-01-01 00:00:00'),
        (3, 'string3', 'string', 'https://aaa.bbb.ccc', 'https://aaa.bbb.ccc', 1, '2020-09-01 11:10:22',
         '2020-09-01 11:11:45', '2020-09-01 11:12:02'),
-       (4, 'string4', 'string', 'https://aaa.bbb.ccc', 'https://aaa.bbb.ccc', 1, '2020-09-01 11:10:22',
+       (4, 'string4', 'string', 'https://aaa.bbb.ccc', 'https://aaa.bbb.ccc', 2, '2020-09-01 11:10:22',
         '2020-09-01 11:11:48', '1970-01-01 00:00:00'),
-       (5, 'string5', 'string', 'https://aaa.bbb.ccc', 'https://aaa.bbb.ccc', 1, '2020-09-01 11:10:23',
+       (5, 'string5', 'string', 'https://aaa.bbb.ccc', 'https://aaa.bbb.ccc', 3, '2020-09-01 11:10:23',
         '2020-09-01 11:11:52', '1970-01-01 00:00:00');

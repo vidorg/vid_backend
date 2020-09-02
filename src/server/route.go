@@ -37,6 +37,7 @@ func initRoute(engine *gin.Engine) {
 		subscribeCtrl = controller.NewSubscribeController()
 		blockCtrl     = controller.NewBlockController()
 		videoCtrl     = controller.NewVideoController()
+		favoriteCtrl  = controller.NewFavoriteController()
 		rbacCtrl      = controller.NewRbacController()
 	)
 
@@ -75,6 +76,9 @@ func initRoute(engine *gin.Engine) {
 		userGroup.DELETE("subscribing/:uid", authMw, j(subscribeCtrl.UnSubscribeUser))
 
 		userGroup.GET(":uid/video", j(videoCtrl.QueryVideosByUid))
+		userGroup.GET(":uid/favorite", j(favoriteCtrl.QueryFavorites))
+		userGroup.POST("favorite/:vid", authMw, j(favoriteCtrl.AddFavorite))
+		userGroup.DELETE("favorite/:vid", authMw, j(favoriteCtrl.RemoveFavorite))
 	}
 
 	videoGroup := v1.Group("video")
@@ -84,6 +88,8 @@ func initRoute(engine *gin.Engine) {
 		videoGroup.POST("", authMw, j(videoCtrl.InsertVideo))
 		videoGroup.PUT(":vid", authMw, j(videoCtrl.UpdateVideo))
 		videoGroup.DELETE(":vid", authMw, j(videoCtrl.DeleteVideo))
+
+		videoGroup.GET(":vid/favored", j(favoriteCtrl.QueryFavoreds))
 	}
 
 	blockGroup := v1.Group("block")

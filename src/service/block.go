@@ -55,32 +55,6 @@ func (b *BlockService) QueryBlockings(uid uint64, pp *param.PageOrderParam) ([]*
 	return users, total, nil
 }
 
-func (b *BlockService) CheckBlockings(me uint64, uids []uint64) ([]bool, error) {
-	if len(uids) == 0 {
-		return []bool{}, nil
-	}
-
-	blockings := make([]*_FromToUidPair, 0)
-	where := b.common.BuildOrExp("to_uid", uids)
-	rdb := b.db.Table(b.tblName).Select("from_uid, to_uid").Where("from_uid = ?", me).Where(where).Group("from_uid, to_uid").Scan(&blockings)
-	if rdb.Error != nil {
-		return nil, rdb.Error
-	}
-
-	bucket := make(map[uint64]bool, len(uids))
-	for _, pair := range blockings {
-		bucket[pair.ToUid] = true
-	}
-	out := make([]bool, len(uids))
-	for idx, uid := range uids {
-		user, ok := bucket[uid]
-		if ok {
-			out[idx] = user
-		}
-	}
-	return out, nil
-}
-
 func (b *BlockService) InsertBlocking(uid uint64, to uint64) (xstatus.DbStatus, error) {
 	ok1, err1 := b.userService.Existed(uid)
 	ok2, err2 := b.userService.Existed(to)
@@ -133,4 +107,30 @@ func (b *BlockService) DeleteBlocking(uid uint64, to uint64) (xstatus.DbStatus, 
 	}
 
 	return xstatus.DbSuccess, nil
+}
+
+func (b *BlockService) CheckBlockings(me uint64, uids []uint64) ([]bool, error) {
+	if len(uids) == 0 {
+		return []bool{}, nil
+	}
+
+	blockings := make([]*_FromToUidPair, 0)
+	where := b.common.BuildOrExp("to_uid", uids)
+	rdb := b.db.Table(b.tblName).Select("from_uid, to_uid").Where("from_uid = ?", me).Where(where).Group("from_uid, to_uid").Scan(&blockings)
+	if rdb.Error != nil {
+		return nil, rdb.Error
+	}
+
+	bucket := make(map[uint64]bool, len(uids))
+	for _, pair := range blockings {
+		bucket[pair.ToUid] = true
+	}
+	out := make([]bool, len(uids))
+	for idx, uid := range uids {
+		user, ok := bucket[uid]
+		if ok {
+			out[idx] = user
+		}
+	}
+	return out, nil
 }
