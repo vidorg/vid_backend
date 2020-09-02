@@ -624,7 +624,7 @@ video-controller
 
 block-controller
 
-## query user blockings [/v1/block/user{?page,limit,order,need_subscribe_count,need_is_subscribe,need_video_count}]
+## query user blockings [/v1/block/user{?page,limit,order,need_subscribe_count,need_is_subscribe,need_block_count,need_video_count}]
 
 ### query user blockings [GET]
 
@@ -639,6 +639,7 @@ block-controller
     + order (string, optional) - order string
     + need_subscribe_count (boolean, optional) - need subscribe count (user)
     + need_is_subscribe (boolean, optional) - need is subscribe (user)
+    + need_block_count (boolean, optional) - need block count (user)
     + need_video_count (boolean, optional) - need video count (user)
 
 + Request (application/json)
@@ -877,6 +878,41 @@ rbac-controller
 
 # Data Structures
 
+## UserExtraDto (object)
+
++ subscribings (number, required) - user subscribing count
+    (format: int32)
++ subscribers (number, required) - user subscriber count
+    (format: int32)
++ is_subscribing (boolean, required) - authorized user is subscribing this user
++ is_subscribed (boolean, required) - authorized user is subscribed by this user
++ is_blocking (boolean, required) - authorized user is blocking this user
++ videos (number, required) - user video count
+    (format: int32)
+
+## VideoDto (object)
+
++ vid (number, required) - video id
+    (format: int64)
++ title (string, required) - video title
++ description (string, required) - video description
++ video_url (string, required) - video source url
++ cover_url (string, required) - video cover url
++ upload_time (string, required) - video upload time
+    (format: date-time)
++ author (UserDto, required) - video author
+
+## LoginParam (object)
+
++ parameter (string, required) - login parameter, support uid | username | email
++ password (string, required) - login password
+
+## Result (object)
+
++ code (number, required) - status code
+    (format: int32)
++ message (string, required) - status message
+
 ## UserDto (object)
 
 + uid (number, required) - user id
@@ -900,6 +936,21 @@ rbac-controller
     (format: date-time)
 + extra (UserExtraDto, required) - user extra information
 
+## RbacPolicyParam (object)
+
++ sub (string, required) - new subject
++ obj (string, required) - new object
++ act (string, required) - new action
+
+## LoginDto (object)
+
++ user (UserDto, required) - authorized user
++ token (string, required) - access token
+
+## ChangeUserRoleParam (object)
+
++ sub (string, required) - new subject
+
 ## UpdateUserParam (object)
 
 + username (string, required) - username
@@ -917,56 +968,6 @@ rbac-controller
 + phone: `13512345678` (string, required) - user phone number
 + avatar: `https://aaa.bbb.ccc` (string, required) - user avatar
 
-## RbacRuleDto (object)
-
-+ p_type (string, required) - rule type
-+ v0 (string, required) - v0
-+ v1 (string, required) - v1
-+ v2 (string, required) - v2
-+ v3 (string, required) - v3
-+ v4 (string, required) - v4
-+ v5 (string, required) - v5
-
-## LoginParam (object)
-
-+ parameter (string, required) - login parameter, support uid | username | email
-+ password (string, required) - login password
-
-## InsertVideoParam (object)
-
-+ title (string, required) - video title
-+ description (string, required) - video description
-+ video_url: `https://aaa.bbb.ccc` (string, required) - video source url
-+ cover_url: `https://aaa.bbb.ccc` (string, required) - video cover url
-
-## Result (object)
-
-+ code (number, required) - status code
-    (format: int32)
-+ message (string, required) - status message
-
-## LoginDto (object)
-
-+ user (UserDto, required) - authorized user
-+ token (string, required) - access token
-
-## VideoDto (object)
-
-+ vid (number, required) - video id
-    (format: int64)
-+ title (string, required) - video title
-+ description (string, required) - video description
-+ video_url (string, required) - video source url
-+ cover_url (string, required) - video cover url
-+ upload_time (string, required) - video upload time
-    (format: date-time)
-+ author (UserDto, required) - video author
-
-## RegisterParam (object)
-
-+ email: `aaa@bbb.ccc` (string, required) - register email
-+ password (string, required) - register password
-
 ## UpdatePasswordParam (object)
 
 + old (string, required) - old password
@@ -977,27 +978,27 @@ rbac-controller
 + new (string, required) - new subject
 + from (string, required) - subject inherited from
 
-## UserExtraDto (object)
+## InsertVideoParam (object)
 
-+ subscribings (number, required) - user subscribing count
-    (format: int32)
-+ subscribers (number, required) - user subscriber count
-    (format: int32)
-+ is_subscribing (boolean, required) - authorized user is subscribing this user
-+ is_subscribed (boolean, required) - authorized user is subscribed by this user
-+ is_blocking (boolean, required) - authorized user is blocking this user
-+ videos (number, required) - user video count
-    (format: int32)
++ title (string, required) - video title
++ description (string, required) - video description
++ video_url: `https://aaa.bbb.ccc` (string, required) - video source url
++ cover_url: `https://aaa.bbb.ccc` (string, required) - video cover url
 
-## ChangeUserRoleParam (object)
+## RbacRuleDto (object)
 
-+ sub (string, required) - new subject
++ p_type (string, required) - rule type
++ v0 (string, required) - v0
++ v1 (string, required) - v1
++ v2 (string, required) - v2
++ v3 (string, required) - v3
++ v4 (string, required) - v4
++ v5 (string, required) - v5
 
-## RbacPolicyParam (object)
+## RegisterParam (object)
 
-+ sub (string, required) - new subject
-+ obj (string, required) - new object
-+ act (string, required) - new action
++ email: `aaa@bbb.ccc` (string, required) - register email
++ password (string, required) - register password
 
 ## _Result<LoginDto> (object)
 

@@ -103,7 +103,30 @@ func (s *SubscribeService) QueryCountByUids(uids []uint64) ([]*[2]int32, error) 
 		return nil, rdb.Error
 	}
 
-	out := s.common.MergeIdCntPairs(&[2][]*_IdCntPair{subings, subers}, uids)
+	// bucket
+	bucket := make(map[uint64][2]int32, len(uids))
+	for _, subing := range subings {
+		bucket[subing.Id] = [2]int32{subing.Cnt, 0}
+	}
+	for _, suber := range subers {
+		if arr, ok := bucket[suber.Id]; !ok {
+			bucket[suber.Id] = [2]int32{0, suber.Cnt}
+		} else {
+			bucket[suber.Id] = [2]int32{arr[0], suber.Cnt}
+		}
+	}
+
+	// out
+	out := make([]*[2]int32, len(uids))
+	for idx, uid := range uids {
+		arr, ok := bucket[uid]
+		if ok {
+			out[idx] = &arr
+		} else {
+			out[idx] = &[2]int32{0, 0}
+		}
+	}
+
 	return out, nil
 }
 
@@ -128,7 +151,30 @@ func (s *SubscribeService) CheckSubscribeByUids(me uint64, uids []uint64) ([]*[2
 		return nil, rdb.Error
 	}
 
-	out := s.common.MergeFromToUidPairs(&[2][]*_FromToUidPair{subings, subers}, uids)
+	// bucket
+	bucket := make(map[uint64][2]bool, len(uids))
+	for _, subing := range subings {
+		bucket[subing.ToUid] = [2]bool{true, false}
+	}
+	for _, suber := range subers {
+		if arr, ok := bucket[suber.FromUid]; !ok {
+			bucket[suber.FromUid] = [2]bool{false, true}
+		} else {
+			bucket[suber.FromUid] = [2]bool{arr[0], true}
+		}
+	}
+
+	// out
+	out := make([]*[2]bool, len(uids))
+	for idx, uid := range uids {
+		arr, ok := bucket[uid]
+		if ok {
+			out[idx] = &arr
+		} else {
+			out[idx] = &[2]bool{false, false}
+		}
+	}
+
 	return out, nil
 }
 

@@ -21,7 +21,7 @@ func init() {
 			Securities("Jwt").
 			Params(
 				param.ADPage, param.ADLimit, param.ADOrder,
-			_adNeedSubscribeCount, _adNeedIsSubscribe, _adNeedVideoCount,
+				_adNeedSubscribeCount, _adNeedIsSubscribe, _adNeedBlockCount, _adNeedVideoCount,
 			).
 			Responses(goapidoc.NewResponse(200, "_Result<_Page<UserDto>>")),
 

@@ -289,6 +289,13 @@
             "description": "need is subscribe (user)"
           },
           {
+            "name": "need_block_count",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need block count (user)"
+          },
+          {
             "name": "need_video_count",
             "in": "query",
             "required": false,

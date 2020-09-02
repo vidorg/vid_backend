@@ -89,9 +89,9 @@ func initRoute(engine *gin.Engine) {
 	blockGroup := v1.Group("block")
 	{
 		blockGroup.Use(authMw)
-		blockGroup.GET("block/user", j(blockCtrl.QueryBlockings))
-		blockGroup.POST("block/user/:uid", j(blockCtrl.BlockUser))
-		blockGroup.DELETE("block/user/:uid", j(blockCtrl.UnblockUser))
+		blockGroup.GET("user", j(blockCtrl.QueryBlockings))
+		blockGroup.POST("user/:uid", j(blockCtrl.BlockUser))
+		blockGroup.DELETE("user/:uid", j(blockCtrl.UnblockUser))
 	}
 
 	rbacGroup := v1.Group("rbac")
