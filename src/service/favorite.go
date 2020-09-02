@@ -143,14 +143,56 @@ func (f *FavoriteService) DeleteFavorite(uid uint64, vid uint64) (xstatus.DbStat
 	return xstatus.DbSuccess, nil
 }
 
-func (f *FavoriteService) QueryCountByVids(vids []uint64) ([]int32, error) {
-	// TODO
-	return nil, nil
+func (f *FavoriteService) QueryCountByUids(uids []uint64) ([]int32, error) {
+	if len(uids) == 0 {
+		return []int32{}, nil
+	}
+
+	counts := make([]*_IdCntPair, 0)
+	where := f.common.BuildOrExp("uid", uids)
+	rdb := f.db.Table(f.tblName).Select("uid as id, count(*) as cnt").Where(where).Group("uid").Scan(&counts)
+	if rdb.Error != nil {
+		return nil, rdb.Error
+	}
+
+	bucket := make(map[uint64]int32)
+	for _, cnt := range counts {
+		bucket[cnt.Id] = cnt.Cnt
+	}
+	out := make([]int32, len(uids))
+	for idx, uid := range uids {
+		cnt, ok := bucket[uid]
+		if ok {
+			out[idx] = cnt
+		}
+	}
+	return out, nil
 }
 
-func (f *FavoriteService) QueryCountByUids(uids []uint64) ([]int32, error) {
-	// TODO
-	return nil, nil
+func (f *FavoriteService) QueryCountByVids(vids []uint64) ([]int32, error) {
+	if len(vids) == 0 {
+		return []int32{}, nil
+	}
+
+	counts := make([]*_IdCntPair, 0)
+	where := f.common.BuildOrExp("vid", vids)
+	rdb := f.db.Table(f.tblName).Select("vid as id, count(*) as cnt").Where(where).Group("vid").Scan(&counts)
+	if rdb.Error != nil {
+		return nil, rdb.Error
+	}
+
+	bucket := make(map[uint64]int32)
+	for _, cnt := range counts {
+		bucket[cnt.Id] = cnt.Cnt
+	}
+	out := make([]int32, len(vids))
+	for idx, vid := range vids {
+		cnt, ok := bucket[vid]
+		if ok {
+			out[idx] = cnt
+		}
+	}
+	return out, nil
 }
 
 func (f *FavoriteService) CheckFavorites(uid uint64, vids []uint64) ([]bool, error) {

@@ -21,7 +21,7 @@ func init() {
 			Params(
 				goapidoc.NewPathParam("uid", "integer#int64", true, "user id"),
 				param.ADPage, param.ADLimit, param.ADOrder,
-				_adNeedSubscribeCount, _adNeedIsSubscribe, _adNeedIsBlock, _adNeedVideoCount, _adNeedAuthor,
+				_adNeedSubscribeCount, _adNeedIsSubscribe, _adNeedIsBlock, _adNeedVideoCount, _adNeedFavoriteCount, _adNeedAuthor, _adNeedFavoredCount,
 			).
 			Responses(goapidoc.NewResponse(200, "_Result<_Page<VideoDto>>")),
 
@@ -30,7 +30,7 @@ func init() {
 			Params(
 				goapidoc.NewPathParam("vid", "integer#int64", true, "vid id"),
 				param.ADPage, param.ADLimit, param.ADOrder,
-				_adNeedSubscribeCount, _adNeedIsSubscribe, _adNeedIsBlock, _adNeedVideoCount,
+				_adNeedSubscribeCount, _adNeedIsSubscribe, _adNeedIsBlock, _adNeedVideoCount, _adNeedFavoriteCount,
 			).
 			Responses(goapidoc.NewResponse(200, "_Result<_Page<UserDto>>")),
 
@@ -80,7 +80,11 @@ func (f *FavoriteController) QueryFavorites(c *gin.Context) *result.Result {
 	}
 
 	authUser := f.jwtService.GetContextUser(c)
-	authors, extras, err := f.common.getVideosAuthor(c, authUser, videos)
+	authors, userExtras, err := f.common.getVideosAuthor(c, authUser, videos)
+	if err != nil {
+		return result.Error(exception.GetFavoriteListError).SetError(err, c)
+	}
+	videoExtras, err := f.common.getVideosExtra(c, authUser, videos)
 	if err != nil {
 		return result.Error(exception.GetFavoriteListError).SetError(err, c)
 	}
@@ -89,8 +93,9 @@ func (f *FavoriteController) QueryFavorites(c *gin.Context) *result.Result {
 	for idx, video := range res {
 		video.Author = dto.BuildUserDto(authors[idx])
 		if video.Author != nil {
-			video.Author.Extra = extras[idx]
+			video.Author.Extra = userExtras[idx]
 		}
+		video.Extra = videoExtras[idx]
 	}
 	return result.Ok().SetPage(pp.Page, pp.Limit, total, res)
 }

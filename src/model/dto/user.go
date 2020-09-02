@@ -33,6 +33,7 @@ func init() {
 				goapidoc.NewProperty("is_subscribed", "boolean", true, "authorized user is subscribed by this user"),
 				goapidoc.NewProperty("is_blocking", "boolean", true, "authorized user is blocking this user"),
 				goapidoc.NewProperty("videos", "integer#int32", true, "user video count"),
+				goapidoc.NewProperty("favorites", "integer#int32", true, "user favorite count"),
 			),
 
 		goapidoc.NewDefinition("LoginDto", "login response").
@@ -104,12 +105,13 @@ func BuildUserPropertyMapper() xproperty.PropertyDict {
 }
 
 type UserExtraDto struct {
-	Subscribings  *int32 `json:"subscribings"`
-	Subscribers   *int32 `json:"subscribers"`
-	IsSubscribing *bool  `json:"is_subscribing"`
-	IsSubscribed  *bool  `json:"is_subscribed"`
-	IsBlocking    *bool  `json:"is_blocking"`
-	Videos        *int32 `json:"videos"`
+	Subscribings  *int32 `json:"subscribings"`   // user subscribing count
+	Subscribers   *int32 `json:"subscribers"`    // user subscriber count
+	IsSubscribing *bool  `json:"is_subscribing"` // authorized user is subscribing this user
+	IsSubscribed  *bool  `json:"is_subscribed"`  // authorized user is subscribed by this user
+	IsBlocking    *bool  `json:"is_blocking"`    // authorized user is blocking this user
+	Videos        *int32 `json:"videos"`         // user video count
+	Favorites     *int32 `json:"favorites"`      // user favorite count
 }
 
 type LoginDto struct {

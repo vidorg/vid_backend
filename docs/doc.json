@@ -974,11 +974,25 @@
             "description": "need video count (user)"
           },
           {
+            "name": "need_favorite_count",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need favorite count (user)"
+          },
+          {
             "name": "need_author",
             "in": "query",
             "required": false,
             "type": "boolean",
             "description": "need video author (video)"
+          },
+          {
+            "name": "need_favored_count",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need favored user count (video)"
           }
         ],
         "responses": {
@@ -1545,6 +1559,13 @@
             "required": false,
             "type": "boolean",
             "description": "need video count (user)"
+          },
+          {
+            "name": "need_favorite_count",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need favorite count (user)"
           }
         ],
         "responses": {
@@ -1965,7 +1986,8 @@
         "is_subscribing",
         "is_subscribed",
         "is_blocking",
-        "videos"
+        "videos",
+        "favorites"
       ],
       "description": "user extra response",
       "properties": {
@@ -2001,6 +2023,12 @@
           "required": true,
           "description": "user video count",
           "format": "int32"
+        },
+        "favorites": {
+          "type": "integer",
+          "required": true,
+          "description": "user favorite count",
+          "format": "int32"
         }
       }
     },
@@ -2013,7 +2041,8 @@
         "video_url",
         "cover_url",
         "upload_time",
-        "author"
+        "author",
+        "extra"
       ],
       "description": "视频信息",
       "properties": {
@@ -2054,6 +2083,33 @@
           "description": "video author",
           "originRef": "UserDto",
           "$ref": "#/definitions/UserDto"
+        },
+        "extra": {
+          "required": true,
+          "description": "video extra information",
+          "originRef": "VideoExtraDto",
+          "$ref": "#/definitions/VideoExtraDto"
+        }
+      }
+    },
+    "VideoExtraDto": {
+      "type": "object",
+      "required": [
+        "favoreds",
+        "in_favorite"
+      ],
+      "description": "video extra response",
+      "properties": {
+        "favoreds": {
+          "type": "integer",
+          "required": true,
+          "description": "video favored user count",
+          "format": "int32"
+        },
+        "in_favorite": {
+          "type": "boolean",
+          "required": true,
+          "description": "this video is in authorized user favorite list"
         }
       }
     },
