@@ -24,6 +24,9 @@ type User struct {
 	Subscribings []*User `gorm:"many2many:subscribe; jointable_foreignkey:from_uid; association_jointable_foreignkey:to_uid"`   // to_uid -> from_uid
 	Subscribers  []*User `gorm:"many2many:subscribe; jointable_foreignkey:to_uid;   association_jointable_foreignkey:from_uid"` // from_uid -> to_uid
 
+	// tbl_block
+	Blockings []*User `gorm:"many2many:block; jointable_foreignkey:from_uid; association_jointable_foreignkey:to_uid"` // to_uid -> from_uid
+
 	xgorm.GormCUTime
 	DeletedAt *time.Time `gorm:"default:'1970-01-01 00:00:00'; unique_index:uk_username,uk_email"`
 }

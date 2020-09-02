@@ -15,11 +15,13 @@ const (
 	SEnforcer xdi.ServiceName = "casbin-enforcer" // *casbin.Enforcer
 
 	// services
+	SCommonService    xdi.ServiceName = "common-service"    // *service.CommonService
 	SAccountService   xdi.ServiceName = "account-service"   // *service.AccountService
 	STokenService     xdi.ServiceName = "token-service"     // *service.TokenService
 	SUserService      xdi.ServiceName = "user-service"      // *service.UserService
 	SEmailService     xdi.ServiceName = "email-service"     // *service.EmailService
 	SSubscribeService xdi.ServiceName = "subscribe-service" // *service.SubscribeService
+	SBlockService     xdi.ServiceName = "block-service"     // *service.BlockService
 	SVideoService     xdi.ServiceName = "video-service"     // *service.VideoService
 	SJwtService       xdi.ServiceName = "jwt-service"       // *service.JwtService
 	SCasbinService    xdi.ServiceName = "casbin-service"    // *service.CasbinService

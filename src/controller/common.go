@@ -12,15 +12,17 @@ import (
 )
 
 var (
-	adNeedSubscribeCount = goapidoc.NewQueryParam("need_subscribe_count", "boolean", false, "need subscribe count (user)")
-	adNeedIsSubscribe    = goapidoc.NewQueryParam("need_is_subscribe", "boolean", false, "need is subscribe (user)")
-	adNeedVideoCount     = goapidoc.NewQueryParam("need_video_count", "boolean", false, "need video count (user)")
-	adNeedAuthor         = goapidoc.NewQueryParam("need_author", "boolean", false, "need video author (video)")
+	_adNeedSubscribeCount = goapidoc.NewQueryParam("need_subscribe_count", "boolean", false, "need subscribe count (user)")
+	_adNeedIsSubscribe    = goapidoc.NewQueryParam("need_is_subscribe", "boolean", false, "need is subscribe (user)")
+	_adNeedVideoCount     = goapidoc.NewQueryParam("need_video_count", "boolean", false, "need video count (user)")
+	_adNeedBlockCount     = goapidoc.NewQueryParam("need_block_count", "boolean", false, "need block count (user)")
+	_adNeedAuthor         = goapidoc.NewQueryParam("need_author", "boolean", false, "need video author (video)")
 )
 
 type CommonController struct {
 	subscribeService *service.SubscribeService
 	videoService     *service.VideoService
+	blockService     *service.BlockService
 	userService      *service.UserService
 }
 
@@ -28,6 +30,7 @@ func NewCommonController() *CommonController {
 	return &CommonController{
 		subscribeService: xdi.GetByNameForce(sn.SSubscribeService).(*service.SubscribeService),
 		videoService:     xdi.GetByNameForce(sn.SVideoService).(*service.VideoService),
+		blockService:     xdi.GetByNameForce(sn.SBlockService).(*service.BlockService),
 		userService:      xdi.GetByNameForce(sn.SUserService).(*service.UserService),
 	}
 }
@@ -76,6 +79,18 @@ func (cmn *CommonController) getUsersExtra(c *gin.Context, authUser *po.User, us
 		for idx, cnt := range arr {
 			cnt := cnt
 			extras[idx].Videos = &cnt
+		}
+	}
+
+	// need_block_count
+	if param.BindQueryBool(c, "need_block_count") && authUser != nil {
+		arr, err := cmn.blockService.CheckBlockings(authUser.Uid, uids)
+		if err != nil {
+			return nil, err
+		}
+		for idx, is := range arr {
+			is := is
+			extras[idx].IsBlocking = &is
 		}
 	}
 

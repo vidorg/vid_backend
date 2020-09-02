@@ -29,8 +29,9 @@ func init() {
 			Properties(
 				goapidoc.NewProperty("subscribings", "integer#int32", true, "user subscribing count"),
 				goapidoc.NewProperty("subscribers", "integer#int32", true, "user subscriber count"),
-				goapidoc.NewProperty("is_subscribing", "boolean", true, "authorized user is subscribing"),
-				goapidoc.NewProperty("is_subscribed", "boolean", true, "authorized user is subscribed"),
+				goapidoc.NewProperty("is_subscribing", "boolean", true, "authorized user is subscribing this user"),
+				goapidoc.NewProperty("is_subscribed", "boolean", true, "authorized user is subscribed by this user"),
+				goapidoc.NewProperty("is_blocking", "boolean", true, "authorized user is blocking this user"),
 				goapidoc.NewProperty("videos", "integer#int32", true, "user video count"),
 			),
 
@@ -73,7 +74,7 @@ func BuildUserDto(user *po.User) *UserDto {
 		Role:         user.Role,
 		State:        user.State.String(),
 		RegisterTime: xtime.NewJsonDateTime(user.CreatedAt).String(),
-		Extra:        nil,
+		Extra:        &UserExtraDto{},
 	}
 }
 
@@ -107,6 +108,7 @@ type UserExtraDto struct {
 	Subscribers   *int32 `json:"subscribers"`
 	IsSubscribing *bool  `json:"is_subscribing"`
 	IsSubscribed  *bool  `json:"is_subscribed"`
+	IsBlocking    *bool  `json:"is_blocking"`
 	Videos        *int32 `json:"videos"`
 }
 
