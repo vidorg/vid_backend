@@ -305,6 +305,13 @@
             "required": false,
             "type": "boolean",
             "description": "need video count (user)"
+          },
+          {
+            "name": "need_favorite_count",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need favorite count (user)"
           }
         ],
         "responses": {
@@ -683,6 +690,13 @@
             "required": false,
             "type": "boolean",
             "description": "need video count (user)"
+          },
+          {
+            "name": "need_favorite_count",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need favorite count (user)"
           }
         ],
         "responses": {
@@ -894,6 +908,13 @@
             "required": false,
             "type": "boolean",
             "description": "need video count (user)"
+          },
+          {
+            "name": "need_favorite_count",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need favorite count (user)"
           }
         ],
         "responses": {
@@ -946,6 +967,27 @@
             "description": "order string"
           },
           {
+            "name": "need_author",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need video author (video)"
+          },
+          {
+            "name": "need_favored_count",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need favored user count (video)"
+          },
+          {
+            "name": "need_is_favorite",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need is favorite (video)"
+          },
+          {
             "name": "need_subscribe_count",
             "in": "query",
             "required": false,
@@ -979,20 +1021,6 @@
             "required": false,
             "type": "boolean",
             "description": "need favorite count (user)"
-          },
-          {
-            "name": "need_author",
-            "in": "query",
-            "required": false,
-            "type": "boolean",
-            "description": "need video author (video)"
-          },
-          {
-            "name": "need_favored_count",
-            "in": "query",
-            "required": false,
-            "type": "boolean",
-            "description": "need favored user count (video)"
           }
         ],
         "responses": {
@@ -1071,6 +1099,13 @@
             "required": false,
             "type": "boolean",
             "description": "need video count (user)"
+          },
+          {
+            "name": "need_favorite_count",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need favorite count (user)"
           }
         ],
         "responses": {
@@ -1149,6 +1184,13 @@
             "required": false,
             "type": "boolean",
             "description": "need video count (user)"
+          },
+          {
+            "name": "need_favorite_count",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need favorite count (user)"
           }
         ],
         "responses": {
@@ -1201,6 +1243,27 @@
             "description": "order string"
           },
           {
+            "name": "need_author",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need video author (video)"
+          },
+          {
+            "name": "need_favored_count",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need favored user count (video)"
+          },
+          {
+            "name": "need_is_favorite",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need is favorite (video)"
+          },
+          {
             "name": "need_subscribe_count",
             "in": "query",
             "required": false,
@@ -1229,11 +1292,11 @@
             "description": "need video count (user)"
           },
           {
-            "name": "need_author",
+            "name": "need_favorite_count",
             "in": "query",
             "required": false,
             "type": "boolean",
-            "description": "need video author (video)"
+            "description": "need favorite count (user)"
           }
         ],
         "responses": {
@@ -1284,6 +1347,27 @@
             "description": "order string"
           },
           {
+            "name": "need_author",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need video author (video)"
+          },
+          {
+            "name": "need_favored_count",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need favored user count (video)"
+          },
+          {
+            "name": "need_is_favorite",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need is favorite (video)"
+          },
+          {
             "name": "need_subscribe_count",
             "in": "query",
             "required": false,
@@ -1312,11 +1396,11 @@
             "description": "need video count (user)"
           },
           {
-            "name": "need_author",
+            "name": "need_favorite_count",
             "in": "query",
             "required": false,
             "type": "boolean",
-            "description": "need video author (video)"
+            "description": "need favorite count (user)"
           }
         ],
         "responses": {
@@ -1408,6 +1492,27 @@
             "format": "int64"
           },
           {
+            "name": "need_author",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need video author (video)"
+          },
+          {
+            "name": "need_favored_count",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need favored user count (video)"
+          },
+          {
+            "name": "need_is_favorite",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need is favorite (video)"
+          },
+          {
             "name": "need_subscribe_count",
             "in": "query",
             "required": false,
@@ -1436,11 +1541,11 @@
             "description": "need video count (user)"
           },
           {
-            "name": "need_author",
+            "name": "need_favorite_count",
             "in": "query",
             "required": false,
             "type": "boolean",
-            "description": "need video author (video)"
+            "description": "need favorite count (user)"
           }
         ],
         "responses": {
@@ -2096,7 +2201,7 @@
       "type": "object",
       "required": [
         "favoreds",
-        "in_favorite"
+        "is_favorite"
       ],
       "description": "video extra response",
       "properties": {
@@ -2106,7 +2211,7 @@
           "description": "video favored user count",
           "format": "int32"
         },
-        "in_favorite": {
+        "is_favorite": {
           "type": "boolean",
           "required": true,
           "description": "this video is in authorized user favorite list"

@@ -185,7 +185,7 @@ auth-controller
 
 user-controller
 
-## query all user [/v1/user{?page,limit,order,need_subscribe_count,need_is_subscribe,need_is_block,need_video_count}]
+## query all user [/v1/user{?page,limit,order,need_subscribe_count,need_is_subscribe,need_is_block,need_video_count,need_favorite_count}]
 
 ### query all user [GET]
 
@@ -202,6 +202,7 @@ user-controller
     + need_is_subscribe (boolean, optional) - need is subscribe (user)
     + need_is_block (boolean, optional) - need block count (user)
     + need_video_count (boolean, optional) - need video count (user)
+    + need_favorite_count (boolean, optional) - need favorite count (user)
 
 + Request (application/json)
 
@@ -221,7 +222,7 @@ user-controller
 
     + Body
 
-## query a user by uid [/v1/user/{uid}{?need_subscribe_count,need_is_subscribe,need_is_block,need_video_count}]
+## query a user by uid [/v1/user/{uid}{?need_subscribe_count,need_is_subscribe,need_is_block,need_video_count,need_favorite_count}]
 
 ### query a user by uid [GET]
 
@@ -235,6 +236,7 @@ user-controller
     + need_is_subscribe (boolean, optional) - need is subscribe (user)
     + need_is_block (boolean, optional) - need block count (user)
     + need_video_count (boolean, optional) - need video count (user)
+    + need_favorite_count (boolean, optional) - need favorite count (user)
 
 + Request (application/json)
 
@@ -302,7 +304,7 @@ user-controller
 
 subscribe-controller
 
-## query user subscribers [/v1/user/{uid}/subscriber{?page,limit,order,need_subscribe_count,need_is_subscribe,need_is_block,need_video_count}]
+## query user subscribers [/v1/user/{uid}/subscriber{?page,limit,order,need_subscribe_count,need_is_subscribe,need_is_block,need_video_count,need_favorite_count}]
 
 ### query user subscribers [GET]
 
@@ -321,6 +323,7 @@ subscribe-controller
     + need_is_subscribe (boolean, optional) - need is subscribe (user)
     + need_is_block (boolean, optional) - need block count (user)
     + need_video_count (boolean, optional) - need video count (user)
+    + need_favorite_count (boolean, optional) - need favorite count (user)
 
 + Request (application/json)
 
@@ -338,7 +341,7 @@ subscribe-controller
 
     + Body
 
-## query user subscribings [/v1/user/{uid}/subscribing{?page,limit,order,need_subscribe_count,need_is_subscribe,need_is_block,need_video_count}]
+## query user subscribings [/v1/user/{uid}/subscribing{?page,limit,order,need_subscribe_count,need_is_subscribe,need_is_block,need_video_count,need_favorite_count}]
 
 ### query user subscribings [GET]
 
@@ -357,6 +360,7 @@ subscribe-controller
     + need_is_subscribe (boolean, optional) - need is subscribe (user)
     + need_is_block (boolean, optional) - need block count (user)
     + need_video_count (boolean, optional) - need video count (user)
+    + need_favorite_count (boolean, optional) - need favorite count (user)
 
 + Request (application/json)
 
@@ -434,7 +438,7 @@ subscribe-controller
 
 video-controller
 
-## query all videos [/v1/video{?page,limit,order,need_subscribe_count,need_is_subscribe,need_is_block,need_video_count,need_author}]
+## query all videos [/v1/video{?page,limit,order,need_author,need_favored_count,need_is_favorite,need_subscribe_count,need_is_subscribe,need_is_block,need_video_count,need_favorite_count}]
 
 ### query all videos [GET]
 
@@ -447,11 +451,14 @@ video-controller
     + limit (number, optional) - page size
         (format: int32)
     + order (string, optional) - order string
+    + need_author (boolean, optional) - need video author (video)
+    + need_favored_count (boolean, optional) - need favored user count (video)
+    + need_is_favorite (boolean, optional) - need is favorite (video)
     + need_subscribe_count (boolean, optional) - need subscribe count (user)
     + need_is_subscribe (boolean, optional) - need is subscribe (user)
     + need_is_block (boolean, optional) - need block count (user)
     + need_video_count (boolean, optional) - need video count (user)
-    + need_author (boolean, optional) - need video author (video)
+    + need_favorite_count (boolean, optional) - need favorite count (user)
 
 + Request (application/json)
 
@@ -471,7 +478,7 @@ video-controller
 
     + Body
 
-## query videos from user [/v1/user/{uid}/video{?page,limit,order,need_subscribe_count,need_is_subscribe,need_is_block,need_video_count,need_author}]
+## query videos from user [/v1/user/{uid}/video{?page,limit,order,need_author,need_favored_count,need_is_favorite,need_subscribe_count,need_is_subscribe,need_is_block,need_video_count,need_favorite_count}]
 
 ### query videos from user [GET]
 
@@ -486,11 +493,14 @@ video-controller
     + limit (number, optional) - page size
         (format: int32)
     + order (string, optional) - order string
+    + need_author (boolean, optional) - need video author (video)
+    + need_favored_count (boolean, optional) - need favored user count (video)
+    + need_is_favorite (boolean, optional) - need is favorite (video)
     + need_subscribe_count (boolean, optional) - need subscribe count (user)
     + need_is_subscribe (boolean, optional) - need is subscribe (user)
     + need_is_block (boolean, optional) - need block count (user)
     + need_video_count (boolean, optional) - need video count (user)
-    + need_author (boolean, optional) - need video author (video)
+    + need_favorite_count (boolean, optional) - need favorite count (user)
 
 + Request (application/json)
 
@@ -508,7 +518,7 @@ video-controller
 
     + Body
 
-## query a video [/v1/video/{vid}{?need_subscribe_count,need_is_subscribe,need_is_block,need_video_count,need_author}]
+## query a video [/v1/video/{vid}{?need_author,need_favored_count,need_is_favorite,need_subscribe_count,need_is_subscribe,need_is_block,need_video_count,need_favorite_count}]
 
 ### query a video [GET]
 
@@ -518,11 +528,14 @@ video-controller
 
     + vid (number, required) - video id
         (format: int64)
+    + need_author (boolean, optional) - need video author (video)
+    + need_favored_count (boolean, optional) - need favored user count (video)
+    + need_is_favorite (boolean, optional) - need is favorite (video)
     + need_subscribe_count (boolean, optional) - need subscribe count (user)
     + need_is_subscribe (boolean, optional) - need is subscribe (user)
     + need_is_block (boolean, optional) - need block count (user)
     + need_video_count (boolean, optional) - need video count (user)
-    + need_author (boolean, optional) - need video author (video)
+    + need_favorite_count (boolean, optional) - need favorite count (user)
 
 + Request (application/json)
 
@@ -624,7 +637,7 @@ video-controller
 
 favorite-controller
 
-## query user favorites [/v1/user/{uid}/favorite{?page,limit,order,need_subscribe_count,need_is_subscribe,need_is_block,need_video_count,need_favorite_count,need_author,need_favored_count}]
+## query user favorites [/v1/user/{uid}/favorite{?page,limit,order,need_author,need_favored_count,need_is_favorite,need_subscribe_count,need_is_subscribe,need_is_block,need_video_count,need_favorite_count}]
 
 ### query user favorites [GET]
 
@@ -639,13 +652,14 @@ favorite-controller
     + limit (number, optional) - page size
         (format: int32)
     + order (string, optional) - order string
+    + need_author (boolean, optional) - need video author (video)
+    + need_favored_count (boolean, optional) - need favored user count (video)
+    + need_is_favorite (boolean, optional) - need is favorite (video)
     + need_subscribe_count (boolean, optional) - need subscribe count (user)
     + need_is_subscribe (boolean, optional) - need is subscribe (user)
     + need_is_block (boolean, optional) - need block count (user)
     + need_video_count (boolean, optional) - need video count (user)
     + need_favorite_count (boolean, optional) - need favorite count (user)
-    + need_author (boolean, optional) - need video author (video)
-    + need_favored_count (boolean, optional) - need favored user count (video)
 
 + Request (application/json)
 
@@ -760,7 +774,7 @@ favorite-controller
 
 block-controller
 
-## query user blockings [/v1/block/user{?page,limit,order,need_subscribe_count,need_is_subscribe,need_is_block,need_video_count}]
+## query user blockings [/v1/block/user{?page,limit,order,need_subscribe_count,need_is_subscribe,need_is_block,need_video_count,need_favorite_count}]
 
 ### query user blockings [GET]
 
@@ -777,6 +791,7 @@ block-controller
     + need_is_subscribe (boolean, optional) - need is subscribe (user)
     + need_is_block (boolean, optional) - need block count (user)
     + need_video_count (boolean, optional) - need video count (user)
+    + need_favorite_count (boolean, optional) - need favorite count (user)
 
 + Request (application/json)
 
@@ -1028,10 +1043,88 @@ rbac-controller
 + favorites (number, required) - user favorite count
     (format: int32)
 
+## LoginDto (object)
+
++ user (UserDto, required) - authorized user
++ token (string, required) - access token
+
+## UpdatePasswordParam (object)
+
++ old (string, required) - old password
++ new (string, required) - new password
+
+## RbacSubjectParam (object)
+
++ new (string, required) - new subject
++ from (string, required) - subject inherited from
+
+## UserDto (object)
+
++ uid (number, required) - user id
+    (format: int64)
++ username (string, required) - username
++ email (string, required) - user email
++ nickname (string, required) - user nickname
++ gender (enum[string], required) - user gender
+    + Members
+        + `secret`
+        + `male`
+        + `female`
++ profile (string, required) - user profile
+    (allow empty)
++ avatar (string, required) - user avatar
++ birthday (string, required) - user birthday
+    (format: date)
++ role (string, required) - user role
++ state (string, required) - user state
++ register_time (string, required) - user register time
+    (format: date-time)
++ extra (UserExtraDto, required) - user extra information
+
+## VideoDto (object)
+
++ vid (number, required) - video id
+    (format: int64)
++ title (string, required) - video title
++ description (string, required) - video description
++ video_url (string, required) - video source url
++ cover_url (string, required) - video cover url
++ upload_time (string, required) - video upload time
+    (format: date-time)
++ author (UserDto, required) - video author
++ extra (VideoExtraDto, required) - video extra information
+
+## LoginParam (object)
+
++ parameter (string, required) - login parameter, support uid | username | email
++ password (string, required) - login password
+
+## Result (object)
+
++ code (number, required) - status code
+    (format: int32)
++ message (string, required) - status message
+
+## VideoExtraDto (object)
+
++ favoreds (number, required) - video favored user count
+    (format: int32)
++ is_favorite (boolean, required) - this video is in authorized user favorite list
+
 ## RegisterParam (object)
 
 + email: `aaa@bbb.ccc` (string, required) - register email
 + password (string, required) - register password
+
+## ChangeUserRoleParam (object)
+
++ sub (string, required) - new subject
+
+## RbacPolicyParam (object)
+
++ sub (string, required) - new subject
++ obj (string, required) - new object
++ act (string, required) - new action
 
 ## UpdateUserParam (object)
 
@@ -1057,51 +1150,6 @@ rbac-controller
 + video_url: `https://aaa.bbb.ccc` (string, required) - video source url
 + cover_url: `https://aaa.bbb.ccc` (string, required) - video cover url
 
-## Result (object)
-
-+ code (number, required) - status code
-    (format: int32)
-+ message (string, required) - status message
-
-## LoginDto (object)
-
-+ user (UserDto, required) - authorized user
-+ token (string, required) - access token
-
-## VideoDto (object)
-
-+ vid (number, required) - video id
-    (format: int64)
-+ title (string, required) - video title
-+ description (string, required) - video description
-+ video_url (string, required) - video source url
-+ cover_url (string, required) - video cover url
-+ upload_time (string, required) - video upload time
-    (format: date-time)
-+ author (UserDto, required) - video author
-+ extra (VideoExtraDto, required) - video extra information
-
-## VideoExtraDto (object)
-
-+ favoreds (number, required) - video favored user count
-    (format: int32)
-+ in_favorite (boolean, required) - this video is in authorized user favorite list
-
-## RbacSubjectParam (object)
-
-+ new (string, required) - new subject
-+ from (string, required) - subject inherited from
-
-## RbacPolicyParam (object)
-
-+ sub (string, required) - new subject
-+ obj (string, required) - new object
-+ act (string, required) - new action
-
-## ChangeUserRoleParam (object)
-
-+ sub (string, required) - new subject
-
 ## RbacRuleDto (object)
 
 + p_type (string, required) - rule type
@@ -1111,39 +1159,6 @@ rbac-controller
 + v3 (string, required) - v3
 + v4 (string, required) - v4
 + v5 (string, required) - v5
-
-## UserDto (object)
-
-+ uid (number, required) - user id
-    (format: int64)
-+ username (string, required) - username
-+ email (string, required) - user email
-+ nickname (string, required) - user nickname
-+ gender (enum[string], required) - user gender
-    + Members
-        + `secret`
-        + `male`
-        + `female`
-+ profile (string, required) - user profile
-    (allow empty)
-+ avatar (string, required) - user avatar
-+ birthday (string, required) - user birthday
-    (format: date)
-+ role (string, required) - user role
-+ state (string, required) - user state
-+ register_time (string, required) - user register time
-    (format: date-time)
-+ extra (UserExtraDto, required) - user extra information
-
-## LoginParam (object)
-
-+ parameter (string, required) - login parameter, support uid | username | email
-+ password (string, required) - login password
-
-## UpdatePasswordParam (object)
-
-+ old (string, required) - old password
-+ new (string, required) - new password
 
 ## _Result<LoginDto> (object)
 

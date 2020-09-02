@@ -30,3 +30,8 @@ type _FromToUidPair struct {
 	FromUid uint64
 	ToUid   uint64
 }
+
+type _UidVidPair struct {
+	Uid uint64
+	Vid uint64
+}

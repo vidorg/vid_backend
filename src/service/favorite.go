@@ -196,6 +196,27 @@ func (f *FavoriteService) QueryCountByVids(vids []uint64) ([]int32, error) {
 }
 
 func (f *FavoriteService) CheckFavorites(uid uint64, vids []uint64) ([]bool, error) {
-	// TODO
-	return nil, nil
+	if len(vids) == 0 {
+		return []bool{}, nil
+	}
+
+	favorites := make([]*_UidVidPair, 0)
+	where := f.common.BuildOrExp("vid", vids)
+	rdb := f.db.Table(f.tblName).Select("uid, vid").Where("uid = ?", uid).Where(where).Group("uid, vid").Scan(&favorites)
+	if rdb.Error != nil {
+		return nil, rdb.Error
+	}
+
+	bucket := make(map[uint64]bool, len(vids))
+	for _, pair := range favorites {
+		bucket[pair.Vid] = true
+	}
+	out := make([]bool, len(vids))
+	for idx, vid := range vids {
+		video, ok := bucket[vid]
+		if ok {
+			out[idx] = video
+		}
+	}
+	return out, nil
 }

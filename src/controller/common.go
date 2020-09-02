@@ -20,12 +20,13 @@ var (
 	_adNeedFavoriteCount  = goapidoc.NewQueryParam("need_favorite_count", "boolean", false, "need favorite count (user)")
 	_adNeedAuthor         = goapidoc.NewQueryParam("need_author", "boolean", false, "need video author (video)")
 	_adNeedFavoredCount   = goapidoc.NewQueryParam("need_favored_count", "boolean", false, "need favored user count (video)")
+	_adNeedIsFavorite     = goapidoc.NewQueryParam("need_is_favorite", "boolean", false, "need is favorite (video)")
 )
 
 // noinspection GoUnusedGlobalVariable
 var (
 	_adUserQueries  = []*goapidoc.Param{_adNeedSubscribeCount, _adNeedIsSubscribe, _adNeedIsBlock, _adNeedVideoCount, _adNeedFavoriteCount}
-	_adVideoQueries = []*goapidoc.Param{_adNeedAuthor, _adNeedFavoredCount}
+	_adVideoQueries = []*goapidoc.Param{_adNeedAuthor, _adNeedFavoredCount, _adNeedIsFavorite}
 )
 
 type CommonController struct {
@@ -181,6 +182,24 @@ func (cmn *CommonController) getVideosExtra(c *gin.Context, authUser *po.User, v
 		for idx, cnt := range arr {
 			cnt := cnt
 			extras[idx].Favoreds = &cnt
+		}
+	}
+
+	// need_is_favorite
+	if param.BindQueryBool(c, "need_is_favorite") {
+		if authUser != nil {
+			arr, err := cmn.favoriteService.CheckFavorites(authUser.Uid, vids)
+			if err != nil {
+				return nil, err
+			}
+			for idx, is := range arr {
+				is := is
+				extras[idx].IsFavorite = &is
+			}
+		} else {
+			for idx := range videos {
+				extras[idx].IsFavorite = xpointer.BoolPtr(false)
+			}
 		}
 	}
 

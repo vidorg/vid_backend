@@ -24,7 +24,7 @@ func init() {
 		goapidoc.NewDefinition("VideoExtraDto", "video extra response").
 			Properties(
 				goapidoc.NewProperty("favoreds", "integer#int32", true, "video favored user count"),
-				goapidoc.NewProperty("in_favorite", "boolean", true, "this video is in authorized user favorite list"),
+				goapidoc.NewProperty("is_favorite", "boolean", true, "this video is in authorized user favorite list"),
 			),
 	)
 }
@@ -78,5 +78,5 @@ func BuildVideoPropertyMapper() xproperty.PropertyDict {
 
 type VideoExtraDto struct {
 	Favoreds   *int32 `json:"favoreds"`    // video favored user count
-	InFavorite *bool  `json:"in_favorite"` // this video is in authorized user favorite list
+	IsFavorite *bool  `json:"is_favorite"` // this video is in authorized user favorite list
 }

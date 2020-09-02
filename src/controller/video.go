@@ -22,7 +22,7 @@ func init() {
 			Securities("Jwt").
 			Params(
 				param.ADPage, param.ADLimit, param.ADOrder,
-				_adNeedSubscribeCount, _adNeedIsSubscribe, _adNeedIsBlock, _adNeedVideoCount, _adNeedAuthor,
+				_adNeedAuthor, _adNeedFavoredCount, _adNeedIsFavorite, _adNeedSubscribeCount, _adNeedIsSubscribe, _adNeedIsBlock, _adNeedVideoCount, _adNeedFavoriteCount,
 			).
 			Responses(goapidoc.NewResponse(200, "_Result<_Page<VideoDto>>")),
 
@@ -31,7 +31,7 @@ func init() {
 			Params(
 				goapidoc.NewPathParam("uid", "integer#int64", true, "user id"),
 				param.ADPage, param.ADLimit, param.ADOrder,
-				_adNeedSubscribeCount, _adNeedIsSubscribe, _adNeedIsBlock, _adNeedVideoCount, _adNeedAuthor,
+				_adNeedAuthor, _adNeedFavoredCount, _adNeedIsFavorite, _adNeedSubscribeCount, _adNeedIsSubscribe, _adNeedIsBlock, _adNeedVideoCount, _adNeedFavoriteCount,
 			).
 			Responses(goapidoc.NewResponse(200, "_Result<_Page<VideoDto>>")),
 
@@ -39,7 +39,7 @@ func init() {
 			Tags("Video").
 			Params(
 				goapidoc.NewPathParam("vid", "integer#int64", true, "video id"),
-				_adNeedSubscribeCount, _adNeedIsSubscribe, _adNeedIsBlock, _adNeedVideoCount, _adNeedAuthor,
+				_adNeedAuthor, _adNeedFavoredCount, _adNeedIsFavorite, _adNeedSubscribeCount, _adNeedIsSubscribe, _adNeedIsBlock, _adNeedVideoCount, _adNeedFavoriteCount,
 			).
 			Responses(goapidoc.NewResponse(200, "_Result<VideoDto>")),
 
@@ -91,7 +91,11 @@ func (v *VideoController) QueryAllVideos(c *gin.Context) *result.Result {
 	}
 
 	authUser := v.jwtService.GetContextUser(c)
-	authors, extras, err := v.common.getVideosAuthor(c, authUser, videos)
+	authors, userExtras, err := v.common.getVideosAuthor(c, authUser, videos)
+	if err != nil {
+		return result.Error(exception.QueryVideoError).SetError(err, c)
+	}
+	videoExtras, err := v.common.getVideosExtra(c, authUser, videos)
 	if err != nil {
 		return result.Error(exception.QueryVideoError).SetError(err, c)
 	}
@@ -100,8 +104,9 @@ func (v *VideoController) QueryAllVideos(c *gin.Context) *result.Result {
 	for idx, video := range res {
 		video.Author = dto.BuildUserDto(authors[idx])
 		if video.Author != nil {
-			video.Author.Extra = extras[idx]
+			video.Author.Extra = userExtras[idx]
 		}
+		video.Extra = videoExtras[idx]
 	}
 	return result.Ok().SetPage(pp.Page, pp.Limit, total, res)
 }
@@ -122,7 +127,11 @@ func (v *VideoController) QueryVideosByUid(c *gin.Context) *result.Result {
 	}
 
 	authUser := v.jwtService.GetContextUser(c)
-	authors, extras, err := v.common.getVideosAuthor(c, authUser, videos)
+	authors, userExtras, err := v.common.getVideosAuthor(c, authUser, videos)
+	if err != nil {
+		return result.Error(exception.QueryVideoError).SetError(err, c)
+	}
+	videoExtras, err := v.common.getVideosExtra(c, authUser, videos)
 	if err != nil {
 		return result.Error(exception.QueryVideoError).SetError(err, c)
 	}
@@ -131,8 +140,9 @@ func (v *VideoController) QueryVideosByUid(c *gin.Context) *result.Result {
 	for idx, video := range res {
 		video.Author = dto.BuildUserDto(authors[idx])
 		if video.Author != nil {
-			video.Author.Extra = extras[idx]
+			video.Author.Extra = userExtras[idx]
 		}
+		video.Extra = videoExtras[idx]
 	}
 	return result.Ok().SetPage(pp.Page, pp.Limit, total, res)
 }
@@ -152,7 +162,11 @@ func (v *VideoController) QueryVideoByVid(c *gin.Context) *result.Result {
 	}
 
 	authUser := v.jwtService.GetContextUser(c)
-	authors, extras, err := v.common.getVideosAuthor(c, authUser, []*po.Video{video})
+	authors, userExtras, err := v.common.getVideosAuthor(c, authUser, []*po.Video{video})
+	if err != nil {
+		return result.Error(exception.QueryVideoError).SetError(err, c)
+	}
+	videoExtras, err := v.common.getVideosExtra(c, authUser, []*po.Video{video})
 	if err != nil {
 		return result.Error(exception.QueryVideoError).SetError(err, c)
 	}
@@ -160,8 +174,9 @@ func (v *VideoController) QueryVideoByVid(c *gin.Context) *result.Result {
 	res := dto.BuildVideoDto(video)
 	res.Author = dto.BuildUserDto(authors[0])
 	if res.Author != nil {
-		res.Author.Extra = extras[0]
+		res.Author.Extra = userExtras[0]
 	}
+	res.Extra = videoExtras[0]
 	return result.Ok().SetData(res)
 }
 
