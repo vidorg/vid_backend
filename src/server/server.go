@@ -31,6 +31,7 @@ func init() {
 		goapidoc.NewTag("User", "user-controller"),
 		goapidoc.NewTag("Subscribe", "subscribe-controller"),
 		goapidoc.NewTag("Video", "video-controller"),
+		goapidoc.NewTag("Favorite", "favorite-controller"),
 		goapidoc.NewTag("Block", "block-controller"),
 		goapidoc.NewTag("Rbac", "rbac-controller"),
 		goapidoc.NewTag("Administration", "*-controller"),

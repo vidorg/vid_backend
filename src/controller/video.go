@@ -22,7 +22,7 @@ func init() {
 			Securities("Jwt").
 			Params(
 				param.ADPage, param.ADLimit, param.ADOrder,
-				_adNeedSubscribeCount, _adNeedIsSubscribe, _adNeedBlockCount, _adNeedVideoCount, _adNeedAuthor,
+				_adNeedSubscribeCount, _adNeedIsSubscribe, _adNeedIsBlock, _adNeedVideoCount, _adNeedAuthor,
 			).
 			Responses(goapidoc.NewResponse(200, "_Result<_Page<VideoDto>>")),
 
@@ -31,7 +31,7 @@ func init() {
 			Params(
 				goapidoc.NewPathParam("uid", "integer#int64", true, "user id"),
 				param.ADPage, param.ADLimit, param.ADOrder,
-				_adNeedSubscribeCount, _adNeedIsSubscribe, _adNeedBlockCount, _adNeedVideoCount, _adNeedAuthor,
+				_adNeedSubscribeCount, _adNeedIsSubscribe, _adNeedIsBlock, _adNeedVideoCount, _adNeedAuthor,
 			).
 			Responses(goapidoc.NewResponse(200, "_Result<_Page<VideoDto>>")),
 
@@ -39,7 +39,7 @@ func init() {
 			Tags("Video").
 			Params(
 				goapidoc.NewPathParam("vid", "integer#int64", true, "video id"),
-				_adNeedSubscribeCount, _adNeedIsSubscribe, _adNeedBlockCount, _adNeedVideoCount, _adNeedAuthor,
+				_adNeedSubscribeCount, _adNeedIsSubscribe, _adNeedIsBlock, _adNeedVideoCount, _adNeedAuthor,
 			).
 			Responses(goapidoc.NewResponse(200, "_Result<VideoDto>")),
 

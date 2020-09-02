@@ -14,8 +14,8 @@ import (
 var (
 	_adNeedSubscribeCount = goapidoc.NewQueryParam("need_subscribe_count", "boolean", false, "need subscribe count (user)")
 	_adNeedIsSubscribe    = goapidoc.NewQueryParam("need_is_subscribe", "boolean", false, "need is subscribe (user)")
+	_adNeedIsBlock        = goapidoc.NewQueryParam("need_is_block", "boolean", false, "need block count (user)")
 	_adNeedVideoCount     = goapidoc.NewQueryParam("need_video_count", "boolean", false, "need video count (user)")
-	_adNeedBlockCount     = goapidoc.NewQueryParam("need_block_count", "boolean", false, "need block count (user)")
 	_adNeedAuthor         = goapidoc.NewQueryParam("need_author", "boolean", false, "need video author (video)")
 )
 
@@ -60,7 +60,7 @@ func (cmn *CommonController) getUsersExtra(c *gin.Context, authUser *po.User, us
 
 	// need_is_subscribe
 	if param.BindQueryBool(c, "need_is_subscribe") && authUser != nil {
-		arr, err := cmn.subscribeService.CheckSubscribeByUids(authUser.Uid, uids)
+		arr, err := cmn.subscribeService.CheckSubscribes(authUser.Uid, uids)
 		if err != nil {
 			return nil, err
 		}
@@ -70,20 +70,8 @@ func (cmn *CommonController) getUsersExtra(c *gin.Context, authUser *po.User, us
 		}
 	}
 
-	// need_video_count
-	if param.BindQueryBool(c, "need_video_count") && authUser != nil {
-		arr, err := cmn.videoService.QueryCountByUids(uids)
-		if err != nil {
-			return nil, err
-		}
-		for idx, cnt := range arr {
-			cnt := cnt
-			extras[idx].Videos = &cnt
-		}
-	}
-
-	// need_block_count
-	if param.BindQueryBool(c, "need_block_count") && authUser != nil {
+	// need_is_block
+	if param.BindQueryBool(c, "need_is_block") && authUser != nil {
 		arr, err := cmn.blockService.CheckBlockings(authUser.Uid, uids)
 		if err != nil {
 			return nil, err
@@ -91,6 +79,18 @@ func (cmn *CommonController) getUsersExtra(c *gin.Context, authUser *po.User, us
 		for idx, is := range arr {
 			is := is
 			extras[idx].IsBlocking = &is
+		}
+	}
+
+	// need_video_count
+	if param.BindQueryBool(c, "need_video_count") {
+		arr, err := cmn.videoService.QueryCountByUids(uids)
+		if err != nil {
+			return nil, err
+		}
+		for idx, cnt := range arr {
+			cnt := cnt
+			extras[idx].Videos = &cnt
 		}
 	}
 

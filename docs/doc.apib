@@ -185,7 +185,7 @@ auth-controller
 
 user-controller
 
-## query all user [/v1/user{?page,limit,order,need_subscribe_count,need_is_subscribe,need_block_count,need_video_count}]
+## query all user [/v1/user{?page,limit,order,need_subscribe_count,need_is_subscribe,need_is_block,need_video_count}]
 
 ### query all user [GET]
 
@@ -200,7 +200,7 @@ user-controller
     + order (string, optional) - order string
     + need_subscribe_count (boolean, optional) - need subscribe count (user)
     + need_is_subscribe (boolean, optional) - need is subscribe (user)
-    + need_block_count (boolean, optional) - need block count (user)
+    + need_is_block (boolean, optional) - need block count (user)
     + need_video_count (boolean, optional) - need video count (user)
 
 + Request (application/json)
@@ -221,7 +221,7 @@ user-controller
 
     + Body
 
-## query a user by uid [/v1/user/{uid}{?need_subscribe_count,need_is_subscribe,need_block_count,need_video_count}]
+## query a user by uid [/v1/user/{uid}{?need_subscribe_count,need_is_subscribe,need_is_block,need_video_count}]
 
 ### query a user by uid [GET]
 
@@ -233,7 +233,7 @@ user-controller
         (format: int64)
     + need_subscribe_count (boolean, optional) - need subscribe count (user)
     + need_is_subscribe (boolean, optional) - need is subscribe (user)
-    + need_block_count (boolean, optional) - need block count (user)
+    + need_is_block (boolean, optional) - need block count (user)
     + need_video_count (boolean, optional) - need video count (user)
 
 + Request (application/json)
@@ -302,7 +302,7 @@ user-controller
 
 subscribe-controller
 
-## query user subscribers [/v1/user/{uid}/subscriber{?page,limit,order,need_subscribe_count,need_is_subscribe,need_block_count,need_video_count}]
+## query user subscribers [/v1/user/{uid}/subscriber{?page,limit,order,need_subscribe_count,need_is_subscribe,need_is_block,need_video_count}]
 
 ### query user subscribers [GET]
 
@@ -319,7 +319,7 @@ subscribe-controller
     + order (string, optional) - order string
     + need_subscribe_count (boolean, optional) - need subscribe count (user)
     + need_is_subscribe (boolean, optional) - need is subscribe (user)
-    + need_block_count (boolean, optional) - need block count (user)
+    + need_is_block (boolean, optional) - need block count (user)
     + need_video_count (boolean, optional) - need video count (user)
 
 + Request (application/json)
@@ -338,7 +338,7 @@ subscribe-controller
 
     + Body
 
-## query user subscribings [/v1/user/{uid}/subscribing{?page,limit,order,need_subscribe_count,need_is_subscribe,need_block_count,need_video_count}]
+## query user subscribings [/v1/user/{uid}/subscribing{?page,limit,order,need_subscribe_count,need_is_subscribe,need_is_block,need_video_count}]
 
 ### query user subscribings [GET]
 
@@ -355,7 +355,7 @@ subscribe-controller
     + order (string, optional) - order string
     + need_subscribe_count (boolean, optional) - need subscribe count (user)
     + need_is_subscribe (boolean, optional) - need is subscribe (user)
-    + need_block_count (boolean, optional) - need block count (user)
+    + need_is_block (boolean, optional) - need block count (user)
     + need_video_count (boolean, optional) - need video count (user)
 
 + Request (application/json)
@@ -434,7 +434,7 @@ subscribe-controller
 
 video-controller
 
-## query all videos [/v1/video{?page,limit,order,need_subscribe_count,need_is_subscribe,need_block_count,need_video_count,need_author}]
+## query all videos [/v1/video{?page,limit,order,need_subscribe_count,need_is_subscribe,need_is_block,need_video_count,need_author}]
 
 ### query all videos [GET]
 
@@ -449,7 +449,7 @@ video-controller
     + order (string, optional) - order string
     + need_subscribe_count (boolean, optional) - need subscribe count (user)
     + need_is_subscribe (boolean, optional) - need is subscribe (user)
-    + need_block_count (boolean, optional) - need block count (user)
+    + need_is_block (boolean, optional) - need block count (user)
     + need_video_count (boolean, optional) - need video count (user)
     + need_author (boolean, optional) - need video author (video)
 
@@ -471,7 +471,7 @@ video-controller
 
     + Body
 
-## query videos from user [/v1/user/{uid}/video{?page,limit,order,need_subscribe_count,need_is_subscribe,need_block_count,need_video_count,need_author}]
+## query videos from user [/v1/user/{uid}/video{?page,limit,order,need_subscribe_count,need_is_subscribe,need_is_block,need_video_count,need_author}]
 
 ### query videos from user [GET]
 
@@ -488,7 +488,7 @@ video-controller
     + order (string, optional) - order string
     + need_subscribe_count (boolean, optional) - need subscribe count (user)
     + need_is_subscribe (boolean, optional) - need is subscribe (user)
-    + need_block_count (boolean, optional) - need block count (user)
+    + need_is_block (boolean, optional) - need block count (user)
     + need_video_count (boolean, optional) - need video count (user)
     + need_author (boolean, optional) - need video author (video)
 
@@ -508,7 +508,7 @@ video-controller
 
     + Body
 
-## query a video [/v1/video/{vid}{?need_subscribe_count,need_is_subscribe,need_block_count,need_video_count,need_author}]
+## query a video [/v1/video/{vid}{?need_subscribe_count,need_is_subscribe,need_is_block,need_video_count,need_author}]
 
 ### query a video [GET]
 
@@ -520,7 +520,7 @@ video-controller
         (format: int64)
     + need_subscribe_count (boolean, optional) - need subscribe count (user)
     + need_is_subscribe (boolean, optional) - need is subscribe (user)
-    + need_block_count (boolean, optional) - need block count (user)
+    + need_is_block (boolean, optional) - need block count (user)
     + need_video_count (boolean, optional) - need video count (user)
     + need_author (boolean, optional) - need video author (video)
 
@@ -620,11 +620,88 @@ video-controller
 
     + Body
 
+# Group Favorite
+
+favorite-controller
+
+## query user favorites [/v1/user/{uid}/favorite{?page,limit,order,need_subscribe_count,need_is_subscribe,need_is_block,need_video_count,need_author}]
+
+### query user favorites [GET]
+
+`GET /v1/user/{uid}/favorite`
+
++ Parameters
+
+    + uid (number, required) - user id
+        (format: int64)
+    + page (number, optional) - current page
+        (format: int32)
+    + limit (number, optional) - page size
+        (format: int32)
+    + order (string, optional) - order string
+    + need_subscribe_count (boolean, optional) - need subscribe count (user)
+    + need_is_subscribe (boolean, optional) - need is subscribe (user)
+    + need_is_block (boolean, optional) - need block count (user)
+    + need_video_count (boolean, optional) - need video count (user)
+    + need_author (boolean, optional) - need video author (video)
+
++ Request (application/json)
+
+    + Attributes
+
+    + Headers
+
+    + Body
+
++ Response 200 (application/json)
+
+    + Attributes (_Result<_Page<VideoDto>>)
+
+    + Headers
+
+    + Body
+
+## query video favored users [/v1/video/{vid}/favored{?page,limit,order,need_subscribe_count,need_is_subscribe,need_is_block,need_video_count}]
+
+### query video favored users [GET]
+
+`GET /v1/video/{vid}/favored`
+
++ Parameters
+
+    + vid (number, required) - user id
+        (format: int64)
+    + page (number, optional) - current page
+        (format: int32)
+    + limit (number, optional) - page size
+        (format: int32)
+    + order (string, optional) - order string
+    + need_subscribe_count (boolean, optional) - need subscribe count (user)
+    + need_is_subscribe (boolean, optional) - need is subscribe (user)
+    + need_is_block (boolean, optional) - need block count (user)
+    + need_video_count (boolean, optional) - need video count (user)
+
++ Request (application/json)
+
+    + Attributes
+
+    + Headers
+
+    + Body
+
++ Response 200 (application/json)
+
+    + Attributes (_Result<_Page<UserDto>>)
+
+    + Headers
+
+    + Body
+
 # Group Block
 
 block-controller
 
-## query user blockings [/v1/block/user{?page,limit,order,need_subscribe_count,need_is_subscribe,need_block_count,need_video_count}]
+## query user blockings [/v1/block/user{?page,limit,order,need_subscribe_count,need_is_subscribe,need_is_block,need_video_count}]
 
 ### query user blockings [GET]
 
@@ -639,7 +716,7 @@ block-controller
     + order (string, optional) - order string
     + need_subscribe_count (boolean, optional) - need subscribe count (user)
     + need_is_subscribe (boolean, optional) - need is subscribe (user)
-    + need_block_count (boolean, optional) - need block count (user)
+    + need_is_block (boolean, optional) - need block count (user)
     + need_video_count (boolean, optional) - need video count (user)
 
 + Request (application/json)
@@ -878,6 +955,66 @@ rbac-controller
 
 # Data Structures
 
+## RegisterParam (object)
+
++ email: `aaa@bbb.ccc` (string, required) - register email
++ password (string, required) - register password
+
+## InsertVideoParam (object)
+
++ title (string, required) - video title
++ description (string, required) - video description
++ video_url: `https://aaa.bbb.ccc` (string, required) - video source url
++ cover_url: `https://aaa.bbb.ccc` (string, required) - video cover url
+
+## UpdatePasswordParam (object)
+
++ old (string, required) - old password
++ new (string, required) - new password
+
+## ChangeUserRoleParam (object)
+
++ sub (string, required) - new subject
+
+## UpdateUserParam (object)
+
++ username (string, required) - username
++ nickname (string, required) - user nickname
++ gender (enum[number], required) - user gender, 0X | 1M | 2F
+    (format: int32)
+    + Members
+        + `0`
+        + `1`
+        + `2`
++ profile (string, required) - user profile
+    (allow empty)
++ birthday: `2000-01-01` (string, required) - user birthday
+    (format: date)
++ phone: `13512345678` (string, required) - user phone number
++ avatar: `https://aaa.bbb.ccc` (string, required) - user avatar
+
+## Result (object)
+
++ code (number, required) - status code
+    (format: int32)
++ message (string, required) - status message
+
+## LoginParam (object)
+
++ parameter (string, required) - login parameter, support uid | username | email
++ password (string, required) - login password
+
+## LoginDto (object)
+
++ user (UserDto, required) - authorized user
++ token (string, required) - access token
+
+## RbacPolicyParam (object)
+
++ sub (string, required) - new subject
++ obj (string, required) - new object
++ act (string, required) - new action
+
 ## UserExtraDto (object)
 
 + subscribings (number, required) - user subscribing count
@@ -902,16 +1039,20 @@ rbac-controller
     (format: date-time)
 + author (UserDto, required) - video author
 
-## LoginParam (object)
+## RbacSubjectParam (object)
 
-+ parameter (string, required) - login parameter, support uid | username | email
-+ password (string, required) - login password
++ new (string, required) - new subject
++ from (string, required) - subject inherited from
 
-## Result (object)
+## RbacRuleDto (object)
 
-+ code (number, required) - status code
-    (format: int32)
-+ message (string, required) - status message
++ p_type (string, required) - rule type
++ v0 (string, required) - v0
++ v1 (string, required) - v1
++ v2 (string, required) - v2
++ v3 (string, required) - v3
++ v4 (string, required) - v4
++ v5 (string, required) - v5
 
 ## UserDto (object)
 
@@ -935,70 +1076,6 @@ rbac-controller
 + register_time (string, required) - user register time
     (format: date-time)
 + extra (UserExtraDto, required) - user extra information
-
-## RbacPolicyParam (object)
-
-+ sub (string, required) - new subject
-+ obj (string, required) - new object
-+ act (string, required) - new action
-
-## LoginDto (object)
-
-+ user (UserDto, required) - authorized user
-+ token (string, required) - access token
-
-## ChangeUserRoleParam (object)
-
-+ sub (string, required) - new subject
-
-## UpdateUserParam (object)
-
-+ username (string, required) - username
-+ nickname (string, required) - user nickname
-+ gender (enum[number], required) - user gender, 0X | 1M | 2F
-    (format: int32)
-    + Members
-        + `0`
-        + `1`
-        + `2`
-+ profile (string, required) - user profile
-    (allow empty)
-+ birthday: `2000-01-01` (string, required) - user birthday
-    (format: date)
-+ phone: `13512345678` (string, required) - user phone number
-+ avatar: `https://aaa.bbb.ccc` (string, required) - user avatar
-
-## UpdatePasswordParam (object)
-
-+ old (string, required) - old password
-+ new (string, required) - new password
-
-## RbacSubjectParam (object)
-
-+ new (string, required) - new subject
-+ from (string, required) - subject inherited from
-
-## InsertVideoParam (object)
-
-+ title (string, required) - video title
-+ description (string, required) - video description
-+ video_url: `https://aaa.bbb.ccc` (string, required) - video source url
-+ cover_url: `https://aaa.bbb.ccc` (string, required) - video cover url
-
-## RbacRuleDto (object)
-
-+ p_type (string, required) - rule type
-+ v0 (string, required) - v0
-+ v1 (string, required) - v1
-+ v2 (string, required) - v2
-+ v3 (string, required) - v3
-+ v4 (string, required) - v4
-+ v5 (string, required) - v5
-
-## RegisterParam (object)
-
-+ email: `aaa@bbb.ccc` (string, required) - register email
-+ password (string, required) - register password
 
 ## _Result<LoginDto> (object)
 
@@ -1031,23 +1108,6 @@ rbac-controller
     (format: int32)
 + data (array[UserDto], required) - page data
 
-## _Result<_Page<RbacRuleDto>> (object)
-
-+ code (number, required) - status code
-    (format: int32)
-+ message (string, required) - status message
-+ data (_Page<RbacRuleDto>, required) - response data
-
-## _Page<RbacRuleDto> (object)
-
-+ page (number, required) - current page
-    (format: int32)
-+ limit (number, required) - page size
-    (format: int32)
-+ total (number, required) - data count
-    (format: int32)
-+ data (array[RbacRuleDto], required) - page data
-
 ## _Result<_Page<VideoDto>> (object)
 
 + code (number, required) - status code
@@ -1064,6 +1124,23 @@ rbac-controller
 + total (number, required) - data count
     (format: int32)
 + data (array[VideoDto], required) - page data
+
+## _Result<_Page<RbacRuleDto>> (object)
+
++ code (number, required) - status code
+    (format: int32)
++ message (string, required) - status message
++ data (_Page<RbacRuleDto>, required) - response data
+
+## _Page<RbacRuleDto> (object)
+
++ page (number, required) - current page
+    (format: int32)
++ limit (number, required) - page size
+    (format: int32)
++ total (number, required) - data count
+    (format: int32)
++ data (array[RbacRuleDto], required) - page data
 
 ## _Result<VideoDto> (object)
 
