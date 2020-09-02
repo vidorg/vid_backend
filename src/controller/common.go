@@ -60,7 +60,7 @@ func (cmn *CommonController) getUsersExtra(c *gin.Context, authUser *po.User, us
 
 	// need_subscribe_count
 	if param.BindQueryBool(c, "need_subscribe_count") {
-		arr, err := cmn.subscribeService.QueryCountByUids(uids)
+		arr, err := cmn.subscribeService.QuerySubscribeCount(uids)
 		if err != nil {
 			return nil, err
 		}
@@ -73,7 +73,7 @@ func (cmn *CommonController) getUsersExtra(c *gin.Context, authUser *po.User, us
 	// need_is_subscribe
 	if param.BindQueryBool(c, "need_is_subscribe") {
 		if authUser != nil {
-			arr, err := cmn.subscribeService.CheckSubscribes(authUser.Uid, uids)
+			arr, err := cmn.subscribeService.CheckSubscribe(authUser.Uid, uids)
 			if err != nil {
 				return nil, err
 			}
@@ -92,7 +92,7 @@ func (cmn *CommonController) getUsersExtra(c *gin.Context, authUser *po.User, us
 	// need_is_block
 	if param.BindQueryBool(c, "need_is_block") {
 		if authUser != nil {
-			arr, err := cmn.blockService.CheckBlockings(authUser.Uid, uids)
+			arr, err := cmn.blockService.CheckBlocking(authUser.Uid, uids)
 			if err != nil {
 				return nil, err
 			}
@@ -121,7 +121,7 @@ func (cmn *CommonController) getUsersExtra(c *gin.Context, authUser *po.User, us
 
 	// need_favorite_count
 	if param.BindQueryBool(c, "need_favorite_count") {
-		arr, err := cmn.favoriteService.QueryCountByUids(uids)
+		arr, err := cmn.favoriteService.QueryFavoredCount(uids)
 		if err != nil {
 			return nil, err
 		}
@@ -175,7 +175,7 @@ func (cmn *CommonController) getVideosExtra(c *gin.Context, authUser *po.User, v
 
 	// need_favored_count
 	if param.BindQueryBool(c, "need_favored_count") {
-		arr, err := cmn.favoriteService.QueryCountByVids(vids)
+		arr, err := cmn.favoriteService.QueryFavoriteCount(vids)
 		if err != nil {
 			return nil, err
 		}
@@ -188,7 +188,7 @@ func (cmn *CommonController) getVideosExtra(c *gin.Context, authUser *po.User, v
 	// need_is_favorite
 	if param.BindQueryBool(c, "need_is_favorite") {
 		if authUser != nil {
-			arr, err := cmn.favoriteService.CheckFavorites(authUser.Uid, vids)
+			arr, err := cmn.favoriteService.CheckFavorite(authUser.Uid, vids)
 			if err != nil {
 				return nil, err
 			}
