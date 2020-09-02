@@ -74,10 +74,6 @@ func initRoute(engine *gin.Engine) {
 		userGroup.POST("subscribing/:uid", authMw, j(subscribeCtrl.SubscribeUser))
 		userGroup.DELETE("subscribing/:uid", authMw, j(subscribeCtrl.UnSubscribeUser))
 
-		userGroup.GET("blocking/list", authMw, j(blockCtrl.QueryBlockings))
-		userGroup.POST("blocking/:uid", authMw, j(blockCtrl.BlockUser))
-		userGroup.DELETE("blocking/:uid", authMw, j(blockCtrl.UnblockUser))
-
 		userGroup.GET(":uid/video", j(videoCtrl.QueryVideosByUid))
 	}
 
@@ -88,6 +84,14 @@ func initRoute(engine *gin.Engine) {
 		videoGroup.POST("", authMw, j(videoCtrl.InsertVideo))
 		videoGroup.PUT(":vid", authMw, j(videoCtrl.UpdateVideo))
 		videoGroup.DELETE(":vid", authMw, j(videoCtrl.DeleteVideo))
+	}
+
+	blockGroup := v1.Group("block")
+	{
+		blockGroup.Use(authMw)
+		blockGroup.GET("block/user", j(blockCtrl.QueryBlockings))
+		blockGroup.POST("block/user/:uid", j(blockCtrl.BlockUser))
+		blockGroup.DELETE("block/user/:uid", j(blockCtrl.UnblockUser))
 	}
 
 	rbacGroup := v1.Group("rbac")

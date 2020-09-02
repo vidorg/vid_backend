@@ -21,7 +21,7 @@ func init() {
 			Params(
 				goapidoc.NewPathParam("uid", "integer#int64", true, "user id"),
 				param.ADPage, param.ADLimit, param.ADOrder,
-				adNeedSubscribeCount, adNeedIsSubscribe, adNeedVideoCount,
+				_adNeedSubscribeCount, _adNeedIsSubscribe, _adNeedBlockCount, _adNeedVideoCount,
 			).
 			Responses(goapidoc.NewResponse(200, "_Result<_Page<UserDto>>")),
 
@@ -30,7 +30,7 @@ func init() {
 			Params(
 				goapidoc.NewPathParam("uid", "integer#int64", true, "user id"),
 				param.ADPage, param.ADLimit, param.ADOrder,
-				adNeedSubscribeCount, adNeedIsSubscribe, adNeedVideoCount,
+				_adNeedSubscribeCount, _adNeedIsSubscribe, _adNeedBlockCount, _adNeedVideoCount,
 			).
 			Responses(goapidoc.NewResponse(200, "_Result<_Page<UserDto>>")),
 

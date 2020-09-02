@@ -71,6 +71,17 @@ var (
 	NotSubscribeYetError    = New(404, ce(), "user has not been followed") // 还没有关注的用户
 )
 
+// block exception
+var (
+	GetBlockingListError = New(500, se(), "get blocking list failed") // 获取黑名单列表失败
+
+	BlockError           = New(500, se(), "block failed")              // 加入黑名单失败
+	BlockSelfError       = New(400, ce(), "could not block self")      // 无法将自己拉入黑名单
+	AlreadyBlockingError = New(409, ce(), "user has been blocked")     // 已经在黑名单的用户
+	UnblockError         = New(500, se(), "unblock error")             // 取消黑名单失败
+	NotBlockYetError     = New(404, ce(), "user has not been blocked") // 用户没有在黑名单中
+)
+
 // video exception
 var (
 	QueryVideoError    = New(500, se(), "query video failed") // 查找视频错误

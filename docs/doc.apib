@@ -185,7 +185,7 @@ auth-controller
 
 user-controller
 
-## query all user [/v1/user{?page,limit,order,need_subscribe_count,need_is_subscribe,need_video_count}]
+## query all user [/v1/user{?page,limit,order,need_subscribe_count,need_is_subscribe,need_block_count,need_video_count}]
 
 ### query all user [GET]
 
@@ -200,6 +200,7 @@ user-controller
     + order (string, optional) - order string
     + need_subscribe_count (boolean, optional) - need subscribe count (user)
     + need_is_subscribe (boolean, optional) - need is subscribe (user)
+    + need_block_count (boolean, optional) - need block count (user)
     + need_video_count (boolean, optional) - need video count (user)
 
 + Request (application/json)
@@ -220,7 +221,7 @@ user-controller
 
     + Body
 
-## query a user by uid [/v1/user/{uid}{?need_subscribe_count,need_is_subscribe,need_video_count}]
+## query a user by uid [/v1/user/{uid}{?need_subscribe_count,need_is_subscribe,need_block_count,need_video_count}]
 
 ### query a user by uid [GET]
 
@@ -232,6 +233,7 @@ user-controller
         (format: int64)
     + need_subscribe_count (boolean, optional) - need subscribe count (user)
     + need_is_subscribe (boolean, optional) - need is subscribe (user)
+    + need_block_count (boolean, optional) - need block count (user)
     + need_video_count (boolean, optional) - need video count (user)
 
 + Request (application/json)
@@ -300,7 +302,7 @@ user-controller
 
 subscribe-controller
 
-## query user subscribers [/v1/user/{uid}/subscriber{?page,limit,order,need_subscribe_count,need_is_subscribe,need_video_count}]
+## query user subscribers [/v1/user/{uid}/subscriber{?page,limit,order,need_subscribe_count,need_is_subscribe,need_block_count,need_video_count}]
 
 ### query user subscribers [GET]
 
@@ -317,6 +319,7 @@ subscribe-controller
     + order (string, optional) - order string
     + need_subscribe_count (boolean, optional) - need subscribe count (user)
     + need_is_subscribe (boolean, optional) - need is subscribe (user)
+    + need_block_count (boolean, optional) - need block count (user)
     + need_video_count (boolean, optional) - need video count (user)
 
 + Request (application/json)
@@ -335,7 +338,7 @@ subscribe-controller
 
     + Body
 
-## query user subscribings [/v1/user/{uid}/subscribing{?page,limit,order,need_subscribe_count,need_is_subscribe,need_video_count}]
+## query user subscribings [/v1/user/{uid}/subscribing{?page,limit,order,need_subscribe_count,need_is_subscribe,need_block_count,need_video_count}]
 
 ### query user subscribings [GET]
 
@@ -352,6 +355,7 @@ subscribe-controller
     + order (string, optional) - order string
     + need_subscribe_count (boolean, optional) - need subscribe count (user)
     + need_is_subscribe (boolean, optional) - need is subscribe (user)
+    + need_block_count (boolean, optional) - need block count (user)
     + need_video_count (boolean, optional) - need video count (user)
 
 + Request (application/json)
@@ -426,106 +430,11 @@ subscribe-controller
 
     + Body
 
-# Group Block
-
-block-controller
-
-## query user blockings [/v1/user/{uid}/blocking{?page,limit,order,need_subscribe_count,need_is_subscribe,need_video_count}]
-
-### query user blockings [GET]
-
-`GET /v1/user/{uid}/blocking`
-
-+ Parameters
-
-    + uid (number, required) - user id
-        (format: int64)
-    + page (number, optional) - current page
-        (format: int32)
-    + limit (number, optional) - page size
-        (format: int32)
-    + order (string, optional) - order string
-    + need_subscribe_count (boolean, optional) - need subscribe count (user)
-    + need_is_subscribe (boolean, optional) - need is subscribe (user)
-    + need_video_count (boolean, optional) - need video count (user)
-
-+ Request (application/json)
-
-    + Attributes
-
-    + Headers
-
-    + Body
-
-+ Response 200 (application/json)
-
-    + Attributes (_Result<_Page<UserDto>>)
-
-    + Headers
-
-    + Body
-
-## block user, unblock user [/v1/user/blocking/{uid}]
-
-### block user [POST]
-
-`POST /v1/user/blocking/{uid}`
-
-+ Parameters
-
-    + uid (number, required) - user id
-        (format: int64)
-
-+ Request (application/json)
-
-    + Attributes
-
-    + Headers
-
-            Authorization: Jwt apiKey (string, optional)
-
-    + Body
-
-+ Response 200 (application/json)
-
-    + Attributes (Result)
-
-    + Headers
-
-    + Body
-
-### unblock user [DELETE]
-
-`DELETE /v1/user/blocking/{uid}`
-
-+ Parameters
-
-    + uid (number, required) - user id
-        (format: int64)
-
-+ Request (application/json)
-
-    + Attributes
-
-    + Headers
-
-            Authorization: Jwt apiKey (string, optional)
-
-    + Body
-
-+ Response 200 (application/json)
-
-    + Attributes (Result)
-
-    + Headers
-
-    + Body
-
 # Group Video
 
 video-controller
 
-## query all videos [/v1/video{?page,limit,order,need_subscribe_count,need_is_subscribe,need_video_count,need_author}]
+## query all videos [/v1/video{?page,limit,order,need_subscribe_count,need_is_subscribe,need_block_count,need_video_count,need_author}]
 
 ### query all videos [GET]
 
@@ -540,6 +449,7 @@ video-controller
     + order (string, optional) - order string
     + need_subscribe_count (boolean, optional) - need subscribe count (user)
     + need_is_subscribe (boolean, optional) - need is subscribe (user)
+    + need_block_count (boolean, optional) - need block count (user)
     + need_video_count (boolean, optional) - need video count (user)
     + need_author (boolean, optional) - need video author (video)
 
@@ -561,7 +471,7 @@ video-controller
 
     + Body
 
-## query videos from user [/v1/user/{uid}/video{?page,limit,order,need_subscribe_count,need_is_subscribe,need_video_count,need_author}]
+## query videos from user [/v1/user/{uid}/video{?page,limit,order,need_subscribe_count,need_is_subscribe,need_block_count,need_video_count,need_author}]
 
 ### query videos from user [GET]
 
@@ -578,6 +488,7 @@ video-controller
     + order (string, optional) - order string
     + need_subscribe_count (boolean, optional) - need subscribe count (user)
     + need_is_subscribe (boolean, optional) - need is subscribe (user)
+    + need_block_count (boolean, optional) - need block count (user)
     + need_video_count (boolean, optional) - need video count (user)
     + need_author (boolean, optional) - need video author (video)
 
@@ -597,7 +508,7 @@ video-controller
 
     + Body
 
-## query a video [/v1/video/{vid}{?need_subscribe_count,need_is_subscribe,need_video_count,need_author}]
+## query a video [/v1/video/{vid}{?need_subscribe_count,need_is_subscribe,need_block_count,need_video_count,need_author}]
 
 ### query a video [GET]
 
@@ -609,6 +520,7 @@ video-controller
         (format: int64)
     + need_subscribe_count (boolean, optional) - need subscribe count (user)
     + need_is_subscribe (boolean, optional) - need is subscribe (user)
+    + need_block_count (boolean, optional) - need block count (user)
     + need_video_count (boolean, optional) - need video count (user)
     + need_author (boolean, optional) - need video author (video)
 
@@ -688,6 +600,101 @@ video-controller
 + Parameters
 
     + vid (number, required) - video id
+        (format: int64)
+
++ Request (application/json)
+
+    + Attributes
+
+    + Headers
+
+            Authorization: Jwt apiKey (string, optional)
+
+    + Body
+
++ Response 200 (application/json)
+
+    + Attributes (Result)
+
+    + Headers
+
+    + Body
+
+# Group Block
+
+block-controller
+
+## query user blockings [/v1/block/user{?page,limit,order,need_subscribe_count,need_is_subscribe,need_video_count}]
+
+### query user blockings [GET]
+
+`GET /v1/block/user`
+
++ Parameters
+
+    + page (number, optional) - current page
+        (format: int32)
+    + limit (number, optional) - page size
+        (format: int32)
+    + order (string, optional) - order string
+    + need_subscribe_count (boolean, optional) - need subscribe count (user)
+    + need_is_subscribe (boolean, optional) - need is subscribe (user)
+    + need_video_count (boolean, optional) - need video count (user)
+
++ Request (application/json)
+
+    + Attributes
+
+    + Headers
+
+            Authorization: Jwt apiKey (string, optional)
+
+    + Body
+
++ Response 200 (application/json)
+
+    + Attributes (_Result<_Page<UserDto>>)
+
+    + Headers
+
+    + Body
+
+## block user, unblock user [/v1/block/user/{uid}]
+
+### block user [POST]
+
+`POST /v1/block/user/{uid}`
+
++ Parameters
+
+    + uid (number, required) - user id
+        (format: int64)
+
++ Request (application/json)
+
+    + Attributes
+
+    + Headers
+
+            Authorization: Jwt apiKey (string, optional)
+
+    + Body
+
++ Response 200 (application/json)
+
+    + Attributes (Result)
+
+    + Headers
+
+    + Body
+
+### unblock user [DELETE]
+
+`DELETE /v1/block/user/{uid}`
+
++ Parameters
+
+    + uid (number, required) - user id
         (format: int64)
 
 + Request (application/json)
@@ -870,68 +877,6 @@ rbac-controller
 
 # Data Structures
 
-## Result (object)
-
-+ code (number, required) - status code
-    (format: int32)
-+ message (string, required) - status message
-
-## RbacPolicyParam (object)
-
-+ sub (string, required) - new subject
-+ obj (string, required) - new object
-+ act (string, required) - new action
-
-## InsertVideoParam (object)
-
-+ title (string, required) - video title
-+ description (string, required) - video description
-+ video_url: `https://aaa.bbb.ccc` (string, required) - video source url
-+ cover_url: `https://aaa.bbb.ccc` (string, required) - video cover url
-
-## VideoDto (object)
-
-+ vid (number, required) - video id
-    (format: int64)
-+ title (string, required) - video title
-+ description (string, required) - video description
-+ video_url (string, required) - video source url
-+ cover_url (string, required) - video cover url
-+ upload_time (string, required) - video upload time
-    (format: date-time)
-+ author (UserDto, required) - video author
-
-## LoginParam (object)
-
-+ parameter (string, required) - login parameter, support uid | username | email
-+ password (string, required) - login password
-
-## UpdatePasswordParam (object)
-
-+ old (string, required) - old password
-+ new (string, required) - new password
-
-## ChangeUserRoleParam (object)
-
-+ sub (string, required) - new subject
-
-## UpdateUserParam (object)
-
-+ username (string, required) - username
-+ nickname (string, required) - user nickname
-+ gender (enum[number], required) - user gender, 0X | 1M | 2F
-    (format: int32)
-    + Members
-        + `0`
-        + `1`
-        + `2`
-+ profile (string, required) - user profile
-    (allow empty)
-+ birthday: `2000-01-01` (string, required) - user birthday
-    (format: date)
-+ phone: `13512345678` (string, required) - user phone number
-+ avatar: `https://aaa.bbb.ccc` (string, required) - user avatar
-
 ## UserDto (object)
 
 + uid (number, required) - user id
@@ -955,15 +900,22 @@ rbac-controller
     (format: date-time)
 + extra (UserExtraDto, required) - user extra information
 
-## LoginDto (object)
+## UpdateUserParam (object)
 
-+ user (UserDto, required) - authorized user
-+ token (string, required) - access token
-
-## RegisterParam (object)
-
-+ email: `aaa@bbb.ccc` (string, required) - register email
-+ password (string, required) - register password
++ username (string, required) - username
++ nickname (string, required) - user nickname
++ gender (enum[number], required) - user gender, 0X | 1M | 2F
+    (format: int32)
+    + Members
+        + `0`
+        + `1`
+        + `2`
++ profile (string, required) - user profile
+    (allow empty)
++ birthday: `2000-01-01` (string, required) - user birthday
+    (format: date)
++ phone: `13512345678` (string, required) - user phone number
++ avatar: `https://aaa.bbb.ccc` (string, required) - user avatar
 
 ## RbacRuleDto (object)
 
@@ -975,21 +927,77 @@ rbac-controller
 + v4 (string, required) - v4
 + v5 (string, required) - v5
 
+## LoginParam (object)
+
++ parameter (string, required) - login parameter, support uid | username | email
++ password (string, required) - login password
+
+## InsertVideoParam (object)
+
++ title (string, required) - video title
++ description (string, required) - video description
++ video_url: `https://aaa.bbb.ccc` (string, required) - video source url
++ cover_url: `https://aaa.bbb.ccc` (string, required) - video cover url
+
+## Result (object)
+
++ code (number, required) - status code
+    (format: int32)
++ message (string, required) - status message
+
+## LoginDto (object)
+
++ user (UserDto, required) - authorized user
++ token (string, required) - access token
+
+## VideoDto (object)
+
++ vid (number, required) - video id
+    (format: int64)
++ title (string, required) - video title
++ description (string, required) - video description
++ video_url (string, required) - video source url
++ cover_url (string, required) - video cover url
++ upload_time (string, required) - video upload time
+    (format: date-time)
++ author (UserDto, required) - video author
+
+## RegisterParam (object)
+
++ email: `aaa@bbb.ccc` (string, required) - register email
++ password (string, required) - register password
+
+## UpdatePasswordParam (object)
+
++ old (string, required) - old password
++ new (string, required) - new password
+
+## RbacSubjectParam (object)
+
++ new (string, required) - new subject
++ from (string, required) - subject inherited from
+
 ## UserExtraDto (object)
 
 + subscribings (number, required) - user subscribing count
     (format: int32)
 + subscribers (number, required) - user subscriber count
     (format: int32)
-+ is_subscribing (boolean, required) - authorized user is subscribing
-+ is_subscribed (boolean, required) - authorized user is subscribed
++ is_subscribing (boolean, required) - authorized user is subscribing this user
++ is_subscribed (boolean, required) - authorized user is subscribed by this user
++ is_blocking (boolean, required) - authorized user is blocking this user
 + videos (number, required) - user video count
     (format: int32)
 
-## RbacSubjectParam (object)
+## ChangeUserRoleParam (object)
 
-+ new (string, required) - new subject
-+ from (string, required) - subject inherited from
++ sub (string, required) - new subject
+
+## RbacPolicyParam (object)
+
++ sub (string, required) - new subject
++ obj (string, required) - new object
++ act (string, required) - new action
 
 ## _Result<LoginDto> (object)
 

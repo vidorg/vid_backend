@@ -43,7 +43,7 @@ func (cmn *CommonService) MergeIdCntPairs(pairs *[2][]*_IdCntPair, uids []uint64
 		if ok {
 			out[idx] = &arr
 		} else {
-			out[idx] = &[2]int32{}
+			out[idx] = &[2]int32{0, 0}
 		}
 	}
 
@@ -72,7 +72,7 @@ func (cmn *CommonService) MergeFromToUidPairs(pairs *[2][]*_FromToUidPair, uids 
 		if ok {
 			out[idx] = &arr
 		} else {
-			out[idx] = &[2]bool{}
+			out[idx] = &[2]bool{false, false}
 		}
 	}
 

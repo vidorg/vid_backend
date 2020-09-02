@@ -16,22 +16,22 @@ import (
 
 func init() {
 	goapidoc.AddRoutePaths(
-		goapidoc.NewRoutePath("GET", "/v1/user/blocking/list", "query user blockings").
+		goapidoc.NewRoutePath("GET", "/v1/block/user", "query user blockings").
 			Tags("Block").
 			Securities("Jwt").
 			Params(
 				param.ADPage, param.ADLimit, param.ADOrder,
-				adNeedSubscribeCount, adNeedIsSubscribe, adNeedVideoCount,
+			_adNeedSubscribeCount, _adNeedIsSubscribe, _adNeedVideoCount,
 			).
 			Responses(goapidoc.NewResponse(200, "_Result<_Page<UserDto>>")),
 
-		goapidoc.NewRoutePath("POST", "/v1/user/blocking/{uid}", "block user").
+		goapidoc.NewRoutePath("POST", "/v1/block/user/{uid}", "block user").
 			Tags("Block").
 			Securities("Jwt").
 			Params(goapidoc.NewPathParam("uid", "integer#int64", true, "user id")).
 			Responses(goapidoc.NewResponse(200, "Result")),
 
-		goapidoc.NewRoutePath("DELETE", "/v1/user/blocking/{uid}", "unblock user").
+		goapidoc.NewRoutePath("DELETE", "/v1/block/user/{uid}", "unblock user").
 			Tags("Block").
 			Securities("Jwt").
 			Params(goapidoc.NewPathParam("uid", "integer#int64", true, "user id")).
@@ -57,7 +57,7 @@ func NewBlockController() *BlockController {
 	}
 }
 
-// GET /v1/user/blocking/list
+// GET /v1/block/user
 func (b *BlockController) QueryBlockings(c *gin.Context) *result.Result {
 	user := b.jwtService.GetContextUser(c)
 	if user == nil {
@@ -67,7 +67,7 @@ func (b *BlockController) QueryBlockings(c *gin.Context) *result.Result {
 
 	users, total, err := b.blockService.QueryBlockings(user.Uid, pp)
 	if err != nil {
-		return result.Error(exception.GetSubscriberListError).SetError(err, c)
+		return result.Error(exception.GetBlockingListError).SetError(err, c)
 	} else if users == nil {
 		return result.Error(exception.UserNotFoundError)
 	}
@@ -85,7 +85,7 @@ func (b *BlockController) QueryBlockings(c *gin.Context) *result.Result {
 	return result.Ok().SetPage(pp.Page, pp.Limit, total, res)
 }
 
-// POST /v1/user/blocking/:uid
+// POST /v1/block/user/:uid
 func (b *BlockController) BlockUser(c *gin.Context) *result.Result {
 	user := b.jwtService.GetContextUser(c)
 	if user == nil {
@@ -98,22 +98,22 @@ func (b *BlockController) BlockUser(c *gin.Context) *result.Result {
 	}
 
 	if user.Uid == uid {
-		return result.Error(exception.SubscribeSelfError)
+		return result.Error(exception.BlockSelfError)
 	}
 
 	status, err := b.blockService.InsertBlocking(user.Uid, uid)
 	if status == xstatus.DbNotFound {
 		return result.Error(exception.UserNotFoundError)
 	} else if status == xstatus.DbExisted {
-		return result.Error(exception.AlreadySubscribingError)
+		return result.Error(exception.AlreadyBlockingError)
 	} else if status == xstatus.DbFailed {
-		return result.Error(exception.SubscribeError).SetError(err, c)
+		return result.Error(exception.BlockError).SetError(err, c)
 	}
 
 	return result.Ok()
 }
 
-// DELETE /v1/user/blocking/:uid
+// DELETE /v1/block/user/:uid
 func (b *BlockController) UnblockUser(c *gin.Context) *result.Result {
 	user := b.jwtService.GetContextUser(c)
 	if user == nil {
@@ -129,9 +129,9 @@ func (b *BlockController) UnblockUser(c *gin.Context) *result.Result {
 	if status == xstatus.DbNotFound {
 		return result.Error(exception.UserNotFoundError)
 	} else if status == xstatus.DbTagA {
-		return result.Error(exception.NotSubscribeYetError)
+		return result.Error(exception.NotBlockYetError)
 	} else if status == xstatus.DbFailed {
-		return result.Error(exception.UnSubscribeError).SetError(err, c)
+		return result.Error(exception.UnblockError).SetError(err, c)
 	}
 
 	return result.Ok()

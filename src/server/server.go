@@ -30,8 +30,8 @@ func init() {
 		goapidoc.NewTag("Authorization", "auth-controller"),
 		goapidoc.NewTag("User", "user-controller"),
 		goapidoc.NewTag("Subscribe", "subscribe-controller"),
-		goapidoc.NewTag("Block", "block-controller"),
 		goapidoc.NewTag("Video", "video-controller"),
+		goapidoc.NewTag("Block", "block-controller"),
 		goapidoc.NewTag("Rbac", "rbac-controller"),
 		goapidoc.NewTag("Administration", "*-controller"),
 	)
