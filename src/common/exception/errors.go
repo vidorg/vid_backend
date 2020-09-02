@@ -93,6 +93,17 @@ var (
 	DeleteVideoError     = New(500, se(), "video delete failed")      // 删除视频失败
 )
 
+// favorite exception
+var (
+	GetFavoriteListError = New(500, se(), "query user favorite list failed")     // 查找用户收藏列表失败
+	GetFavoredListError  = New(500, se(), "query user favored user list failed") // 查找视频被收藏用户列表失败
+
+	AddToFavoriteError      = New(500, se(), "add to favorite failed")         // 添加收藏失败
+	AlreadyInFavoriteError  = New(409, ce(), "video has been in favorite")     // 已经收藏的视频
+	RemoveFromFavoriteError = New(500, se(), "remove from favorite failed")    // 删除收藏失败
+	NotInFavoriteYetError   = New(404, ce(), "video has not been in favorite") // 还没有收藏的视频
+)
+
 // rbac rule exceptions
 var (
 	QueryRbacRuleError  = New(500, se(), "query rbac rule failed")       // 查询规则失败

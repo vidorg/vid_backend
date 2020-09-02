@@ -2,6 +2,7 @@ package controller
 
 import (
 	"github.com/Aoi-hosizora/ahlib/xdi"
+	"github.com/Aoi-hosizora/ahlib/xpointer"
 	"github.com/Aoi-hosizora/goapidoc"
 	"github.com/gin-gonic/gin"
 	"github.com/vidorg/vid_backend/src/model/dto"
@@ -59,26 +60,39 @@ func (cmn *CommonController) getUsersExtra(c *gin.Context, authUser *po.User, us
 	}
 
 	// need_is_subscribe
-	if param.BindQueryBool(c, "need_is_subscribe") && authUser != nil {
-		arr, err := cmn.subscribeService.CheckSubscribes(authUser.Uid, uids)
-		if err != nil {
-			return nil, err
-		}
-		for idx, is := range arr {
-			extras[idx].IsSubscribing = &is[0]
-			extras[idx].IsSubscribed = &is[1]
+	if param.BindQueryBool(c, "need_is_subscribe") {
+		if authUser != nil {
+			arr, err := cmn.subscribeService.CheckSubscribes(authUser.Uid, uids)
+			if err != nil {
+				return nil, err
+			}
+			for idx, is := range arr {
+				extras[idx].IsSubscribing = &is[0]
+				extras[idx].IsSubscribed = &is[1]
+			}
+		} else {
+			for idx := range extras {
+				extras[idx].IsSubscribing = xpointer.BoolPtr(false)
+				extras[idx].IsSubscribed = xpointer.BoolPtr(false)
+			}
 		}
 	}
 
 	// need_is_block
-	if param.BindQueryBool(c, "need_is_block") && authUser != nil {
-		arr, err := cmn.blockService.CheckBlockings(authUser.Uid, uids)
-		if err != nil {
-			return nil, err
-		}
-		for idx, is := range arr {
-			is := is
-			extras[idx].IsBlocking = &is
+	if param.BindQueryBool(c, "need_is_block") {
+		if authUser != nil {
+			arr, err := cmn.blockService.CheckBlockings(authUser.Uid, uids)
+			if err != nil {
+				return nil, err
+			}
+			for idx, is := range arr {
+				is := is
+				extras[idx].IsBlocking = &is
+			}
+		} else {
+			for idx := range extras {
+				extras[idx].IsBlocking = xpointer.BoolPtr(false)
+			}
 		}
 	}
 

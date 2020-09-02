@@ -727,6 +727,68 @@
         }
       }
     },
+    "/v1/user/favorite/{vid}": {
+      "delete": {
+        "summary": "remove video from favorite",
+        "operationId": "-v1-user-favorite-vid-delete",
+        "tags": [
+          "Favorite"
+        ],
+        "security": [
+          {
+            "Jwt": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "vid",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "description": "vid id",
+            "format": "int64"
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "originRef": "Result",
+              "$ref": "#/definitions/Result"
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "add video to favorite",
+        "operationId": "-v1-user-favorite-vid-post",
+        "tags": [
+          "Favorite"
+        ],
+        "security": [
+          {
+            "Jwt": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "vid",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "description": "vid id",
+            "format": "int64"
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "originRef": "Result",
+              "$ref": "#/definitions/Result"
+            }
+          }
+        }
+      }
+    },
     "/v1/user/subscribing/{uid}": {
       "delete": {
         "summary": "unsubscribe user",
@@ -1430,7 +1492,7 @@
             "in": "path",
             "required": true,
             "type": "integer",
-            "description": "user id",
+            "description": "vid id",
             "format": "int64"
           },
           {

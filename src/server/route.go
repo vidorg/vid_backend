@@ -77,6 +77,8 @@ func initRoute(engine *gin.Engine) {
 
 		userGroup.GET(":uid/video", j(videoCtrl.QueryVideosByUid))
 		userGroup.GET(":uid/favorite", j(favoriteCtrl.QueryFavorites))
+		userGroup.POST("favorite/:vid", authMw, j(favoriteCtrl.AddFavorite))
+		userGroup.DELETE("favorite/:vid", authMw, j(favoriteCtrl.RemoveFavorite))
 	}
 
 	videoGroup := v1.Group("video")

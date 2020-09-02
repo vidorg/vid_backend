@@ -2,6 +2,7 @@ package controller
 
 import (
 	"github.com/Aoi-hosizora/ahlib/xdi"
+	"github.com/Aoi-hosizora/ahlib/xstatus"
 	"github.com/Aoi-hosizora/goapidoc"
 	"github.com/gin-gonic/gin"
 	"github.com/vidorg/vid_backend/src/common/exception"
@@ -27,11 +28,23 @@ func init() {
 		goapidoc.NewRoutePath("GET", "/v1/video/{vid}/favored", "query video favored users").
 			Tags("Favorite").
 			Params(
-				goapidoc.NewPathParam("vid", "integer#int64", true, "user id"),
+				goapidoc.NewPathParam("vid", "integer#int64", true, "vid id"),
 				param.ADPage, param.ADLimit, param.ADOrder,
 				_adNeedSubscribeCount, _adNeedIsSubscribe, _adNeedIsBlock, _adNeedVideoCount,
 			).
 			Responses(goapidoc.NewResponse(200, "_Result<_Page<UserDto>>")),
+
+		goapidoc.NewRoutePath("POST", "/v1/user/favorite/{vid}", "add video to favorite").
+			Tags("Favorite").
+			Securities("Jwt").
+			Params(goapidoc.NewPathParam("vid", "integer#int64", true, "vid id")).
+			Responses(goapidoc.NewResponse(200, "Result")),
+
+		goapidoc.NewRoutePath("DELETE", "/v1/user/favorite/{vid}", "remove video from favorite").
+			Tags("Favorite").
+			Securities("Jwt").
+			Params(goapidoc.NewPathParam("vid", "integer#int64", true, "vid id")).
+			Responses(goapidoc.NewResponse(200, "Result")),
 	)
 }
 
@@ -61,7 +74,7 @@ func (f *FavoriteController) QueryFavorites(c *gin.Context) *result.Result {
 
 	videos, total, err := f.favoriteService.QueryFavorites(uid, pp)
 	if err != nil {
-		return result.Error(exception.GetBlockingListError).SetError(err, c)
+		return result.Error(exception.GetFavoriteListError).SetError(err, c)
 	} else if videos == nil {
 		return result.Error(exception.UserNotFoundError)
 	}
@@ -69,7 +82,7 @@ func (f *FavoriteController) QueryFavorites(c *gin.Context) *result.Result {
 	authUser := f.jwtService.GetContextUser(c)
 	authors, extras, err := f.common.getVideosAuthor(c, authUser, videos)
 	if err != nil {
-		return result.Error(exception.QueryVideoError).SetError(err, c)
+		return result.Error(exception.GetFavoriteListError).SetError(err, c)
 	}
 
 	res := dto.BuildVideoDtos(videos)
@@ -92,7 +105,7 @@ func (f *FavoriteController) QueryFavoreds(c *gin.Context) *result.Result {
 
 	users, total, err := f.favoriteService.QueryFavoreds(vid, pp)
 	if err != nil {
-		return result.Error(exception.GetBlockingListError).SetError(err, c)
+		return result.Error(exception.GetFavoredListError).SetError(err, c)
 	} else if users == nil {
 		return result.Error(exception.VideoNotFoundError)
 	}
@@ -100,7 +113,7 @@ func (f *FavoriteController) QueryFavoreds(c *gin.Context) *result.Result {
 	authUser := f.jwtService.GetContextUser(c)
 	extras, err := f.common.getUsersExtra(c, authUser, users)
 	if err != nil {
-		return result.Error(exception.QueryUserError).SetError(err, c)
+		return result.Error(exception.GetFavoredListError).SetError(err, c)
 	}
 
 	res := dto.BuildUserDtos(users)
@@ -108,4 +121,56 @@ func (f *FavoriteController) QueryFavoreds(c *gin.Context) *result.Result {
 		user.Extra = extras[idx]
 	}
 	return result.Ok().SetPage(pp.Page, pp.Limit, total, res)
+}
+
+// POST /v1/user/favorite/:vid
+func (f *FavoriteController) AddFavorite(c *gin.Context) *result.Result {
+	user := f.jwtService.GetContextUser(c)
+	if user == nil {
+		return nil
+	}
+
+	vid, err := param.BindRouteId(c, "vid")
+	if err != nil {
+		return result.Error(exception.RequestParamError).SetError(err, c)
+	}
+
+	status, err := f.favoriteService.InsertFavorite(user.Uid, vid)
+	if status == xstatus.DbTagB {
+		return result.Error(exception.UserNotFoundError)
+	} else if status == xstatus.DbTagC {
+		return result.Error(exception.VideoNotFoundError)
+	} else if status == xstatus.DbExisted {
+		return result.Error(exception.AlreadyInFavoriteError)
+	} else if status == xstatus.DbFailed {
+		return result.Error(exception.AddToFavoriteError).SetError(err, c)
+	}
+
+	return result.Ok()
+}
+
+// DELETE /v1/user/favorite/:vid
+func (f *FavoriteController) RemoveFavorite(c *gin.Context) *result.Result {
+	user := f.jwtService.GetContextUser(c)
+	if user == nil {
+		return nil
+	}
+
+	vid, err := param.BindRouteId(c, "vid")
+	if err != nil {
+		return result.Error(exception.RequestParamError).SetError(err, c)
+	}
+
+	status, err := f.favoriteService.DeleteFavorite(user.Uid, vid)
+	if status == xstatus.DbTagB {
+		return result.Error(exception.UserNotFoundError)
+	} else if status == xstatus.DbTagC {
+		return result.Error(exception.VideoNotFoundError)
+	} else if status == xstatus.DbTagA {
+		return result.Error(exception.NotInFavoriteYetError)
+	} else if status == xstatus.DbFailed {
+		return result.Error(exception.RemoveFromFavoriteError).SetError(err, c)
+	}
+
+	return result.Ok()
 }

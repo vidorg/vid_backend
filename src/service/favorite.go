@@ -18,7 +18,7 @@ type FavoriteService struct {
 	common       *CommonService
 	userOrderBy  func(string) string
 	videoOrderBy func(string) string
-	tableName    string
+	tblName      string
 }
 
 func NewFavoriteService() *FavoriteService {
@@ -29,7 +29,7 @@ func NewFavoriteService() *FavoriteService {
 		common:       xdi.GetByNameForce(sn.SCommonService).(*CommonService),
 		userOrderBy:  xgorm.OrderByFunc(dto.BuildUserPropertyMapper()),
 		videoOrderBy: xgorm.OrderByFunc(dto.BuildVideoPropertyMapper()),
-		tableName:    "tbl_favorite",
+		tblName:      "tbl_favorite",
 	}
 }
 
@@ -86,12 +86,60 @@ func (f *FavoriteService) QueryFavoreds(vid uint64, pp *param.PageOrderParam) ([
 }
 
 func (f *FavoriteService) InsertFavorite(uid uint64, vid uint64) (xstatus.DbStatus, error) {
-	// TODO
+	ok1, err1 := f.userService.Existed(uid)
+	ok2, err2 := f.videoService.Existed(vid)
+	if err1 != nil {
+		return xstatus.DbFailed, err1
+	} else if err2 != nil {
+		return xstatus.DbFailed, err2
+	} else if !ok1 {
+		return xstatus.DbTagB, nil
+	} else if !ok2 {
+		return xstatus.DbTagC, nil
+	}
+
+	cnt := 0
+	rdb := f.db.Table(f.tblName).Where("uid = ? AND vid = ?", uid, vid).Count(&cnt)
+	if rdb.Error != nil {
+		return xstatus.DbFailed, rdb.Error
+	} else if cnt > 0 {
+		return xstatus.DbExisted, nil
+	}
+
+	ras := f.favoriteAsso(uid).Append(&po.Video{Vid: vid})
+	if ras.Error != nil {
+		return xstatus.DbFailed, ras.Error
+	}
+
 	return xstatus.DbSuccess, nil
 }
 
 func (f *FavoriteService) DeleteFavorite(uid uint64, vid uint64) (xstatus.DbStatus, error) {
-	// TODO
+	ok1, err1 := f.userService.Existed(uid)
+	ok2, err2 := f.videoService.Existed(vid)
+	if err1 != nil {
+		return xstatus.DbFailed, err1
+	} else if err2 != nil {
+		return xstatus.DbFailed, err2
+	} else if !ok1 {
+		return xstatus.DbTagB, nil
+	} else if !ok2 {
+		return xstatus.DbTagC, nil
+	}
+
+	cnt := 0
+	rdb := f.db.Table(f.tblName).Where("uid = ? AND vid = ?", uid, vid).Count(&cnt)
+	if rdb.Error != nil {
+		return xstatus.DbFailed, rdb.Error
+	} else if cnt == 0 {
+		return xstatus.DbTagA, nil
+	}
+
+	ras := f.favoriteAsso(uid).Delete(&po.Video{Vid: vid})
+	if ras.Error != nil {
+		return xstatus.DbFailed, ras.Error
+	}
+
 	return xstatus.DbSuccess, nil
 }
 

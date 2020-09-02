@@ -84,7 +84,7 @@ func (s *SubscribeController) QuerySubscribers(c *gin.Context) *result.Result {
 	authUser := s.jwtService.GetContextUser(c)
 	extras, err := s.common.getUsersExtra(c, authUser, users)
 	if err != nil {
-		return result.Error(exception.QueryUserError).SetError(err, c)
+		return result.Error(exception.GetSubscriberListError).SetError(err, c)
 	}
 
 	res := dto.BuildUserDtos(users)
@@ -112,7 +112,7 @@ func (s *SubscribeController) QuerySubscribings(c *gin.Context) *result.Result {
 	authUser := s.jwtService.GetContextUser(c)
 	extras, err := s.common.getUsersExtra(c, authUser, users)
 	if err != nil {
-		return result.Error(exception.QueryUserError).SetError(err, c)
+		return result.Error(exception.GetSubscribingListError).SetError(err, c)
 	}
 
 	res := dto.BuildUserDtos(users)

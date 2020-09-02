@@ -669,7 +669,7 @@ favorite-controller
 
 + Parameters
 
-    + vid (number, required) - user id
+    + vid (number, required) - vid id
         (format: int64)
     + page (number, optional) - current page
         (format: int32)
@@ -692,6 +692,62 @@ favorite-controller
 + Response 200 (application/json)
 
     + Attributes (_Result<_Page<UserDto>>)
+
+    + Headers
+
+    + Body
+
+## add video to favorite, remove video from favorite [/v1/user/favorite/{vid}]
+
+### add video to favorite [POST]
+
+`POST /v1/user/favorite/{vid}`
+
++ Parameters
+
+    + vid (number, required) - vid id
+        (format: int64)
+
++ Request (application/json)
+
+    + Attributes
+
+    + Headers
+
+            Authorization: Jwt apiKey (string, optional)
+
+    + Body
+
++ Response 200 (application/json)
+
+    + Attributes (Result)
+
+    + Headers
+
+    + Body
+
+### remove video from favorite [DELETE]
+
+`DELETE /v1/user/favorite/{vid}`
+
++ Parameters
+
+    + vid (number, required) - vid id
+        (format: int64)
+
++ Request (application/json)
+
+    + Attributes
+
+    + Headers
+
+            Authorization: Jwt apiKey (string, optional)
+
+    + Body
+
++ Response 200 (application/json)
+
+    + Attributes (Result)
 
     + Headers
 
@@ -955,65 +1011,25 @@ rbac-controller
 
 # Data Structures
 
-## RegisterParam (object)
-
-+ email: `aaa@bbb.ccc` (string, required) - register email
-+ password (string, required) - register password
-
-## InsertVideoParam (object)
-
-+ title (string, required) - video title
-+ description (string, required) - video description
-+ video_url: `https://aaa.bbb.ccc` (string, required) - video source url
-+ cover_url: `https://aaa.bbb.ccc` (string, required) - video cover url
-
-## UpdatePasswordParam (object)
-
-+ old (string, required) - old password
-+ new (string, required) - new password
-
-## ChangeUserRoleParam (object)
-
-+ sub (string, required) - new subject
-
-## UpdateUserParam (object)
-
-+ username (string, required) - username
-+ nickname (string, required) - user nickname
-+ gender (enum[number], required) - user gender, 0X | 1M | 2F
-    (format: int32)
-    + Members
-        + `0`
-        + `1`
-        + `2`
-+ profile (string, required) - user profile
-    (allow empty)
-+ birthday: `2000-01-01` (string, required) - user birthday
-    (format: date)
-+ phone: `13512345678` (string, required) - user phone number
-+ avatar: `https://aaa.bbb.ccc` (string, required) - user avatar
-
 ## Result (object)
 
 + code (number, required) - status code
     (format: int32)
 + message (string, required) - status message
 
-## LoginParam (object)
-
-+ parameter (string, required) - login parameter, support uid | username | email
-+ password (string, required) - login password
-
 ## LoginDto (object)
 
 + user (UserDto, required) - authorized user
 + token (string, required) - access token
 
-## RbacPolicyParam (object)
+## ChangeUserRoleParam (object)
 
 + sub (string, required) - new subject
-+ obj (string, required) - new object
-+ act (string, required) - new action
+
+## RbacSubjectParam (object)
+
++ new (string, required) - new subject
++ from (string, required) - subject inherited from
 
 ## UserExtraDto (object)
 
@@ -1039,10 +1055,32 @@ rbac-controller
     (format: date-time)
 + author (UserDto, required) - video author
 
-## RbacSubjectParam (object)
+## RegisterParam (object)
 
-+ new (string, required) - new subject
-+ from (string, required) - subject inherited from
++ email: `aaa@bbb.ccc` (string, required) - register email
++ password (string, required) - register password
+
+## UpdatePasswordParam (object)
+
++ old (string, required) - old password
++ new (string, required) - new password
+
+## UpdateUserParam (object)
+
++ username (string, required) - username
++ nickname (string, required) - user nickname
++ gender (enum[number], required) - user gender, 0X | 1M | 2F
+    (format: int32)
+    + Members
+        + `0`
+        + `1`
+        + `2`
++ profile (string, required) - user profile
+    (allow empty)
++ birthday: `2000-01-01` (string, required) - user birthday
+    (format: date)
++ phone: `13512345678` (string, required) - user phone number
++ avatar: `https://aaa.bbb.ccc` (string, required) - user avatar
 
 ## RbacRuleDto (object)
 
@@ -1076,6 +1114,24 @@ rbac-controller
 + register_time (string, required) - user register time
     (format: date-time)
 + extra (UserExtraDto, required) - user extra information
+
+## RbacPolicyParam (object)
+
++ sub (string, required) - new subject
++ obj (string, required) - new object
++ act (string, required) - new action
+
+## LoginParam (object)
+
++ parameter (string, required) - login parameter, support uid | username | email
++ password (string, required) - login password
+
+## InsertVideoParam (object)
+
++ title (string, required) - video title
++ description (string, required) - video description
++ video_url: `https://aaa.bbb.ccc` (string, required) - video source url
++ cover_url: `https://aaa.bbb.ccc` (string, required) - video cover url
 
 ## _Result<LoginDto> (object)
 
