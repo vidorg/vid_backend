@@ -109,7 +109,7 @@ func (b *BlockService) DeleteBlocking(uid uint64, to uint64) (xstatus.DbStatus, 
 	return xstatus.DbSuccess, nil
 }
 
-func (b *BlockService) CheckBlockings(me uint64, uids []uint64) ([]bool, error) {
+func (b *BlockService) CheckBlocking(me uint64, uids []uint64) ([]bool, error) {
 	if len(uids) == 0 {
 		return []bool{}, nil
 	}

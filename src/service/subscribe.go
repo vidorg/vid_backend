@@ -136,7 +136,7 @@ func (s *SubscribeService) DeleteSubscribe(uid uint64, to uint64) (xstatus.DbSta
 	return xstatus.DbSuccess, nil
 }
 
-func (s *SubscribeService) QueryCountByUids(uids []uint64) ([]*[2]int32, error) {
+func (s *SubscribeService) QuerySubscribeCount(uids []uint64) ([]*[2]int32, error) {
 	if len(uids) == 0 {
 		return []*[2]int32{}, nil
 	}
@@ -184,7 +184,7 @@ func (s *SubscribeService) QueryCountByUids(uids []uint64) ([]*[2]int32, error) 
 	return out, nil
 }
 
-func (s *SubscribeService) CheckSubscribes(me uint64, uids []uint64) ([]*[2]bool, error) {
+func (s *SubscribeService) CheckSubscribe(me uint64, uids []uint64) ([]*[2]bool, error) {
 	if len(uids) == 0 {
 		return []*[2]bool{}, nil
 	}
