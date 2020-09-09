@@ -19,7 +19,7 @@ func initRoute(engine *gin.Engine) {
 		result.Status(404).SetMessage(fmt.Sprintf("route %s is not found", c.Request.URL.Path)).JSON(c)
 	})
 	engine.NoMethod(func(c *gin.Context) {
-		result.Status(405).SetMessage("method not allowed").JSON(c)
+		result.Status(405).SetMessage(fmt.Sprintf("method %s is not allowed", c.Request.Method)).JSON(c)
 	})
 	engine.GET("", func(c *gin.Context) {
 		c.JSON(200, &gin.H{"message": "Welcome to vid API."})

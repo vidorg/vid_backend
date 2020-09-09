@@ -15,6 +15,10 @@ func LoggerMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		start := time.Now()
 		c.Next()
-		xgin.WithLogrus(logger, start, c)
+
+		rid := c.Writer.Header().Get("X-Request-ID")
+		fields := map[string]interface{}{"requestID": rid}
+
+		xgin.WithLogrus(logger, start, c, rid, fields)
 	}
 }

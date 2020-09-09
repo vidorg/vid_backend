@@ -54,6 +54,7 @@ func NewServer() *Server {
 	setupBinding()
 
 	// mw
+	engine.Use(middleware.RequestIdMiddleware())
 	engine.Use(middleware.LoggerMiddleware())
 	engine.Use(middleware.RecoveryMiddleware())
 	engine.Use(middleware.CorsMiddleware())
