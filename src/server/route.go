@@ -6,6 +6,7 @@ import (
 	"github.com/vidorg/vid_backend/src/common/result"
 	"github.com/vidorg/vid_backend/src/controller"
 	"github.com/vidorg/vid_backend/src/middleware"
+	"strings"
 )
 
 func j(fn func(c *gin.Context) *result.Result) func(c *gin.Context) {
@@ -19,13 +20,13 @@ func initRoute(engine *gin.Engine) {
 		result.Status(404).SetMessage(fmt.Sprintf("route %s is not found", c.Request.URL.Path)).JSON(c)
 	})
 	engine.NoMethod(func(c *gin.Context) {
-		result.Status(405).SetMessage(fmt.Sprintf("method %s is not allowed", c.Request.Method)).JSON(c)
+		result.Status(405).SetMessage(fmt.Sprintf("method %s is not allowed", strings.ToUpper(c.Request.Method))).JSON(c)
+	})
+	engine.GET("/ping", func(c *gin.Context) {
+		c.JSON(200, &gin.H{"ping": "pong"})
 	})
 	engine.GET("", func(c *gin.Context) {
 		c.JSON(200, &gin.H{"message": "Welcome to vid API."})
-	})
-	engine.GET("ping", func(c *gin.Context) {
-		c.JSON(200, &gin.H{"ping": "pong"})
 	})
 
 	// controller

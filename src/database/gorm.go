@@ -30,7 +30,7 @@ func NewMySQLDB() (*gorm.DB, error) {
 	gorm.DefaultTableNameHandler = func(db *gorm.DB, defaultTableName string) string {
 		return "tbl_" + defaultTableName
 	}
-	xgorm.HookDeleteAtField(db, xgorm.DefaultDeleteAtTimeStamp)
+	xgorm.HookDeleteAtField(db, xgorm.DefaultDeleteAtTimestamp)
 
 	db.DB().SetMaxIdleConns(int(mcfg.MaxIdle))
 	db.DB().SetMaxOpenConns(int(mcfg.MaxActive))

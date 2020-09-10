@@ -1029,34 +1029,23 @@ rbac-controller
 
 # Data Structures
 
-## UserExtraDto (object)
+## RbacPolicyParam (object)
 
-+ subscribings (number, required) - user subscribing count
-    (format: int32)
-+ subscribers (number, required) - user subscriber count
-    (format: int32)
-+ is_subscribing (boolean, required) - authorized user is subscribing this user
-+ is_subscribed (boolean, required) - authorized user is subscribed by this user
-+ is_blocking (boolean, required) - authorized user is blocking this user
-+ videos (number, required) - user video count
-    (format: int32)
-+ favorites (number, required) - user favorite count
-    (format: int32)
++ sub (string, required) - new subject
++ obj (string, required) - new object
++ act (string, required) - new action
 
-## LoginDto (object)
+## InsertVideoParam (object)
 
-+ user (UserDto, required) - authorized user
-+ token (string, required) - access token
++ title (string, required) - video title
++ description (string, required) - video description
++ video_url: `https://aaa.bbb.ccc` (string, required) - video source url
++ cover_url: `https://aaa.bbb.ccc` (string, required) - video cover url
 
-## UpdatePasswordParam (object)
+## RegisterParam (object)
 
-+ old (string, required) - old password
-+ new (string, required) - new password
-
-## RbacSubjectParam (object)
-
-+ new (string, required) - new subject
-+ from (string, required) - subject inherited from
++ email: `aaa@bbb.ccc` (string, required) - register email
++ password (string, required) - register password
 
 ## UserDto (object)
 
@@ -1094,37 +1083,14 @@ rbac-controller
 + author (UserDto, required) - video author
 + extra (VideoExtraDto, required) - video extra information
 
-## LoginParam (object)
-
-+ parameter (string, required) - login parameter, support uid | username | email
-+ password (string, required) - login password
-
-## Result (object)
-
-+ code (number, required) - status code
-    (format: int32)
-+ message (string, required) - status message
-
-## VideoExtraDto (object)
-
-+ favoreds (number, required) - video favored user count
-    (format: int32)
-+ is_favorite (boolean, required) - this video is in authorized user favorite list
-
-## RegisterParam (object)
-
-+ email: `aaa@bbb.ccc` (string, required) - register email
-+ password (string, required) - register password
-
 ## ChangeUserRoleParam (object)
 
 + sub (string, required) - new subject
 
-## RbacPolicyParam (object)
+## RbacSubjectParam (object)
 
-+ sub (string, required) - new subject
-+ obj (string, required) - new object
-+ act (string, required) - new action
++ new (string, required) - new subject
++ from (string, required) - subject inherited from
 
 ## UpdateUserParam (object)
 
@@ -1143,12 +1109,11 @@ rbac-controller
 + phone: `13512345678` (string, required) - user phone number
 + avatar: `https://aaa.bbb.ccc` (string, required) - user avatar
 
-## InsertVideoParam (object)
+## Result (object)
 
-+ title (string, required) - video title
-+ description (string, required) - video description
-+ video_url: `https://aaa.bbb.ccc` (string, required) - video source url
-+ cover_url: `https://aaa.bbb.ccc` (string, required) - video cover url
++ code (number, required) - status code
+    (format: int32)
++ message (string, required) - status message
 
 ## RbacRuleDto (object)
 
@@ -1159,6 +1124,41 @@ rbac-controller
 + v3 (string, required) - v3
 + v4 (string, required) - v4
 + v5 (string, required) - v5
+
+## VideoExtraDto (object)
+
++ favoreds (number, required) - video favored user count
+    (format: int32)
++ is_favorite (boolean, required) - this video is in authorized user favorite list
+
+## LoginParam (object)
+
++ parameter (string, required) - login parameter, support uid | username | email
++ password (string, required) - login password
+
+## UpdatePasswordParam (object)
+
++ old (string, required) - old password
++ new (string, required) - new password
+
+## UserExtraDto (object)
+
++ subscribings (number, required) - user subscribing count
+    (format: int32)
++ subscribers (number, required) - user subscriber count
+    (format: int32)
++ is_subscribing (boolean, required) - authorized user is subscribing this user
++ is_subscribed (boolean, required) - authorized user is subscribed by this user
++ is_blocking (boolean, required) - authorized user is blocking this user
++ videos (number, required) - user video count
+    (format: int32)
++ favorites (number, required) - user favorite count
+    (format: int32)
+
+## LoginDto (object)
+
++ user (UserDto, required) - authorized user
++ token (string, required) - access token
 
 ## _Result<LoginDto> (object)
 
