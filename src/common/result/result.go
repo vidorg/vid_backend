@@ -89,10 +89,8 @@ func (r *Result) SetPage(page int32, limit int32, total int32, data interface{})
 
 func (r *Result) SetError(err error, c *gin.Context) *Result {
 	if gin.Mode() == gin.DebugMode && err != nil {
-		r.Error = xgin.BuildBasicErrorDto(err, c, map[string]interface{}{
-			"request_ip": c.ClientIP(),
-			"request_id": c.Writer.Header().Get("X-Request-Id"),
-		})
+		r.Error = xgin.BuildBasicErrorDto(err, c)
+		r.Error.Others = map[string]interface{}{"request_id": c.Writer.Header().Get("X-Request-Id")}
 	}
 	return r
 }

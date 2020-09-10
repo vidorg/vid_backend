@@ -19,18 +19,16 @@ func RecoveryMiddleware() gin.HandlerFunc {
 		defer func() {
 			if err := recover(); err != nil {
 				rid := c.Writer.Header().Get("X-Request-Id")
+
 				r := result.Error(exception.ServerRecoveryError)
 				if gin.Mode() == gin.DebugMode {
-					others := map[string]interface{}{
-						"request_ip": c.ClientIP(),
-						"request_id": rid,
-					}
-					r.Error = xgin.BuildErrorDto(err, c, others, skip, true)
+					r.Error = xgin.BuildErrorDto(err, c, skip, true)
+					r.Error.Others = map[string]interface{}{"request_id": rid}
 				}
 
 				logger.WithFields(logrus.Fields{
 					"module":    "panic",
-					"error":     err,
+					"error":     fmt.Sprintf("%v", err),
 					"requestID": rid,
 				}).Errorln(fmt.Sprintf("[Recovery] panic recovered: %v | %s", err, rid))
 				r.JSON(c)

@@ -25,6 +25,6 @@ type User struct {
 	Blockings    []*User  `gorm:"many2many:block;     foreignkey:Uid; association_foreignkey:Uid; jointable_foreignkey:from_uid; association_jointable_foreignkey:to_uid"`   // tbl_block
 	Favorites    []*Video `gorm:"many2many:favorite;  foreignkey:Uid; association_foreignkey:Vid; jointable_foreignkey:uid;      association_jointable_foreignkey:vid"`      // tbl_favorite
 
-	xgorm.GormCUTime
+	xgorm.GormTimeWithoutDeleteAt
 	DeletedAt *time.Time `gorm:"default:'1970-01-01 00:00:00'; unique_index:uk_username,uk_email"`
 }

@@ -17,8 +17,9 @@ func LoggerMiddleware() gin.HandlerFunc {
 		c.Next()
 
 		rid := c.Writer.Header().Get("X-Request-ID")
-		fields := map[string]interface{}{"requestID": rid}
-
-		xgin.WithLogrus(logger, start, c, rid, fields)
+		xgin.WithLogrus(logger, start, c, &xgin.LoggerExtra{
+			OtherString: rid,
+			OtherFields: map[string]interface{}{"requestID": rid},
+		})
 	}
 }
