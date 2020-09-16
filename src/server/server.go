@@ -64,8 +64,7 @@ func NewServer() *Server {
 		xgin.PprofWrap(engine)
 	}
 	docs.RegisterSwag()
-	swaggerUrl := ginSwagger.URL(fmt.Sprintf("http://localhost:%d/v1/swagger/doc.json", cfg.Meta.Port))
-	engine.GET("/v1/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, swaggerUrl))
+	engine.GET("/v1/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, ginSwagger.URL("doc.json")))
 	engine.GET("/v1/swagger", func(c *gin.Context) { c.Redirect(http.StatusPermanentRedirect, "/v1/swagger/index.html") })
 	initRoute(engine)
 

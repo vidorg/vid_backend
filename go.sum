@@ -1,9 +1,11 @@
 github.com/Aoi-hosizora/ahlib v1.4.0 h1:YnU9yse0z7ufvmAp0fWY3+kFq+63lPUK7BCFlTuaDQU=
 github.com/Aoi-hosizora/ahlib v1.4.0/go.mod h1:ylSsYucCsXhYPQwB041/SVjWlmYpvCEywbSZBu8Bx6o=
+github.com/Aoi-hosizora/ahlib v1.4.1 h1:O+zVD7xYcbOrcIeUfnmtIpEFsM+rUxlA4ItpcblLW+E=
+github.com/Aoi-hosizora/ahlib v1.4.1/go.mod h1:ylSsYucCsXhYPQwB041/SVjWlmYpvCEywbSZBu8Bx6o=
 github.com/Aoi-hosizora/ahlib-more v1.4.0 h1:lu4LWQGKYs4lKmMclk1TC5CX/fk4tbAcoZLfnn09DZA=
 github.com/Aoi-hosizora/ahlib-more v1.4.0/go.mod h1:btA3tpwtxnKJ6FG1ascTK41cjlNYmen/CndsH2qHcLs=
-github.com/Aoi-hosizora/ahlib-web v1.4.1 h1:tWLBzco99vb697ApCeMekoKC0VCIjE+QAFv67khN6ro=
-github.com/Aoi-hosizora/ahlib-web v1.4.1/go.mod h1:Y71NfeAiSMaxYvKuvs8J+Dli7fU5GUjyyWyPItUB260=
+github.com/Aoi-hosizora/ahlib-web v1.4.3 h1:l5FxbVali73zzgqAbnwohGb/jK7A+aYFGb4MUB3mZLk=
+github.com/Aoi-hosizora/ahlib-web v1.4.3/go.mod h1:gF+IhDL+TuKEwWDLxc5Bsf+x42urVn42y+UETOJai6E=
 github.com/Aoi-hosizora/go-serverchan v1.0.0/go.mod h1:xje3libEmHAI+GXwuundHgp/PC8NuuLUJfnuoGADUu4=
 github.com/Aoi-hosizora/goapidoc v1.2.0 h1:eqw9Dg+98bMvZwakLmidvF8K9n/VokKJIJe3JBisBB0=
 github.com/Aoi-hosizora/goapidoc v1.2.0/go.mod h1:CsTYijB1dB2KXg+Q1yOVhwiDCeI04UiORFAzJBPac2M=

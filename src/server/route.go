@@ -45,11 +45,9 @@ func initRoute(engine *gin.Engine) {
 	jwtMw := middleware.JwtMiddleware()
 	casbinMw := middleware.CasbinMiddleware()
 	authMw := func(c *gin.Context) {
+		jwtMw(c)
 		if !c.IsAborted() {
-			jwtMw(c)
-			if !c.IsAborted() {
-				casbinMw(c)
-			}
+			casbinMw(c)
 		}
 	}
 
