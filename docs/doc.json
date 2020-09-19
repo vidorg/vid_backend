@@ -1940,7 +1940,6 @@
         "gender",
         "profile",
         "birthday",
-        "phone",
         "avatar"
       ],
       "description": "update user parameter",
@@ -1978,12 +1977,6 @@
           "description": "user birthday",
           "format": "date",
           "example": "2000-01-01"
-        },
-        "phone": {
-          "type": "string",
-          "required": true,
-          "description": "user phone number",
-          "example": "13512345678"
         },
         "avatar": {
           "type": "string",

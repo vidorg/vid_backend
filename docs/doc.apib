@@ -1029,18 +1029,9 @@ rbac-controller
 
 # Data Structures
 
-## VideoDto (object)
+## ChangeUserRoleParam (object)
 
-+ vid (number, required) - video id
-    (format: int64)
-+ title (string, required) - video title
-+ description (string, required) - video description
-+ video_url (string, required) - video source url
-+ cover_url (string, required) - video cover url
-+ upload_time (string, required) - video upload time
-    (format: date-time)
-+ author (UserDto, required) - video author
-+ extra (VideoExtraDto, required) - video extra information
++ sub (string, required) - new subject
 
 ## UpdateUserParam (object)
 
@@ -1056,72 +1047,7 @@ rbac-controller
     (allow empty)
 + birthday: `2000-01-01` (string, required) - user birthday
     (format: date)
-+ phone: `13512345678` (string, required) - user phone number
 + avatar: `https://aaa.bbb.ccc` (string, required) - user avatar
-
-## InsertVideoParam (object)
-
-+ title (string, required) - video title
-+ description (string, required) - video description
-+ video_url: `https://aaa.bbb.ccc` (string, required) - video source url
-+ cover_url: `https://aaa.bbb.ccc` (string, required) - video cover url
-
-## UpdatePasswordParam (object)
-
-+ old (string, required) - old password
-+ new (string, required) - new password
-
-## ChangeUserRoleParam (object)
-
-+ sub (string, required) - new subject
-
-## RbacPolicyParam (object)
-
-+ sub (string, required) - new subject
-+ obj (string, required) - new object
-+ act (string, required) - new action
-
-## RbacRuleDto (object)
-
-+ p_type (string, required) - rule type
-+ v0 (string, required) - v0
-+ v1 (string, required) - v1
-+ v2 (string, required) - v2
-+ v3 (string, required) - v3
-+ v4 (string, required) - v4
-+ v5 (string, required) - v5
-
-## VideoExtraDto (object)
-
-+ favoreds (number, required) - video favored user count
-    (format: int32)
-+ is_favorite (boolean, required) - this video is in authorized user favorite list
-
-## LoginParam (object)
-
-+ parameter (string, required) - login parameter, support uid | username | email
-+ password (string, required) - login password
-
-## LoginDto (object)
-
-+ user (UserDto, required) - authorized user
-+ token (string, required) - access token
-
-## RegisterParam (object)
-
-+ email: `aaa@bbb.ccc` (string, required) - register email
-+ password (string, required) - register password
-
-## RbacSubjectParam (object)
-
-+ new (string, required) - new subject
-+ from (string, required) - subject inherited from
-
-## Result (object)
-
-+ code (number, required) - status code
-    (format: int32)
-+ message (string, required) - status message
 
 ## UserDto (object)
 
@@ -1146,6 +1072,37 @@ rbac-controller
     (format: date-time)
 + extra (UserExtraDto, required) - user extra information
 
+## VideoDto (object)
+
++ vid (number, required) - video id
+    (format: int64)
++ title (string, required) - video title
++ description (string, required) - video description
++ video_url (string, required) - video source url
++ cover_url (string, required) - video cover url
++ upload_time (string, required) - video upload time
+    (format: date-time)
++ author (UserDto, required) - video author
++ extra (VideoExtraDto, required) - video extra information
+
+## RbacSubjectParam (object)
+
++ new (string, required) - new subject
++ from (string, required) - subject inherited from
+
+## RbacPolicyParam (object)
+
++ sub (string, required) - new subject
++ obj (string, required) - new object
++ act (string, required) - new action
+
+## InsertVideoParam (object)
+
++ title (string, required) - video title
++ description (string, required) - video description
++ video_url: `https://aaa.bbb.ccc` (string, required) - video source url
++ cover_url: `https://aaa.bbb.ccc` (string, required) - video cover url
+
 ## UserExtraDto (object)
 
 + subscribings (number, required) - user subscribing count
@@ -1159,6 +1116,48 @@ rbac-controller
     (format: int32)
 + favorites (number, required) - user favorite count
     (format: int32)
+
+## LoginDto (object)
+
++ user (UserDto, required) - authorized user
++ token (string, required) - access token
+
+## LoginParam (object)
+
++ parameter (string, required) - login parameter, support uid | username | email
++ password (string, required) - login password
+
+## UpdatePasswordParam (object)
+
++ old (string, required) - old password
++ new (string, required) - new password
+
+## Result (object)
+
++ code (number, required) - status code
+    (format: int32)
++ message (string, required) - status message
+
+## RbacRuleDto (object)
+
++ p_type (string, required) - rule type
++ v0 (string, required) - v0
++ v1 (string, required) - v1
++ v2 (string, required) - v2
++ v3 (string, required) - v3
++ v4 (string, required) - v4
++ v5 (string, required) - v5
+
+## VideoExtraDto (object)
+
++ favoreds (number, required) - video favored user count
+    (format: int32)
++ is_favorite (boolean, required) - this video is in authorized user favorite list
+
+## RegisterParam (object)
+
++ email: `aaa@bbb.ccc` (string, required) - register email
++ password (string, required) - register password
 
 ## _Result<LoginDto> (object)
 

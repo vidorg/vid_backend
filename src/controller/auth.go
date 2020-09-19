@@ -88,7 +88,7 @@ func (a *AuthController) Register(c *gin.Context) *result.Result {
 		return result.Error(exception.RegisterError).SetError(err, c)
 	}
 
-	status, err := a.accountService.Insert(pa.Email, string(encrypted))
+	status, err := a.accountService.Insert(pa.Username, pa.Email, string(encrypted))
 	if status == xstatus.DbExisted {
 		return result.Error(exception.EmailRegisteredError)
 	} else if status == xstatus.DbFailed {

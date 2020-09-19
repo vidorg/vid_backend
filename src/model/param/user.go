@@ -15,7 +15,6 @@ func init() {
 				goapidoc.NewProperty("gender", "integer#int32", true, "user gender, 0X | 1M | 2F").Enum(0, 1, 2),
 				goapidoc.NewProperty("profile", "string", true, "user profile").AllowEmpty(true),
 				goapidoc.NewProperty("birthday", "string#date", true, "user birthday").Example("2000-01-01"),
-				goapidoc.NewProperty("phone", "string", true, "user phone number").Example("13512345678"),
 				goapidoc.NewProperty("avatar", "string", true, "user avatar").Example("https://aaa.bbb.ccc"),
 			),
 	)
@@ -27,7 +26,6 @@ type UpdateUserParam struct {
 	Gender   int8    `json:"gender"       form:"gender"       binding:"required,o_gender"`      // user gender (0X, 1M, 2F)
 	Profile  *string `json:"profile"      form:"profile"      binding:"required,l_profile"`     // user profile, allowempty
 	Birthday string  `json:"birthday"     form:"birthday"     binding:"required,date"`          // user birthday
-	Phone    string  `json:"phone"        form:"phone"        binding:"required,r_phone"`       // user phone number
 	Avatar   string  `json:"avatar"       form:"avatar"       binding:"required,url"`           // user avatar
 }
 
@@ -37,7 +35,6 @@ func (u *UpdateUserParam) ToMap() map[string]interface{} {
 		"nickname": u.Nickname,
 		"gender":   constant.ParseGender(u.Gender),
 		"profile":  *u.Profile,
-		"phone":    u.Phone,
 		"avatar":   u.Avatar,
 	}
 

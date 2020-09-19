@@ -18,7 +18,6 @@ type User struct {
 	Birthday xtime.JsonDate     `gorm:"type:date;         not null; default:'2000-01-01'"`     // user birthday
 	Role     string             `gorm:"type:varchar(255); not null; default:'normal'"`         // user role, used in casbin
 	State    constant.UserState `gorm:"type:tinyint;      not null; default:0"`                // user state (0|1|2)
-	Phone    string             `gorm:"type:varchar(127); not null"`                           // user phone number
 
 	Subscribings []*User  `gorm:"many2many:subscribe; foreignkey:Uid; association_foreignkey:Uid; jointable_foreignkey:from_uid; association_jointable_foreignkey:to_uid"`   // tbl_subscribe
 	Subscribers  []*User  `gorm:"many2many:subscribe; foreignkey:Uid; association_foreignkey:Uid; jointable_foreignkey:to_uid;   association_jointable_foreignkey:from_uid"` // tbl_subscribe

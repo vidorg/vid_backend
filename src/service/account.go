@@ -4,7 +4,6 @@ import (
 	"github.com/Aoi-hosizora/ahlib-web/xgorm"
 	"github.com/Aoi-hosizora/ahlib/xdi"
 	"github.com/Aoi-hosizora/ahlib/xstatus"
-	"github.com/Aoi-hosizora/ahlib/xstring"
 	"github.com/jinzhu/gorm"
 	"github.com/vidorg/vid_backend/src/model/po"
 	"github.com/vidorg/vid_backend/src/provide/sn"
@@ -69,8 +68,7 @@ func (a *AccountService) QueryByUid(uid uint64) (*po.Account, error) {
 	return a.QueryByUser(user)
 }
 
-func (a *AccountService) Insert(email string, encrypted string) (xstatus.DbStatus, error) {
-	username := "user" + xstring.CurrentTimeUuid(20)
+func (a *AccountService) Insert(username, email, encrypted string) (xstatus.DbStatus, error) {
 	account := &po.Account{
 		Password: encrypted,
 		User: &po.User{
