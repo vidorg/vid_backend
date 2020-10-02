@@ -24,6 +24,9 @@ func NewCasbinEnforcer() (*casbin.Enforcer, error) {
 	}
 
 	enforcer.EnableLog(false)
+	// roleMgr := enforcer.GetRoleManager().(*defaultrolemanager.RoleManager)
+	// roleMgr.AddMatchingFunc("KeyMatch2", util.KeyMatch2)
+
 	err = enforcer.LoadPolicy()
 	if err != nil {
 		return nil, err

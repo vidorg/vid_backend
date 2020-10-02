@@ -44,7 +44,7 @@ func UpdateErr(rdb *gorm.DB) (xstatus.DbStatus, error) {
 	if IsMySQL(rdb) && IsMySQLDuplicateEntryError(rdb.Error) {
 		return xstatus.DbExisted, rdb.Error
 	} else if rdb.RowsAffected == 0 {
-		return xstatus.DbNotFound, rdb.Error
+		return xstatus.DbNotFound, nil
 	} else if rdb.Error != nil {
 		return xstatus.DbFailed, rdb.Error
 	}
@@ -54,7 +54,7 @@ func UpdateErr(rdb *gorm.DB) (xstatus.DbStatus, error) {
 
 func DeleteErr(rdb *gorm.DB) (xstatus.DbStatus, error) {
 	if rdb.RowsAffected == 0 {
-		return xstatus.DbNotFound, rdb.Error
+		return xstatus.DbNotFound, nil
 	} else if rdb.Error != nil {
 		return xstatus.DbFailed, rdb.Error
 	}

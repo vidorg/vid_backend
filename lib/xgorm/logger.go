@@ -51,6 +51,9 @@ func (l gormLogger) Trace(_ context.Context, begin time.Time, fc func() (string,
 
 	switch {
 	case err != nil && l.LogLevel >= logger.Error:
+		if strings.HasPrefix(err.Error(), "record not found") {
+			break
+		}
 		if sql == "" {
 			sql = "?"
 		}

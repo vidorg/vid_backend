@@ -20,10 +20,12 @@ type CasbinService struct {
 }
 
 func NewCasbinService() *CasbinService {
+	enforcer := xdi.GetByNameForce(sn.SEnforcer).(*casbin.Enforcer)
+
 	return &CasbinService{
 		config:     xdi.GetByNameForce(sn.SConfig).(*config.Config),
 		db:         xdi.GetByNameForce(sn.SGorm).(*gorm.DB),
-		enforcer:   xdi.GetByNameForce(sn.SEnforcer).(*casbin.Enforcer),
+		enforcer:   enforcer,
 		jwtService: xdi.GetByNameForce(sn.SJwtService).(*JwtService),
 	}
 }
@@ -61,14 +63,13 @@ func (c *CasbinService) addRule(rule *po.RbacRule) (xstatus.DbStatus, error) {
 	ruleMap := rule.ToMap()
 	rdb := c.table().Where(ruleMap).First(&po.RbacRule{})
 	if rdb.RowsAffected != 0 {
-		return xstatus.DbExisted, nil
-	} else {
 		if rdb.Error != nil {
 			return xstatus.DbFailed, rdb.Error
 		}
+		return xstatus.DbExisted, nil
 	}
 
-	rdb = c.table().Create(rule)
+	rdb = c.table().Create(ruleMap)
 	if rdb.RowsAffected == 0 || rdb.Error != nil {
 		return xstatus.DbFailed, rdb.Error
 	}
@@ -78,13 +79,12 @@ func (c *CasbinService) addRule(rule *po.RbacRule) (xstatus.DbStatus, error) {
 func (c *CasbinService) removeRule(rule *po.RbacRule) (xstatus.DbStatus, error) {
 	ruleMap := rule.ToMap()
 	rdb := c.table().Where(ruleMap).First(&po.RbacRule{})
-	if rdb.RowsAffected != 0 {
+	if rdb.RowsAffected == 0 {
 		return xstatus.DbNotFound, nil
-	} else {
-		if rdb.Error != nil {
-			return xstatus.DbFailed, rdb.Error
-		}
+	} else if rdb.Error != nil {
+		return xstatus.DbFailed, rdb.Error
 	}
+
 	rdb = c.table().Where(ruleMap).Delete(rule)
 	if rdb.RowsAffected == 0 || rdb.Error != nil {
 		return xstatus.DbFailed, rdb.Error

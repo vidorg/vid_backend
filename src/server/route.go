@@ -57,6 +57,7 @@ func initRoute(engine *gin.Engine) {
 		authGroup.GET("user", authMw, j(authCtrl.CurrentUser))
 		authGroup.DELETE("logout", authMw, j(authCtrl.Logout))
 		authGroup.PUT("password", authMw, j(authCtrl.UpdatePassword))
+
 		authGroup.POST("activate", authMw, j(authCtrl.ActivateUser))
 		authGroup.GET("spec/:spec", j(authCtrl.CheckSpec))
 	}
