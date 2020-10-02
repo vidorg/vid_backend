@@ -22,7 +22,7 @@ func init() {
 			Securities("Jwt").
 			Params(
 				param.ADPage, param.ADLimit, param.ADOrder,
-				_adNeedAuthor, _adNeedFavoredCount, _adNeedIsFavorite, _adNeedSubscribeCount, _adNeedIsSubscribe, _adNeedVideoCount, _adNeedFavoriteCount,
+				_adNeedAuthor, _adNeedFavoredCount, _adNeedIsFavorite, _adNeedFollowCount, _adNeedIsFollow, _adNeedVideoCount, _adNeedFavoriteCount,
 			).
 			Responses(goapidoc.NewResponse(200, "_Result<_Page<VideoDto>>")),
 
@@ -31,7 +31,7 @@ func init() {
 			Params(
 				goapidoc.NewPathParam("uid", "integer#int64", true, "user id"),
 				param.ADPage, param.ADLimit, param.ADOrder,
-				_adNeedAuthor, _adNeedFavoredCount, _adNeedIsFavorite, _adNeedSubscribeCount, _adNeedIsSubscribe, _adNeedVideoCount, _adNeedFavoriteCount,
+				_adNeedAuthor, _adNeedFavoredCount, _adNeedIsFavorite, _adNeedFollowCount, _adNeedIsFollow, _adNeedVideoCount, _adNeedFavoriteCount,
 			).
 			Responses(goapidoc.NewResponse(200, "_Result<_Page<VideoDto>>")),
 
@@ -39,7 +39,7 @@ func init() {
 			Tags("Video").
 			Params(
 				goapidoc.NewPathParam("vid", "integer#int64", true, "video id"),
-				_adNeedAuthor, _adNeedFavoredCount, _adNeedIsFavorite, _adNeedSubscribeCount, _adNeedIsSubscribe, _adNeedVideoCount, _adNeedFavoriteCount,
+				_adNeedAuthor, _adNeedFavoredCount, _adNeedIsFavorite, _adNeedFollowCount, _adNeedIsFollow, _adNeedVideoCount, _adNeedFavoriteCount,
 			).
 			Responses(goapidoc.NewResponse(200, "_Result<VideoDto>")),
 

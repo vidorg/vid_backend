@@ -7,7 +7,7 @@ import (
 
 type OrderbyService struct {
 	_userDict             xproperty.PropertyDict
-	_subscribeForUserDict xproperty.PropertyDict
+	_followForUserDict    xproperty.PropertyDict
 	_videoDict            xproperty.PropertyDict
 	_favoriteForVideoDict xproperty.PropertyDict
 	_favoriteForUserDict  xproperty.PropertyDict
@@ -20,11 +20,11 @@ func NewOrderbyService() *OrderbyService {
 			"nickname":      xproperty.NewValue(false, "nickname"),
 			"register_time": xproperty.NewValue(false, "created_at"),
 		},
-		_subscribeForUserDict: xproperty.PropertyDict{
-			"uid":            xproperty.NewValue(false, "uid"),
-			"nickname":       xproperty.NewValue(false, "nickname"),
-			"register_time":  xproperty.NewValue(false, "created_at"),
-			"subscribe_time": xproperty.NewValue(false, "tbl_subscribe.created_at"),
+		_followForUserDict: xproperty.PropertyDict{
+			"uid":           xproperty.NewValue(false, "uid"),
+			"nickname":      xproperty.NewValue(false, "nickname"),
+			"register_time": xproperty.NewValue(false, "created_at"),
+			"follow_time":   xproperty.NewValue(false, "tbl_follow.created_at"),
 		},
 		_videoDict: xproperty.PropertyDict{
 			"vid":         xproperty.NewValue(false, "vid"),
@@ -57,11 +57,11 @@ func (o *OrderbyService) User(s string) interface{} {
 	return order
 }
 
-// tbl_subscribe
-func (o *OrderbyService) SubscribeForUser(s string) interface{} {
-	order := xgorm.OrderByFunc(o._subscribeForUserDict)(s)
+// tbl_follow
+func (o *OrderbyService) FollowForUser(s string) interface{} {
+	order := xgorm.OrderByFunc(o._followForUserDict)(s)
 	if order == "" {
-		return "tbl_subscribe.created_at"
+		return "tbl_follow.created_at"
 	}
 	return order
 }

@@ -18,9 +18,9 @@ type User struct {
 	Role     string             `gorm:"type:varchar(255); not null; default:'normal'"`          // user role, used in casbin
 	State    constant.UserState `gorm:"type:tinyint;      not null; default:0"`                 // user state (0|1|2)
 
-	Subscribings []*User  `gorm:"many2many:tbl_subscribe; foreignKey:Uid; references:Uid; joinForeignKey:from_uid; JoinReferences:to_uid"`   // tbl_subscribe
-	Subscribers  []*User  `gorm:"many2many:tbl_subscribe; foreignKey:Uid; references:Uid; joinForeignKey:to_uid;   JoinReferences:from_uid"` // tbl_subscribe
-	Favorites    []*Video `gorm:"many2many:tbl_favorite;  foreignKey:Uid; references:Vid; joinForeignKey:uid;      JoinReferences:vid"`      // tbl_favorite
+	Followings []*User  `gorm:"many2many:tbl_follow;   foreignKey:Uid; references:Uid; joinForeignKey:from_uid; JoinReferences:to_uid"`   // tbl_follow
+	Followers  []*User  `gorm:"many2many:tbl_follow;   foreignKey:Uid; references:Uid; joinForeignKey:to_uid;   JoinReferences:from_uid"` // tbl_follow
+	Favorites  []*Video `gorm:"many2many:tbl_favorite; foreignKey:Uid; references:Vid; joinForeignKey:uid;      JoinReferences:vid"`      // tbl_favorite
 
 	xgorm.Model
 }

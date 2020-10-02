@@ -26,8 +26,8 @@
       "description": "user-controller"
     },
     {
-      "name": "Subscribe",
-      "description": "subscribe-controller"
+      "name": "Follow",
+      "description": "follow-controller"
     },
     {
       "name": "Video",
@@ -516,18 +516,18 @@
             "description": "order string"
           },
           {
-            "name": "need_subscribe_count",
+            "name": "need_follow_count",
             "in": "query",
             "required": false,
             "type": "boolean",
-            "description": "need subscribe count (user)"
+            "description": "need follow count (user)"
           },
           {
-            "name": "need_is_subscribe",
+            "name": "need_is_follow",
             "in": "query",
             "required": false,
             "type": "boolean",
-            "description": "need is subscribe (user)"
+            "description": "need is follow (user)"
           },
           {
             "name": "need_video_count",
@@ -648,12 +648,12 @@
         }
       }
     },
-    "/v1/user/subscribing/{uid}": {
+    "/v1/user/following/{uid}": {
       "delete": {
-        "summary": "unsubscribe user",
-        "operationId": "-v1-user-subscribing-uid-delete",
+        "summary": "unfollow user",
+        "operationId": "-v1-user-following-uid-delete",
         "tags": [
-          "Subscribe"
+          "Follow"
         ],
         "security": [
           {
@@ -680,10 +680,10 @@
         }
       },
       "post": {
-        "summary": "subscribe user",
-        "operationId": "-v1-user-subscribing-uid-post",
+        "summary": "follow user",
+        "operationId": "-v1-user-following-uid-post",
         "tags": [
-          "Subscribe"
+          "Follow"
         ],
         "security": [
           {
@@ -727,18 +727,18 @@
             "format": "int64"
           },
           {
-            "name": "need_subscribe_count",
+            "name": "need_follow_count",
             "in": "query",
             "required": false,
             "type": "boolean",
-            "description": "need subscribe count (user)"
+            "description": "need follow count (user)"
           },
           {
-            "name": "need_is_subscribe",
+            "name": "need_is_follow",
             "in": "query",
             "required": false,
             "type": "boolean",
-            "description": "need is subscribe (user)"
+            "description": "need is follow (user)"
           },
           {
             "name": "need_video_count",
@@ -826,18 +826,18 @@
             "description": "need is favorite (video)"
           },
           {
-            "name": "need_subscribe_count",
+            "name": "need_follow_count",
             "in": "query",
             "required": false,
             "type": "boolean",
-            "description": "need subscribe count (user)"
+            "description": "need follow count (user)"
           },
           {
-            "name": "need_is_subscribe",
+            "name": "need_is_follow",
             "in": "query",
             "required": false,
             "type": "boolean",
-            "description": "need is subscribe (user)"
+            "description": "need is follow (user)"
           },
           {
             "name": "need_video_count",
@@ -864,12 +864,12 @@
         }
       }
     },
-    "/v1/user/{uid}/subscriber": {
+    "/v1/user/{uid}/follower": {
       "get": {
-        "summary": "query user subscribers",
-        "operationId": "-v1-user-uid-subscriber-get",
+        "summary": "query user followers",
+        "operationId": "-v1-user-uid-follower-get",
         "tags": [
-          "Subscribe"
+          "Follow"
         ],
         "parameters": [
           {
@@ -904,18 +904,18 @@
             "description": "order string"
           },
           {
-            "name": "need_subscribe_count",
+            "name": "need_follow_count",
             "in": "query",
             "required": false,
             "type": "boolean",
-            "description": "need subscribe count (user)"
+            "description": "need follow count (user)"
           },
           {
-            "name": "need_is_subscribe",
+            "name": "need_is_follow",
             "in": "query",
             "required": false,
             "type": "boolean",
-            "description": "need is subscribe (user)"
+            "description": "need is follow (user)"
           },
           {
             "name": "need_video_count",
@@ -942,12 +942,12 @@
         }
       }
     },
-    "/v1/user/{uid}/subscribing": {
+    "/v1/user/{uid}/following": {
       "get": {
-        "summary": "query user subscribings",
-        "operationId": "-v1-user-uid-subscribing-get",
+        "summary": "query user followings",
+        "operationId": "-v1-user-uid-following-get",
         "tags": [
-          "Subscribe"
+          "Follow"
         ],
         "parameters": [
           {
@@ -982,18 +982,18 @@
             "description": "order string"
           },
           {
-            "name": "need_subscribe_count",
+            "name": "need_follow_count",
             "in": "query",
             "required": false,
             "type": "boolean",
-            "description": "need subscribe count (user)"
+            "description": "need follow count (user)"
           },
           {
-            "name": "need_is_subscribe",
+            "name": "need_is_follow",
             "in": "query",
             "required": false,
             "type": "boolean",
-            "description": "need is subscribe (user)"
+            "description": "need is follow (user)"
           },
           {
             "name": "need_video_count",
@@ -1081,18 +1081,18 @@
             "description": "need is favorite (video)"
           },
           {
-            "name": "need_subscribe_count",
+            "name": "need_follow_count",
             "in": "query",
             "required": false,
             "type": "boolean",
-            "description": "need subscribe count (user)"
+            "description": "need follow count (user)"
           },
           {
-            "name": "need_is_subscribe",
+            "name": "need_is_follow",
             "in": "query",
             "required": false,
             "type": "boolean",
-            "description": "need is subscribe (user)"
+            "description": "need is follow (user)"
           },
           {
             "name": "need_video_count",
@@ -1178,18 +1178,18 @@
             "description": "need is favorite (video)"
           },
           {
-            "name": "need_subscribe_count",
+            "name": "need_follow_count",
             "in": "query",
             "required": false,
             "type": "boolean",
-            "description": "need subscribe count (user)"
+            "description": "need follow count (user)"
           },
           {
-            "name": "need_is_subscribe",
+            "name": "need_is_follow",
             "in": "query",
             "required": false,
             "type": "boolean",
-            "description": "need is subscribe (user)"
+            "description": "need is follow (user)"
           },
           {
             "name": "need_video_count",
@@ -1316,18 +1316,18 @@
             "description": "need is favorite (video)"
           },
           {
-            "name": "need_subscribe_count",
+            "name": "need_follow_count",
             "in": "query",
             "required": false,
             "type": "boolean",
-            "description": "need subscribe count (user)"
+            "description": "need follow count (user)"
           },
           {
-            "name": "need_is_subscribe",
+            "name": "need_is_follow",
             "in": "query",
             "required": false,
             "type": "boolean",
-            "description": "need is subscribe (user)"
+            "description": "need is follow (user)"
           },
           {
             "name": "need_video_count",
@@ -1434,18 +1434,18 @@
             "description": "order string"
           },
           {
-            "name": "need_subscribe_count",
+            "name": "need_follow_count",
             "in": "query",
             "required": false,
             "type": "boolean",
-            "description": "need subscribe count (user)"
+            "description": "need follow count (user)"
           },
           {
-            "name": "need_is_subscribe",
+            "name": "need_is_follow",
             "in": "query",
             "required": false,
             "type": "boolean",
-            "description": "need is subscribe (user)"
+            "description": "need is follow (user)"
           },
           {
             "name": "need_video_count",
@@ -1874,37 +1874,37 @@
     "UserExtraDto": {
       "type": "object",
       "required": [
-        "subscribings",
-        "subscribers",
-        "is_subscribing",
-        "is_subscribed",
+        "followings",
+        "followers",
+        "is_following",
+        "is_followed",
         "is_blocking",
         "videos",
         "favorites"
       ],
       "description": "user extra response",
       "properties": {
-        "subscribings": {
+        "followings": {
           "type": "integer",
           "required": true,
-          "description": "user subscribing count",
+          "description": "user following count",
           "format": "int32"
         },
-        "subscribers": {
+        "followers": {
           "type": "integer",
           "required": true,
-          "description": "user subscriber count",
+          "description": "user follower count",
           "format": "int32"
         },
-        "is_subscribing": {
+        "is_following": {
           "type": "boolean",
           "required": true,
-          "description": "authorized user is subscribing this user"
+          "description": "authorized user is following this user"
         },
-        "is_subscribed": {
+        "is_followed": {
           "type": "boolean",
           "required": true,
-          "description": "authorized user is subscribed by this user"
+          "description": "authorized user is followed by this user"
         },
         "is_blocking": {
           "type": "boolean",

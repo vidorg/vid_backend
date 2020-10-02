@@ -61,16 +61,16 @@ var (
 	DeleteUserError   = New(500, se(), "delete user failed")     // 删除用户失败
 )
 
-// subscribe exception
+// follow exception
 var (
-	GetSubscriberListError  = New(500, se(), "get subscriber list failed")  // 获取粉丝列表失败
-	GetSubscribingListError = New(500, se(), "get subscribing list failed") // 获取关注列表失败
+	GetFollowerListError  = New(500, se(), "get follower list failed")  // 获取粉丝列表失败
+	GetFollowingListError = New(500, se(), "get following list failed") // 获取关注列表失败
 
-	SubscribeError          = New(500, se(), "subscribe failed")               // 关注用户失败
-	SubscribeSelfError      = New(400, ce(), "could not subscribe self")       // 无法关注自己
-	AlreadySubscribingError = New(409, ce(), "user has been subscribed")       // 已经关注的用户
-	UnsubscribeError        = New(500, se(), "unsubscribe failed")             // 取消关注用户失败
-	NotSubscribeYetError    = New(404, ce(), "user has not been unsubscribed") // 还没有关注的用户
+	FollowError           = New(500, se(), "follow failed")                  // 关注用户失败
+	FollowSelfError       = New(400, ce(), "could not follow self")          // 无法关注自己
+	AlreadyFollowingError = New(409, ce(), "user has been already followed") // 已经关注的用户
+	UnfollowError         = New(500, se(), "unfollow failed")                // 取消关注用户失败
+	NotFollowYetError     = New(404, ce(), "user has not been followed yet") // 还没有关注的用户
 )
 
 // video exception

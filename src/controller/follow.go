@@ -16,67 +16,67 @@ import (
 
 func init() {
 	goapidoc.AddRoutePaths(
-		goapidoc.NewRoutePath("GET", "/v1/user/{uid}/subscriber", "query user subscribers").
-			Tags("Subscribe").
+		goapidoc.NewRoutePath("GET", "/v1/user/{uid}/follower", "query user followers").
+			Tags("Follow").
 			Params(
 				goapidoc.NewPathParam("uid", "integer#int64", true, "user id"),
 				param.ADPage, param.ADLimit, param.ADOrder,
-				_adNeedSubscribeCount, _adNeedIsSubscribe, _adNeedVideoCount, _adNeedFavoriteCount,
+				_adNeedFollowCount, _adNeedIsFollow, _adNeedVideoCount, _adNeedFavoriteCount,
 			).
 			Responses(goapidoc.NewResponse(200, "_Result<_Page<UserDto>>")),
 
-		goapidoc.NewRoutePath("GET", "/v1/user/{uid}/subscribing", "query user subscribings").
-			Tags("Subscribe").
+		goapidoc.NewRoutePath("GET", "/v1/user/{uid}/following", "query user followings").
+			Tags("Follow").
 			Params(
 				goapidoc.NewPathParam("uid", "integer#int64", true, "user id"),
 				param.ADPage, param.ADLimit, param.ADOrder,
-				_adNeedSubscribeCount, _adNeedIsSubscribe, _adNeedVideoCount, _adNeedFavoriteCount,
+				_adNeedFollowCount, _adNeedIsFollow, _adNeedVideoCount, _adNeedFavoriteCount,
 			).
 			Responses(goapidoc.NewResponse(200, "_Result<_Page<UserDto>>")),
 
-		goapidoc.NewRoutePath("POST", "/v1/user/subscribing/{uid}", "subscribe user").
-			Tags("Subscribe").
+		goapidoc.NewRoutePath("POST", "/v1/user/following/{uid}", "follow user").
+			Tags("Follow").
 			Securities("Jwt").
 			Params(goapidoc.NewPathParam("uid", "integer#int64", true, "user id")).
 			Responses(goapidoc.NewResponse(200, "Result")),
 
-		goapidoc.NewRoutePath("DELETE", "/v1/user/subscribing/{uid}", "unsubscribe user").
-			Tags("Subscribe").
+		goapidoc.NewRoutePath("DELETE", "/v1/user/following/{uid}", "unfollow user").
+			Tags("Follow").
 			Securities("Jwt").
 			Params(goapidoc.NewPathParam("uid", "integer#int64", true, "user id")).
 			Responses(goapidoc.NewResponse(200, "Result")),
 	)
 }
 
-type SubscribeController struct {
-	config           *config.Config
-	jwtService       *service.JwtService
-	userService      *service.UserService
-	subscribeService *service.SubscribeService
-	common           *CommonController
+type FollowController struct {
+	config        *config.Config
+	jwtService    *service.JwtService
+	userService   *service.UserService
+	followService *service.FollowService
+	common        *CommonController
 }
 
-func NewSubscribeController() *SubscribeController {
-	return &SubscribeController{
-		config:           xdi.GetByNameForce(sn.SConfig).(*config.Config),
-		jwtService:       xdi.GetByNameForce(sn.SJwtService).(*service.JwtService),
-		userService:      xdi.GetByNameForce(sn.SUserService).(*service.UserService),
-		subscribeService: xdi.GetByNameForce(sn.SSubscribeService).(*service.SubscribeService),
-		common:           xdi.GetByNameForce(sn.SCommonController).(*CommonController),
+func NewFollowController() *FollowController {
+	return &FollowController{
+		config:        xdi.GetByNameForce(sn.SConfig).(*config.Config),
+		jwtService:    xdi.GetByNameForce(sn.SJwtService).(*service.JwtService),
+		userService:   xdi.GetByNameForce(sn.SUserService).(*service.UserService),
+		followService: xdi.GetByNameForce(sn.SFollowService).(*service.FollowService),
+		common:        xdi.GetByNameForce(sn.SCommonController).(*CommonController),
 	}
 }
 
-// GET /v1/user/:uid/subscriber
-func (s *SubscribeController) QuerySubscribers(c *gin.Context) *result.Result {
+// GET /v1/user/:uid/follower
+func (s *FollowController) QueryFollowers(c *gin.Context) *result.Result {
 	uid, err := param.BindRouteId(c, "uid")
 	if err != nil {
 		return result.Error(exception.RequestParamError).SetError(err, c)
 	}
 	pp := param.BindPageOrder(c, s.config)
 
-	users, total, err := s.subscribeService.QuerySubscribers(uid, pp)
+	users, total, err := s.followService.QueryFollowers(uid, pp)
 	if err != nil {
-		return result.Error(exception.GetSubscriberListError).SetError(err, c)
+		return result.Error(exception.GetFollowerListError).SetError(err, c)
 	} else if users == nil {
 		return result.Error(exception.UserNotFoundError)
 	}
@@ -84,7 +84,7 @@ func (s *SubscribeController) QuerySubscribers(c *gin.Context) *result.Result {
 	authUser := s.jwtService.GetContextUser(c)
 	extras, err := s.common.getUsersExtra(c, authUser, users)
 	if err != nil {
-		return result.Error(exception.GetSubscriberListError).SetError(err, c)
+		return result.Error(exception.GetFollowerListError).SetError(err, c)
 	}
 
 	res := dto.BuildUserDtos(users)
@@ -94,17 +94,17 @@ func (s *SubscribeController) QuerySubscribers(c *gin.Context) *result.Result {
 	return result.Ok().SetPage(pp.Page, pp.Limit, total, res)
 }
 
-// GET /v1/user/{uid}/subscribing
-func (s *SubscribeController) QuerySubscribings(c *gin.Context) *result.Result {
+// GET /v1/user/:uid/following
+func (s *FollowController) QueryFollowings(c *gin.Context) *result.Result {
 	uid, err := param.BindRouteId(c, "uid")
 	if err != nil {
 		return result.Error(exception.RequestParamError).SetError(err, c)
 	}
 	pp := param.BindPageOrder(c, s.config)
 
-	users, total, err := s.subscribeService.QuerySubscribings(uid, pp)
+	users, total, err := s.followService.QueryFollowings(uid, pp)
 	if err != nil {
-		return result.Error(exception.GetSubscribingListError).SetError(err, c)
+		return result.Error(exception.GetFollowingListError).SetError(err, c)
 	} else if users == nil {
 		return result.Error(exception.UserNotFoundError)
 	}
@@ -112,7 +112,7 @@ func (s *SubscribeController) QuerySubscribings(c *gin.Context) *result.Result {
 	authUser := s.jwtService.GetContextUser(c)
 	extras, err := s.common.getUsersExtra(c, authUser, users)
 	if err != nil {
-		return result.Error(exception.GetSubscribingListError).SetError(err, c)
+		return result.Error(exception.GetFollowingListError).SetError(err, c)
 	}
 
 	res := dto.BuildUserDtos(users)
@@ -122,8 +122,8 @@ func (s *SubscribeController) QuerySubscribings(c *gin.Context) *result.Result {
 	return result.Ok().SetPage(pp.Page, pp.Limit, total, res)
 }
 
-// POST /v1/user/subscribing/:uid
-func (s *SubscribeController) SubscribeUser(c *gin.Context) *result.Result {
+// POST /v1/user/following/:uid
+func (s *FollowController) FollowUser(c *gin.Context) *result.Result {
 	user := s.jwtService.GetContextUser(c)
 	if user == nil {
 		return nil
@@ -135,23 +135,23 @@ func (s *SubscribeController) SubscribeUser(c *gin.Context) *result.Result {
 	}
 
 	if user.Uid == uid {
-		return result.Error(exception.SubscribeSelfError)
+		return result.Error(exception.FollowSelfError)
 	}
 
-	status, err := s.subscribeService.InsertSubscribe(user.Uid, uid)
+	status, err := s.followService.FollowUser(user.Uid, uid)
 	if status == xstatus.DbNotFound {
 		return result.Error(exception.UserNotFoundError)
 	} else if status == xstatus.DbExisted {
-		return result.Error(exception.AlreadySubscribingError)
+		return result.Error(exception.AlreadyFollowingError)
 	} else if status == xstatus.DbFailed {
-		return result.Error(exception.SubscribeError).SetError(err, c)
+		return result.Error(exception.FollowError).SetError(err, c)
 	}
 
 	return result.Ok()
 }
 
-// DELETE /v1/user/subscribing/:uid
-func (s *SubscribeController) UnSubscribeUser(c *gin.Context) *result.Result {
+// DELETE /v1/user/following/:uid
+func (s *FollowController) UnfollowUser(c *gin.Context) *result.Result {
 	user := s.jwtService.GetContextUser(c)
 	if user == nil {
 		return nil
@@ -162,13 +162,13 @@ func (s *SubscribeController) UnSubscribeUser(c *gin.Context) *result.Result {
 		return result.Error(exception.RequestParamError).SetError(err, c)
 	}
 
-	status, err := s.subscribeService.DeleteSubscribe(user.Uid, uid)
+	status, err := s.followService.UnfollowUser(user.Uid, uid)
 	if status == xstatus.DbNotFound {
 		return result.Error(exception.UserNotFoundError)
 	} else if status == xstatus.DbTagA {
-		return result.Error(exception.NotSubscribeYetError)
+		return result.Error(exception.NotFollowYetError)
 	} else if status == xstatus.DbFailed {
-		return result.Error(exception.UnsubscribeError).SetError(err, c)
+		return result.Error(exception.UnfollowError).SetError(err, c)
 	}
 
 	return result.Ok()

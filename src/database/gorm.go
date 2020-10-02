@@ -56,8 +56,8 @@ func NewMySQLDB() (*gorm.DB, error) {
 
 func migrate(db *gorm.DB) error {
 	for _, err := range []error{
-		db.SetupJoinTable(&po.User{}, "Subscribings", &po.Subscribe{}),
-		db.SetupJoinTable(&po.User{}, "Subscribers", &po.Subscribe{}),
+		db.SetupJoinTable(&po.User{}, "Followings", &po.Follow{}),
+		db.SetupJoinTable(&po.User{}, "Followers", &po.Follow{}),
 		db.SetupJoinTable(&po.User{}, "Favorites", &po.Favorite{}),
 		db.SetupJoinTable(&po.Video{}, "Favoreds", &po.Favorite{}),
 	} {

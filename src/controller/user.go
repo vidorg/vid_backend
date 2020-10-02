@@ -22,7 +22,7 @@ func init() {
 			Securities("Jwt").
 			Params(
 				param.ADPage, param.ADLimit, param.ADOrder,
-				_adNeedSubscribeCount, _adNeedIsSubscribe, _adNeedVideoCount, _adNeedFavoriteCount,
+				_adNeedFollowCount, _adNeedIsFollow, _adNeedVideoCount, _adNeedFavoriteCount,
 			).
 			Responses(goapidoc.NewResponse(200, "_Result<_Page<UserDto>>")),
 
@@ -30,7 +30,7 @@ func init() {
 			Tags("User").
 			Params(
 				goapidoc.NewPathParam("uid", "integer#int64", true, "user id"),
-				_adNeedSubscribeCount, _adNeedIsSubscribe, _adNeedVideoCount, _adNeedFavoriteCount,
+				_adNeedFollowCount, _adNeedIsFollow, _adNeedVideoCount, _adNeedFavoriteCount,
 			).
 			Responses(goapidoc.NewResponse(200, "_Result<UserDto>")),
 
@@ -48,22 +48,22 @@ func init() {
 }
 
 type UserController struct {
-	config           *config.Config
-	jwtService       *service.JwtService
-	userService      *service.UserService
-	subscribeService *service.SubscribeService
-	videoService     *service.VideoService
-	common           *CommonController
+	config        *config.Config
+	jwtService    *service.JwtService
+	userService   *service.UserService
+	followService *service.FollowService
+	videoService  *service.VideoService
+	common        *CommonController
 }
 
 func NewUserController() *UserController {
 	return &UserController{
-		config:           xdi.GetByNameForce(sn.SConfig).(*config.Config),
-		jwtService:       xdi.GetByNameForce(sn.SJwtService).(*service.JwtService),
-		userService:      xdi.GetByNameForce(sn.SUserService).(*service.UserService),
-		subscribeService: xdi.GetByNameForce(sn.SSubscribeService).(*service.SubscribeService),
-		videoService:     xdi.GetByNameForce(sn.SVideoService).(*service.VideoService),
-		common:           xdi.GetByNameForce(sn.SCommonController).(*CommonController),
+		config:        xdi.GetByNameForce(sn.SConfig).(*config.Config),
+		jwtService:    xdi.GetByNameForce(sn.SJwtService).(*service.JwtService),
+		userService:   xdi.GetByNameForce(sn.SUserService).(*service.UserService),
+		followService: xdi.GetByNameForce(sn.SFollowService).(*service.FollowService),
+		videoService:  xdi.GetByNameForce(sn.SVideoService).(*service.VideoService),
+		common:        xdi.GetByNameForce(sn.SCommonController).(*CommonController),
 	}
 }
 

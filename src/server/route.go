@@ -33,12 +33,12 @@ func initRoute(engine *gin.Engine) {
 	v1 := engine.Group("v1")
 
 	var (
-		authCtrl      = controller.NewAuthController()
-		userCtrl      = controller.NewUserController()
-		subscribeCtrl = controller.NewSubscribeController()
-		videoCtrl     = controller.NewVideoController()
-		favoriteCtrl  = controller.NewFavoriteController()
-		rbacCtrl      = controller.NewRbacController()
+		authCtrl     = controller.NewAuthController()
+		userCtrl     = controller.NewUserController()
+		followCtrl   = controller.NewFollowController()
+		videoCtrl    = controller.NewVideoController()
+		favoriteCtrl = controller.NewFavoriteController()
+		rbacCtrl     = controller.NewRbacController()
 	)
 
 	jwtMw := middleware.JwtMiddleware()
@@ -69,10 +69,10 @@ func initRoute(engine *gin.Engine) {
 		userGroup.PUT("", authMw, j(userCtrl.Update))
 		userGroup.DELETE("", authMw, j(userCtrl.Delete))
 
-		userGroup.GET(":uid/subscriber", j(subscribeCtrl.QuerySubscribers))
-		userGroup.GET(":uid/subscribing", j(subscribeCtrl.QuerySubscribings))
-		userGroup.POST("subscribing/:uid", authMw, j(subscribeCtrl.SubscribeUser))
-		userGroup.DELETE("subscribing/:uid", authMw, j(subscribeCtrl.UnSubscribeUser))
+		userGroup.GET(":uid/follower", j(followCtrl.QueryFollowers))
+		userGroup.GET(":uid/following", j(followCtrl.QueryFollowings))
+		userGroup.POST("following/:uid", authMw, j(followCtrl.FollowUser))
+		userGroup.DELETE("following/:uid", authMw, j(followCtrl.UnfollowUser))
 
 		userGroup.GET(":uid/video", j(videoCtrl.QueryVideosByUid))
 		userGroup.GET(":uid/favorite", j(favoriteCtrl.QueryFavorites))

@@ -4,7 +4,7 @@ import (
 	"time"
 )
 
-type Subscribe struct {
+type Follow struct {
 	FromUid   uint64
 	ToUid     uint64
 	CreatedAt time.Time

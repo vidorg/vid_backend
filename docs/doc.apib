@@ -185,7 +185,7 @@ auth-controller
 
 user-controller
 
-## query all user [/v1/user{?page,limit,order,need_subscribe_count,need_is_subscribe,need_video_count,need_favorite_count}]
+## query all user [/v1/user{?page,limit,order,need_follow_count,need_is_follow,need_video_count,need_favorite_count}]
 
 ### query all user [GET]
 
@@ -198,8 +198,8 @@ user-controller
     + limit (number, optional) - page size
         (format: int32)
     + order (string, optional) - order string
-    + need_subscribe_count (boolean, optional) - need subscribe count (user)
-    + need_is_subscribe (boolean, optional) - need is subscribe (user)
+    + need_follow_count (boolean, optional) - need follow count (user)
+    + need_is_follow (boolean, optional) - need is follow (user)
     + need_video_count (boolean, optional) - need video count (user)
     + need_favorite_count (boolean, optional) - need favorite count (user)
 
@@ -221,7 +221,7 @@ user-controller
 
     + Body
 
-## query a user by uid [/v1/user/{uid}{?need_subscribe_count,need_is_subscribe,need_video_count,need_favorite_count}]
+## query a user by uid [/v1/user/{uid}{?need_follow_count,need_is_follow,need_video_count,need_favorite_count}]
 
 ### query a user by uid [GET]
 
@@ -231,8 +231,8 @@ user-controller
 
     + uid (number, required) - user id
         (format: int64)
-    + need_subscribe_count (boolean, optional) - need subscribe count (user)
-    + need_is_subscribe (boolean, optional) - need is subscribe (user)
+    + need_follow_count (boolean, optional) - need follow count (user)
+    + need_is_follow (boolean, optional) - need is follow (user)
     + need_video_count (boolean, optional) - need video count (user)
     + need_favorite_count (boolean, optional) - need favorite count (user)
 
@@ -298,15 +298,15 @@ user-controller
 
     + Body
 
-# Group Subscribe
+# Group Follow
 
-subscribe-controller
+follow-controller
 
-## query user subscribers [/v1/user/{uid}/subscriber{?page,limit,order,need_subscribe_count,need_is_subscribe,need_video_count,need_favorite_count}]
+## query user followers [/v1/user/{uid}/follower{?page,limit,order,need_follow_count,need_is_follow,need_video_count,need_favorite_count}]
 
-### query user subscribers [GET]
+### query user followers [GET]
 
-`GET /v1/user/{uid}/subscriber`
+`GET /v1/user/{uid}/follower`
 
 + Parameters
 
@@ -317,8 +317,8 @@ subscribe-controller
     + limit (number, optional) - page size
         (format: int32)
     + order (string, optional) - order string
-    + need_subscribe_count (boolean, optional) - need subscribe count (user)
-    + need_is_subscribe (boolean, optional) - need is subscribe (user)
+    + need_follow_count (boolean, optional) - need follow count (user)
+    + need_is_follow (boolean, optional) - need is follow (user)
     + need_video_count (boolean, optional) - need video count (user)
     + need_favorite_count (boolean, optional) - need favorite count (user)
 
@@ -338,11 +338,11 @@ subscribe-controller
 
     + Body
 
-## query user subscribings [/v1/user/{uid}/subscribing{?page,limit,order,need_subscribe_count,need_is_subscribe,need_video_count,need_favorite_count}]
+## query user followings [/v1/user/{uid}/following{?page,limit,order,need_follow_count,need_is_follow,need_video_count,need_favorite_count}]
 
-### query user subscribings [GET]
+### query user followings [GET]
 
-`GET /v1/user/{uid}/subscribing`
+`GET /v1/user/{uid}/following`
 
 + Parameters
 
@@ -353,8 +353,8 @@ subscribe-controller
     + limit (number, optional) - page size
         (format: int32)
     + order (string, optional) - order string
-    + need_subscribe_count (boolean, optional) - need subscribe count (user)
-    + need_is_subscribe (boolean, optional) - need is subscribe (user)
+    + need_follow_count (boolean, optional) - need follow count (user)
+    + need_is_follow (boolean, optional) - need is follow (user)
     + need_video_count (boolean, optional) - need video count (user)
     + need_favorite_count (boolean, optional) - need favorite count (user)
 
@@ -374,11 +374,11 @@ subscribe-controller
 
     + Body
 
-## subscribe user, unsubscribe user [/v1/user/subscribing/{uid}]
+## follow user, unfollow user [/v1/user/following/{uid}]
 
-### subscribe user [POST]
+### follow user [POST]
 
-`POST /v1/user/subscribing/{uid}`
+`POST /v1/user/following/{uid}`
 
 + Parameters
 
@@ -403,9 +403,9 @@ subscribe-controller
 
     + Body
 
-### unsubscribe user [DELETE]
+### unfollow user [DELETE]
 
-`DELETE /v1/user/subscribing/{uid}`
+`DELETE /v1/user/following/{uid}`
 
 + Parameters
 
@@ -434,7 +434,7 @@ subscribe-controller
 
 video-controller
 
-## query all videos [/v1/video{?page,limit,order,need_author,need_favored_count,need_is_favorite,need_subscribe_count,need_is_subscribe,need_video_count,need_favorite_count}]
+## query all videos [/v1/video{?page,limit,order,need_author,need_favored_count,need_is_favorite,need_follow_count,need_is_follow,need_video_count,need_favorite_count}]
 
 ### query all videos [GET]
 
@@ -450,8 +450,8 @@ video-controller
     + need_author (boolean, optional) - need video author (video)
     + need_favored_count (boolean, optional) - need favored user count (video)
     + need_is_favorite (boolean, optional) - need is favorite (video)
-    + need_subscribe_count (boolean, optional) - need subscribe count (user)
-    + need_is_subscribe (boolean, optional) - need is subscribe (user)
+    + need_follow_count (boolean, optional) - need follow count (user)
+    + need_is_follow (boolean, optional) - need is follow (user)
     + need_video_count (boolean, optional) - need video count (user)
     + need_favorite_count (boolean, optional) - need favorite count (user)
 
@@ -473,7 +473,7 @@ video-controller
 
     + Body
 
-## query videos from user [/v1/user/{uid}/video{?page,limit,order,need_author,need_favored_count,need_is_favorite,need_subscribe_count,need_is_subscribe,need_video_count,need_favorite_count}]
+## query videos from user [/v1/user/{uid}/video{?page,limit,order,need_author,need_favored_count,need_is_favorite,need_follow_count,need_is_follow,need_video_count,need_favorite_count}]
 
 ### query videos from user [GET]
 
@@ -491,8 +491,8 @@ video-controller
     + need_author (boolean, optional) - need video author (video)
     + need_favored_count (boolean, optional) - need favored user count (video)
     + need_is_favorite (boolean, optional) - need is favorite (video)
-    + need_subscribe_count (boolean, optional) - need subscribe count (user)
-    + need_is_subscribe (boolean, optional) - need is subscribe (user)
+    + need_follow_count (boolean, optional) - need follow count (user)
+    + need_is_follow (boolean, optional) - need is follow (user)
     + need_video_count (boolean, optional) - need video count (user)
     + need_favorite_count (boolean, optional) - need favorite count (user)
 
@@ -512,7 +512,7 @@ video-controller
 
     + Body
 
-## query a video [/v1/video/{vid}{?need_author,need_favored_count,need_is_favorite,need_subscribe_count,need_is_subscribe,need_video_count,need_favorite_count}]
+## query a video [/v1/video/{vid}{?need_author,need_favored_count,need_is_favorite,need_follow_count,need_is_follow,need_video_count,need_favorite_count}]
 
 ### query a video [GET]
 
@@ -525,8 +525,8 @@ video-controller
     + need_author (boolean, optional) - need video author (video)
     + need_favored_count (boolean, optional) - need favored user count (video)
     + need_is_favorite (boolean, optional) - need is favorite (video)
-    + need_subscribe_count (boolean, optional) - need subscribe count (user)
-    + need_is_subscribe (boolean, optional) - need is subscribe (user)
+    + need_follow_count (boolean, optional) - need follow count (user)
+    + need_is_follow (boolean, optional) - need is follow (user)
     + need_video_count (boolean, optional) - need video count (user)
     + need_favorite_count (boolean, optional) - need favorite count (user)
 
@@ -630,7 +630,7 @@ video-controller
 
 favorite-controller
 
-## query user favorites [/v1/user/{uid}/favorite{?page,limit,order,need_author,need_favored_count,need_is_favorite,need_subscribe_count,need_is_subscribe,need_video_count,need_favorite_count}]
+## query user favorites [/v1/user/{uid}/favorite{?page,limit,order,need_author,need_favored_count,need_is_favorite,need_follow_count,need_is_follow,need_video_count,need_favorite_count}]
 
 ### query user favorites [GET]
 
@@ -648,8 +648,8 @@ favorite-controller
     + need_author (boolean, optional) - need video author (video)
     + need_favored_count (boolean, optional) - need favored user count (video)
     + need_is_favorite (boolean, optional) - need is favorite (video)
-    + need_subscribe_count (boolean, optional) - need subscribe count (user)
-    + need_is_subscribe (boolean, optional) - need is subscribe (user)
+    + need_follow_count (boolean, optional) - need follow count (user)
+    + need_is_follow (boolean, optional) - need is follow (user)
     + need_video_count (boolean, optional) - need video count (user)
     + need_favorite_count (boolean, optional) - need favorite count (user)
 
@@ -669,7 +669,7 @@ favorite-controller
 
     + Body
 
-## query video favored users [/v1/video/{vid}/favored{?page,limit,order,need_subscribe_count,need_is_subscribe,need_video_count,need_favorite_count}]
+## query video favored users [/v1/video/{vid}/favored{?page,limit,order,need_follow_count,need_is_follow,need_video_count,need_favorite_count}]
 
 ### query video favored users [GET]
 
@@ -684,8 +684,8 @@ favorite-controller
     + limit (number, optional) - page size
         (format: int32)
     + order (string, optional) - order string
-    + need_subscribe_count (boolean, optional) - need subscribe count (user)
-    + need_is_subscribe (boolean, optional) - need is subscribe (user)
+    + need_follow_count (boolean, optional) - need follow count (user)
+    + need_is_follow (boolean, optional) - need is follow (user)
     + need_video_count (boolean, optional) - need video count (user)
     + need_favorite_count (boolean, optional) - need favorite count (user)
 
@@ -964,12 +964,12 @@ rbac-controller
 
 ## UserExtraDto (object)
 
-+ subscribings (number, required) - user subscribing count
++ followings (number, required) - user following count
     (format: int32)
-+ subscribers (number, required) - user subscriber count
++ followers (number, required) - user follower count
     (format: int32)
-+ is_subscribing (boolean, required) - authorized user is subscribing this user
-+ is_subscribed (boolean, required) - authorized user is subscribed by this user
++ is_following (boolean, required) - authorized user is following this user
++ is_followed (boolean, required) - authorized user is followed by this user
 + is_blocking (boolean, required) - authorized user is blocking this user
 + videos (number, required) - user video count
     (format: int32)
