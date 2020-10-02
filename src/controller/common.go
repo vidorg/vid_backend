@@ -15,7 +15,6 @@ import (
 var (
 	_adNeedSubscribeCount = goapidoc.NewQueryParam("need_subscribe_count", "boolean", false, "need subscribe count (user)")
 	_adNeedIsSubscribe    = goapidoc.NewQueryParam("need_is_subscribe", "boolean", false, "need is subscribe (user)")
-	_adNeedIsBlock        = goapidoc.NewQueryParam("need_is_block", "boolean", false, "need block count (user)")
 	_adNeedVideoCount     = goapidoc.NewQueryParam("need_video_count", "boolean", false, "need video count (user)")
 	_adNeedFavoriteCount  = goapidoc.NewQueryParam("need_favorite_count", "boolean", false, "need favorite count (user)")
 	_adNeedAuthor         = goapidoc.NewQueryParam("need_author", "boolean", false, "need video author (video)")
@@ -25,14 +24,13 @@ var (
 
 // noinspection GoUnusedGlobalVariable
 var (
-	_adUserQueries  = []*goapidoc.Param{_adNeedSubscribeCount, _adNeedIsSubscribe, _adNeedIsBlock, _adNeedVideoCount, _adNeedFavoriteCount}
+	_adUserQueries  = []*goapidoc.Param{_adNeedSubscribeCount, _adNeedIsSubscribe, _adNeedVideoCount, _adNeedFavoriteCount}
 	_adVideoQueries = []*goapidoc.Param{_adNeedAuthor, _adNeedFavoredCount, _adNeedIsFavorite}
 )
 
 type CommonController struct {
 	subscribeService *service.SubscribeService
 	videoService     *service.VideoService
-	blockService     *service.BlockService
 	userService      *service.UserService
 	favoriteService  *service.FavoriteService
 }
@@ -41,7 +39,6 @@ func NewCommonController() *CommonController {
 	return &CommonController{
 		subscribeService: xdi.GetByNameForce(sn.SSubscribeService).(*service.SubscribeService),
 		videoService:     xdi.GetByNameForce(sn.SVideoService).(*service.VideoService),
-		blockService:     xdi.GetByNameForce(sn.SBlockService).(*service.BlockService),
 		userService:      xdi.GetByNameForce(sn.SUserService).(*service.UserService),
 		favoriteService:  xdi.GetByNameForce(sn.SFavoriteService).(*service.FavoriteService),
 	}
@@ -85,24 +82,6 @@ func (cmn *CommonController) getUsersExtra(c *gin.Context, authUser *po.User, us
 			for idx := range extras {
 				extras[idx].IsSubscribing = xpointer.BoolPtr(false)
 				extras[idx].IsSubscribed = xpointer.BoolPtr(false)
-			}
-		}
-	}
-
-	// need_is_block
-	if param.BindQueryBool(c, "need_is_block") {
-		if authUser != nil {
-			arr, err := cmn.blockService.CheckBlocking(authUser.Uid, uids)
-			if err != nil {
-				return nil, err
-			}
-			for idx, is := range arr {
-				is := is
-				extras[idx].IsBlocking = &is
-			}
-		} else {
-			for idx := range extras {
-				extras[idx].IsBlocking = xpointer.BoolPtr(false)
 			}
 		}
 	}

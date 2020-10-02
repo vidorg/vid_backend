@@ -1,43 +1,45 @@
 package service
 
 import (
-	"github.com/Aoi-hosizora/ahlib-web/xgorm"
 	"github.com/Aoi-hosizora/ahlib/xdi"
 	"github.com/Aoi-hosizora/ahlib/xstatus"
-	"github.com/jinzhu/gorm"
-	"github.com/vidorg/vid_backend/src/model/dto"
+	"github.com/vidorg/vid_backend/lib/xgorm"
 	"github.com/vidorg/vid_backend/src/model/param"
 	"github.com/vidorg/vid_backend/src/model/po"
 	"github.com/vidorg/vid_backend/src/provide/sn"
+	"gorm.io/gorm"
 )
 
 type VideoService struct {
-	db          *gorm.DB
-	userService *UserService
-	common      *CommonService
-	orderBy     func(string) string
+	db             *gorm.DB
+	common         *CommonService
+	userService    *UserService
+	orderbyService *OrderbyService
 }
 
 func NewVideoService() *VideoService {
 	return &VideoService{
-		db:          xdi.GetByNameForce(sn.SGorm).(*gorm.DB),
-		userService: xdi.GetByNameForce(sn.SUserService).(*UserService),
-		common:      xdi.GetByNameForce(sn.SCommonService).(*CommonService),
-		orderBy:     xgorm.OrderByFunc(dto.BuildVideoPropertyMapper()),
+		db:             xdi.GetByNameForce(sn.SGorm).(*gorm.DB),
+		common:         xdi.GetByNameForce(sn.SCommonService).(*CommonService),
+		userService:    xdi.GetByNameForce(sn.SUserService).(*UserService),
+		orderbyService: xdi.GetByNameForce(sn.SOrderbyService).(*OrderbyService),
 	}
 }
 
 func (v *VideoService) QueryAll(pp *param.PageOrderParam) ([]*po.Video, int32, error) {
-	total := int32(0)
-	v.db.Model(&po.Video{}).Count(&total)
-
-	videos := make([]*po.Video, 0)
-	rdb := xgorm.WithDB(v.db).Pagination(pp.Limit, pp.Page).Model(&po.User{}).Order(v.orderBy(pp.Order)).Find(&videos)
+	total := int64(0)
+	rdb := v.db.Model(&po.Video{}).Count(&total)
 	if rdb.Error != nil {
 		return nil, 0, rdb.Error
 	}
 
-	return videos, total, nil
+	videos := make([]*po.Video, 0)
+	rdb = xgorm.WithDB(v.db).Pagination(pp.Limit, pp.Page).Model(&po.User{}).Order(v.orderbyService.Video(pp.Order)).Find(&videos)
+	if rdb.Error != nil {
+		return nil, 0, rdb.Error
+	}
+
+	return videos, int32(total), nil
 }
 
 func (v *VideoService) QueryByUid(uid uint64, pp *param.PageOrderParam) ([]*po.Video, int32, error) {
@@ -48,22 +50,25 @@ func (v *VideoService) QueryByUid(uid uint64, pp *param.PageOrderParam) ([]*po.V
 		return nil, 0, nil
 	}
 
-	total := int32(0)
-	v.db.Model(&po.Video{}).Where(&po.Video{AuthorUid: uid}).Count(&total)
-
-	videos := make([]*po.Video, 0)
-	rdb := xgorm.WithDB(v.db).Pagination(pp.Limit, pp.Page).Model(&po.Video{}).Order(v.orderBy(pp.Order)).Where(&po.Video{AuthorUid: uid}).Find(&videos)
+	total := int64(0)
+	rdb := v.db.Model(&po.Video{}).Where(&po.Video{AuthorUid: uid}).Count(&total)
 	if rdb.Error != nil {
 		return nil, 0, rdb.Error
 	}
 
-	return videos, total, nil
+	videos := make([]*po.Video, 0)
+	rdb = xgorm.WithDB(v.db).Pagination(pp.Limit, pp.Page).Model(&po.Video{}).Order(v.orderbyService.Video(pp.Order)).Where("author_uid = ?", uid).Find(&videos)
+	if rdb.Error != nil {
+		return nil, 0, rdb.Error
+	}
+
+	return videos, int32(total), nil
 }
 
 func (v *VideoService) QueryByVid(vid uint64) (*po.Video, error) {
 	video := &po.Video{}
-	rdb := v.db.Model(&po.Video{}).Where(&po.Video{Vid: vid}).First(video)
-	if rdb.RecordNotFound() {
+	rdb := v.db.Model(&po.Video{}).Where("vid = ?", vid).First(video)
+	if rdb.RowsAffected == 0 {
 		return nil, nil
 	} else if rdb.Error != nil {
 		return nil, rdb.Error
@@ -77,21 +82,20 @@ func (v *VideoService) QueryCountByUids(uids []uint64) ([]int32, error) {
 		return []int32{}, nil
 	}
 
-	counts := make([]*_IdCntPair, 0)
-	where := v.common.BuildOrExp("author_uid", uids)
+	counts := make([]*_IdCntScanResult, 0)
+	where := v.common.BuildOrExpr("author_uid", uids)
 	rdb := v.db.Model(&po.Video{}).Select("author_uid as id, count(*) as cnt").Where(where).Group("author_uid").Scan(&counts)
 	if rdb.Error != nil {
 		return nil, rdb.Error
 	}
 
 	bucket := make(map[uint64]int32)
-	for _, cnt := range counts {
-		bucket[cnt.Id] = cnt.Cnt
+	for _, r := range counts {
+		bucket[r.Id] = r.Cnt
 	}
 	out := make([]int32, len(uids))
 	for idx, uid := range uids {
-		cnt, ok := bucket[uid]
-		if ok {
+		if cnt, ok := bucket[uid]; ok {
 			out[idx] = cnt
 		}
 	}
@@ -99,8 +103,8 @@ func (v *VideoService) QueryCountByUids(uids []uint64) ([]int32, error) {
 }
 
 func (v *VideoService) Existed(vid uint64) (bool, error) {
-	cnt := 0
-	rdb := v.db.Model(&po.Video{}).Where(&po.Video{Vid: vid}).Count(&cnt)
+	cnt := int64(0)
+	rdb := v.db.Model(&po.Video{}).Where("vid = ?", vid).Count(&cnt)
 	if rdb.Error != nil {
 		return false, rdb.Error
 	}
@@ -109,7 +113,7 @@ func (v *VideoService) Existed(vid uint64) (bool, error) {
 }
 
 func (v *VideoService) Insert(pa *param.InsertVideoParam, uid uint64) (xstatus.DbStatus, error) {
-	video := pa.ToPo()
+	video := pa.ToVideoPo()
 	video.AuthorUid = uid
 
 	rdb := v.db.Model(&po.Video{}).Create(video)
@@ -117,11 +121,11 @@ func (v *VideoService) Insert(pa *param.InsertVideoParam, uid uint64) (xstatus.D
 }
 
 func (v *VideoService) Update(vid uint64, video *param.UpdateVideoParam) (xstatus.DbStatus, error) {
-	rdb := v.db.Model(&po.Video{}).Where(&po.Video{Vid: vid}).Update(video.ToMap())
+	rdb := v.db.Model(&po.Video{}).Where("vid = ?", vid).Updates(video.ToMap())
 	return xgorm.UpdateErr(rdb)
 }
 
 func (v *VideoService) Delete(vid uint64) (xstatus.DbStatus, error) {
-	rdb := v.db.Model(&po.Video{}).Where(&po.Video{Vid: vid}).Delete(&po.Video{Vid: vid})
+	rdb := v.db.Model(&po.Video{}).Where("vid = ?", vid).Delete(&po.Video{})
 	return xgorm.DeleteErr(rdb)
 }

@@ -31,6 +31,9 @@ type RbacRuleDto struct {
 }
 
 func BuildRbacRuleDto(rule *po.RbacRule) *RbacRuleDto {
+	if rule == nil {
+		return nil
+	}
 	return &RbacRuleDto{
 		PType: rule.PType,
 		V0:    rule.V0,

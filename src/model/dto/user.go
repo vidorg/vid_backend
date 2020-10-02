@@ -1,7 +1,6 @@
 package dto
 
 import (
-	"github.com/Aoi-hosizora/ahlib/xproperty"
 	"github.com/Aoi-hosizora/ahlib/xtime"
 	"github.com/Aoi-hosizora/goapidoc"
 	"github.com/vidorg/vid_backend/src/model/po"
@@ -87,29 +86,11 @@ func BuildUserDtos(users []*po.User) []*UserDto {
 	return out
 }
 
-func BuildUserPropertyMapper() xproperty.PropertyDict {
-	return xproperty.PropertyDict{
-		"uid":           xproperty.NewValue(false, "uid"),
-		"username":      xproperty.NewValue(false, "username"),
-		"email":         xproperty.NewValue(false, "email"),
-		"nickname":      xproperty.NewValue(false, "nickname"),
-		"gender":        xproperty.NewValue(false, "gender"),
-		"profile":       xproperty.NewValue(false, "profile"),
-		"avatar":        xproperty.NewValue(false, "avatar"),
-		"birthday":      xproperty.NewValue(false, "birthday"),
-		"age":           xproperty.NewValue(true, "birthday"),
-		"role":          xproperty.NewValue(false, "role"),
-		"state":         xproperty.NewValue(false, "state"),
-		"register_time": xproperty.NewValue(false, "created_at"),
-	}
-}
-
 type UserExtraDto struct {
 	Subscribings  *int32 `json:"subscribings"`   // user subscribing count
 	Subscribers   *int32 `json:"subscribers"`    // user subscriber count
 	IsSubscribing *bool  `json:"is_subscribing"` // authorized user is subscribing this user
 	IsSubscribed  *bool  `json:"is_subscribed"`  // authorized user is subscribed by this user
-	IsBlocking    *bool  `json:"is_blocking"`    // authorized user is blocking this user
 	Videos        *int32 `json:"videos"`         // user video count
 	Favorites     *int32 `json:"favorites"`      // user favorite count
 }

@@ -1,15 +1,15 @@
 package service
 
 import (
-	"github.com/Aoi-hosizora/ahlib-web/xgorm"
 	"github.com/Aoi-hosizora/ahlib/xdi"
 	"github.com/Aoi-hosizora/ahlib/xstatus"
 	"github.com/casbin/casbin/v2"
-	"github.com/jinzhu/gorm"
+	"github.com/vidorg/vid_backend/lib/xgorm"
 	"github.com/vidorg/vid_backend/src/config"
 	"github.com/vidorg/vid_backend/src/model/param"
 	"github.com/vidorg/vid_backend/src/model/po"
 	"github.com/vidorg/vid_backend/src/provide/sn"
+	"gorm.io/gorm"
 )
 
 type CasbinService struct {
@@ -17,7 +17,6 @@ type CasbinService struct {
 	db         *gorm.DB
 	enforcer   *casbin.Enforcer
 	jwtService *JwtService
-	tblName    string
 }
 
 func NewCasbinService() *CasbinService {
@@ -26,8 +25,11 @@ func NewCasbinService() *CasbinService {
 		db:         xdi.GetByNameForce(sn.SGorm).(*gorm.DB),
 		enforcer:   xdi.GetByNameForce(sn.SEnforcer).(*casbin.Enforcer),
 		jwtService: xdi.GetByNameForce(sn.SJwtService).(*JwtService),
-		tblName:    "tbl_casbin_rule",
 	}
+}
+
+func (c *CasbinService) table() *gorm.DB {
+	return c.db.Table("tbl_casbin_rule")
 }
 
 func (c *CasbinService) Enforce(sub string, obj string, act string) (bool, error) {
@@ -40,27 +42,33 @@ func (c *CasbinService) Enforce(sub string, obj string, act string) (bool, error
 }
 
 func (c *CasbinService) GetAllRules(pp *param.PageParam) ([]*po.RbacRule, int32, error) {
-	total := int32(0)
-	rules := make([]*po.RbacRule, 0)
-	c.db.Table(c.tblName).Count(&total)
-	rdb := xgorm.WithDB(c.db).Pagination(pp.Limit, pp.Page).Table(c.tblName).Order("p_type").Order("v0").Find(&rules)
-
+	total := int64(0)
+	rdb := c.table().Count(&total)
 	if rdb.Error != nil {
 		return nil, 0, rdb.Error
 	}
-	return rules, total, nil
+
+	rules := make([]*po.RbacRule, 0)
+	rdb = xgorm.WithDB(c.table()).Pagination(pp.Limit, pp.Page).Order("p_type").Order("v0").Find(&rules)
+	if rdb.Error != nil {
+		return nil, 0, rdb.Error
+	}
+
+	return rules, int32(total), nil
 }
 
 func (c *CasbinService) addRule(rule *po.RbacRule) (xstatus.DbStatus, error) {
-	rdb := c.db.Table(c.tblName).Where(rule.ToMap()).First(&po.RbacRule{})
-	if rdb.RecordNotFound() {
-	} else if !rdb.RecordNotFound() {
+	ruleMap := rule.ToMap()
+	rdb := c.table().Where(ruleMap).First(&po.RbacRule{})
+	if rdb.RowsAffected != 0 {
 		return xstatus.DbExisted, nil
-	} else if rdb.Error != nil {
-		return xstatus.DbFailed, rdb.Error
+	} else {
+		if rdb.Error != nil {
+			return xstatus.DbFailed, rdb.Error
+		}
 	}
 
-	rdb = c.db.Table(c.tblName).Create(rule)
+	rdb = c.table().Create(rule)
 	if rdb.RowsAffected == 0 || rdb.Error != nil {
 		return xstatus.DbFailed, rdb.Error
 	}
@@ -69,14 +77,15 @@ func (c *CasbinService) addRule(rule *po.RbacRule) (xstatus.DbStatus, error) {
 
 func (c *CasbinService) removeRule(rule *po.RbacRule) (xstatus.DbStatus, error) {
 	ruleMap := rule.ToMap()
-	rdb := c.db.Table(c.tblName).Where(ruleMap).First(&po.RbacRule{})
-	if rdb.RecordNotFound() {
+	rdb := c.table().Where(ruleMap).First(&po.RbacRule{})
+	if rdb.RowsAffected != 0 {
 		return xstatus.DbNotFound, nil
-	} else if rdb.Error != nil {
-		return xstatus.DbFailed, rdb.Error
+	} else {
+		if rdb.Error != nil {
+			return xstatus.DbFailed, rdb.Error
+		}
 	}
-
-	rdb = c.db.Table(c.tblName).Where(ruleMap).Delete(rule)
+	rdb = c.table().Where(ruleMap).Delete(rule)
 	if rdb.RowsAffected == 0 || rdb.Error != nil {
 		return xstatus.DbFailed, rdb.Error
 	}

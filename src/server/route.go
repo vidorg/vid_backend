@@ -36,7 +36,6 @@ func initRoute(engine *gin.Engine) {
 		authCtrl      = controller.NewAuthController()
 		userCtrl      = controller.NewUserController()
 		subscribeCtrl = controller.NewSubscribeController()
-		blockCtrl     = controller.NewBlockController()
 		videoCtrl     = controller.NewVideoController()
 		favoriteCtrl  = controller.NewFavoriteController()
 		rbacCtrl      = controller.NewRbacController()
@@ -89,14 +88,6 @@ func initRoute(engine *gin.Engine) {
 		videoGroup.DELETE(":vid", authMw, j(videoCtrl.DeleteVideo))
 
 		videoGroup.GET(":vid/favored", j(favoriteCtrl.QueryFavoreds))
-	}
-
-	blockGroup := v1.Group("block")
-	{
-		blockGroup.Use(authMw)
-		blockGroup.GET("user", j(blockCtrl.QueryBlockings))
-		blockGroup.POST("user/:uid", j(blockCtrl.BlockUser))
-		blockGroup.DELETE("user/:uid", j(blockCtrl.UnblockUser))
 	}
 
 	rbacGroup := v1.Group("rbac")

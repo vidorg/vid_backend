@@ -27,9 +27,9 @@ func init() {
 }
 
 type RegisterParam struct {
-	Username string `json:"username"     form:"username"     binding:"required,l_name,r_name"` // register username
-	Email    string `json:"email"        form:"email"        binding:"required,l_email,email"` // register email
-	Password string `json:"password"     form:"password"     binding:"required,l_pwd,r_pwd"`   // register password
+	Username string `json:"username" form:"username" binding:"required,l_name,r_name"` // register username
+	Email    string `json:"email"    form:"email"    binding:"required,l_email,email"` // register email
+	Password string `json:"password" form:"password" binding:"required,l_pwd,r_pwd"`   // register password
 }
 
 type LoginParam struct {

@@ -12,7 +12,11 @@ func NewCommonService() *CommonService {
 }
 
 // Build `xxx = yyy OR ...` where expression.
-func (cmn *CommonService) BuildOrExp(tok string, ids []uint64) string {
+func (cmn *CommonService) BuildOrExpr(tok string, ids []uint64) string {
+	if len(ids) == 0 {
+		return ""
+	}
+
 	sp := strings.Builder{}
 	for _, uid := range ids {
 		sp.WriteString(fmt.Sprintf("`%s` = '%d' OR ", tok, uid))
@@ -21,17 +25,11 @@ func (cmn *CommonService) BuildOrExp(tok string, ids []uint64) string {
 	return where
 }
 
-type _IdCntPair struct {
+type _IdScanResult struct {
+	Id uint64
+}
+
+type _IdCntScanResult struct {
 	Id  uint64
 	Cnt int32
-}
-
-type _FromToUidPair struct {
-	FromUid uint64
-	ToUid   uint64
-}
-
-type _UidVidPair struct {
-	Uid uint64
-	Vid uint64
 }

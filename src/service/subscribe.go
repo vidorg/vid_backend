@@ -1,48 +1,41 @@
 package service
 
 import (
-	"github.com/Aoi-hosizora/ahlib-web/xgorm"
 	"github.com/Aoi-hosizora/ahlib/xdi"
 	"github.com/Aoi-hosizora/ahlib/xstatus"
-	"github.com/jinzhu/gorm"
-	"github.com/vidorg/vid_backend/src/model/dto"
+	"github.com/vidorg/vid_backend/lib/xgorm"
 	"github.com/vidorg/vid_backend/src/model/param"
 	"github.com/vidorg/vid_backend/src/model/po"
 	"github.com/vidorg/vid_backend/src/provide/sn"
+	"gorm.io/gorm"
 )
 
 type SubscribeService struct {
-	db          *gorm.DB
-	userService *UserService
-	common      *CommonService
-	orderBy     func(string) string
-	tblName     string
+	db             *gorm.DB
+	common         *CommonService
+	userService    *UserService
+	orderbyService *OrderbyService
 }
 
 func NewSubscribeService() *SubscribeService {
 	return &SubscribeService{
-		db:          xdi.GetByNameForce(sn.SGorm).(*gorm.DB),
-		userService: xdi.GetByNameForce(sn.SUserService).(*UserService),
-		common:      xdi.GetByNameForce(sn.SCommonService).(*CommonService),
-		orderBy:     xgorm.OrderByFunc(dto.BuildUserPropertyMapper()),
-		tblName:     "tbl_subscribe",
+		db:             xdi.GetByNameForce(sn.SGorm).(*gorm.DB),
+		common:         xdi.GetByNameForce(sn.SCommonService).(*CommonService),
+		userService:    xdi.GetByNameForce(sn.SUserService).(*UserService),
+		orderbyService: xdi.GetByNameForce(sn.SOrderbyService).(*OrderbyService),
 	}
 }
 
-func (s *SubscribeService) subscriberAssoDB(db *gorm.DB, uid uint64) *gorm.Association {
+func (s *SubscribeService) table() *gorm.DB {
+	return s.db.Table("tbl_subscribe")
+}
+
+func (s *SubscribeService) subscriberAsso(db *gorm.DB, uid uint64) *gorm.Association {
 	return db.Model(&po.User{Uid: uid}).Association("Subscribers") // association pattern
 }
 
-func (s *SubscribeService) subscriberAsso(uid uint64) *gorm.Association {
-	return s.subscriberAssoDB(s.db, uid)
-}
-
-func (s *SubscribeService) subscribingAssoDB(db *gorm.DB, uid uint64) *gorm.Association {
+func (s *SubscribeService) subscribingAsso(db *gorm.DB, uid uint64) *gorm.Association {
 	return db.Model(&po.User{Uid: uid}).Association("Subscribings") // association pattern
-}
-
-func (s *SubscribeService) subscribingAsso(uid uint64) *gorm.Association {
-	return s.subscribingAssoDB(s.db, uid)
 }
 
 func (s *SubscribeService) QuerySubscribers(uid uint64, pp *param.PageOrderParam) ([]*po.User, int32, error) {
@@ -53,12 +46,11 @@ func (s *SubscribeService) QuerySubscribers(uid uint64, pp *param.PageOrderParam
 		return nil, 0, nil
 	}
 
-	total := int32(s.subscriberAsso(uid).Count())
+	total := int32(s.subscriberAsso(s.db, uid).Count())
 	users := make([]*po.User, 0)
-	// xgorm.WithDB(s.db).Pagination(pp.Limit, pp.Page).Model(&po.User{Uid: uid}).Order(s.orderBy(pp.Order)).Related(&users, "Subscribers")
-	rac := s.subscriberAssoDB(xgorm.WithDB(s.db).Pagination(pp.Limit, pp.Page).Order(s.orderBy(pp.Order)), uid).Find(&users)
-	if rac.Error != nil {
-		return nil, 0, rac.Error
+	err = s.subscriberAsso(xgorm.WithDB(s.db).Pagination(pp.Limit, pp.Page).Order(s.orderbyService.User(pp.Order)), uid).Find(&users)
+	if err != nil {
+		return nil, 0, err
 	}
 
 	return users, total, nil
@@ -72,11 +64,11 @@ func (s *SubscribeService) QuerySubscribings(uid uint64, pp *param.PageOrderPara
 		return nil, 0, nil
 	}
 
-	total := int32(s.subscribingAsso(uid).Count())
+	total := int32(s.subscribingAsso(s.db, uid).Count())
 	users := make([]*po.User, 0)
-	rac := s.subscribingAssoDB(xgorm.WithDB(s.db).Pagination(pp.Limit, pp.Page).Order(s.orderBy(pp.Order)), uid).Find(&users)
-	if rac.Error != nil {
-		return nil, 0, rac.Error
+	err = s.subscribingAsso(xgorm.WithDB(s.db).Pagination(pp.Limit, pp.Page).Order(s.orderbyService.User(pp.Order)), uid).Find(&users)
+	if err != nil {
+		return nil, 0, err
 	}
 
 	return users, total, nil
@@ -93,17 +85,17 @@ func (s *SubscribeService) InsertSubscribe(uid uint64, to uint64) (xstatus.DbSta
 		return xstatus.DbNotFound, nil
 	}
 
-	cnt := 0
-	rdb := s.db.Table(s.tblName).Where("from_uid = ? AND to_uid = ?", uid, to).Count(&cnt)
+	cnt := int64(0)
+	rdb := s.table().Where("from_uid = ? AND to_uid = ?", uid, to).Count(&cnt)
 	if rdb.Error != nil {
 		return xstatus.DbFailed, rdb.Error
 	} else if cnt > 0 {
-		return xstatus.DbExisted, nil
+		return xstatus.DbExisted, nil // existed
 	}
 
-	ras := s.subscriberAsso(to).Append(&po.User{Uid: uid})
-	if ras.Error != nil {
-		return xstatus.DbFailed, ras.Error
+	err := s.subscriberAsso(s.db, to).Append(&po.User{Uid: uid})
+	if err != nil {
+		return xstatus.DbFailed, err
 	}
 
 	return xstatus.DbSuccess, nil
@@ -120,105 +112,92 @@ func (s *SubscribeService) DeleteSubscribe(uid uint64, to uint64) (xstatus.DbSta
 		return xstatus.DbNotFound, nil
 	}
 
-	cnt := 0
-	rdb := s.db.Table(s.tblName).Where("from_uid = ? AND to_uid = ?", uid, to).Count(&cnt)
+	cnt := int64(0)
+	rdb := s.table().Where("from_uid = ? AND to_uid = ?", uid, to).Count(&cnt)
 	if rdb.Error != nil {
 		return xstatus.DbFailed, rdb.Error
 	} else if cnt == 0 {
-		return xstatus.DbTagA, nil
+		return xstatus.DbTagA, nil // not found
 	}
 
-	ras := s.subscriberAsso(to).Delete(&po.User{Uid: uid})
-	if ras.Error != nil {
-		return xstatus.DbFailed, ras.Error
+	err := s.subscriberAsso(s.db, to).Delete(&po.User{Uid: uid})
+	if err != nil {
+		return xstatus.DbFailed, err
 	}
 
 	return xstatus.DbSuccess, nil
 }
 
-func (s *SubscribeService) CheckSubscribe(me uint64, uids []uint64) ([]*[2]bool, error) {
+func (s *SubscribeService) CheckSubscribe(me uint64, uids []uint64) (ingerPairs []*[2]bool, err error) {
 	if len(uids) == 0 {
 		return []*[2]bool{}, nil
 	}
 
-	// subscribing
-	subings := make([]*_FromToUidPair, 0)
-	where := s.common.BuildOrExp("to_uid", uids)
-	rdb := s.db.Table(s.tblName).Select("from_uid, to_uid").Where("from_uid = ?", me).Where(where).Group("from_uid, to_uid").Scan(&subings)
+	subscribings := make([]*_IdScanResult, 0)
+	where := s.common.BuildOrExpr("to_uid", uids)
+	rdb := s.table().Select("to_uid as id").Where("from_uid = ?", me).Where(where).Scan(&subscribings)
 	if rdb.Error != nil {
 		return nil, rdb.Error
 	}
 
-	// subscriber
-	subers := make([]*_FromToUidPair, 0)
-	where = s.common.BuildOrExp("from_uid", uids)
-	rdb = s.db.Table(s.tblName).Select("from_uid, to_uid").Where("to_uid = ?", me).Where(where).Group("from_uid, to_uid").Scan(&subers)
+	subscribers := make([]*_IdScanResult, 0)
+	where = s.common.BuildOrExpr("from_uid", uids)
+	rdb = s.table().Select("from_uid as id").Where("to_uid = ?", me).Where(where).Scan(&subscribers)
 	if rdb.Error != nil {
 		return nil, rdb.Error
 	}
 
-	// bucket
 	bucket := make(map[uint64][2]bool, len(uids))
-	for _, subing := range subings {
-		bucket[subing.ToUid] = [2]bool{true, false}
+	for _, r := range subscribings {
+		bucket[r.Id] = [2]bool{true, false}
 	}
-	for _, suber := range subers {
-		if arr, ok := bucket[suber.FromUid]; !ok {
-			bucket[suber.FromUid] = [2]bool{false, true}
-		} else {
-			bucket[suber.FromUid] = [2]bool{arr[0], true}
-		}
+	for _, r := range subscribers {
+		_, ok := bucket[r.Id]
+		bucket[r.Id] = [2]bool{ok, true} // use ok directly
 	}
 
-	// out
 	out := make([]*[2]bool, len(uids))
 	for idx, uid := range uids {
-		arr, ok := bucket[uid]
-		if ok {
+		if arr, ok := bucket[uid]; ok {
 			out[idx] = &arr
 		} else {
 			out[idx] = &[2]bool{false, false}
 		}
 	}
-
 	return out, nil
 }
 
-func (s *SubscribeService) QuerySubscribeCount(uids []uint64) ([]*[2]int32, error) {
+func (s *SubscribeService) QuerySubscribeCount(uids []uint64) (ingerPairs []*[2]int32, err error) {
 	if len(uids) == 0 {
 		return []*[2]int32{}, nil
 	}
 
-	// subscribing
-	subings := make([]*_IdCntPair, 0)
-	where := s.common.BuildOrExp("from_uid", uids)
-	rdb := s.db.Table(s.tblName).Select("from_uid as id, count(*) as cnt").Where(where).Group("from_uid").Scan(&subings)
+	subscribings := make([]*_IdCntScanResult, 0)
+	where := s.common.BuildOrExpr("from_uid", uids)
+	rdb := s.table().Select("from_uid as id, count(*) as cnt").Where(where).Group("from_uid").Scan(&subscribings)
 	if rdb.Error != nil {
 		return nil, rdb.Error
 	}
 
-	// subscriber
-	subers := make([]*_IdCntPair, 0)
-	where = s.common.BuildOrExp("to_uid", uids)
-	rdb = s.db.Table(s.tblName).Select("to_uid as id, count(*) as cnt").Where(where).Group("to_uid").Scan(&subers)
+	subscribers := make([]*_IdCntScanResult, 0)
+	where = s.common.BuildOrExpr("to_uid", uids)
+	rdb = s.table().Select("to_uid as id, count(*) as cnt").Where(where).Group("to_uid").Scan(&subscribers)
 	if rdb.Error != nil {
 		return nil, rdb.Error
 	}
 
-	// bucket
 	bucket := make(map[uint64][2]int32, len(uids))
-	for _, subing := range subings {
-		bucket[subing.Id] = [2]int32{subing.Cnt, 0}
+	for _, r := range subscribings {
+		bucket[r.Id] = [2]int32{r.Cnt, 0}
 	}
-	for _, suber := range subers {
-		if arr, ok := bucket[suber.Id]; !ok {
-			bucket[suber.Id] = [2]int32{0, suber.Cnt}
+	for _, r := range subscribers {
+		if arr, ok := bucket[r.Id]; !ok {
+			bucket[r.Id] = [2]int32{0, r.Cnt}
 		} else {
-			bucket[suber.Id] = [2]int32{arr[0], suber.Cnt}
+			bucket[r.Id] = [2]int32{arr[0], r.Cnt}
 		}
 	}
 
-	// out
 	out := make([]*[2]int32, len(uids))
 	for idx, uid := range uids {
 		arr, ok := bucket[uid]
@@ -228,6 +207,5 @@ func (s *SubscribeService) QuerySubscribeCount(uids []uint64) ([]*[2]int32, erro
 			out[idx] = &[2]int32{0, 0}
 		}
 	}
-
 	return out, nil
 }
