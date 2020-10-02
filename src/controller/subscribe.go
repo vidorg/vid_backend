@@ -168,7 +168,7 @@ func (s *SubscribeController) UnSubscribeUser(c *gin.Context) *result.Result {
 	} else if status == xstatus.DbTagA {
 		return result.Error(exception.NotSubscribeYetError)
 	} else if status == xstatus.DbFailed {
-		return result.Error(exception.UnSubscribeError).SetError(err, c)
+		return result.Error(exception.UnsubscribeError).SetError(err, c)
 	}
 
 	return result.Ok()

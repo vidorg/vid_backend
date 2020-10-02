@@ -7,6 +7,7 @@ import (
 	"github.com/vidorg/vid_backend/src/model/po"
 	"github.com/vidorg/vid_backend/src/provide/sn"
 	"gorm.io/gorm"
+	"strings"
 )
 
 type AccountService struct {
@@ -69,16 +70,41 @@ func (a *AccountService) QueryByUid(uid uint64) (*po.Account, error) {
 }
 
 func (a *AccountService) Insert(username, email, encrypted string) (xstatus.DbStatus, error) {
-	account := &po.Account{
-		Password: encrypted,
-		User: &po.User{
-			Email:    email,
-			Username: username,
-			Nickname: username,
-		},
+	tx := a.db.Begin()
+
+	user := &po.User{
+		Email:    email,
+		Username: username,
+		Nickname: username,
 	}
-	rdb := a.db.Model(&po.Account{}).Create(account)
-	return xgorm.CreateErr(rdb)
+	rdb := tx.Model(&po.User{}).Create(user)
+	status, err := xgorm.CreateErr(rdb)
+	if status != xstatus.DbSuccess {
+		tx.Rollback()
+		if status == xstatus.DbExisted && err != nil {
+			if strings.Contains(err.Error(), "uk_username") {
+				return xstatus.DbTagA, err // username duplicated
+			}
+			return xstatus.DbTagB, err // email duplicated
+		}
+		return status, err
+	}
+
+	account := &po.Account{
+		Uid:      user.Uid,
+		Password: encrypted,
+	}
+	rdb = tx.Model(&po.Account{}).Create(account)
+	if status != xstatus.DbSuccess {
+		tx.Rollback()
+		return status, err
+	}
+
+	rdb = tx.Commit()
+	if rdb.Error != nil {
+		return status, rdb.Error
+	}
+	return xstatus.DbSuccess, nil
 }
 
 func (a *AccountService) UpdatePassword(uid uint64, encrypted string) (xstatus.DbStatus, error) {

@@ -9,6 +9,7 @@ func init() {
 		goapidoc.NewDefinition("RegisterParam", "register parameter").
 			Properties(
 				goapidoc.NewProperty("email", "string", true, "register email").Example("aaa@bbb.ccc"),
+				goapidoc.NewProperty("username", "string", true, "register username"),
 				goapidoc.NewProperty("password", "string", true, "register password"),
 			),
 

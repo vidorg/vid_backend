@@ -34,7 +34,7 @@ func (v *VideoService) QueryAll(pp *param.PageOrderParam) ([]*po.Video, int32, e
 	}
 
 	videos := make([]*po.Video, 0)
-	rdb = xgorm.WithDB(v.db).Pagination(pp.Limit, pp.Page).Model(&po.User{}).Order(v.orderbyService.Video(pp.Order)).Find(&videos)
+	rdb = xgorm.WithDB(v.db).Pagination(pp.Limit, pp.Page).Model(&po.Video{}).Order(v.orderbyService.Video(pp.Order)).Find(&videos)
 	if rdb.Error != nil {
 		return nil, 0, rdb.Error
 	}

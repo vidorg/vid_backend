@@ -6,6 +6,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"gorm.io/gorm/logger"
 	"gorm.io/gorm/utils"
+	"strings"
 	"time"
 )
 
@@ -16,6 +17,18 @@ func NewGormLogger(logger *logrus.Logger, config logger.Config) logger.Interface
 type gormLogger struct {
 	*logrus.Logger
 	logger.Config
+}
+
+func (l *gormLogger) LogMode(level logger.LogLevel) logger.Interface {
+	newlogger := *l
+	newlogger.LogLevel = level
+	return &newlogger
+}
+
+func (l gormLogger) trim(s string) string {
+	s = strings.TrimSpace(s)
+	s = strings.Trim(s, "\n")
+	return s
 }
 
 func (l gormLogger) Trace(_ context.Context, begin time.Time, fc func() (string, int64), err error) {
@@ -38,32 +51,34 @@ func (l gormLogger) Trace(_ context.Context, begin time.Time, fc func() (string,
 
 	switch {
 	case err != nil && l.LogLevel >= logger.Error:
-		field.Errorf(fmt.Sprintf("[Gorm] #: %4d | %12s | err: %s | %s | %s", rows, duration, err, sql, source))
+		if sql == "" {
+			sql = "?"
+		}
+		field.Errorf(fmt.Sprintf("[Gorm] %s | %s | %s", err, sql, source))
 	case l.LogLevel >= logger.Info:
+		if strings.HasPrefix(sql, "SELECT DATABASE()") ||
+			strings.HasPrefix(sql, "SELECT count(*) FROM information_schema.tables WHERE table_schema") ||
+			strings.HasPrefix(sql, "SELECT count(*) FROM information_schema.statistics WHERE table_schema") {
+			break
+		}
 		field.Infof(fmt.Sprintf("[Gorm] #: %4d | %12s | %s | %s", rows, duration, sql, source))
 	}
 }
 
-func (l *gormLogger) LogMode(level logger.LogLevel) logger.Interface {
-	newlogger := *l
-	newlogger.LogLevel = level
-	return &newlogger
-}
-
 func (l gormLogger) Info(_ context.Context, msg string, data ...interface{}) {
 	if l.LogLevel >= logger.Info {
-		l.Infof(fmt.Sprintf("[info] %s | %s", fmt.Sprintf(msg, data...), utils.FileWithLineNum()))
+		l.Infof(fmt.Sprintf("[Gorm] [info] %s | %s", l.trim(fmt.Sprintf(msg, data...)), utils.FileWithLineNum()))
 	}
 }
 
 func (l gormLogger) Warn(_ context.Context, msg string, data ...interface{}) {
 	if l.LogLevel >= logger.Warn {
-		l.Warnf(fmt.Sprintf("[warn] %s | %s", fmt.Sprintf(msg, data...), utils.FileWithLineNum()))
+		l.Warnf(fmt.Sprintf("[Gorm] [warn] %s | %s", l.trim(fmt.Sprintf(msg, data...)), utils.FileWithLineNum()))
 	}
 }
 
 func (l gormLogger) Error(_ context.Context, msg string, data ...interface{}) {
 	if l.LogLevel >= logger.Error {
-		l.Errorf(fmt.Sprintf("[error] %s | %s", fmt.Sprintf(msg, data...), utils.FileWithLineNum()))
+		l.Errorf(fmt.Sprintf("[Gorm] [error] %s | %s", l.trim(fmt.Sprintf(msg, data...)), utils.FileWithLineNum()))
 	}
 }

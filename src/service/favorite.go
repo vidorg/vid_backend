@@ -50,7 +50,7 @@ func (f *FavoriteService) QueryFavorites(uid uint64, pp *param.PageOrderParam) (
 
 	total := int32(f.favoriteAsso(f.db, uid).Count())
 	videos := make([]*po.Video, 0)
-	err = f.favoriteAsso(xgorm.WithDB(f.db).Pagination(pp.Limit, pp.Page).Order(f.orderbyService.Video(pp.Order)), uid).Find(&videos)
+	err = f.favoriteAsso(xgorm.WithDB(f.db).Pagination(pp.Limit, pp.Page).Order(f.orderbyService.FavoriteForVideo(pp.Order)), uid).Find(&videos)
 	if err != nil {
 		return nil, 0, err
 	}
@@ -68,7 +68,7 @@ func (f *FavoriteService) QueryFavoreds(vid uint64, pp *param.PageOrderParam) ([
 
 	total := int32(f.favoredAsso(f.db, vid).Count())
 	users := make([]*po.User, 0)
-	err = f.favoredAsso(xgorm.WithDB(f.db).Pagination(pp.Limit, pp.Page).Order(f.orderbyService.User(pp.Order)), vid).Find(&users)
+	err = f.favoredAsso(xgorm.WithDB(f.db).Pagination(pp.Limit, pp.Page).Order(f.orderbyService.FavoriteForUser(pp.Order)), vid).Find(&users)
 	if err != nil {
 		return nil, 0, err
 	}

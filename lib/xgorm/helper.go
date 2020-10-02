@@ -5,7 +5,14 @@ import (
 	"github.com/Aoi-hosizora/ahlib/xstatus"
 	"gorm.io/gorm"
 	"strings"
+	"time"
 )
+
+type Model struct {
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	DeletedAt gorm.DeletedAt `gorm:"index:idx_delete_at"`
+}
 
 type Helper struct {
 	db *gorm.DB
@@ -25,8 +32,8 @@ func IsMySQL(db *gorm.DB) bool {
 
 func CreateErr(rdb *gorm.DB) (xstatus.DbStatus, error) {
 	if IsMySQL(rdb) && IsMySQLDuplicateEntryError(rdb.Error) {
-		return xstatus.DbExisted, nil
-	} else if rdb.Error != nil || rdb.RowsAffected == 0 {
+		return xstatus.DbExisted, rdb.Error
+	} else if rdb.Error != nil || rdb.RowsAffected <= 0 {
 		return xstatus.DbFailed, rdb.Error
 	}
 
@@ -35,21 +42,21 @@ func CreateErr(rdb *gorm.DB) (xstatus.DbStatus, error) {
 
 func UpdateErr(rdb *gorm.DB) (xstatus.DbStatus, error) {
 	if IsMySQL(rdb) && IsMySQLDuplicateEntryError(rdb.Error) {
-		return xstatus.DbExisted, nil
+		return xstatus.DbExisted, rdb.Error
+	} else if rdb.RowsAffected == 0 {
+		return xstatus.DbNotFound, rdb.Error
 	} else if rdb.Error != nil {
 		return xstatus.DbFailed, rdb.Error
-	} else if rdb.RowsAffected == 0 {
-		return xstatus.DbNotFound, nil
 	}
 
 	return xstatus.DbSuccess, nil
 }
 
 func DeleteErr(rdb *gorm.DB) (xstatus.DbStatus, error) {
-	if rdb.Error != nil {
+	if rdb.RowsAffected == 0 {
+		return xstatus.DbNotFound, rdb.Error
+	} else if rdb.Error != nil {
 		return xstatus.DbFailed, rdb.Error
-	} else if rdb.RowsAffected == 0 {
-		return xstatus.DbNotFound, nil
 	}
 
 	return xstatus.DbSuccess, nil
@@ -57,18 +64,17 @@ func DeleteErr(rdb *gorm.DB) (xstatus.DbStatus, error) {
 
 func OrderByFunc(p xproperty.PropertyDict) func(source string) string {
 	return func(source string) string {
-		result := make([]string, 0)
 		if source == "" {
 			return ""
 		}
 
-		sources := strings.Split(source, ",")
-		for _, src := range sources {
+		result := make([]string, 0)
+		for _, src := range strings.Split(source, ",") {
+			src = strings.TrimSpace(src)
 			if src == "" {
 				continue
 			}
 
-			src = strings.TrimSpace(src)
 			reverse := strings.HasSuffix(src, " desc") || strings.HasSuffix(src, " DESC")
 			src = strings.Split(src, " ")[0]
 

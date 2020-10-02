@@ -48,7 +48,7 @@ func (s *SubscribeService) QuerySubscribers(uid uint64, pp *param.PageOrderParam
 
 	total := int32(s.subscriberAsso(s.db, uid).Count())
 	users := make([]*po.User, 0)
-	err = s.subscriberAsso(xgorm.WithDB(s.db).Pagination(pp.Limit, pp.Page).Order(s.orderbyService.User(pp.Order)), uid).Find(&users)
+	err = s.subscriberAsso(xgorm.WithDB(s.db).Pagination(pp.Limit, pp.Page).Order(s.orderbyService.SubscribeForUser(pp.Order)), uid).Find(&users)
 	if err != nil {
 		return nil, 0, err
 	}
@@ -66,7 +66,7 @@ func (s *SubscribeService) QuerySubscribings(uid uint64, pp *param.PageOrderPara
 
 	total := int32(s.subscribingAsso(s.db, uid).Count())
 	users := make([]*po.User, 0)
-	err = s.subscribingAsso(xgorm.WithDB(s.db).Pagination(pp.Limit, pp.Page).Order(s.orderbyService.User(pp.Order)), uid).Find(&users)
+	err = s.subscribingAsso(xgorm.WithDB(s.db).Pagination(pp.Limit, pp.Page).Order(s.orderbyService.SubscribeForUser(pp.Order)), uid).Find(&users)
 	if err != nil {
 		return nil, 0, err
 	}
@@ -135,6 +135,7 @@ func (s *SubscribeService) CheckSubscribe(me uint64, uids []uint64) (ingerPairs 
 
 	subscribings := make([]*_IdScanResult, 0)
 	where := s.common.BuildOrExpr("to_uid", uids)
+	// TODO tx.Statement.Selects = []string{strings.Join(fields, " ")}
 	rdb := s.table().Select("to_uid as id").Where("from_uid = ?", me).Where(where).Scan(&subscribings)
 	if rdb.Error != nil {
 		return nil, rdb.Error
