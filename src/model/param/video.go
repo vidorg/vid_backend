@@ -24,7 +24,7 @@ type InsertVideoParam struct {
 	CoverUrl    string `json:"cover_url"   form:"cover_url"   binding:"required,url"`           // video cover url (oss)
 }
 
-func (i *InsertVideoParam) ToPo() *po.Video {
+func (i *InsertVideoParam) ToVideoPo() *po.Video {
 	return &po.Video{
 		Title:       i.Title,
 		Description: i.Description,

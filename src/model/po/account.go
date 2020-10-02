@@ -1,13 +1,14 @@
 package po
 
 import (
-	"github.com/Aoi-hosizora/ahlib-web/xgorm"
+	"github.com/vidorg/vid_backend/lib/xgorm"
 )
 
 type Account struct {
-	Uid      uint64 `gorm:"primary_key;       not null"`                // user id (foreigner key)
-	Password string `gorm:"type:varchar(255); not null"`                // encrypted password
-	User     *User  `gorm:"foreignkey:Uid; association_foreignkey:Uid"` // po.Account belongs to po.User
+	Uid      uint64 `gorm:"                   not null; primaryKey"` // user id (foreigner key)
+	Password string `gorm:"type:varchar(255); not null"`             // encrypted password
 
-	xgorm.GormTime
+	User *User `gorm:"foreignKey:Uid; references:Uid"` // po.Account belongs to po.User
+
+	xgorm.Model
 }

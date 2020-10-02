@@ -16,6 +16,7 @@ const (
 
 	// services
 	SCommonService    xdi.ServiceName = "common-service"    // *service.CommonService
+	SOrderbyService   xdi.ServiceName = "orderby-service"   // *service.OrderbyService
 	SAccountService   xdi.ServiceName = "account-service"   // *service.AccountService
 	STokenService     xdi.ServiceName = "token-service"     // *service.TokenService
 	SUserService      xdi.ServiceName = "user-service"      // *service.UserService
@@ -23,7 +24,6 @@ const (
 	SSubscribeService xdi.ServiceName = "subscribe-service" // *service.SubscribeService
 	SVideoService     xdi.ServiceName = "video-service"     // *service.VideoService
 	SFavoriteService  xdi.ServiceName = "favorite-service"  // *service.FavoriteService
-	SBlockService     xdi.ServiceName = "block-service"     // *service.BlockService
 	SJwtService       xdi.ServiceName = "jwt-service"       // *service.JwtService
 	SCasbinService    xdi.ServiceName = "casbin-service"    // *service.CasbinService
 

@@ -34,13 +34,15 @@ var (
 
 // auth exceptions
 var (
-	RegisterError        = New(500, se(), "register failed")                        // 注册失败
-	EmailRegisteredError = New(409, ce(), "email has been registered")              // 邮箱已被注册
-	LoginError           = New(500, se(), "login failed")                           // 登录失败
-	LoginParameterError  = New(401, ce(), "email, username, uid or password wrong") // 用户名密码错误
-	LogoutError          = New(500, se(), "logout failed")                          // 登出失败
-	UpdatePasswordError  = New(500, se(), "update password failed")                 // 更新密码失败
-	WrongPasswordError   = New(401, ce(), "password is wrong")                      // 密码不一致
+	RegisterError           = New(500, se(), "register failed")                        // 注册失败
+	UsernameRegisteredError = New(409, ce(), "username has been registered")           // 用户名已被注册
+	EmailRegisteredError    = New(409, ce(), "email has been registered")              // 邮箱已被注册
+	LoginError              = New(500, se(), "login failed")                           // 登录失败
+	LoginParameterError     = New(401, ce(), "email, username, uid or password wrong") // 用户名密码错误
+	LogoutError             = New(500, se(), "logout failed")                          // 登出失败
+	UpdatePasswordError     = New(500, se(), "update password failed")                 // 更新密码失败
+	WrongPasswordError      = New(401, ce(), "password is wrong")                      // 旧密码错误
+	SamePasswordError       = New(400, ce(), "could not update to the same password")  // 新密码和旧密码一直
 
 	SendActivateEmailError = New(500, se(), "send email failed")                // 发送邮件失败
 	AlreadyActivatedError  = New(400, ce(), "you have been activated")          // 已经被激活
@@ -61,25 +63,14 @@ var (
 
 // subscribe exception
 var (
-	GetSubscriberListError  = New(500, se(), "get follower list failed")  // 获取粉丝列表失败
-	GetSubscribingListError = New(500, se(), "get following list failed") // 获取关注列表失败
+	GetSubscriberListError  = New(500, se(), "get subscriber list failed")  // 获取粉丝列表失败
+	GetSubscribingListError = New(500, se(), "get subscribing list failed") // 获取关注列表失败
 
-	SubscribeError          = New(500, se(), "follow failed")              // 关注用户失败
-	SubscribeSelfError      = New(400, ce(), "could not follow self")      // 无法关注自己
-	AlreadySubscribingError = New(409, ce(), "user has been followed")     // 已经关注的用户
-	UnSubscribeError        = New(500, se(), "unfollow failed")            // 取消关注用户失败
-	NotSubscribeYetError    = New(404, ce(), "user has not been followed") // 还没有关注的用户
-)
-
-// block exception
-var (
-	GetBlockingListError = New(500, se(), "get blocking list failed") // 获取黑名单列表失败
-
-	BlockError           = New(500, se(), "block failed")              // 加入黑名单失败
-	BlockSelfError       = New(400, ce(), "could not block self")      // 无法将自己拉入黑名单
-	AlreadyBlockingError = New(409, ce(), "user has been blocked")     // 已经在黑名单的用户
-	UnblockError         = New(500, se(), "unblock error")             // 取消黑名单失败
-	NotBlockYetError     = New(404, ce(), "user has not been blocked") // 用户没有在黑名单中
+	SubscribeError          = New(500, se(), "subscribe failed")               // 关注用户失败
+	SubscribeSelfError      = New(400, ce(), "could not subscribe self")       // 无法关注自己
+	AlreadySubscribingError = New(409, ce(), "user has been subscribed")       // 已经关注的用户
+	UnsubscribeError        = New(500, se(), "unsubscribe failed")             // 取消关注用户失败
+	NotSubscribeYetError    = New(404, ce(), "user has not been unsubscribed") // 还没有关注的用户
 )
 
 // video exception

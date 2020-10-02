@@ -3,17 +3,17 @@ package database
 import (
 	"github.com/Aoi-hosizora/ahlib/xdi"
 	"github.com/casbin/casbin/v2"
-	gormadapter "github.com/casbin/gorm-adapter/v2"
-	"github.com/jinzhu/gorm"
+	gormadapter "github.com/casbin/gorm-adapter/v3"
 	"github.com/vidorg/vid_backend/src/config"
 	"github.com/vidorg/vid_backend/src/provide/sn"
+	"gorm.io/gorm"
 )
 
 func NewCasbinEnforcer() (*casbin.Enforcer, error) {
 	cfg := xdi.GetByNameForce(sn.SConfig).(*config.Config)
 	db := xdi.GetByNameForce(sn.SGorm).(*gorm.DB)
 
-	adapter, err := gormadapter.NewAdapterByDBUsePrefix(db, "tbl_")
+	adapter, err := gormadapter.NewAdapterByDBUseTableName(db, "tbl", "casbin_rule")
 	if err != nil {
 		return nil, err
 	}
@@ -24,6 +24,9 @@ func NewCasbinEnforcer() (*casbin.Enforcer, error) {
 	}
 
 	enforcer.EnableLog(false)
+	// roleMgr := enforcer.GetRoleManager().(*defaultrolemanager.RoleManager)
+	// roleMgr.AddMatchingFunc("KeyMatch2", util.KeyMatch2)
+
 	err = enforcer.LoadPolicy()
 	if err != nil {
 		return nil, err

@@ -9,6 +9,7 @@ func init() {
 		goapidoc.NewDefinition("RegisterParam", "register parameter").
 			Properties(
 				goapidoc.NewProperty("email", "string", true, "register email").Example("aaa@bbb.ccc"),
+				goapidoc.NewProperty("username", "string", true, "register username"),
 				goapidoc.NewProperty("password", "string", true, "register password"),
 			),
 
@@ -27,6 +28,7 @@ func init() {
 }
 
 type RegisterParam struct {
+	Username string `json:"username" form:"username" binding:"required,l_name,r_name"` // register username
 	Email    string `json:"email"    form:"email"    binding:"required,l_email,email"` // register email
 	Password string `json:"password" form:"password" binding:"required,l_pwd,r_pwd"`   // register password
 }

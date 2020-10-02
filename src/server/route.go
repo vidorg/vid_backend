@@ -36,7 +36,6 @@ func initRoute(engine *gin.Engine) {
 		authCtrl      = controller.NewAuthController()
 		userCtrl      = controller.NewUserController()
 		subscribeCtrl = controller.NewSubscribeController()
-		blockCtrl     = controller.NewBlockController()
 		videoCtrl     = controller.NewVideoController()
 		favoriteCtrl  = controller.NewFavoriteController()
 		rbacCtrl      = controller.NewRbacController()
@@ -45,11 +44,9 @@ func initRoute(engine *gin.Engine) {
 	jwtMw := middleware.JwtMiddleware()
 	casbinMw := middleware.CasbinMiddleware()
 	authMw := func(c *gin.Context) {
+		jwtMw(c)
 		if !c.IsAborted() {
-			jwtMw(c)
-			if !c.IsAborted() {
-				casbinMw(c)
-			}
+			casbinMw(c)
 		}
 	}
 
@@ -60,6 +57,7 @@ func initRoute(engine *gin.Engine) {
 		authGroup.GET("user", authMw, j(authCtrl.CurrentUser))
 		authGroup.DELETE("logout", authMw, j(authCtrl.Logout))
 		authGroup.PUT("password", authMw, j(authCtrl.UpdatePassword))
+
 		authGroup.POST("activate", authMw, j(authCtrl.ActivateUser))
 		authGroup.GET("spec/:spec", j(authCtrl.CheckSpec))
 	}
@@ -91,14 +89,6 @@ func initRoute(engine *gin.Engine) {
 		videoGroup.DELETE(":vid", authMw, j(videoCtrl.DeleteVideo))
 
 		videoGroup.GET(":vid/favored", j(favoriteCtrl.QueryFavoreds))
-	}
-
-	blockGroup := v1.Group("block")
-	{
-		blockGroup.Use(authMw)
-		blockGroup.GET("user", j(blockCtrl.QueryBlockings))
-		blockGroup.POST("user/:uid", j(blockCtrl.BlockUser))
-		blockGroup.DELETE("user/:uid", j(blockCtrl.UnblockUser))
 	}
 
 	rbacGroup := v1.Group("rbac")

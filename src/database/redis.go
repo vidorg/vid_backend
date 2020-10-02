@@ -40,12 +40,11 @@ func NewRedisPool() (*redis.Pool, error) {
 		},
 	}
 
-	conn := pool.Get()
-	defer conn.Close()
-	err := conn.Err()
+	conn, err := pool.Dial()
 	if err != nil {
 		return nil, err
 	}
+	defer conn.Close()
 
 	return pool, nil
 }

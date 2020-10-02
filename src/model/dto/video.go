@@ -1,7 +1,6 @@
 package dto
 
 import (
-	"github.com/Aoi-hosizora/ahlib/xproperty"
 	"github.com/Aoi-hosizora/ahlib/xtime"
 	"github.com/Aoi-hosizora/goapidoc"
 	"github.com/vidorg/vid_backend/src/model/po"
@@ -9,7 +8,7 @@ import (
 
 func init() {
 	goapidoc.AddDefinitions(
-		goapidoc.NewDefinition("VideoDto", "视频信息").
+		goapidoc.NewDefinition("VideoDto", "video response").
 			Properties(
 				goapidoc.NewProperty("vid", "integer#int64", true, "video id"),
 				goapidoc.NewProperty("title", "string", true, "video title"),
@@ -62,18 +61,6 @@ func BuildVideoDtos(videos []*po.Video) []*VideoDto {
 		out[idx] = BuildVideoDto(video)
 	}
 	return out
-}
-
-func BuildVideoPropertyMapper() xproperty.PropertyDict {
-	return xproperty.PropertyDict{
-		"vid":         xproperty.NewValue(false, "vid"),
-		"title":       xproperty.NewValue(false, "title"),
-		"description": xproperty.NewValue(false, "description"),
-		"video_url":   xproperty.NewValue(false, "video_url"),
-		"cover_url":   xproperty.NewValue(false, "cover_url"),
-		"upload_time": xproperty.NewValue(false, "create_at"),
-		"author_uid":  xproperty.NewValue(false, "author_uid"),
-	}
 }
 
 type VideoExtraDto struct {

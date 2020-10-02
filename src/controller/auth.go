@@ -88,8 +88,10 @@ func (a *AuthController) Register(c *gin.Context) *result.Result {
 		return result.Error(exception.RegisterError).SetError(err, c)
 	}
 
-	status, err := a.accountService.Insert(pa.Email, string(encrypted))
-	if status == xstatus.DbExisted {
+	status, err := a.accountService.Insert(pa.Username, pa.Email, string(encrypted))
+	if status == xstatus.DbTagA {
+		return result.Error(exception.UsernameRegisteredError)
+	} else if status == xstatus.DbTagB {
 		return result.Error(exception.EmailRegisteredError)
 	} else if status == xstatus.DbFailed {
 		return result.Error(exception.RegisterError).SetError(err, c)
@@ -203,6 +205,9 @@ func (a *AuthController) UpdatePassword(c *gin.Context) *result.Result {
 		return result.Error(exception.UpdatePasswordError).SetError(err, c)
 	} else if !ok {
 		return result.Error(exception.WrongPasswordError)
+	}
+	if pa.New == pa.Old {
+		return result.Error(exception.SamePasswordError)
 	}
 	encrypted, err := xpassword.EncryptWithDefaultCost([]byte(pa.New))
 	if err != nil {

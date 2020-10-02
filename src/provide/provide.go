@@ -51,6 +51,7 @@ func Provide(configPath string) error {
 
 	// services
 	xdi.ProvideName(sn.SCommonService, service.NewCommonService())
+	xdi.ProvideName(sn.SOrderbyService, service.NewOrderbyService())
 	xdi.ProvideName(sn.SAccountService, service.NewAccountService())
 	xdi.ProvideName(sn.STokenService, service.NewTokenService())
 	xdi.ProvideName(sn.SUserService, service.NewUserService())
@@ -58,7 +59,6 @@ func Provide(configPath string) error {
 	xdi.ProvideName(sn.SSubscribeService, service.NewSubscribeService())
 	xdi.ProvideName(sn.SVideoService, service.NewVideoService())
 	xdi.ProvideName(sn.SFavoriteService, service.NewFavoriteService())
-	xdi.ProvideName(sn.SBlockService, service.NewBlockService())
 	xdi.ProvideName(sn.SJwtService, service.NewJwtService())
 	xdi.ProvideName(sn.SCasbinService, service.NewCasbinService())
 

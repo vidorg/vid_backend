@@ -37,6 +37,7 @@ func (e *EmailService) GenerateSpec() string {
 func (e *EmailService) SendTo(to string, spec string) error {
 	cfg := e.config.Email
 
+	// TODO 放消息队列
 	message := gomail.NewMessage()
 	message.SetHeader("From", cfg.Name)
 	message.SetHeader("To", to)

@@ -27,11 +27,10 @@ func CasbinMiddleware() gin.HandlerFunc {
 
 		ok, err := casbinService.Enforce(sub, obj, act)
 		if err != nil {
-			result.Error(exception.CheckRoleError).JSON(c)
+			result.Error(exception.CheckRoleError).SetError(err, c).JSON(c)
 			c.Abort()
 			return
-		}
-		if !ok {
+		} else if !ok {
 			result.Error(exception.NoPermissionError).JSON(c)
 			c.Abort()
 			return

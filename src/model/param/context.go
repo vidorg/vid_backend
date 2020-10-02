@@ -15,6 +15,14 @@ var (
 	ADOrder = goapidoc.NewQueryParam("order", "string", false, "order string")
 )
 
+type Queryable interface {
+	ToMap() map[string]interface{}
+}
+
+type Updatable interface {
+	ToMap() map[string]interface{}
+}
+
 type PageParam struct {
 	Page  int32
 	Limit int32

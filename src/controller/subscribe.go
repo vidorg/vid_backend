@@ -21,7 +21,7 @@ func init() {
 			Params(
 				goapidoc.NewPathParam("uid", "integer#int64", true, "user id"),
 				param.ADPage, param.ADLimit, param.ADOrder,
-				_adNeedSubscribeCount, _adNeedIsSubscribe, _adNeedIsBlock, _adNeedVideoCount, _adNeedFavoriteCount,
+				_adNeedSubscribeCount, _adNeedIsSubscribe, _adNeedVideoCount, _adNeedFavoriteCount,
 			).
 			Responses(goapidoc.NewResponse(200, "_Result<_Page<UserDto>>")),
 
@@ -30,7 +30,7 @@ func init() {
 			Params(
 				goapidoc.NewPathParam("uid", "integer#int64", true, "user id"),
 				param.ADPage, param.ADLimit, param.ADOrder,
-				_adNeedSubscribeCount, _adNeedIsSubscribe, _adNeedIsBlock, _adNeedVideoCount, _adNeedFavoriteCount,
+				_adNeedSubscribeCount, _adNeedIsSubscribe, _adNeedVideoCount, _adNeedFavoriteCount,
 			).
 			Responses(goapidoc.NewResponse(200, "_Result<_Page<UserDto>>")),
 
@@ -168,7 +168,7 @@ func (s *SubscribeController) UnSubscribeUser(c *gin.Context) *result.Result {
 	} else if status == xstatus.DbTagA {
 		return result.Error(exception.NotSubscribeYetError)
 	} else if status == xstatus.DbFailed {
-		return result.Error(exception.UnSubscribeError).SetError(err, c)
+		return result.Error(exception.UnsubscribeError).SetError(err, c)
 	}
 
 	return result.Ok()

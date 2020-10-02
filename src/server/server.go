@@ -32,7 +32,6 @@ func init() {
 		goapidoc.NewTag("Subscribe", "subscribe-controller"),
 		goapidoc.NewTag("Video", "video-controller"),
 		goapidoc.NewTag("Favorite", "favorite-controller"),
-		goapidoc.NewTag("Block", "block-controller"),
 		goapidoc.NewTag("Rbac", "rbac-controller"),
 		goapidoc.NewTag("Administration", "*-controller"),
 	)
@@ -64,8 +63,7 @@ func NewServer() *Server {
 		xgin.PprofWrap(engine)
 	}
 	docs.RegisterSwag()
-	swaggerUrl := ginSwagger.URL(fmt.Sprintf("http://localhost:%d/v1/swagger/doc.json", cfg.Meta.Port))
-	engine.GET("/v1/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, swaggerUrl))
+	engine.GET("/v1/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, ginSwagger.URL("doc.json")))
 	engine.GET("/v1/swagger", func(c *gin.Context) { c.Redirect(http.StatusPermanentRedirect, "/v1/swagger/index.html") })
 	initRoute(engine)
 
@@ -80,7 +78,6 @@ func setupBinding() {
 
 	_ = xgin.AddBinding("r_name", xvalidator.RegexpValidator(regexp.MustCompile(`^[A-Za-z][0-9A-Za-z\-_]+$`)))     // 0-9 a-z A-Z - _
 	_ = xgin.AddBinding("r_pwd", xvalidator.RegexpValidator(regexp.MustCompile(`^[0-9A-Za-z\-_!@#$%^&*=+/\\]+$`))) // 0-9 z-z A-Z - _ ! @ # $ % ^ & * + = / \
-	_ = xgin.AddBinding("r_phone", xvalidator.RegexpValidator(regexp.MustCompile(`^(13[0-9]|15[012356789]|17[678]|18[0-9]|14[57])[0-9]{8}$`)))
 
 	_ = xgin.AddBinding("l_name", xvalidator.LengthRangeValidator(4, 63))
 	_ = xgin.AddBinding("l_pwd", xvalidator.LengthRangeValidator(4, 25))
