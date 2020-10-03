@@ -28,6 +28,9 @@ func initRoute(engine *gin.Engine) {
 	engine.GET("", func(c *gin.Context) {
 		c.JSON(200, &gin.H{"message": "Welcome to vid API."})
 	})
+	engine.GET("panic", func(*gin.Context) {
+		panic("hhh")
+	})
 
 	// controller
 	v1 := engine.Group("v1")
@@ -38,6 +41,7 @@ func initRoute(engine *gin.Engine) {
 		followCtrl   = controller.NewFollowController()
 		videoCtrl    = controller.NewVideoController()
 		favoriteCtrl = controller.NewFavoriteController()
+		channelCtrl  = controller.NewChannelController()
 		rbacCtrl     = controller.NewRbacController()
 	)
 
@@ -69,12 +73,14 @@ func initRoute(engine *gin.Engine) {
 		userGroup.PUT("", authMw, j(userCtrl.Update))
 		userGroup.DELETE("", authMw, j(userCtrl.Delete))
 
+		userGroup.GET(":uid/video", j(videoCtrl.QueryVideosByUid))
+		userGroup.GET(":uid/channel", j(channelCtrl.QueryChannelsByUid))
+
 		userGroup.GET(":uid/follower", j(followCtrl.QueryFollowers))
 		userGroup.GET(":uid/following", j(followCtrl.QueryFollowings))
 		userGroup.POST("following/:uid", authMw, j(followCtrl.FollowUser))
 		userGroup.DELETE("following/:uid", authMw, j(followCtrl.UnfollowUser))
 
-		userGroup.GET(":uid/video", j(videoCtrl.QueryVideosByUid))
 		userGroup.GET(":uid/favorite", j(favoriteCtrl.QueryFavorites))
 		userGroup.POST("favorite/:vid", authMw, j(favoriteCtrl.AddFavorite))
 		userGroup.DELETE("favorite/:vid", authMw, j(favoriteCtrl.RemoveFavorite))
@@ -91,6 +97,15 @@ func initRoute(engine *gin.Engine) {
 		videoGroup.GET(":vid/favored", j(favoriteCtrl.QueryFavoreds))
 	}
 
+	channelGroup := v1.Group("channel")
+	{
+		channelGroup.GET("", authMw, j(channelCtrl.QueryAllChannels))
+		channelGroup.GET(":cid", j(channelCtrl.QueryChannelByCid))
+		channelGroup.POST("", authMw, j(channelCtrl.InsertChannel))
+		channelGroup.PUT(":cid", authMw, j(channelCtrl.UpdateChannel))
+		channelGroup.DELETE(":cid", authMw, j(channelCtrl.DeleteChannel))
+	}
+
 	rbacGroup := v1.Group("rbac")
 	{
 		rbacGroup.Use(authMw)
@@ -101,4 +116,5 @@ func initRoute(engine *gin.Engine) {
 		rbacGroup.DELETE("subject", j(rbacCtrl.DeleteSubject))
 		rbacGroup.DELETE("policy", j(rbacCtrl.DeletePolicy))
 	}
+
 }

@@ -11,6 +11,7 @@ type OrderbyService struct {
 	_videoDict            xproperty.PropertyDict
 	_favoriteForVideoDict xproperty.PropertyDict
 	_favoriteForUserDict  xproperty.PropertyDict
+	_channelDict          xproperty.PropertyDict
 }
 
 func NewOrderbyService() *OrderbyService {
@@ -29,13 +30,13 @@ func NewOrderbyService() *OrderbyService {
 		_videoDict: xproperty.PropertyDict{
 			"vid":         xproperty.NewValue(false, "vid"),
 			"title":       xproperty.NewValue(false, "title"),
-			"upload_time": xproperty.NewValue(false, "create_at"),
+			"upload_time": xproperty.NewValue(false, "created_at"),
 			"author_uid":  xproperty.NewValue(false, "author_uid"),
 		},
 		_favoriteForVideoDict: xproperty.PropertyDict{
 			"vid":           xproperty.NewValue(false, "vid"),
 			"title":         xproperty.NewValue(false, "title"),
-			"upload_time":   xproperty.NewValue(false, "create_at"),
+			"upload_time":   xproperty.NewValue(false, "created_at"),
 			"author_uid":    xproperty.NewValue(false, "author_uid"),
 			"favorite_time": xproperty.NewValue(false, "tbl_favorite.created_at"),
 		},
@@ -44,6 +45,12 @@ func NewOrderbyService() *OrderbyService {
 			"nickname":      xproperty.NewValue(false, "nickname"),
 			"register_time": xproperty.NewValue(false, "created_at"),
 			"favorite_time": xproperty.NewValue(false, "tbl_favorite.created_at"),
+		},
+		_channelDict: xproperty.PropertyDict{
+			"cid":         xproperty.NewValue(false, "cid"),
+			"name":        xproperty.NewValue(false, "name"),
+			"author_uid":  xproperty.NewValue(false, "author_uid"),
+			"create_time": xproperty.NewValue(false, "created_at"),
 		},
 	}
 }
@@ -89,6 +96,15 @@ func (o *OrderbyService) FavoriteForUser(s string) string {
 	order := xgorm.OrderByFunc(o._favoriteForUserDict)(s)
 	if order == "" {
 		return "tbl_favorite.created_at"
+	}
+	return order
+}
+
+// tbl_channel
+func (o *OrderbyService) Channel(s string) string {
+	order := xgorm.OrderByFunc(o._channelDict)(s)
+	if order == "" {
+		return "cid"
 	}
 	return order
 }

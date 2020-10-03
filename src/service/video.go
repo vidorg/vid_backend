@@ -51,13 +51,13 @@ func (v *VideoService) QueryByUid(uid uint64, pp *param.PageOrderParam) ([]*po.V
 	}
 
 	total := int64(0)
-	rdb := v.db.Model(&po.Video{}).Where(&po.Video{AuthorUid: uid}).Count(&total)
+	rdb := v.db.Model(&po.Video{}).Where("author_uid = ?", uid).Count(&total)
 	if rdb.Error != nil {
 		return nil, 0, rdb.Error
 	}
 
 	videos := make([]*po.Video, 0)
-	rdb = xgorm.WithDB(v.db).Pagination(pp.Limit, pp.Page).Model(&po.Video{}).Order(v.orderbyService.Video(pp.Order)).Where("author_uid = ?", uid).Find(&videos)
+	rdb = xgorm.WithDB(v.db).Pagination(pp.Limit, pp.Page).Model(&po.Video{}).Where("author_uid = ?", uid).Order(v.orderbyService.Video(pp.Order)).Find(&videos)
 	if rdb.Error != nil {
 		return nil, 0, rdb.Error
 	}

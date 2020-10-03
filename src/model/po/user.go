@@ -6,6 +6,7 @@ import (
 	"github.com/vidorg/vid_backend/src/model/constant"
 )
 
+// User: tbl_user.
 type User struct {
 	Uid      uint64             `gorm:"                   not null; primaryKey; autoIncrement"` // user id
 	Username string             `gorm:"type:varchar(127); not null; uniqueIndex:uk_username"`   // username, unique
@@ -18,9 +19,10 @@ type User struct {
 	Role     string             `gorm:"type:varchar(255); not null; default:'normal'"`          // user role, used in casbin
 	State    constant.UserState `gorm:"type:tinyint;      not null; default:0"`                 // user state (0|1|2)
 
-	Followings []*User  `gorm:"many2many:tbl_follow;   foreignKey:Uid; references:Uid; joinForeignKey:from_uid; JoinReferences:to_uid"`   // tbl_follow
-	Followers  []*User  `gorm:"many2many:tbl_follow;   foreignKey:Uid; references:Uid; joinForeignKey:to_uid;   JoinReferences:from_uid"` // tbl_follow
-	Favorites  []*Video `gorm:"many2many:tbl_favorite; foreignKey:Uid; references:Vid; joinForeignKey:uid;      JoinReferences:vid"`      // tbl_favorite
+	Followings   []*User    `gorm:"many2many:tbl_follow;    foreignKey:Uid; references:Uid; joinForeignKey:from_uid; joinReferences:to_uid"`   // tbl_follow
+	Followers    []*User    `gorm:"many2many:tbl_follow;    foreignKey:Uid; references:Uid; joinForeignKey:to_uid;   joinReferences:from_uid"` // tbl_follow
+	Subscribings []*Channel `gorm:"many2many:tbl_subscribe; foreignKey:Uid; references:Cid; joinForeignKey:uid;      joinReferences:cid"`      // tbl_subscribe
+	Favorites    []*Video   `gorm:"many2many:tbl_favorite;  foreignKey:Uid; references:Vid; joinForeignKey:uid;      joinReferences:vid"`      // tbl_favorite
 
 	xgorm.Model
 }

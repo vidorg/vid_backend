@@ -54,7 +54,7 @@ func init() {
 			Securities("Jwt").
 			Params(
 				goapidoc.NewPathParam("vid", "integer#int64", true, "video id"),
-				goapidoc.NewBodyParam("param", "InsertVideoParam", true, "update video parameter"),
+				goapidoc.NewBodyParam("param", "UpdateVideoParam", true, "update video parameter"),
 			).
 			Responses(goapidoc.NewResponse(200, "Result")),
 
@@ -185,7 +185,7 @@ func (v *VideoController) InsertVideo(c *gin.Context) *result.Result {
 	user := v.jwtService.GetContextUser(c)
 	pa := &param.InsertVideoParam{}
 	if err := c.ShouldBind(pa); err != nil {
-		return result.Error(exception.WrapValidationError(err))
+		return result.Error(exception.WrapValidationError(err)).SetError(err, c)
 	}
 
 	status, err := v.videoService.Insert(pa, user.Uid)
@@ -237,7 +237,7 @@ func (v *VideoController) DeleteVideo(c *gin.Context) *result.Result {
 
 	video, err := v.videoService.QueryByVid(vid)
 	if err != nil {
-		return result.Error(exception.UpdateVideoError).SetError(err, c)
+		return result.Error(exception.DeleteVideoError).SetError(err, c)
 	} else if video == nil {
 		return result.Error(exception.VideoNotFoundError)
 	} else if video.AuthorUid != user.Uid {

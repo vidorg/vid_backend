@@ -61,6 +61,7 @@ func Provide(configPath string) error {
 	xdi.ProvideName(sn.SFollowService, service.NewFollowService())     // *service.FollowService
 	xdi.ProvideName(sn.SVideoService, service.NewVideoService())       // *service.VideoService
 	xdi.ProvideName(sn.SFavoriteService, service.NewFavoriteService()) // *service.FavoriteService
+	xdi.ProvideName(sn.SChannelService, service.NewChannelService())   // *service.ChannelService
 
 	// controllers
 	xdi.ProvideName(sn.SCommonController, controller.NewCommonController())

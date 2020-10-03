@@ -583,7 +583,7 @@ video-controller
 
 + Request (application/json)
 
-    + Attributes (InsertVideoParam)
+    + Attributes (UpdateVideoParam)
 
     + Headers
 
@@ -761,6 +761,179 @@ favorite-controller
 
     + Body
 
+# Group Channel
+
+channel-controller
+
+## query all channels [/v1/channel{?page,limit,order}]
+
+### query all channels [GET]
+
+`GET /v1/channel`
+
++ Parameters
+
+    + page (number, optional) - current page
+        (format: int32)
+    + limit (number, optional) - page size
+        (format: int32)
+    + order (string, optional) - order string
+
++ Request (application/json)
+
+    + Attributes
+
+    + Headers
+
+            Authorization: Jwt apiKey (string, optional)
+
+    + Body
+
++ Response 200 (application/json)
+
+    + Attributes (_Result<_Page<ChannelDto>>)
+
+    + Headers
+
+    + Body
+
+## query channels from user [/v1/user/{uid}/channel{?page,limit,order}]
+
+### query channels from user [GET]
+
+`GET /v1/user/{uid}/channel`
+
++ Parameters
+
+    + uid (number, required) - user id
+        (format: int64)
+    + page (number, optional) - current page
+        (format: int32)
+    + limit (number, optional) - page size
+        (format: int32)
+    + order (string, optional) - order string
+
++ Request (application/json)
+
+    + Attributes
+
+    + Headers
+
+    + Body
+
++ Response 200 (application/json)
+
+    + Attributes (_Result<_Page<ChannelDto>>)
+
+    + Headers
+
+    + Body
+
+## query a channel, update a channel, delete a channel [/v1/channel/{cid}]
+
+### query a channel [GET]
+
+`GET /v1/channel/{cid}`
+
++ Parameters
+
+    + cid (number, required) - channel id
+        (format: int64)
+
++ Request (application/json)
+
+    + Attributes
+
+    + Headers
+
+    + Body
+
++ Response 200 (application/json)
+
+    + Attributes (_Result<ChannelDto>)
+
+    + Headers
+
+    + Body
+
+### update a channel [PUT]
+
+`PUT /v1/channel/{cid}`
+
++ Parameters
+
+    + cid (number, required) - channel id
+        (format: int64)
+
++ Request (application/json)
+
+    + Attributes (UpdateChannelParam)
+
+    + Headers
+
+            Authorization: Jwt apiKey (string, optional)
+
+    + Body
+
++ Response 200 (application/json)
+
+    + Attributes (Result)
+
+    + Headers
+
+    + Body
+
+### delete a channel [DELETE]
+
+`DELETE /v1/channel/{cid}`
+
++ Parameters
+
+    + cid (number, required) - channel id
+        (format: int64)
+
++ Request (application/json)
+
+    + Attributes
+
+    + Headers
+
+            Authorization: Jwt apiKey (string, optional)
+
+    + Body
+
++ Response 200 (application/json)
+
+    + Attributes (Result)
+
+    + Headers
+
+    + Body
+
+## create a channel [/v1/channel]
+
+### create a channel [POST]
+
+`POST /v1/channel`
+
++ Request (application/json)
+
+    + Attributes (InsertChannelParam)
+
+    + Headers
+
+            Authorization: Jwt apiKey (string, optional)
+
+    + Body
+
++ Response 201 (application/json)
+
+    + Attributes (Result)
+
+    + Headers
+
+    + Body
+
 # Group Rbac
 
 rbac-controller
@@ -929,6 +1102,26 @@ rbac-controller
     (format: int32)
 + message (string, required) - status message
 
+## ChannelDto (object)
+
++ cid (number, required) - channel id
+    (format: int64)
++ name (string, required) - channel name
++ description (string, required) - channel description
++ cover_url (string, required) - channel cover url
++ author_uid (number, required) - channel author id
+    (format: int64)
++ author (UserDto, required) - channel author
++ create_time (string, required) - channel upload time
+    (format: date-time)
++ extra (ChannelExtraDto, required) - channel extra information
+
+## ChannelExtraDto (object)
+
++ is_subscribed (number, required) - channel subscriber users count
+    (format: int32)
++ is_subscribed (boolean, required) - this channel is subscribed by the authorized user
+
 ## RbacRuleDto (object)
 
 + p_type (string, required) - rule type
@@ -989,16 +1182,18 @@ rbac-controller
 + description (string, required) - video description
 + video_url (string, required) - video source url
 + cover_url (string, required) - video cover url
++ author_uid (number, required) - video author id
+    (format: int64)
++ author (UserDto, required) - video author
 + upload_time (string, required) - video upload time
     (format: date-time)
-+ author (UserDto, required) - video author
 + extra (VideoExtraDto, required) - video extra information
 
 ## VideoExtraDto (object)
 
 + favoreds (number, required) - video favored user count
     (format: int32)
-+ is_favorite (boolean, required) - this video is in authorized user favorite list
++ is_favorite (boolean, required) - this video is favored by the authorized user
 
 ## RegisterParam (object)
 
@@ -1015,6 +1210,18 @@ rbac-controller
 
 + old (string, required) - old password
 + new (string, required) - new password
+
+## InsertChannelParam (object)
+
++ name (string, required) - channel name
++ description (string, required) - channel description
++ cover_url: `https://aaa.bbb.ccc` (string, required) - channel cover url
+
+## UpdateChannelParam (object)
+
++ name (string, required) - channel name
++ description (string, required) - channel description
++ cover_url: `https://aaa.bbb.ccc` (string, required) - channel cover url
 
 ## ChangeUserRoleParam (object)
 
@@ -1054,6 +1261,13 @@ rbac-controller
 + video_url: `https://aaa.bbb.ccc` (string, required) - video source url
 + cover_url: `https://aaa.bbb.ccc` (string, required) - video cover url
 
+## UpdateVideoParam (object)
+
++ title (string, required) - video title
++ description (string, required) - video description
++ video_url: `https://aaa.bbb.ccc` (string, required) - video source url
++ cover_url: `https://aaa.bbb.ccc` (string, required) - video cover url
+
 ## _Result<LoginDto> (object)
 
 + code (number, required) - status code
@@ -1067,6 +1281,30 @@ rbac-controller
     (format: int32)
 + message (string, required) - status message
 + data (UserDto, required) - response data
+
+## _Result<_Page<ChannelDto>> (object)
+
++ code (number, required) - status code
+    (format: int32)
++ message (string, required) - status message
++ data (_Page<ChannelDto>, required) - response data
+
+## _Page<ChannelDto> (object)
+
++ page (number, required) - current page
+    (format: int32)
++ limit (number, required) - page size
+    (format: int32)
++ total (number, required) - data count
+    (format: int32)
++ data (array[ChannelDto], required) - page data
+
+## _Result<ChannelDto> (object)
+
++ code (number, required) - status code
+    (format: int32)
++ message (string, required) - status message
++ data (ChannelDto, required) - response data
 
 ## _Result<_Page<VideoDto>> (object)
 

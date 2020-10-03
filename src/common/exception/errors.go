@@ -95,6 +95,18 @@ var (
 	NotInFavoriteYetError   = New(404, ce(), "video has not been in favorite") // 还没有收藏的视频
 )
 
+// channel exception
+var (
+	QueryChannelError    = New(500, se(), "query channel failed") // 查找频道错误
+	ChannelNotFoundError = New(404, ce(), "channel not found")    // 频道未找到
+
+	ChannelNameUsedError   = New(409, ce(), "channel name has been used") // 频道名称已存在
+	InsertChannelError     = New(500, se(), "channel insert failed")      // 插入频道失败
+	UpdateChannelError     = New(500, se(), "channel update failed")      // 更新频道失败
+	ChannelPermissionError = New(400, ce(), "no permission with channel") // 无权限操作频道
+	DeleteChannelError     = New(500, se(), "channel delete failed")      // 删除频道失败
+)
+
 // rbac rule exceptions
 var (
 	QueryRbacRuleError  = New(500, se(), "query rbac rule failed")       // 查询规则失败

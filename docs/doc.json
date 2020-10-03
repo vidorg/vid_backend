@@ -38,6 +38,10 @@
       "description": "favorite-controller"
     },
     {
+      "name": "Channel",
+      "description": "channel-controller"
+    },
+    {
       "name": "Rbac",
       "description": "rbac-controller"
     },
@@ -233,6 +237,183 @@
             "schema": {
               "originRef": "_Result<UserDto>",
               "$ref": "#/definitions/_Result<UserDto>"
+            }
+          }
+        }
+      }
+    },
+    "/v1/channel": {
+      "get": {
+        "summary": "query all channels",
+        "operationId": "-v1-channel-get",
+        "tags": [
+          "Channel",
+          "Administration"
+        ],
+        "security": [
+          {
+            "Jwt": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "description": "current page",
+            "format": "int32"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "description": "page size",
+            "format": "int32"
+          },
+          {
+            "name": "order",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "description": "order string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "originRef": "_Result<_Page<ChannelDto>>",
+              "$ref": "#/definitions/_Result<_Page<ChannelDto>>"
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "create a channel",
+        "operationId": "-v1-channel-post",
+        "tags": [
+          "Channel"
+        ],
+        "security": [
+          {
+            "Jwt": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "param",
+            "in": "body",
+            "required": true,
+            "description": "create channel parameter",
+            "schema": {
+              "originRef": "InsertChannelParam",
+              "$ref": "#/definitions/InsertChannelParam"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "schema": {
+              "originRef": "Result",
+              "$ref": "#/definitions/Result"
+            }
+          }
+        }
+      }
+    },
+    "/v1/channel/{cid}": {
+      "delete": {
+        "summary": "delete a channel",
+        "operationId": "-v1-channel-cid-delete",
+        "tags": [
+          "Channel"
+        ],
+        "security": [
+          {
+            "Jwt": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "cid",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "description": "channel id",
+            "format": "int64"
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "originRef": "Result",
+              "$ref": "#/definitions/Result"
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "query a channel",
+        "operationId": "-v1-channel-cid-get",
+        "tags": [
+          "Channel"
+        ],
+        "parameters": [
+          {
+            "name": "cid",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "description": "channel id",
+            "format": "int64"
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "originRef": "_Result<ChannelDto>",
+              "$ref": "#/definitions/_Result<ChannelDto>"
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "update a channel",
+        "operationId": "-v1-channel-cid-put",
+        "tags": [
+          "Channel"
+        ],
+        "security": [
+          {
+            "Jwt": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "cid",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "description": "channel id",
+            "format": "int64"
+          },
+          {
+            "name": "param",
+            "in": "body",
+            "required": true,
+            "description": "update channel parameter",
+            "schema": {
+              "originRef": "UpdateChannelParam",
+              "$ref": "#/definitions/UpdateChannelParam"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "originRef": "Result",
+              "$ref": "#/definitions/Result"
             }
           }
         }
@@ -760,6 +941,56 @@
             "schema": {
               "originRef": "_Result<UserDto>",
               "$ref": "#/definitions/_Result<UserDto>"
+            }
+          }
+        }
+      }
+    },
+    "/v1/user/{uid}/channel": {
+      "get": {
+        "summary": "query channels from user",
+        "operationId": "-v1-user-uid-channel-get",
+        "tags": [
+          "Channel"
+        ],
+        "parameters": [
+          {
+            "name": "uid",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "description": "user id",
+            "format": "int64"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "description": "current page",
+            "format": "int32"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "description": "page size",
+            "format": "int32"
+          },
+          {
+            "name": "order",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "description": "order string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "originRef": "_Result<_Page<ChannelDto>>",
+              "$ref": "#/definitions/_Result<_Page<ChannelDto>>"
             }
           }
         }
@@ -1379,8 +1610,8 @@
             "required": true,
             "description": "update video parameter",
             "schema": {
-              "originRef": "InsertVideoParam",
-              "$ref": "#/definitions/InsertVideoParam"
+              "originRef": "UpdateVideoParam",
+              "$ref": "#/definitions/UpdateVideoParam"
             }
           }
         ],
@@ -1485,6 +1716,109 @@
           "type": "string",
           "required": true,
           "description": "new subject"
+        }
+      }
+    },
+    "ChannelDto": {
+      "type": "object",
+      "required": [
+        "cid",
+        "name",
+        "description",
+        "cover_url",
+        "author_uid",
+        "author",
+        "create_time",
+        "extra"
+      ],
+      "description": "video response",
+      "properties": {
+        "cid": {
+          "type": "integer",
+          "required": true,
+          "description": "channel id",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string",
+          "required": true,
+          "description": "channel name"
+        },
+        "description": {
+          "type": "string",
+          "required": true,
+          "description": "channel description"
+        },
+        "cover_url": {
+          "type": "string",
+          "required": true,
+          "description": "channel cover url"
+        },
+        "author_uid": {
+          "type": "integer",
+          "required": true,
+          "description": "channel author id",
+          "format": "int64"
+        },
+        "author": {
+          "required": true,
+          "description": "channel author",
+          "originRef": "UserDto",
+          "$ref": "#/definitions/UserDto"
+        },
+        "create_time": {
+          "type": "string",
+          "required": true,
+          "description": "channel upload time",
+          "format": "date-time"
+        },
+        "extra": {
+          "required": true,
+          "description": "channel extra information",
+          "originRef": "ChannelExtraDto",
+          "$ref": "#/definitions/ChannelExtraDto"
+        }
+      }
+    },
+    "ChannelExtraDto": {
+      "type": "object",
+      "required": [
+        "is_subscribed",
+        "is_subscribed"
+      ],
+      "description": "channel extra response",
+      "properties": {
+        "is_subscribed": {
+          "type": "boolean",
+          "required": true,
+          "description": "this channel is subscribed by the authorized user"
+        }
+      }
+    },
+    "InsertChannelParam": {
+      "type": "object",
+      "required": [
+        "name",
+        "description",
+        "cover_url"
+      ],
+      "description": "insert channel parameter",
+      "properties": {
+        "name": {
+          "type": "string",
+          "required": true,
+          "description": "channel name"
+        },
+        "description": {
+          "type": "string",
+          "required": true,
+          "description": "channel description"
+        },
+        "cover_url": {
+          "type": "string",
+          "required": true,
+          "description": "channel cover url",
+          "example": "https://aaa.bbb.ccc"
         }
       }
     },
@@ -1707,6 +2041,33 @@
         }
       }
     },
+    "UpdateChannelParam": {
+      "type": "object",
+      "required": [
+        "name",
+        "description",
+        "cover_url"
+      ],
+      "description": "update channel parameter",
+      "properties": {
+        "name": {
+          "type": "string",
+          "required": true,
+          "description": "channel name"
+        },
+        "description": {
+          "type": "string",
+          "required": true,
+          "description": "channel description"
+        },
+        "cover_url": {
+          "type": "string",
+          "required": true,
+          "description": "channel cover url",
+          "example": "https://aaa.bbb.ccc"
+        }
+      }
+    },
     "UpdatePasswordParam": {
       "type": "object",
       "required": [
@@ -1777,6 +2138,40 @@
           "type": "string",
           "required": true,
           "description": "user avatar",
+          "example": "https://aaa.bbb.ccc"
+        }
+      }
+    },
+    "UpdateVideoParam": {
+      "type": "object",
+      "required": [
+        "title",
+        "description",
+        "video_url",
+        "cover_url"
+      ],
+      "description": "update video parameter",
+      "properties": {
+        "title": {
+          "type": "string",
+          "required": true,
+          "description": "video title"
+        },
+        "description": {
+          "type": "string",
+          "required": true,
+          "description": "video description"
+        },
+        "video_url": {
+          "type": "string",
+          "required": true,
+          "description": "video source url",
+          "example": "https://aaa.bbb.ccc"
+        },
+        "cover_url": {
+          "type": "string",
+          "required": true,
+          "description": "video cover url",
           "example": "https://aaa.bbb.ccc"
         }
       }
@@ -1933,8 +2328,9 @@
         "description",
         "video_url",
         "cover_url",
-        "upload_time",
+        "author_uid",
         "author",
+        "upload_time",
         "extra"
       ],
       "description": "video response",
@@ -1965,17 +2361,23 @@
           "required": true,
           "description": "video cover url"
         },
-        "upload_time": {
-          "type": "string",
+        "author_uid": {
+          "type": "integer",
           "required": true,
-          "description": "video upload time",
-          "format": "date-time"
+          "description": "video author id",
+          "format": "int64"
         },
         "author": {
           "required": true,
           "description": "video author",
           "originRef": "UserDto",
           "$ref": "#/definitions/UserDto"
+        },
+        "upload_time": {
+          "type": "string",
+          "required": true,
+          "description": "video upload time",
+          "format": "date-time"
         },
         "extra": {
           "required": true,
@@ -2002,7 +2404,46 @@
         "is_favorite": {
           "type": "boolean",
           "required": true,
-          "description": "this video is in authorized user favorite list"
+          "description": "this video is favored by the authorized user"
+        }
+      }
+    },
+    "_Page<ChannelDto>": {
+      "type": "object",
+      "required": [
+        "page",
+        "limit",
+        "total",
+        "data"
+      ],
+      "description": "page response",
+      "properties": {
+        "page": {
+          "type": "integer",
+          "required": true,
+          "description": "current page",
+          "format": "int32"
+        },
+        "limit": {
+          "type": "integer",
+          "required": true,
+          "description": "page size",
+          "format": "int32"
+        },
+        "total": {
+          "type": "integer",
+          "required": true,
+          "description": "data count",
+          "format": "int32"
+        },
+        "data": {
+          "type": "array",
+          "required": true,
+          "description": "page data",
+          "items": {
+            "originRef": "ChannelDto",
+            "$ref": "#/definitions/ChannelDto"
+          }
         }
       }
     },
@@ -2123,6 +2564,34 @@
         }
       }
     },
+    "_Result<ChannelDto>": {
+      "type": "object",
+      "required": [
+        "code",
+        "message",
+        "data"
+      ],
+      "description": "global response",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "required": true,
+          "description": "status code",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string",
+          "required": true,
+          "description": "status message"
+        },
+        "data": {
+          "required": true,
+          "description": "response data",
+          "originRef": "ChannelDto",
+          "$ref": "#/definitions/ChannelDto"
+        }
+      }
+    },
     "_Result<LoginDto>": {
       "type": "object",
       "required": [
@@ -2204,6 +2673,34 @@
           "description": "response data",
           "originRef": "VideoDto",
           "$ref": "#/definitions/VideoDto"
+        }
+      }
+    },
+    "_Result<_Page<ChannelDto>>": {
+      "type": "object",
+      "required": [
+        "code",
+        "message",
+        "data"
+      ],
+      "description": "global response",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "required": true,
+          "description": "status code",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string",
+          "required": true,
+          "description": "status message"
+        },
+        "data": {
+          "required": true,
+          "description": "response data",
+          "originRef": "_Page\u003cChannelDto\u003e",
+          "$ref": "#/definitions/_Page\u003cChannelDto\u003e"
         }
       }
     },
