@@ -99,6 +99,9 @@ func (u *UserController) QueryByUid(c *gin.Context) *result.Result {
 
 	res := dto.BuildUserDto(user)
 	err = u.common.PreLoadUsers(c, u.jwtService.GetContextUser(c), []*po.User{user}, []*dto.UserDto{res})
+	if err != nil {
+		result.Error(exception.QueryUserError).SetError(err, c)
+	}
 	return result.Ok().SetData(res)
 }
 

@@ -107,6 +107,17 @@ var (
 	DeleteChannelError     = New(500, se(), "channel delete failed")      // 删除频道失败
 )
 
+// subscribe exception
+var (
+	GetSubscribingListError = New(500, se(), "query user subscribing list failed")   // 获取用户订阅列表失败
+	GetSubscriberListError  = New(500, se(), "query channel subscriber list failed") // 获取频道被订阅列表失败
+
+	SubscribeChannelError   = New(500, se(), "subscribe channel failed")           // 订阅频道失败
+	AlreadySubscribedError  = New(409, ce(), "channel has been subscribe")         // 频道已经订阅
+	UnsubscribeChannelError = New(500, se(), "unsubscribe channel failed")         // 取消订阅频道失败
+	NotSubscribeYetError    = New(404, ce(), "channel has not been subscribe yet") // 频道还没有订阅
+)
+
 // rbac rule exceptions
 var (
 	QueryRbacRuleError  = New(500, se(), "query rbac rule failed")       // 查询规则失败

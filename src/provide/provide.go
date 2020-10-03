@@ -50,18 +50,19 @@ func Provide(configPath string) error {
 	// ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	// services
-	xdi.ProvideName(sn.SCommonService, service.NewCommonService())     // *service.CommonService
-	xdi.ProvideName(sn.SOrderbyService, service.NewOrderbyService())   // *service.OrderbyService
-	xdi.ProvideName(sn.SAccountService, service.NewAccountService())   // *service.AccountService
-	xdi.ProvideName(sn.STokenService, service.NewTokenService())       // *service.TokenService
-	xdi.ProvideName(sn.SUserService, service.NewUserService())         // *service.UserService
-	xdi.ProvideName(sn.SJwtService, service.NewJwtService())           // *service.JwtService
-	xdi.ProvideName(sn.SCasbinService, service.NewCasbinService())     // *service.CasbinService
-	xdi.ProvideName(sn.SEmailService, service.NewEmailService())       // *service.EmailService
-	xdi.ProvideName(sn.SFollowService, service.NewFollowService())     // *service.FollowService
-	xdi.ProvideName(sn.SVideoService, service.NewVideoService())       // *service.VideoService
-	xdi.ProvideName(sn.SFavoriteService, service.NewFavoriteService()) // *service.FavoriteService
-	xdi.ProvideName(sn.SChannelService, service.NewChannelService())   // *service.ChannelService
+	xdi.ProvideName(sn.SCommonService, service.NewCommonService())       // *service.CommonService
+	xdi.ProvideName(sn.SOrderbyService, service.NewOrderbyService())     // *service.OrderbyService
+	xdi.ProvideName(sn.SAccountService, service.NewAccountService())     // *service.AccountService
+	xdi.ProvideName(sn.STokenService, service.NewTokenService())         // *service.TokenService
+	xdi.ProvideName(sn.SUserService, service.NewUserService())           // *service.UserService
+	xdi.ProvideName(sn.SJwtService, service.NewJwtService())             // *service.JwtService
+	xdi.ProvideName(sn.SCasbinService, service.NewCasbinService())       // *service.CasbinService
+	xdi.ProvideName(sn.SEmailService, service.NewEmailService())         // *service.EmailService
+	xdi.ProvideName(sn.SFollowService, service.NewFollowService())       // *service.FollowService
+	xdi.ProvideName(sn.SChannelService, service.NewChannelService())     // *service.ChannelService
+	xdi.ProvideName(sn.SSubscribeService, service.NewSubscribeService()) // *service.SubscribeService
+	xdi.ProvideName(sn.SVideoService, service.NewVideoService())         // *service.VideoService
+	xdi.ProvideName(sn.SFavoriteService, service.NewFavoriteService())   // *service.FavoriteService
 
 	// controllers
 	xdi.ProvideName(sn.SCommonController, controller.NewCommonController())

@@ -434,6 +434,346 @@ follow-controller
 
     + Body
 
+# Group Channel
+
+channel-controller
+
+## query all channels [/v1/channel{?page,limit,order,need_channel_author,need_subscriber_count,need_video_count,need_is_subscribed,need_follow_count,need_channel_count,need_subscribing_count,need_favorite_count,need_is_follow}]
+
+### query all channels [GET]
+
+`GET /v1/channel`
+
++ Parameters
+
+    + page (number, optional) - current page
+        (format: int32)
+    + limit (number, optional) - page size
+        (format: int32)
+    + order (string, optional) - order string
+    + need_channel_author (boolean, optional) - need channel author (channel)
+    + need_subscriber_count (boolean, optional) - need subscriber count (channel)
+    + need_video_count (boolean, optional) - need video count (channel)
+    + need_is_subscribed (boolean, optional) - need is subscribed (channel)
+    + need_follow_count (boolean, optional) - need follow count (user)
+    + need_channel_count (boolean, optional) - need channel count (user)
+    + need_subscribing_count (boolean, optional) - need subscribing count (user)
+    + need_favorite_count (boolean, optional) - need favorite count (user)
+    + need_is_follow (boolean, optional) - need is follow (user)
+
++ Request (application/json)
+
+    + Attributes
+
+    + Headers
+
+            Authorization: Jwt apiKey (string, optional)
+
+    + Body
+
++ Response 200 (application/json)
+
+    + Attributes (_Result<_Page<ChannelDto>>)
+
+    + Headers
+
+    + Body
+
+## query channels from user [/v1/user/{uid}/channel{?page,limit,order,need_channel_author,need_subscriber_count,need_video_count,need_is_subscribed,need_follow_count,need_channel_count,need_subscribing_count,need_favorite_count,need_is_follow}]
+
+### query channels from user [GET]
+
+`GET /v1/user/{uid}/channel`
+
++ Parameters
+
+    + uid (number, required) - user id
+        (format: int64)
+    + page (number, optional) - current page
+        (format: int32)
+    + limit (number, optional) - page size
+        (format: int32)
+    + order (string, optional) - order string
+    + need_channel_author (boolean, optional) - need channel author (channel)
+    + need_subscriber_count (boolean, optional) - need subscriber count (channel)
+    + need_video_count (boolean, optional) - need video count (channel)
+    + need_is_subscribed (boolean, optional) - need is subscribed (channel)
+    + need_follow_count (boolean, optional) - need follow count (user)
+    + need_channel_count (boolean, optional) - need channel count (user)
+    + need_subscribing_count (boolean, optional) - need subscribing count (user)
+    + need_favorite_count (boolean, optional) - need favorite count (user)
+    + need_is_follow (boolean, optional) - need is follow (user)
+
++ Request (application/json)
+
+    + Attributes
+
+    + Headers
+
+    + Body
+
++ Response 200 (application/json)
+
+    + Attributes (_Result<_Page<ChannelDto>>)
+
+    + Headers
+
+    + Body
+
+## query a channel [/v1/channel/{cid}{?need_channel_author,need_subscriber_count,need_video_count,need_is_subscribed,need_follow_count,need_channel_count,need_subscribing_count,need_favorite_count,need_is_follow}]
+
+### query a channel [GET]
+
+`GET /v1/channel/{cid}`
+
++ Parameters
+
+    + cid (number, required) - channel id
+        (format: int64)
+    + need_channel_author (boolean, optional) - need channel author (channel)
+    + need_subscriber_count (boolean, optional) - need subscriber count (channel)
+    + need_video_count (boolean, optional) - need video count (channel)
+    + need_is_subscribed (boolean, optional) - need is subscribed (channel)
+    + need_follow_count (boolean, optional) - need follow count (user)
+    + need_channel_count (boolean, optional) - need channel count (user)
+    + need_subscribing_count (boolean, optional) - need subscribing count (user)
+    + need_favorite_count (boolean, optional) - need favorite count (user)
+    + need_is_follow (boolean, optional) - need is follow (user)
+
++ Request (application/json)
+
+    + Attributes
+
+    + Headers
+
+    + Body
+
++ Response 200 (application/json)
+
+    + Attributes (_Result<ChannelDto>)
+
+    + Headers
+
+    + Body
+
+## create a channel [/v1/channel]
+
+### create a channel [POST]
+
+`POST /v1/channel`
+
++ Request (application/json)
+
+    + Attributes (InsertChannelParam)
+
+    + Headers
+
+            Authorization: Jwt apiKey (string, optional)
+
+    + Body
+
++ Response 201 (application/json)
+
+    + Attributes (Result)
+
+    + Headers
+
+    + Body
+
+## update a channel, delete a channel [/v1/channel/{cid}]
+
+### update a channel [PUT]
+
+`PUT /v1/channel/{cid}`
+
++ Parameters
+
+    + cid (number, required) - channel id
+        (format: int64)
+
++ Request (application/json)
+
+    + Attributes (UpdateChannelParam)
+
+    + Headers
+
+            Authorization: Jwt apiKey (string, optional)
+
+    + Body
+
++ Response 200 (application/json)
+
+    + Attributes (Result)
+
+    + Headers
+
+    + Body
+
+### delete a channel [DELETE]
+
+`DELETE /v1/channel/{cid}`
+
++ Parameters
+
+    + cid (number, required) - channel id
+        (format: int64)
+
++ Request (application/json)
+
+    + Attributes
+
+    + Headers
+
+            Authorization: Jwt apiKey (string, optional)
+
+    + Body
+
++ Response 200 (application/json)
+
+    + Attributes (Result)
+
+    + Headers
+
+    + Body
+
+# Group Subscribe
+
+subscribe-controller
+
+## query user subscribings [/v1/user/{uid}/subscribing{?page,limit,order,need_channel_author,need_subscriber_count,need_video_count,need_is_subscribed,need_follow_count,need_channel_count,need_subscribing_count,need_favorite_count,need_is_follow}]
+
+### query user subscribings [GET]
+
+`GET /v1/user/{uid}/subscribing`
+
++ Parameters
+
+    + uid (number, required) - user id
+        (format: int64)
+    + page (number, optional) - current page
+        (format: int32)
+    + limit (number, optional) - page size
+        (format: int32)
+    + order (string, optional) - order string
+    + need_channel_author (boolean, optional) - need channel author (channel)
+    + need_subscriber_count (boolean, optional) - need subscriber count (channel)
+    + need_video_count (boolean, optional) - need video count (channel)
+    + need_is_subscribed (boolean, optional) - need is subscribed (channel)
+    + need_follow_count (boolean, optional) - need follow count (user)
+    + need_channel_count (boolean, optional) - need channel count (user)
+    + need_subscribing_count (boolean, optional) - need subscribing count (user)
+    + need_favorite_count (boolean, optional) - need favorite count (user)
+    + need_is_follow (boolean, optional) - need is follow (user)
+
++ Request (application/json)
+
+    + Attributes
+
+    + Headers
+
+    + Body
+
++ Response 200 (application/json)
+
+    + Attributes (_Result<_Page<ChannelDto>>)
+
+    + Headers
+
+    + Body
+
+## query channel subscriber users [/v1/channel/{cid}/subscriber{?page,limit,order,need_follow_count,need_channel_count,need_subscribing_count,need_favorite_count,need_is_follow}]
+
+### query channel subscriber users [GET]
+
+`GET /v1/channel/{cid}/subscriber`
+
++ Parameters
+
+    + cid (number, required) - channel id
+        (format: int64)
+    + page (number, optional) - current page
+        (format: int32)
+    + limit (number, optional) - page size
+        (format: int32)
+    + order (string, optional) - order string
+    + need_follow_count (boolean, optional) - need follow count (user)
+    + need_channel_count (boolean, optional) - need channel count (user)
+    + need_subscribing_count (boolean, optional) - need subscribing count (user)
+    + need_favorite_count (boolean, optional) - need favorite count (user)
+    + need_is_follow (boolean, optional) - need is follow (user)
+
++ Request (application/json)
+
+    + Attributes
+
+    + Headers
+
+    + Body
+
++ Response 200 (application/json)
+
+    + Attributes (_Result<_Page<UserDto>>)
+
+    + Headers
+
+    + Body
+
+## subscribe channel, unsubscribe channel [/v1/user/subscribe/{cid}]
+
+### subscribe channel [POST]
+
+`POST /v1/user/subscribe/{cid}`
+
++ Parameters
+
+    + cid (number, required) - channel id
+        (format: int64)
+
++ Request (application/json)
+
+    + Attributes
+
+    + Headers
+
+            Authorization: Jwt apiKey (string, optional)
+
+    + Body
+
++ Response 200 (application/json)
+
+    + Attributes (Result)
+
+    + Headers
+
+    + Body
+
+### unsubscribe channel [DELETE]
+
+`DELETE /v1/user/subscribe/{cid}`
+
++ Parameters
+
+    + cid (number, required) - channel id
+        (format: int64)
+
++ Request (application/json)
+
+    + Attributes
+
+    + Headers
+
+            Authorization: Jwt apiKey (string, optional)
+
+    + Body
+
++ Response 200 (application/json)
+
+    + Attributes (Result)
+
+    + Headers
+
+    + Body
+
 # Group Video
 
 video-controller
@@ -693,7 +1033,7 @@ favorite-controller
 
     + Body
 
-## query video favored users [/v1/video/{vid}/favored{?page,limit,order,need_video_channel,need_favored_count,need_is_favorite,need_channel_author,need_subscriber_count,need_video_count,need_is_subscribed,need_follow_count,need_channel_count,need_subscribing_count,need_favorite_count,need_is_follow}]
+## query video favored users [/v1/video/{vid}/favored{?page,limit,order,need_follow_count,need_channel_count,need_subscribing_count,need_favorite_count,need_is_follow}]
 
 ### query video favored users [GET]
 
@@ -701,20 +1041,13 @@ favorite-controller
 
 + Parameters
 
-    + vid (number, required) - vid id
+    + vid (number, required) - video id
         (format: int64)
     + page (number, optional) - current page
         (format: int32)
     + limit (number, optional) - page size
         (format: int32)
     + order (string, optional) - order string
-    + need_video_channel (boolean, optional) - need video channel (video)
-    + need_favored_count (boolean, optional) - need favored user count (video)
-    + need_is_favorite (boolean, optional) - need is favorite (video)
-    + need_channel_author (boolean, optional) - need channel author (channel)
-    + need_subscriber_count (boolean, optional) - need subscriber count (channel)
-    + need_video_count (boolean, optional) - need video count (channel)
-    + need_is_subscribed (boolean, optional) - need is subscribed (channel)
     + need_follow_count (boolean, optional) - need follow count (user)
     + need_channel_count (boolean, optional) - need channel count (user)
     + need_subscribing_count (boolean, optional) - need subscribing count (user)
@@ -745,7 +1078,7 @@ favorite-controller
 
 + Parameters
 
-    + vid (number, required) - vid id
+    + vid (number, required) - video id
         (format: int64)
 
 + Request (application/json)
@@ -772,209 +1105,7 @@ favorite-controller
 
 + Parameters
 
-    + vid (number, required) - vid id
-        (format: int64)
-
-+ Request (application/json)
-
-    + Attributes
-
-    + Headers
-
-            Authorization: Jwt apiKey (string, optional)
-
-    + Body
-
-+ Response 200 (application/json)
-
-    + Attributes (Result)
-
-    + Headers
-
-    + Body
-
-# Group Channel
-
-channel-controller
-
-## query all channels [/v1/channel{?page,limit,order,need_channel_author,need_subscriber_count,need_video_count,need_is_subscribed,need_follow_count,need_channel_count,need_subscribing_count,need_favorite_count,need_is_follow}]
-
-### query all channels [GET]
-
-`GET /v1/channel`
-
-+ Parameters
-
-    + page (number, optional) - current page
-        (format: int32)
-    + limit (number, optional) - page size
-        (format: int32)
-    + order (string, optional) - order string
-    + need_channel_author (boolean, optional) - need channel author (channel)
-    + need_subscriber_count (boolean, optional) - need subscriber count (channel)
-    + need_video_count (boolean, optional) - need video count (channel)
-    + need_is_subscribed (boolean, optional) - need is subscribed (channel)
-    + need_follow_count (boolean, optional) - need follow count (user)
-    + need_channel_count (boolean, optional) - need channel count (user)
-    + need_subscribing_count (boolean, optional) - need subscribing count (user)
-    + need_favorite_count (boolean, optional) - need favorite count (user)
-    + need_is_follow (boolean, optional) - need is follow (user)
-
-+ Request (application/json)
-
-    + Attributes
-
-    + Headers
-
-            Authorization: Jwt apiKey (string, optional)
-
-    + Body
-
-+ Response 200 (application/json)
-
-    + Attributes (_Result<_Page<ChannelDto>>)
-
-    + Headers
-
-    + Body
-
-## query channels from user [/v1/user/{uid}/channel{?page,limit,order,need_channel_author,need_subscriber_count,need_video_count,need_is_subscribed,need_follow_count,need_channel_count,need_subscribing_count,need_favorite_count,need_is_follow}]
-
-### query channels from user [GET]
-
-`GET /v1/user/{uid}/channel`
-
-+ Parameters
-
-    + uid (number, required) - user id
-        (format: int64)
-    + page (number, optional) - current page
-        (format: int32)
-    + limit (number, optional) - page size
-        (format: int32)
-    + order (string, optional) - order string
-    + need_channel_author (boolean, optional) - need channel author (channel)
-    + need_subscriber_count (boolean, optional) - need subscriber count (channel)
-    + need_video_count (boolean, optional) - need video count (channel)
-    + need_is_subscribed (boolean, optional) - need is subscribed (channel)
-    + need_follow_count (boolean, optional) - need follow count (user)
-    + need_channel_count (boolean, optional) - need channel count (user)
-    + need_subscribing_count (boolean, optional) - need subscribing count (user)
-    + need_favorite_count (boolean, optional) - need favorite count (user)
-    + need_is_follow (boolean, optional) - need is follow (user)
-
-+ Request (application/json)
-
-    + Attributes
-
-    + Headers
-
-    + Body
-
-+ Response 200 (application/json)
-
-    + Attributes (_Result<_Page<ChannelDto>>)
-
-    + Headers
-
-    + Body
-
-## query a channel [/v1/channel/{cid}{?need_channel_author,need_subscriber_count,need_video_count,need_is_subscribed,need_follow_count,need_channel_count,need_subscribing_count,need_favorite_count,need_is_follow}]
-
-### query a channel [GET]
-
-`GET /v1/channel/{cid}`
-
-+ Parameters
-
-    + cid (number, required) - channel id
-        (format: int64)
-    + need_channel_author (boolean, optional) - need channel author (channel)
-    + need_subscriber_count (boolean, optional) - need subscriber count (channel)
-    + need_video_count (boolean, optional) - need video count (channel)
-    + need_is_subscribed (boolean, optional) - need is subscribed (channel)
-    + need_follow_count (boolean, optional) - need follow count (user)
-    + need_channel_count (boolean, optional) - need channel count (user)
-    + need_subscribing_count (boolean, optional) - need subscribing count (user)
-    + need_favorite_count (boolean, optional) - need favorite count (user)
-    + need_is_follow (boolean, optional) - need is follow (user)
-
-+ Request (application/json)
-
-    + Attributes
-
-    + Headers
-
-    + Body
-
-+ Response 200 (application/json)
-
-    + Attributes (_Result<ChannelDto>)
-
-    + Headers
-
-    + Body
-
-## create a channel [/v1/channel]
-
-### create a channel [POST]
-
-`POST /v1/channel`
-
-+ Request (application/json)
-
-    + Attributes (InsertChannelParam)
-
-    + Headers
-
-            Authorization: Jwt apiKey (string, optional)
-
-    + Body
-
-+ Response 201 (application/json)
-
-    + Attributes (Result)
-
-    + Headers
-
-    + Body
-
-## update a channel, delete a channel [/v1/channel/{cid}]
-
-### update a channel [PUT]
-
-`PUT /v1/channel/{cid}`
-
-+ Parameters
-
-    + cid (number, required) - channel id
-        (format: int64)
-
-+ Request (application/json)
-
-    + Attributes (UpdateChannelParam)
-
-    + Headers
-
-            Authorization: Jwt apiKey (string, optional)
-
-    + Body
-
-+ Response 200 (application/json)
-
-    + Attributes (Result)
-
-    + Headers
-
-    + Body
-
-### delete a channel [DELETE]
-
-`DELETE /v1/channel/{cid}`
-
-+ Parameters
-
-    + cid (number, required) - channel id
+    + vid (number, required) - video id
         (format: int64)
 
 + Request (application/json)

@@ -30,10 +30,8 @@ func init() {
 		goapidoc.NewRoutePath("GET", "/v1/video/{vid}/favored", "query video favored users").
 			Tags("Favorite").
 			Params(
-				goapidoc.NewPathParam("vid", "integer#int64", true, "vid id"),
+				goapidoc.NewPathParam("vid", "integer#int64", true, "video id"),
 				param.ADPage, param.ADLimit, param.ADOrder,
-				_adNeedVideoChannel, _adNeedFavoredCount, _adNeedIsFavorite,
-				_adNeedChannelAuthor, _adNeedSubscriberCount, _adNeedVideoCount, _adNeedIsSubscribed,
 				_adNeedFollowCount, _adNeedChannelCount, _adNeedSubscribingCount, _adNeedFavoriteCount, _adNeedIsFollow,
 			).
 			Responses(goapidoc.NewResponse(200, "_Result<_Page<UserDto>>")),
@@ -41,13 +39,13 @@ func init() {
 		goapidoc.NewRoutePath("POST", "/v1/user/favorite/{vid}", "add video to favorite").
 			Tags("Favorite").
 			Securities("Jwt").
-			Params(goapidoc.NewPathParam("vid", "integer#int64", true, "vid id")).
+			Params(goapidoc.NewPathParam("vid", "integer#int64", true, "video id")).
 			Responses(goapidoc.NewResponse(200, "Result")),
 
 		goapidoc.NewRoutePath("DELETE", "/v1/user/favorite/{vid}", "remove video from favorite").
 			Tags("Favorite").
 			Securities("Jwt").
-			Params(goapidoc.NewPathParam("vid", "integer#int64", true, "vid id")).
+			Params(goapidoc.NewPathParam("vid", "integer#int64", true, "video id")).
 			Responses(goapidoc.NewResponse(200, "Result")),
 	)
 }
@@ -68,7 +66,7 @@ func NewFavoriteController() *FavoriteController {
 	}
 }
 
-// /v1/user/:uid/favorite
+// GET /v1/user/:uid/favorite
 func (f *FavoriteController) QueryFavorites(c *gin.Context) *result.Result {
 	uid, err := param.BindRouteId(c, "uid")
 	if err != nil {
@@ -86,12 +84,12 @@ func (f *FavoriteController) QueryFavorites(c *gin.Context) *result.Result {
 	res := dto.BuildVideoDtos(videos)
 	err = f.common.PreLoadVideos(c, f.jwtService.GetContextUser(c), videos, res)
 	if err != nil {
-		return result.Error(exception.QueryVideoError).SetError(err, c)
+		return result.Error(exception.GetFavoriteListError).SetError(err, c)
 	}
 	return result.Ok().SetPage(pp.Page, pp.Limit, total, res)
 }
 
-// /v1/video/:vid/favored
+// GET /v1/video/:vid/favored
 func (f *FavoriteController) QueryFavoreds(c *gin.Context) *result.Result {
 	vid, err := param.BindRouteId(c, "vid")
 	if err != nil {

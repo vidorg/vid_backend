@@ -40,20 +40,22 @@ var (
 )
 
 type CommonController struct {
-	userService     *service.UserService
-	followService   *service.FollowService
-	channelService  *service.ChannelService
-	videoService    *service.VideoService
-	favoriteService *service.FavoriteService
+	userService      *service.UserService
+	followService    *service.FollowService
+	channelService   *service.ChannelService
+	subscribeService *service.SubscribeService
+	videoService     *service.VideoService
+	favoriteService  *service.FavoriteService
 }
 
 func NewCommonController() *CommonController {
 	return &CommonController{
-		userService:     xdi.GetByNameForce(sn.SUserService).(*service.UserService),
-		followService:   xdi.GetByNameForce(sn.SFollowService).(*service.FollowService),
-		channelService:  xdi.GetByNameForce(sn.SChannelService).(*service.ChannelService),
-		videoService:    xdi.GetByNameForce(sn.SVideoService).(*service.VideoService),
-		favoriteService: xdi.GetByNameForce(sn.SFavoriteService).(*service.FavoriteService),
+		userService:      xdi.GetByNameForce(sn.SUserService).(*service.UserService),
+		followService:    xdi.GetByNameForce(sn.SFollowService).(*service.FollowService),
+		channelService:   xdi.GetByNameForce(sn.SChannelService).(*service.ChannelService),
+		subscribeService: xdi.GetByNameForce(sn.SSubscribeService).(*service.SubscribeService),
+		videoService:     xdi.GetByNameForce(sn.SVideoService).(*service.VideoService),
+		favoriteService:  xdi.GetByNameForce(sn.SFavoriteService).(*service.FavoriteService),
 	}
 }
 
@@ -94,7 +96,14 @@ func (cmn *CommonController) getUserExtras(c *gin.Context, authUser *po.User, us
 
 	// need_subscribing_count
 	if param.BindQueryBool(c, "need_subscribing_count") {
-		// TODO
+		arr, err := cmn.subscribeService.QuerySubscribingCount(uids)
+		if err != nil {
+			return nil, err
+		}
+		for idx, cnt := range arr {
+			cnt := cnt
+			extras[idx].Subscribings = &cnt
+		}
 	}
 
 	// need_favorite_count
@@ -172,7 +181,14 @@ func (cmn *CommonController) getChannelExtras(c *gin.Context, authUser *po.User,
 
 	// need_subscriber_count
 	if param.BindQueryBool(c, "need_subscriber_count") {
-		// TODO
+		arr, err := cmn.subscribeService.QuerySubscriberCount(cids)
+		if err != nil {
+			return nil, err
+		}
+		for idx, cnt := range arr {
+			cnt := cnt
+			extras[idx].Subscribers = &cnt
+		}
 	}
 
 	// need_video_count
@@ -190,7 +206,14 @@ func (cmn *CommonController) getChannelExtras(c *gin.Context, authUser *po.User,
 	// need_is_subscribed
 	if param.BindQueryBool(c, "need_is_subscribed") {
 		if authUser != nil {
-			// TODO
+			arr, err := cmn.subscribeService.CheckSubscribe(authUser.Uid, cids)
+			if err != nil {
+				return nil, err
+			}
+			for idx, is := range arr {
+				is := is
+				extras[idx].IsSubscribed = &is
+			}
 		} else {
 			for idx := range extras {
 				extras[idx].IsSubscribed = xpointer.BoolPtr(false)

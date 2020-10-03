@@ -150,7 +150,6 @@ func (f *FavoriteService) CheckFavorite(uid uint64, vids []uint64) ([]bool, erro
 	for _, r := range favorites {
 		bucket[r.Id] = true
 	}
-
 	out := make([]bool, len(vids))
 	for idx, vid := range vids {
 		_, ok := bucket[vid]
@@ -175,7 +174,6 @@ func (f *FavoriteService) QueryFavoriteCount(uids []uint64) ([]int32, error) {
 	for _, r := range counts {
 		bucket[r.Id] = r.Cnt
 	}
-
 	out := make([]int32, len(uids))
 	for idx, uid := range uids {
 		if cnt, ok := bucket[uid]; ok {
@@ -198,10 +196,9 @@ func (f *FavoriteService) QueryFavoredCount(vids []uint64) ([]int32, error) {
 	}
 
 	bucket := make(map[uint64]int32)
-	for _, cnt := range counts {
-		bucket[cnt.Id] = cnt.Cnt
+	for _, r := range counts {
+		bucket[r.Id] = r.Cnt
 	}
-
 	out := make([]int32, len(vids))
 	for idx, vid := range vids {
 		if cnt, ok := bucket[vid]; ok {
