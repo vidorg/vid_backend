@@ -93,23 +93,10 @@ func (ch *ChannelController) QueryAllChannels(c *gin.Context) *result.Result {
 		return result.Error(exception.QueryChannelError).SetError(err, c)
 	}
 
-	authUser := ch.jwtService.GetContextUser(c)
-	authors, userExtras, err := ch.common.getChannelAuthors(c, authUser, channels)
-	if err != nil {
-		return result.Error(exception.QueryChannelError).SetError(err, c)
-	}
-	channelExtras, err := ch.common.getChannelExtras(c, authUser, channels)
-	if err != nil {
-		return result.Error(exception.QueryChannelError).SetError(err, c)
-	}
-
 	res := dto.BuildChannelDtos(channels)
-	for idx, channel := range res {
-		channel.Author = dto.BuildUserDto(authors[idx])
-		if channel.Author != nil {
-			channel.Author.Extra = userExtras[idx]
-		}
-		channel.Extra = channelExtras[idx]
+	err = ch.common.PreLoadChannels(c, ch.jwtService.GetContextUser(c), channels, res)
+	if err != nil {
+		return result.Error(exception.QueryChannelError).SetError(err, c)
 	}
 	return result.Ok().SetPage(pp.Page, pp.Limit, total, res)
 }
@@ -129,23 +116,10 @@ func (ch *ChannelController) QueryChannelsByUid(c *gin.Context) *result.Result {
 		return result.Error(exception.UserNotFoundError)
 	}
 
-	authUser := ch.jwtService.GetContextUser(c)
-	authors, userExtras, err := ch.common.getChannelAuthors(c, authUser, channels)
-	if err != nil {
-		return result.Error(exception.QueryChannelError).SetError(err, c)
-	}
-	channelExtras, err := ch.common.getChannelExtras(c, authUser, channels)
-	if err != nil {
-		return result.Error(exception.QueryChannelError).SetError(err, c)
-	}
-
 	res := dto.BuildChannelDtos(channels)
-	for idx, channel := range res {
-		channel.Author = dto.BuildUserDto(authors[idx])
-		if channel.Author != nil {
-			channel.Author.Extra = userExtras[idx]
-		}
-		channel.Extra = channelExtras[idx]
+	err = ch.common.PreLoadChannels(c, ch.jwtService.GetContextUser(c), channels, res)
+	if err != nil {
+		return result.Error(exception.QueryChannelError).SetError(err, c)
 	}
 	return result.Ok().SetPage(pp.Page, pp.Limit, total, res)
 }
@@ -164,22 +138,11 @@ func (ch *ChannelController) QueryChannelByCid(c *gin.Context) *result.Result {
 		return result.Error(exception.ChannelNotFoundError)
 	}
 
-	authUser := ch.jwtService.GetContextUser(c)
-	authors, userExtras, err := ch.common.getChannelAuthors(c, authUser, []*po.Channel{channel})
-	if err != nil {
-		return result.Error(exception.QueryChannelError).SetError(err, c)
-	}
-	channelExtras, err := ch.common.getChannelExtras(c, authUser, []*po.Channel{channel})
-	if err != nil {
-		return result.Error(exception.QueryChannelError).SetError(err, c)
-	}
-
 	res := dto.BuildChannelDto(channel)
-	res.Author = dto.BuildUserDto(authors[0])
-	if res.Author != nil {
-		res.Author.Extra = userExtras[0]
+	err = ch.common.PreLoadChannels(c, ch.jwtService.GetContextUser(c), []*po.Channel{channel}, []*dto.ChannelDto{res})
+	if err != nil {
+		return result.Error(exception.QueryChannelError).SetError(err, c)
 	}
-	res.Extra = channelExtras[0]
 	return result.Ok().SetData(res)
 }
 

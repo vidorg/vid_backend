@@ -67,64 +67,54 @@ func NewFollowController() *FollowController {
 }
 
 // GET /v1/user/:uid/follower
-func (s *FollowController) QueryFollowers(c *gin.Context) *result.Result {
+func (f *FollowController) QueryFollowers(c *gin.Context) *result.Result {
 	uid, err := param.BindRouteId(c, "uid")
 	if err != nil {
 		return result.Error(exception.RequestParamError).SetError(err, c)
 	}
-	pp := param.BindPageOrder(c, s.config)
+	pp := param.BindPageOrder(c, f.config)
 
-	users, total, err := s.followService.QueryFollowers(uid, pp)
+	users, total, err := f.followService.QueryFollowers(uid, pp)
 	if err != nil {
 		return result.Error(exception.GetFollowerListError).SetError(err, c)
 	} else if users == nil {
 		return result.Error(exception.UserNotFoundError)
 	}
 
-	authUser := s.jwtService.GetContextUser(c)
-	extras, err := s.common.getUserExtras(c, authUser, users)
-	if err != nil {
-		return result.Error(exception.GetFollowerListError).SetError(err, c)
-	}
-
 	res := dto.BuildUserDtos(users)
-	for idx, user := range res {
-		user.Extra = extras[idx]
+	err = f.common.PreLoadUsers(c, f.jwtService.GetContextUser(c), users, res)
+	if err != nil {
+		return result.Error(exception.QueryUserError).SetError(err, c)
 	}
 	return result.Ok().SetPage(pp.Page, pp.Limit, total, res)
 }
 
 // GET /v1/user/:uid/following
-func (s *FollowController) QueryFollowings(c *gin.Context) *result.Result {
+func (f *FollowController) QueryFollowings(c *gin.Context) *result.Result {
 	uid, err := param.BindRouteId(c, "uid")
 	if err != nil {
 		return result.Error(exception.RequestParamError).SetError(err, c)
 	}
-	pp := param.BindPageOrder(c, s.config)
+	pp := param.BindPageOrder(c, f.config)
 
-	users, total, err := s.followService.QueryFollowings(uid, pp)
+	users, total, err := f.followService.QueryFollowings(uid, pp)
 	if err != nil {
 		return result.Error(exception.GetFollowingListError).SetError(err, c)
 	} else if users == nil {
 		return result.Error(exception.UserNotFoundError)
 	}
 
-	authUser := s.jwtService.GetContextUser(c)
-	extras, err := s.common.getUserExtras(c, authUser, users)
-	if err != nil {
-		return result.Error(exception.GetFollowingListError).SetError(err, c)
-	}
-
 	res := dto.BuildUserDtos(users)
-	for idx, user := range res {
-		user.Extra = extras[idx]
+	err = f.common.PreLoadUsers(c, f.jwtService.GetContextUser(c), users, res)
+	if err != nil {
+		return result.Error(exception.QueryUserError).SetError(err, c)
 	}
 	return result.Ok().SetPage(pp.Page, pp.Limit, total, res)
 }
 
 // POST /v1/user/following/:uid
-func (s *FollowController) FollowUser(c *gin.Context) *result.Result {
-	user := s.jwtService.GetContextUser(c)
+func (f *FollowController) FollowUser(c *gin.Context) *result.Result {
+	user := f.jwtService.GetContextUser(c)
 	if user == nil {
 		return nil
 	}
@@ -138,7 +128,7 @@ func (s *FollowController) FollowUser(c *gin.Context) *result.Result {
 		return result.Error(exception.FollowSelfError)
 	}
 
-	status, err := s.followService.FollowUser(user.Uid, uid)
+	status, err := f.followService.FollowUser(user.Uid, uid)
 	if status == xstatus.DbNotFound {
 		return result.Error(exception.UserNotFoundError)
 	} else if status == xstatus.DbExisted {
@@ -151,8 +141,8 @@ func (s *FollowController) FollowUser(c *gin.Context) *result.Result {
 }
 
 // DELETE /v1/user/following/:uid
-func (s *FollowController) UnfollowUser(c *gin.Context) *result.Result {
-	user := s.jwtService.GetContextUser(c)
+func (f *FollowController) UnfollowUser(c *gin.Context) *result.Result {
+	user := f.jwtService.GetContextUser(c)
 	if user == nil {
 		return nil
 	}
@@ -162,7 +152,7 @@ func (s *FollowController) UnfollowUser(c *gin.Context) *result.Result {
 		return result.Error(exception.RequestParamError).SetError(err, c)
 	}
 
-	status, err := s.followService.UnfollowUser(user.Uid, uid)
+	status, err := f.followService.UnfollowUser(user.Uid, uid)
 	if status == xstatus.DbNotFound {
 		return result.Error(exception.UserNotFoundError)
 	} else if status == xstatus.DbTagA {

@@ -83,31 +83,10 @@ func (f *FavoriteController) QueryFavorites(c *gin.Context) *result.Result {
 		return result.Error(exception.UserNotFoundError)
 	}
 
-	authUser := f.jwtService.GetContextUser(c)
-	channels, channelExtras, err := f.common.getVideoChannels(c, authUser, videos)
-	if err != nil {
-		return result.Error(exception.QueryVideoError).SetError(err, c)
-	}
-	authors, userExtras, err := f.common.getChannelAuthors(c, authUser, channels)
-	if err != nil {
-		return result.Error(exception.QueryVideoError).SetError(err, c)
-	}
-	videoExtras, err := f.common.getVideoExtras(c, authUser, videos)
-	if err != nil {
-		return result.Error(exception.QueryVideoError).SetError(err, c)
-	}
-
 	res := dto.BuildVideoDtos(videos)
-	for idx, video := range res {
-		video.Channel = dto.BuildChannelDto(channels[idx])
-		if video.Channel != nil {
-			video.Channel.Extra = channelExtras[idx]
-			video.Channel.Author = dto.BuildUserDto(authors[idx])
-			if video.Channel.Author != nil {
-				video.Channel.Author.Extra = userExtras[idx]
-			}
-		}
-		video.Extra = videoExtras[idx]
+	err = f.common.PreLoadVideos(c, f.jwtService.GetContextUser(c), videos, res)
+	if err != nil {
+		return result.Error(exception.QueryVideoError).SetError(err, c)
 	}
 	return result.Ok().SetPage(pp.Page, pp.Limit, total, res)
 }
@@ -127,15 +106,10 @@ func (f *FavoriteController) QueryFavoreds(c *gin.Context) *result.Result {
 		return result.Error(exception.VideoNotFoundError)
 	}
 
-	authUser := f.jwtService.GetContextUser(c)
-	extras, err := f.common.getUserExtras(c, authUser, users)
+	res := dto.BuildUserDtos(users)
+	err = f.common.PreLoadUsers(c, f.jwtService.GetContextUser(c), users, res)
 	if err != nil {
 		return result.Error(exception.GetFavoredListError).SetError(err, c)
-	}
-
-	res := dto.BuildUserDtos(users)
-	for idx, user := range res {
-		user.Extra = extras[idx]
 	}
 	return result.Ok().SetPage(pp.Page, pp.Limit, total, res)
 }

@@ -98,31 +98,10 @@ func (v *VideoController) QueryAllVideos(c *gin.Context) *result.Result {
 		return result.Error(exception.QueryVideoError).SetError(err, c)
 	}
 
-	authUser := v.jwtService.GetContextUser(c)
-	channels, channelExtras, err := v.common.getVideoChannels(c, authUser, videos)
-	if err != nil {
-		return result.Error(exception.QueryVideoError).SetError(err, c)
-	}
-	authors, userExtras, err := v.common.getChannelAuthors(c, authUser, channels)
-	if err != nil {
-		return result.Error(exception.QueryVideoError).SetError(err, c)
-	}
-	videoExtras, err := v.common.getVideoExtras(c, authUser, videos)
-	if err != nil {
-		return result.Error(exception.QueryVideoError).SetError(err, c)
-	}
-
 	res := dto.BuildVideoDtos(videos)
-	for idx, video := range res {
-		video.Channel = dto.BuildChannelDto(channels[idx])
-		if video.Channel != nil {
-			video.Channel.Extra = channelExtras[idx]
-			video.Channel.Author = dto.BuildUserDto(authors[idx])
-			if video.Channel.Author != nil {
-				video.Channel.Author.Extra = userExtras[idx]
-			}
-		}
-		video.Extra = videoExtras[idx]
+	err = v.common.PreLoadVideos(c, v.jwtService.GetContextUser(c), videos, res)
+	if err != nil {
+		return result.Error(exception.QueryVideoError).SetError(err, c)
 	}
 	return result.Ok().SetPage(pp.Page, pp.Limit, total, res)
 }
@@ -142,31 +121,10 @@ func (v *VideoController) QueryVideosByUid(c *gin.Context) *result.Result {
 		return result.Error(exception.UserNotFoundError)
 	}
 
-	authUser := v.jwtService.GetContextUser(c)
-	channels, channelExtras, err := v.common.getVideoChannels(c, authUser, videos)
-	if err != nil {
-		return result.Error(exception.QueryVideoError).SetError(err, c)
-	}
-	authors, userExtras, err := v.common.getChannelAuthors(c, authUser, channels)
-	if err != nil {
-		return result.Error(exception.QueryVideoError).SetError(err, c)
-	}
-	videoExtras, err := v.common.getVideoExtras(c, authUser, videos)
-	if err != nil {
-		return result.Error(exception.QueryVideoError).SetError(err, c)
-	}
-
 	res := dto.BuildVideoDtos(videos)
-	for idx, video := range res {
-		video.Channel = dto.BuildChannelDto(channels[idx])
-		if video.Channel != nil {
-			video.Channel.Extra = channelExtras[idx]
-			video.Channel.Author = dto.BuildUserDto(authors[idx])
-			if video.Channel.Author != nil {
-				video.Channel.Author.Extra = userExtras[idx]
-			}
-		}
-		video.Extra = videoExtras[idx]
+	err = v.common.PreLoadVideos(c, v.jwtService.GetContextUser(c), videos, res)
+	if err != nil {
+		return result.Error(exception.QueryVideoError).SetError(err, c)
 	}
 	return result.Ok().SetPage(pp.Page, pp.Limit, total, res)
 }
@@ -185,30 +143,11 @@ func (v *VideoController) QueryVideoByVid(c *gin.Context) *result.Result {
 		return result.Error(exception.VideoNotFoundError)
 	}
 
-	authUser := v.jwtService.GetContextUser(c)
-	channels, channelExtras, err := v.common.getVideoChannels(c, authUser, []*po.Video{video})
-	if err != nil {
-		return result.Error(exception.QueryVideoError).SetError(err, c)
-	}
-	authors, userExtras, err := v.common.getChannelAuthors(c, authUser, channels)
-	if err != nil {
-		return result.Error(exception.QueryVideoError).SetError(err, c)
-	}
-	videoExtras, err := v.common.getVideoExtras(c, authUser, []*po.Video{video})
-	if err != nil {
-		return result.Error(exception.QueryVideoError).SetError(err, c)
-	}
-
 	res := dto.BuildVideoDto(video)
-	res.Channel = dto.BuildChannelDto(channels[0])
-	if res.Channel != nil {
-		res.Channel.Extra = channelExtras[0]
-		res.Channel.Author = dto.BuildUserDto(authors[0])
-		if res.Channel.Author != nil {
-			res.Channel.Author.Extra = userExtras[0]
-		}
+	err = v.common.PreLoadVideos(c, v.jwtService.GetContextUser(c), []*po.Video{video}, []*dto.VideoDto{res})
+	if err != nil {
+		return result.Error(exception.QueryVideoError).SetError(err, c)
 	}
-	res.Extra = videoExtras[0]
 	return result.Ok().SetData(res)
 }
 

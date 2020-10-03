@@ -69,25 +69,16 @@ func NewUserController() *UserController {
 
 // GET /v1/user
 func (u *UserController) QueryAll(c *gin.Context) *result.Result {
-	user := u.jwtService.GetContextUser(c)
-	if user == nil {
-		return nil
-	}
-
 	pp := param.BindPageOrder(c, u.config)
 	users, total, err := u.userService.QueryAll(pp)
 	if err != nil {
 		return result.Error(exception.QueryUserError).SetError(err, c)
 	}
 
-	extras, err := u.common.getUserExtras(c, user, users)
+	res := dto.BuildUserDtos(users)
+	err = u.common.PreLoadUsers(c, u.jwtService.GetContextUser(c), users, res)
 	if err != nil {
 		return result.Error(exception.QueryUserError).SetError(err, c)
-	}
-
-	res := dto.BuildUserDtos(users)
-	for idx, user := range res {
-		user.Extra = extras[idx]
 	}
 	return result.Ok().SetPage(pp.Page, pp.Limit, total, res)
 }
@@ -106,14 +97,8 @@ func (u *UserController) QueryByUid(c *gin.Context) *result.Result {
 		return result.Error(exception.UserNotFoundError)
 	}
 
-	authUser := u.jwtService.GetContextUser(c)
-	extras, err := u.common.getUserExtras(c, authUser, []*po.User{user})
-	if err != nil {
-		return result.Error(exception.QueryUserError).SetError(err, c)
-	}
-
 	res := dto.BuildUserDto(user)
-	res.Extra = extras[0]
+	err = u.common.PreLoadUsers(c, u.jwtService.GetContextUser(c), []*po.User{user}, []*dto.UserDto{res})
 	return result.Ok().SetData(res)
 }
 

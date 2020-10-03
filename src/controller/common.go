@@ -57,6 +57,7 @@ func NewCommonController() *CommonController {
 	}
 }
 
+// Query []*dto.UserExtraDto from []*po.User.
 func (cmn *CommonController) getUserExtras(c *gin.Context, authUser *po.User, users []*po.User) ([]*dto.UserExtraDto, error) {
 	extras := make([]*dto.UserExtraDto, len(users))
 	for idx := range extras {
@@ -130,6 +131,7 @@ func (cmn *CommonController) getUserExtras(c *gin.Context, authUser *po.User, us
 	return extras, nil
 }
 
+// Query []*po.User and []*dto.UserExtraDto from []*po.Channel.
 func (cmn *CommonController) getChannelAuthors(c *gin.Context, authUser *po.User, channels []*po.Channel) ([]*po.User, []*dto.UserExtraDto, error) {
 	authors := make([]*po.User, len(channels))
 	extras := make([]*dto.UserExtraDto, len(channels))
@@ -157,6 +159,7 @@ func (cmn *CommonController) getChannelAuthors(c *gin.Context, authUser *po.User
 	return authors, extras, nil
 }
 
+// Query []*dto.ChannelExtraDto from []*po.Channel.
 func (cmn *CommonController) getChannelExtras(c *gin.Context, authUser *po.User, channels []*po.Channel) ([]*dto.ChannelExtraDto, error) {
 	extras := make([]*dto.ChannelExtraDto, len(channels))
 	for idx := range extras {
@@ -198,6 +201,7 @@ func (cmn *CommonController) getChannelExtras(c *gin.Context, authUser *po.User,
 	return extras, nil
 }
 
+// Query []*po.Channel and []*dto.ChannelExtraDto from []*po.Video.
 func (cmn *CommonController) getVideoChannels(c *gin.Context, authUser *po.User, videos []*po.Video) ([]*po.Channel, []*dto.ChannelExtraDto, error) {
 	channels := make([]*po.Channel, len(videos))
 	extras := make([]*dto.ChannelExtraDto, len(videos))
@@ -225,6 +229,7 @@ func (cmn *CommonController) getVideoChannels(c *gin.Context, authUser *po.User,
 	return channels, extras, nil
 }
 
+// Query []*dto.VideoExtraDto from []*po.Video.
 func (cmn *CommonController) getVideoExtras(c *gin.Context, authUser *po.User, videos []*po.Video) ([]*dto.VideoExtraDto, error) {
 	extras := make([]*dto.VideoExtraDto, len(videos))
 	for idx := range extras {
@@ -266,4 +271,73 @@ func (cmn *CommonController) getVideoExtras(c *gin.Context, authUser *po.User, v
 	}
 
 	return extras, nil
+}
+
+// PreLoad []*dto.UserDto from []*po.User.
+func (cmn *CommonController) PreLoadUsers(c *gin.Context, authUser *po.User, users []*po.User, out []*dto.UserDto) error {
+	extras, err := cmn.getUserExtras(c, authUser, users)
+	if err != nil {
+		return err
+	}
+
+	for idx, user := range out {
+		user.Extra = extras[idx]
+	}
+
+	return nil
+}
+
+// PreLoad []*dto.ChannelDto from []*po.Channel.
+func (cmn *CommonController) PreLoadChannels(c *gin.Context, authUser *po.User, channels []*po.Channel, out []*dto.ChannelDto) error {
+	authors, userExtras, err := cmn.getChannelAuthors(c, authUser, channels)
+	if err != nil {
+		return err
+	}
+	channelExtras, err := cmn.getChannelExtras(c, authUser, channels)
+	if err != nil {
+		return err
+	}
+
+	for idx, channel := range out {
+		channel.Author = dto.BuildUserDto(authors[idx])
+		if channel.Author != nil {
+			channel.Author.Extra = userExtras[idx]
+		}
+		channel.Extra = channelExtras[idx]
+	}
+
+	return nil
+}
+
+// PreLoad []*dto.VideoDto from []*po.Video.
+func (cmn *CommonController) PreLoadVideos(c *gin.Context, authUser *po.User, videos []*po.Video, out []*dto.VideoDto) error {
+	channels, channelExtras, err := cmn.getVideoChannels(c, authUser, videos)
+	if err != nil {
+		return err
+	}
+	authors, userExtras := make([]*po.User, 0), make([]*dto.UserExtraDto, 0)
+	if len(channels) != 0 && channels[0] != nil {
+		authors, userExtras, err = cmn.getChannelAuthors(c, authUser, channels)
+		if err != nil {
+			return err
+		}
+	}
+	videoExtras, err := cmn.getVideoExtras(c, authUser, videos)
+	if err != nil {
+		return err
+	}
+
+	for idx, video := range out {
+		video.Channel = dto.BuildChannelDto(channels[idx])
+		if video.Channel != nil {
+			video.Channel.Extra = channelExtras[idx]
+			video.Channel.Author = dto.BuildUserDto(authors[idx])
+			if video.Channel.Author != nil {
+				video.Channel.Author.Extra = userExtras[idx]
+			}
+		}
+		video.Extra = videoExtras[idx]
+	}
+
+	return nil
 }
