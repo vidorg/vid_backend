@@ -10,6 +10,7 @@ import (
 	"github.com/vidorg/vid_backend/src/config"
 	"github.com/vidorg/vid_backend/src/model/dto"
 	"github.com/vidorg/vid_backend/src/model/param"
+	"github.com/vidorg/vid_backend/src/model/po"
 	"github.com/vidorg/vid_backend/src/provide/sn"
 	"github.com/vidorg/vid_backend/src/service"
 )
@@ -19,7 +20,11 @@ func init() {
 		goapidoc.NewRoutePath("GET", "/v1/channel", "query all channels").
 			Tags("Channel", "Administration").
 			Securities("Jwt").
-			Params(param.ADPage, param.ADLimit, param.ADOrder).
+			Params(
+				param.ADPage, param.ADLimit, param.ADOrder,
+				_adNeedChannelAuthor, _adNeedSubscriberCount, _adNeedVideoCount, _adNeedIsSubscribed,
+				_adNeedFollowCount, _adNeedChannelCount, _adNeedSubscribingCount, _adNeedFavoriteCount, _adNeedIsFollow,
+			).
 			Responses(goapidoc.NewResponse(200, "_Result<_Page<ChannelDto>>")),
 
 		goapidoc.NewRoutePath("GET", "/v1/user/{uid}/channel", "query channels from user").
@@ -27,12 +32,18 @@ func init() {
 			Params(
 				goapidoc.NewPathParam("uid", "integer#int64", true, "user id"),
 				param.ADPage, param.ADLimit, param.ADOrder,
+				_adNeedChannelAuthor, _adNeedSubscriberCount, _adNeedVideoCount, _adNeedIsSubscribed,
+				_adNeedFollowCount, _adNeedChannelCount, _adNeedSubscribingCount, _adNeedFavoriteCount, _adNeedIsFollow,
 			).
 			Responses(goapidoc.NewResponse(200, "_Result<_Page<ChannelDto>>")),
 
 		goapidoc.NewRoutePath("GET", "/v1/channel/{cid}", "query a channel").
 			Tags("Channel").
-			Params(goapidoc.NewPathParam("cid", "integer#int64", true, "channel id")).
+			Params(
+				goapidoc.NewPathParam("cid", "integer#int64", true, "channel id"),
+				_adNeedChannelAuthor, _adNeedSubscriberCount, _adNeedVideoCount, _adNeedIsSubscribed,
+				_adNeedFollowCount, _adNeedChannelCount, _adNeedSubscribingCount, _adNeedFavoriteCount, _adNeedIsFollow,
+			).
 			Responses(goapidoc.NewResponse(200, "_Result<ChannelDto>")),
 
 		goapidoc.NewRoutePath("POST", "/v1/channel", "create a channel").
@@ -60,6 +71,7 @@ func init() {
 
 type ChannelController struct {
 	config         *config.Config
+	common         *CommonController
 	jwtService     *service.JwtService
 	channelService *service.ChannelService
 }
@@ -67,6 +79,7 @@ type ChannelController struct {
 func NewChannelController() *ChannelController {
 	return &ChannelController{
 		config:         xdi.GetByNameForce(sn.SConfig).(*config.Config),
+		common:         xdi.GetByNameForce(sn.SCommonController).(*CommonController),
 		jwtService:     xdi.GetByNameForce(sn.SJwtService).(*service.JwtService),
 		channelService: xdi.GetByNameForce(sn.SChannelService).(*service.ChannelService),
 	}
@@ -80,7 +93,24 @@ func (ch *ChannelController) QueryAllChannels(c *gin.Context) *result.Result {
 		return result.Error(exception.QueryChannelError).SetError(err, c)
 	}
 
+	authUser := ch.jwtService.GetContextUser(c)
+	authors, userExtras, err := ch.common.getChannelAuthors(c, authUser, channels)
+	if err != nil {
+		return result.Error(exception.QueryChannelError).SetError(err, c)
+	}
+	channelExtras, err := ch.common.getChannelExtras(c, authUser, channels)
+	if err != nil {
+		return result.Error(exception.QueryChannelError).SetError(err, c)
+	}
+
 	res := dto.BuildChannelDtos(channels)
+	for idx, channel := range res {
+		channel.Author = dto.BuildUserDto(authors[idx])
+		if channel.Author != nil {
+			channel.Author.Extra = userExtras[idx]
+		}
+		channel.Extra = channelExtras[idx]
+	}
 	return result.Ok().SetPage(pp.Page, pp.Limit, total, res)
 }
 
@@ -99,7 +129,24 @@ func (ch *ChannelController) QueryChannelsByUid(c *gin.Context) *result.Result {
 		return result.Error(exception.UserNotFoundError)
 	}
 
+	authUser := ch.jwtService.GetContextUser(c)
+	authors, userExtras, err := ch.common.getChannelAuthors(c, authUser, channels)
+	if err != nil {
+		return result.Error(exception.QueryChannelError).SetError(err, c)
+	}
+	channelExtras, err := ch.common.getChannelExtras(c, authUser, channels)
+	if err != nil {
+		return result.Error(exception.QueryChannelError).SetError(err, c)
+	}
+
 	res := dto.BuildChannelDtos(channels)
+	for idx, channel := range res {
+		channel.Author = dto.BuildUserDto(authors[idx])
+		if channel.Author != nil {
+			channel.Author.Extra = userExtras[idx]
+		}
+		channel.Extra = channelExtras[idx]
+	}
 	return result.Ok().SetPage(pp.Page, pp.Limit, total, res)
 }
 
@@ -117,7 +164,22 @@ func (ch *ChannelController) QueryChannelByCid(c *gin.Context) *result.Result {
 		return result.Error(exception.ChannelNotFoundError)
 	}
 
+	authUser := ch.jwtService.GetContextUser(c)
+	authors, userExtras, err := ch.common.getChannelAuthors(c, authUser, []*po.Channel{channel})
+	if err != nil {
+		return result.Error(exception.QueryChannelError).SetError(err, c)
+	}
+	channelExtras, err := ch.common.getChannelExtras(c, authUser, []*po.Channel{channel})
+	if err != nil {
+		return result.Error(exception.QueryChannelError).SetError(err, c)
+	}
+
 	res := dto.BuildChannelDto(channel)
+	res.Author = dto.BuildUserDto(authors[0])
+	if res.Author != nil {
+		res.Author.Extra = userExtras[0]
+	}
+	res.Extra = channelExtras[0]
 	return result.Ok().SetData(res)
 }
 

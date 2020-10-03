@@ -12,6 +12,7 @@ import (
 
 type ChannelService struct {
 	db             *gorm.DB
+	common         *CommonService
 	userService    *UserService
 	orderbyService *OrderbyService
 }
@@ -19,6 +20,7 @@ type ChannelService struct {
 func NewChannelService() *ChannelService {
 	return &ChannelService{
 		db:             xdi.GetByNameForce(sn.SGorm).(*gorm.DB),
+		common:         xdi.GetByNameForce(sn.SCommonService).(*CommonService),
 		userService:    xdi.GetByNameForce(sn.SUserService).(*UserService),
 		orderbyService: xdi.GetByNameForce(sn.SOrderbyService).(*OrderbyService),
 	}
@@ -63,6 +65,31 @@ func (c *ChannelService) QueryByUid(uid uint64, pp *param.PageOrderParam) ([]*po
 	return channels, int32(total), nil
 }
 
+func (c *ChannelService) QueryByCids(cids []uint64) ([]*po.Channel, error) {
+	if len(cids) == 0 {
+		return []*po.Channel{}, nil
+	}
+
+	channels := make([]*po.Channel, 0)
+	where := c.common.BuildOrExpr("cid", cids)
+	rdb := c.db.Model(&po.Channel{}).Where(where).Find(&channels)
+	if rdb.Error != nil {
+		return nil, rdb.Error
+	}
+
+	bucket := make(map[uint64]*po.Channel, len(channels))
+	for _, channel := range channels {
+		bucket[channel.Cid] = channel
+	}
+	out := make([]*po.Channel, len(cids))
+	for idx, cid := range cids {
+		if channel, ok := bucket[cid]; ok {
+			out[idx] = channel
+		}
+	}
+	return out, nil
+}
+
 func (c *ChannelService) QueryByCid(cid uint64) (*po.Channel, error) {
 	channel := &po.Channel{}
 	rdb := c.db.Model(&po.Channel{}).Where("cid = ?", cid).First(&channel)
@@ -73,6 +100,31 @@ func (c *ChannelService) QueryByCid(cid uint64) (*po.Channel, error) {
 	}
 
 	return channel, nil
+}
+
+func (c *ChannelService) QueryCountByUids(uids []uint64) ([]int32, error) {
+	if len(uids) == 0 {
+		return []int32{}, nil
+	}
+
+	counts := make([]*_IdCntScanResult, 0)
+	where := c.common.BuildOrExpr("author_uid", uids)
+	rdb := c.db.Model(&po.Channel{}).Select("author_uid as id, count(*) as cnt").Where(where).Group("author_uid").Scan(&counts)
+	if rdb.Error != nil {
+		return nil, rdb.Error
+	}
+
+	bucket := make(map[uint64]int32)
+	for _, r := range counts {
+		bucket[r.Id] = r.Cnt
+	}
+	out := make([]int32, len(uids))
+	for idx, uid := range uids {
+		if cnt, ok := bucket[uid]; ok {
+			out[idx] = cnt
+		}
+	}
+	return out, nil
 }
 
 func (c *ChannelService) Existed(cid uint64) (bool, error) {

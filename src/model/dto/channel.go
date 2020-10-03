@@ -22,8 +22,9 @@ func init() {
 
 		goapidoc.NewDefinition("ChannelExtraDto", "channel extra response").
 			Properties(
-				goapidoc.NewProperty("is_subscribed", "integer#int32", true, "channel subscriber users count"),
-				goapidoc.NewProperty("is_subscribed", "boolean", true, "this channel is subscribed by the authorized user"),
+				goapidoc.NewProperty("subscribers", "integer#int32", true, "channel subscriber count"),
+				goapidoc.NewProperty("videos", "integer#int32", true, "channel video count"),
+				goapidoc.NewProperty("is_subscribed", "boolean", true, "is subscribing this channel"),
 			),
 	)
 }
@@ -64,6 +65,7 @@ func BuildChannelDtos(channels []*po.Channel) []*ChannelDto {
 }
 
 type ChannelExtraDto struct {
-	Subscribers  *int32 `json:"subscribers"`   // channel subscriber users count
-	IsSubscribed *bool  `json:"is_subscribed"` // this channel is subscribed by the authorized user
+	Subscribers  *int32 `json:"subscribers"`   // channel subscriber count
+	Videos       *int32 `json:"videos"`        // channel video count
+	IsSubscribed *bool  `json:"is_subscribed"` // is subscribing this channel
 }

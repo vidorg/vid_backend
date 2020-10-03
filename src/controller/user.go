@@ -22,7 +22,7 @@ func init() {
 			Securities("Jwt").
 			Params(
 				param.ADPage, param.ADLimit, param.ADOrder,
-				_adNeedFollowCount, _adNeedIsFollow, _adNeedVideoCount, _adNeedFavoriteCount,
+				_adNeedFollowCount, _adNeedChannelCount, _adNeedSubscribingCount, _adNeedFavoriteCount, _adNeedIsFollow,
 			).
 			Responses(goapidoc.NewResponse(200, "_Result<_Page<UserDto>>")),
 
@@ -30,7 +30,7 @@ func init() {
 			Tags("User").
 			Params(
 				goapidoc.NewPathParam("uid", "integer#int64", true, "user id"),
-				_adNeedFollowCount, _adNeedIsFollow, _adNeedVideoCount, _adNeedFavoriteCount,
+				_adNeedFollowCount, _adNeedChannelCount, _adNeedSubscribingCount, _adNeedFavoriteCount, _adNeedIsFollow,
 			).
 			Responses(goapidoc.NewResponse(200, "_Result<UserDto>")),
 
@@ -80,7 +80,7 @@ func (u *UserController) QueryAll(c *gin.Context) *result.Result {
 		return result.Error(exception.QueryUserError).SetError(err, c)
 	}
 
-	extras, err := u.common.getUsersExtra(c, user, users)
+	extras, err := u.common.getUserExtras(c, user, users)
 	if err != nil {
 		return result.Error(exception.QueryUserError).SetError(err, c)
 	}
@@ -107,7 +107,7 @@ func (u *UserController) QueryByUid(c *gin.Context) *result.Result {
 	}
 
 	authUser := u.jwtService.GetContextUser(c)
-	extras, err := u.common.getUsersExtra(c, authUser, []*po.User{user})
+	extras, err := u.common.getUserExtras(c, authUser, []*po.User{user})
 	if err != nil {
 		return result.Error(exception.QueryUserError).SetError(err, c)
 	}

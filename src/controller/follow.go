@@ -21,7 +21,7 @@ func init() {
 			Params(
 				goapidoc.NewPathParam("uid", "integer#int64", true, "user id"),
 				param.ADPage, param.ADLimit, param.ADOrder,
-				_adNeedFollowCount, _adNeedIsFollow, _adNeedVideoCount, _adNeedFavoriteCount,
+				_adNeedFollowCount, _adNeedChannelCount, _adNeedSubscribingCount, _adNeedFavoriteCount, _adNeedIsFollow,
 			).
 			Responses(goapidoc.NewResponse(200, "_Result<_Page<UserDto>>")),
 
@@ -30,7 +30,7 @@ func init() {
 			Params(
 				goapidoc.NewPathParam("uid", "integer#int64", true, "user id"),
 				param.ADPage, param.ADLimit, param.ADOrder,
-				_adNeedFollowCount, _adNeedIsFollow, _adNeedVideoCount, _adNeedFavoriteCount,
+				_adNeedFollowCount, _adNeedChannelCount, _adNeedSubscribingCount, _adNeedFavoriteCount, _adNeedIsFollow,
 			).
 			Responses(goapidoc.NewResponse(200, "_Result<_Page<UserDto>>")),
 
@@ -82,7 +82,7 @@ func (s *FollowController) QueryFollowers(c *gin.Context) *result.Result {
 	}
 
 	authUser := s.jwtService.GetContextUser(c)
-	extras, err := s.common.getUsersExtra(c, authUser, users)
+	extras, err := s.common.getUserExtras(c, authUser, users)
 	if err != nil {
 		return result.Error(exception.GetFollowerListError).SetError(err, c)
 	}
@@ -110,7 +110,7 @@ func (s *FollowController) QueryFollowings(c *gin.Context) *result.Result {
 	}
 
 	authUser := s.jwtService.GetContextUser(c)
-	extras, err := s.common.getUsersExtra(c, authUser, users)
+	extras, err := s.common.getUserExtras(c, authUser, users)
 	if err != nil {
 		return result.Error(exception.GetFollowingListError).SetError(err, c)
 	}

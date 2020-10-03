@@ -22,7 +22,9 @@ func init() {
 			Securities("Jwt").
 			Params(
 				param.ADPage, param.ADLimit, param.ADOrder,
-				_adNeedAuthor, _adNeedFavoredCount, _adNeedIsFavorite, _adNeedFollowCount, _adNeedIsFollow, _adNeedVideoCount, _adNeedFavoriteCount,
+				_adNeedVideoChannel, _adNeedFavoredCount, _adNeedIsFavorite,
+				_adNeedChannelAuthor, _adNeedSubscriberCount, _adNeedVideoCount, _adNeedIsSubscribed,
+				_adNeedFollowCount, _adNeedChannelCount, _adNeedSubscribingCount, _adNeedFavoriteCount, _adNeedIsFollow,
 			).
 			Responses(goapidoc.NewResponse(200, "_Result<_Page<VideoDto>>")),
 
@@ -31,7 +33,9 @@ func init() {
 			Params(
 				goapidoc.NewPathParam("uid", "integer#int64", true, "user id"),
 				param.ADPage, param.ADLimit, param.ADOrder,
-				_adNeedAuthor, _adNeedFavoredCount, _adNeedIsFavorite, _adNeedFollowCount, _adNeedIsFollow, _adNeedVideoCount, _adNeedFavoriteCount,
+				_adNeedVideoChannel, _adNeedFavoredCount, _adNeedIsFavorite,
+				_adNeedChannelAuthor, _adNeedSubscriberCount, _adNeedVideoCount, _adNeedIsSubscribed,
+				_adNeedFollowCount, _adNeedChannelCount, _adNeedSubscribingCount, _adNeedFavoriteCount, _adNeedIsFollow,
 			).
 			Responses(goapidoc.NewResponse(200, "_Result<_Page<VideoDto>>")),
 
@@ -39,7 +43,9 @@ func init() {
 			Tags("Video").
 			Params(
 				goapidoc.NewPathParam("vid", "integer#int64", true, "video id"),
-				_adNeedAuthor, _adNeedFavoredCount, _adNeedIsFavorite, _adNeedFollowCount, _adNeedIsFollow, _adNeedVideoCount, _adNeedFavoriteCount,
+				_adNeedVideoChannel, _adNeedFavoredCount, _adNeedIsFavorite,
+				_adNeedChannelAuthor, _adNeedSubscriberCount, _adNeedVideoCount, _adNeedIsSubscribed,
+				_adNeedFollowCount, _adNeedChannelCount, _adNeedSubscribingCount, _adNeedFavoriteCount, _adNeedIsFollow,
 			).
 			Responses(goapidoc.NewResponse(200, "_Result<VideoDto>")),
 
@@ -67,18 +73,20 @@ func init() {
 }
 
 type VideoController struct {
-	config       *config.Config
-	jwtService   *service.JwtService
-	videoService *service.VideoService
-	common       *CommonController
+	config         *config.Config
+	common         *CommonController
+	jwtService     *service.JwtService
+	videoService   *service.VideoService
+	channelService *service.ChannelService
 }
 
 func NewVideoController() *VideoController {
 	return &VideoController{
-		config:       xdi.GetByNameForce(sn.SConfig).(*config.Config),
-		jwtService:   xdi.GetByNameForce(sn.SJwtService).(*service.JwtService),
-		videoService: xdi.GetByNameForce(sn.SVideoService).(*service.VideoService),
-		common:       xdi.GetByNameForce(sn.SCommonController).(*CommonController),
+		config:         xdi.GetByNameForce(sn.SConfig).(*config.Config),
+		common:         xdi.GetByNameForce(sn.SCommonController).(*CommonController),
+		jwtService:     xdi.GetByNameForce(sn.SJwtService).(*service.JwtService),
+		videoService:   xdi.GetByNameForce(sn.SVideoService).(*service.VideoService),
+		channelService: xdi.GetByNameForce(sn.SChannelService).(*service.ChannelService),
 	}
 }
 
@@ -91,20 +99,28 @@ func (v *VideoController) QueryAllVideos(c *gin.Context) *result.Result {
 	}
 
 	authUser := v.jwtService.GetContextUser(c)
-	authors, userExtras, err := v.common.getVideosAuthor(c, authUser, videos)
+	channels, channelExtras, err := v.common.getVideoChannels(c, authUser, videos)
 	if err != nil {
 		return result.Error(exception.QueryVideoError).SetError(err, c)
 	}
-	videoExtras, err := v.common.getVideosExtra(c, authUser, videos)
+	authors, userExtras, err := v.common.getChannelAuthors(c, authUser, channels)
+	if err != nil {
+		return result.Error(exception.QueryVideoError).SetError(err, c)
+	}
+	videoExtras, err := v.common.getVideoExtras(c, authUser, videos)
 	if err != nil {
 		return result.Error(exception.QueryVideoError).SetError(err, c)
 	}
 
 	res := dto.BuildVideoDtos(videos)
 	for idx, video := range res {
-		video.Author = dto.BuildUserDto(authors[idx])
-		if video.Author != nil {
-			video.Author.Extra = userExtras[idx]
+		video.Channel = dto.BuildChannelDto(channels[idx])
+		if video.Channel != nil {
+			video.Channel.Extra = channelExtras[idx]
+			video.Channel.Author = dto.BuildUserDto(authors[idx])
+			if video.Channel.Author != nil {
+				video.Channel.Author.Extra = userExtras[idx]
+			}
 		}
 		video.Extra = videoExtras[idx]
 	}
@@ -119,7 +135,7 @@ func (v *VideoController) QueryVideosByUid(c *gin.Context) *result.Result {
 	}
 	pp := param.BindPageOrder(c, v.config)
 
-	videos, total, err := v.videoService.QueryByUid(uid, pp)
+	videos, total, err := v.videoService.QueryByCid(uid, pp)
 	if err != nil {
 		return result.Error(exception.QueryVideoError).SetError(err, c)
 	} else if videos == nil {
@@ -127,20 +143,28 @@ func (v *VideoController) QueryVideosByUid(c *gin.Context) *result.Result {
 	}
 
 	authUser := v.jwtService.GetContextUser(c)
-	authors, userExtras, err := v.common.getVideosAuthor(c, authUser, videos)
+	channels, channelExtras, err := v.common.getVideoChannels(c, authUser, videos)
 	if err != nil {
 		return result.Error(exception.QueryVideoError).SetError(err, c)
 	}
-	videoExtras, err := v.common.getVideosExtra(c, authUser, videos)
+	authors, userExtras, err := v.common.getChannelAuthors(c, authUser, channels)
+	if err != nil {
+		return result.Error(exception.QueryVideoError).SetError(err, c)
+	}
+	videoExtras, err := v.common.getVideoExtras(c, authUser, videos)
 	if err != nil {
 		return result.Error(exception.QueryVideoError).SetError(err, c)
 	}
 
 	res := dto.BuildVideoDtos(videos)
 	for idx, video := range res {
-		video.Author = dto.BuildUserDto(authors[idx])
-		if video.Author != nil {
-			video.Author.Extra = userExtras[idx]
+		video.Channel = dto.BuildChannelDto(channels[idx])
+		if video.Channel != nil {
+			video.Channel.Extra = channelExtras[idx]
+			video.Channel.Author = dto.BuildUserDto(authors[idx])
+			if video.Channel.Author != nil {
+				video.Channel.Author.Extra = userExtras[idx]
+			}
 		}
 		video.Extra = videoExtras[idx]
 	}
@@ -162,19 +186,27 @@ func (v *VideoController) QueryVideoByVid(c *gin.Context) *result.Result {
 	}
 
 	authUser := v.jwtService.GetContextUser(c)
-	authors, userExtras, err := v.common.getVideosAuthor(c, authUser, []*po.Video{video})
+	channels, channelExtras, err := v.common.getVideoChannels(c, authUser, []*po.Video{video})
 	if err != nil {
 		return result.Error(exception.QueryVideoError).SetError(err, c)
 	}
-	videoExtras, err := v.common.getVideosExtra(c, authUser, []*po.Video{video})
+	authors, userExtras, err := v.common.getChannelAuthors(c, authUser, channels)
+	if err != nil {
+		return result.Error(exception.QueryVideoError).SetError(err, c)
+	}
+	videoExtras, err := v.common.getVideoExtras(c, authUser, []*po.Video{video})
 	if err != nil {
 		return result.Error(exception.QueryVideoError).SetError(err, c)
 	}
 
 	res := dto.BuildVideoDto(video)
-	res.Author = dto.BuildUserDto(authors[0])
-	if res.Author != nil {
-		res.Author.Extra = userExtras[0]
+	res.Channel = dto.BuildChannelDto(channels[0])
+	if res.Channel != nil {
+		res.Channel.Extra = channelExtras[0]
+		res.Channel.Author = dto.BuildUserDto(authors[0])
+		if res.Channel.Author != nil {
+			res.Channel.Author.Extra = userExtras[0]
+		}
 	}
 	res.Extra = videoExtras[0]
 	return result.Ok().SetData(res)
@@ -213,7 +245,13 @@ func (v *VideoController) UpdateVideo(c *gin.Context) *result.Result {
 		return result.Error(exception.UpdateVideoError).SetError(err, c)
 	} else if video == nil {
 		return result.Error(exception.VideoNotFoundError)
-	} else if video.AuthorUid != user.Uid {
+	}
+	channel, err := v.channelService.QueryByCid(video.ChannelCid)
+	if err != nil {
+		return result.Error(exception.UpdateVideoError).SetError(err, c)
+	} else if channel == nil {
+		return result.Error(exception.VideoNotFoundError)
+	} else if channel.AuthorUid != user.Uid {
 		return result.Error(exception.VideoPermissionError)
 	}
 
@@ -240,7 +278,13 @@ func (v *VideoController) DeleteVideo(c *gin.Context) *result.Result {
 		return result.Error(exception.DeleteVideoError).SetError(err, c)
 	} else if video == nil {
 		return result.Error(exception.VideoNotFoundError)
-	} else if video.AuthorUid != user.Uid {
+	}
+	channel, err := v.channelService.QueryByCid(video.ChannelCid)
+	if err != nil {
+		return result.Error(exception.DeleteVideoError).SetError(err, c)
+	} else if channel == nil {
+		return result.Error(exception.VideoNotFoundError)
+	} else if channel.AuthorUid != user.Uid {
 		return result.Error(exception.VideoPermissionError)
 	}
 

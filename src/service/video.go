@@ -42,8 +42,8 @@ func (v *VideoService) QueryAll(pp *param.PageOrderParam) ([]*po.Video, int32, e
 	return videos, int32(total), nil
 }
 
-func (v *VideoService) QueryByUid(uid uint64, pp *param.PageOrderParam) ([]*po.Video, int32, error) {
-	author, err := v.userService.QueryByUid(uid)
+func (v *VideoService) QueryByCid(cid uint64, pp *param.PageOrderParam) ([]*po.Video, int32, error) {
+	author, err := v.userService.QueryByUid(cid)
 	if err != nil {
 		return nil, 0, err
 	} else if author == nil {
@@ -51,13 +51,13 @@ func (v *VideoService) QueryByUid(uid uint64, pp *param.PageOrderParam) ([]*po.V
 	}
 
 	total := int64(0)
-	rdb := v.db.Model(&po.Video{}).Where("author_uid = ?", uid).Count(&total)
+	rdb := v.db.Model(&po.Video{}).Where("channel_cid = ?", cid).Count(&total)
 	if rdb.Error != nil {
 		return nil, 0, rdb.Error
 	}
 
 	videos := make([]*po.Video, 0)
-	rdb = xgorm.WithDB(v.db).Pagination(pp.Limit, pp.Page).Model(&po.Video{}).Where("author_uid = ?", uid).Order(v.orderbyService.Video(pp.Order)).Find(&videos)
+	rdb = xgorm.WithDB(v.db).Pagination(pp.Limit, pp.Page).Model(&po.Video{}).Where("channel_cid = ?", cid).Order(v.orderbyService.Video(pp.Order)).Find(&videos)
 	if rdb.Error != nil {
 		return nil, 0, rdb.Error
 	}
@@ -77,14 +77,14 @@ func (v *VideoService) QueryByVid(vid uint64) (*po.Video, error) {
 	return video, nil
 }
 
-func (v *VideoService) QueryCountByUids(uids []uint64) ([]int32, error) {
-	if len(uids) == 0 {
+func (v *VideoService) QueryCountByCids(cids []uint64) ([]int32, error) {
+	if len(cids) == 0 {
 		return []int32{}, nil
 	}
 
 	counts := make([]*_IdCntScanResult, 0)
-	where := v.common.BuildOrExpr("author_uid", uids)
-	rdb := v.db.Model(&po.Video{}).Select("author_uid as id, count(*) as cnt").Where(where).Group("author_uid").Scan(&counts)
+	where := v.common.BuildOrExpr("channel_cid", cids)
+	rdb := v.db.Model(&po.Video{}).Select("channel_cid as id, count(*) as cnt").Where(where).Group("channel_cid").Scan(&counts)
 	if rdb.Error != nil {
 		return nil, rdb.Error
 	}
@@ -93,8 +93,8 @@ func (v *VideoService) QueryCountByUids(uids []uint64) ([]int32, error) {
 	for _, r := range counts {
 		bucket[r.Id] = r.Cnt
 	}
-	out := make([]int32, len(uids))
-	for idx, uid := range uids {
+	out := make([]int32, len(cids))
+	for idx, uid := range cids {
 		if cnt, ok := bucket[uid]; ok {
 			out[idx] = cnt
 		}
@@ -112,9 +112,9 @@ func (v *VideoService) Existed(vid uint64) (bool, error) {
 	return cnt > 0, nil
 }
 
-func (v *VideoService) Insert(pa *param.InsertVideoParam, uid uint64) (xstatus.DbStatus, error) {
+func (v *VideoService) Insert(pa *param.InsertVideoParam, cid uint64) (xstatus.DbStatus, error) {
 	video := pa.ToVideoPo()
-	video.AuthorUid = uid
+	video.ChannelCid = cid
 
 	rdb := v.db.Model(&po.Video{}).Create(video)
 	return xgorm.CreateErr(rdb)

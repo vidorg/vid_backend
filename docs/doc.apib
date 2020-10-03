@@ -185,7 +185,7 @@ auth-controller
 
 user-controller
 
-## query all user [/v1/user{?page,limit,order,need_follow_count,need_is_follow,need_video_count,need_favorite_count}]
+## query all user [/v1/user{?page,limit,order,need_follow_count,need_channel_count,need_subscribing_count,need_favorite_count,need_is_follow}]
 
 ### query all user [GET]
 
@@ -199,9 +199,10 @@ user-controller
         (format: int32)
     + order (string, optional) - order string
     + need_follow_count (boolean, optional) - need follow count (user)
-    + need_is_follow (boolean, optional) - need is follow (user)
-    + need_video_count (boolean, optional) - need video count (user)
+    + need_channel_count (boolean, optional) - need channel count (user)
+    + need_subscribing_count (boolean, optional) - need subscribing count (user)
     + need_favorite_count (boolean, optional) - need favorite count (user)
+    + need_is_follow (boolean, optional) - need is follow (user)
 
 + Request (application/json)
 
@@ -221,7 +222,7 @@ user-controller
 
     + Body
 
-## query a user by uid [/v1/user/{uid}{?need_follow_count,need_is_follow,need_video_count,need_favorite_count}]
+## query a user by uid [/v1/user/{uid}{?need_follow_count,need_channel_count,need_subscribing_count,need_favorite_count,need_is_follow}]
 
 ### query a user by uid [GET]
 
@@ -232,9 +233,10 @@ user-controller
     + uid (number, required) - user id
         (format: int64)
     + need_follow_count (boolean, optional) - need follow count (user)
-    + need_is_follow (boolean, optional) - need is follow (user)
-    + need_video_count (boolean, optional) - need video count (user)
+    + need_channel_count (boolean, optional) - need channel count (user)
+    + need_subscribing_count (boolean, optional) - need subscribing count (user)
     + need_favorite_count (boolean, optional) - need favorite count (user)
+    + need_is_follow (boolean, optional) - need is follow (user)
 
 + Request (application/json)
 
@@ -302,7 +304,7 @@ user-controller
 
 follow-controller
 
-## query user followers [/v1/user/{uid}/follower{?page,limit,order,need_follow_count,need_is_follow,need_video_count,need_favorite_count}]
+## query user followers [/v1/user/{uid}/follower{?page,limit,order,need_follow_count,need_channel_count,need_subscribing_count,need_favorite_count,need_is_follow}]
 
 ### query user followers [GET]
 
@@ -318,9 +320,10 @@ follow-controller
         (format: int32)
     + order (string, optional) - order string
     + need_follow_count (boolean, optional) - need follow count (user)
-    + need_is_follow (boolean, optional) - need is follow (user)
-    + need_video_count (boolean, optional) - need video count (user)
+    + need_channel_count (boolean, optional) - need channel count (user)
+    + need_subscribing_count (boolean, optional) - need subscribing count (user)
     + need_favorite_count (boolean, optional) - need favorite count (user)
+    + need_is_follow (boolean, optional) - need is follow (user)
 
 + Request (application/json)
 
@@ -338,7 +341,7 @@ follow-controller
 
     + Body
 
-## query user followings [/v1/user/{uid}/following{?page,limit,order,need_follow_count,need_is_follow,need_video_count,need_favorite_count}]
+## query user followings [/v1/user/{uid}/following{?page,limit,order,need_follow_count,need_channel_count,need_subscribing_count,need_favorite_count,need_is_follow}]
 
 ### query user followings [GET]
 
@@ -354,9 +357,10 @@ follow-controller
         (format: int32)
     + order (string, optional) - order string
     + need_follow_count (boolean, optional) - need follow count (user)
-    + need_is_follow (boolean, optional) - need is follow (user)
-    + need_video_count (boolean, optional) - need video count (user)
+    + need_channel_count (boolean, optional) - need channel count (user)
+    + need_subscribing_count (boolean, optional) - need subscribing count (user)
     + need_favorite_count (boolean, optional) - need favorite count (user)
+    + need_is_follow (boolean, optional) - need is follow (user)
 
 + Request (application/json)
 
@@ -434,7 +438,7 @@ follow-controller
 
 video-controller
 
-## query all videos [/v1/video{?page,limit,order,need_author,need_favored_count,need_is_favorite,need_follow_count,need_is_follow,need_video_count,need_favorite_count}]
+## query all videos [/v1/video{?page,limit,order,need_video_channel,need_favored_count,need_is_favorite,need_channel_author,need_subscriber_count,need_video_count,need_is_subscribed,need_follow_count,need_channel_count,need_subscribing_count,need_favorite_count,need_is_follow}]
 
 ### query all videos [GET]
 
@@ -447,13 +451,18 @@ video-controller
     + limit (number, optional) - page size
         (format: int32)
     + order (string, optional) - order string
-    + need_author (boolean, optional) - need video author (video)
+    + need_video_channel (boolean, optional) - need video channel (video)
     + need_favored_count (boolean, optional) - need favored user count (video)
     + need_is_favorite (boolean, optional) - need is favorite (video)
+    + need_channel_author (boolean, optional) - need channel author (channel)
+    + need_subscriber_count (boolean, optional) - need subscriber count (channel)
+    + need_video_count (boolean, optional) - need video count (channel)
+    + need_is_subscribed (boolean, optional) - need is subscribed (channel)
     + need_follow_count (boolean, optional) - need follow count (user)
-    + need_is_follow (boolean, optional) - need is follow (user)
-    + need_video_count (boolean, optional) - need video count (user)
+    + need_channel_count (boolean, optional) - need channel count (user)
+    + need_subscribing_count (boolean, optional) - need subscribing count (user)
     + need_favorite_count (boolean, optional) - need favorite count (user)
+    + need_is_follow (boolean, optional) - need is follow (user)
 
 + Request (application/json)
 
@@ -473,7 +482,7 @@ video-controller
 
     + Body
 
-## query videos from user [/v1/user/{uid}/video{?page,limit,order,need_author,need_favored_count,need_is_favorite,need_follow_count,need_is_follow,need_video_count,need_favorite_count}]
+## query videos from user [/v1/user/{uid}/video{?page,limit,order,need_video_channel,need_favored_count,need_is_favorite,need_channel_author,need_subscriber_count,need_video_count,need_is_subscribed,need_follow_count,need_channel_count,need_subscribing_count,need_favorite_count,need_is_follow}]
 
 ### query videos from user [GET]
 
@@ -488,13 +497,18 @@ video-controller
     + limit (number, optional) - page size
         (format: int32)
     + order (string, optional) - order string
-    + need_author (boolean, optional) - need video author (video)
+    + need_video_channel (boolean, optional) - need video channel (video)
     + need_favored_count (boolean, optional) - need favored user count (video)
     + need_is_favorite (boolean, optional) - need is favorite (video)
+    + need_channel_author (boolean, optional) - need channel author (channel)
+    + need_subscriber_count (boolean, optional) - need subscriber count (channel)
+    + need_video_count (boolean, optional) - need video count (channel)
+    + need_is_subscribed (boolean, optional) - need is subscribed (channel)
     + need_follow_count (boolean, optional) - need follow count (user)
-    + need_is_follow (boolean, optional) - need is follow (user)
-    + need_video_count (boolean, optional) - need video count (user)
+    + need_channel_count (boolean, optional) - need channel count (user)
+    + need_subscribing_count (boolean, optional) - need subscribing count (user)
     + need_favorite_count (boolean, optional) - need favorite count (user)
+    + need_is_follow (boolean, optional) - need is follow (user)
 
 + Request (application/json)
 
@@ -512,7 +526,7 @@ video-controller
 
     + Body
 
-## query a video [/v1/video/{vid}{?need_author,need_favored_count,need_is_favorite,need_follow_count,need_is_follow,need_video_count,need_favorite_count}]
+## query a video [/v1/video/{vid}{?need_video_channel,need_favored_count,need_is_favorite,need_channel_author,need_subscriber_count,need_video_count,need_is_subscribed,need_follow_count,need_channel_count,need_subscribing_count,need_favorite_count,need_is_follow}]
 
 ### query a video [GET]
 
@@ -522,13 +536,18 @@ video-controller
 
     + vid (number, required) - video id
         (format: int64)
-    + need_author (boolean, optional) - need video author (video)
+    + need_video_channel (boolean, optional) - need video channel (video)
     + need_favored_count (boolean, optional) - need favored user count (video)
     + need_is_favorite (boolean, optional) - need is favorite (video)
+    + need_channel_author (boolean, optional) - need channel author (channel)
+    + need_subscriber_count (boolean, optional) - need subscriber count (channel)
+    + need_video_count (boolean, optional) - need video count (channel)
+    + need_is_subscribed (boolean, optional) - need is subscribed (channel)
     + need_follow_count (boolean, optional) - need follow count (user)
-    + need_is_follow (boolean, optional) - need is follow (user)
-    + need_video_count (boolean, optional) - need video count (user)
+    + need_channel_count (boolean, optional) - need channel count (user)
+    + need_subscribing_count (boolean, optional) - need subscribing count (user)
     + need_favorite_count (boolean, optional) - need favorite count (user)
+    + need_is_follow (boolean, optional) - need is follow (user)
 
 + Request (application/json)
 
@@ -630,7 +649,7 @@ video-controller
 
 favorite-controller
 
-## query user favorites [/v1/user/{uid}/favorite{?page,limit,order,need_author,need_favored_count,need_is_favorite,need_follow_count,need_is_follow,need_video_count,need_favorite_count}]
+## query user favorites [/v1/user/{uid}/favorite{?page,limit,order,need_video_channel,need_favored_count,need_is_favorite,need_channel_author,need_subscriber_count,need_video_count,need_is_subscribed,need_follow_count,need_channel_count,need_subscribing_count,need_favorite_count,need_is_follow}]
 
 ### query user favorites [GET]
 
@@ -645,13 +664,18 @@ favorite-controller
     + limit (number, optional) - page size
         (format: int32)
     + order (string, optional) - order string
-    + need_author (boolean, optional) - need video author (video)
+    + need_video_channel (boolean, optional) - need video channel (video)
     + need_favored_count (boolean, optional) - need favored user count (video)
     + need_is_favorite (boolean, optional) - need is favorite (video)
+    + need_channel_author (boolean, optional) - need channel author (channel)
+    + need_subscriber_count (boolean, optional) - need subscriber count (channel)
+    + need_video_count (boolean, optional) - need video count (channel)
+    + need_is_subscribed (boolean, optional) - need is subscribed (channel)
     + need_follow_count (boolean, optional) - need follow count (user)
-    + need_is_follow (boolean, optional) - need is follow (user)
-    + need_video_count (boolean, optional) - need video count (user)
+    + need_channel_count (boolean, optional) - need channel count (user)
+    + need_subscribing_count (boolean, optional) - need subscribing count (user)
     + need_favorite_count (boolean, optional) - need favorite count (user)
+    + need_is_follow (boolean, optional) - need is follow (user)
 
 + Request (application/json)
 
@@ -669,7 +693,7 @@ favorite-controller
 
     + Body
 
-## query video favored users [/v1/video/{vid}/favored{?page,limit,order,need_follow_count,need_is_follow,need_video_count,need_favorite_count}]
+## query video favored users [/v1/video/{vid}/favored{?page,limit,order,need_video_channel,need_favored_count,need_is_favorite,need_channel_author,need_subscriber_count,need_video_count,need_is_subscribed,need_follow_count,need_channel_count,need_subscribing_count,need_favorite_count,need_is_follow}]
 
 ### query video favored users [GET]
 
@@ -684,10 +708,18 @@ favorite-controller
     + limit (number, optional) - page size
         (format: int32)
     + order (string, optional) - order string
+    + need_video_channel (boolean, optional) - need video channel (video)
+    + need_favored_count (boolean, optional) - need favored user count (video)
+    + need_is_favorite (boolean, optional) - need is favorite (video)
+    + need_channel_author (boolean, optional) - need channel author (channel)
+    + need_subscriber_count (boolean, optional) - need subscriber count (channel)
+    + need_video_count (boolean, optional) - need video count (channel)
+    + need_is_subscribed (boolean, optional) - need is subscribed (channel)
     + need_follow_count (boolean, optional) - need follow count (user)
-    + need_is_follow (boolean, optional) - need is follow (user)
-    + need_video_count (boolean, optional) - need video count (user)
+    + need_channel_count (boolean, optional) - need channel count (user)
+    + need_subscribing_count (boolean, optional) - need subscribing count (user)
     + need_favorite_count (boolean, optional) - need favorite count (user)
+    + need_is_follow (boolean, optional) - need is follow (user)
 
 + Request (application/json)
 
@@ -765,7 +797,7 @@ favorite-controller
 
 channel-controller
 
-## query all channels [/v1/channel{?page,limit,order}]
+## query all channels [/v1/channel{?page,limit,order,need_channel_author,need_subscriber_count,need_video_count,need_is_subscribed,need_follow_count,need_channel_count,need_subscribing_count,need_favorite_count,need_is_follow}]
 
 ### query all channels [GET]
 
@@ -778,6 +810,15 @@ channel-controller
     + limit (number, optional) - page size
         (format: int32)
     + order (string, optional) - order string
+    + need_channel_author (boolean, optional) - need channel author (channel)
+    + need_subscriber_count (boolean, optional) - need subscriber count (channel)
+    + need_video_count (boolean, optional) - need video count (channel)
+    + need_is_subscribed (boolean, optional) - need is subscribed (channel)
+    + need_follow_count (boolean, optional) - need follow count (user)
+    + need_channel_count (boolean, optional) - need channel count (user)
+    + need_subscribing_count (boolean, optional) - need subscribing count (user)
+    + need_favorite_count (boolean, optional) - need favorite count (user)
+    + need_is_follow (boolean, optional) - need is follow (user)
 
 + Request (application/json)
 
@@ -797,7 +838,7 @@ channel-controller
 
     + Body
 
-## query channels from user [/v1/user/{uid}/channel{?page,limit,order}]
+## query channels from user [/v1/user/{uid}/channel{?page,limit,order,need_channel_author,need_subscriber_count,need_video_count,need_is_subscribed,need_follow_count,need_channel_count,need_subscribing_count,need_favorite_count,need_is_follow}]
 
 ### query channels from user [GET]
 
@@ -812,6 +853,15 @@ channel-controller
     + limit (number, optional) - page size
         (format: int32)
     + order (string, optional) - order string
+    + need_channel_author (boolean, optional) - need channel author (channel)
+    + need_subscriber_count (boolean, optional) - need subscriber count (channel)
+    + need_video_count (boolean, optional) - need video count (channel)
+    + need_is_subscribed (boolean, optional) - need is subscribed (channel)
+    + need_follow_count (boolean, optional) - need follow count (user)
+    + need_channel_count (boolean, optional) - need channel count (user)
+    + need_subscribing_count (boolean, optional) - need subscribing count (user)
+    + need_favorite_count (boolean, optional) - need favorite count (user)
+    + need_is_follow (boolean, optional) - need is follow (user)
 
 + Request (application/json)
 
@@ -829,7 +879,7 @@ channel-controller
 
     + Body
 
-## query a channel, update a channel, delete a channel [/v1/channel/{cid}]
+## query a channel [/v1/channel/{cid}{?need_channel_author,need_subscriber_count,need_video_count,need_is_subscribed,need_follow_count,need_channel_count,need_subscribing_count,need_favorite_count,need_is_follow}]
 
 ### query a channel [GET]
 
@@ -839,6 +889,15 @@ channel-controller
 
     + cid (number, required) - channel id
         (format: int64)
+    + need_channel_author (boolean, optional) - need channel author (channel)
+    + need_subscriber_count (boolean, optional) - need subscriber count (channel)
+    + need_video_count (boolean, optional) - need video count (channel)
+    + need_is_subscribed (boolean, optional) - need is subscribed (channel)
+    + need_follow_count (boolean, optional) - need follow count (user)
+    + need_channel_count (boolean, optional) - need channel count (user)
+    + need_subscribing_count (boolean, optional) - need subscribing count (user)
+    + need_favorite_count (boolean, optional) - need favorite count (user)
+    + need_is_follow (boolean, optional) - need is follow (user)
 
 + Request (application/json)
 
@@ -855,6 +914,32 @@ channel-controller
     + Headers
 
     + Body
+
+## create a channel [/v1/channel]
+
+### create a channel [POST]
+
+`POST /v1/channel`
+
++ Request (application/json)
+
+    + Attributes (InsertChannelParam)
+
+    + Headers
+
+            Authorization: Jwt apiKey (string, optional)
+
+    + Body
+
++ Response 201 (application/json)
+
+    + Attributes (Result)
+
+    + Headers
+
+    + Body
+
+## update a channel, delete a channel [/v1/channel/{cid}]
 
 ### update a channel [PUT]
 
@@ -903,30 +988,6 @@ channel-controller
     + Body
 
 + Response 200 (application/json)
-
-    + Attributes (Result)
-
-    + Headers
-
-    + Body
-
-## create a channel [/v1/channel]
-
-### create a channel [POST]
-
-`POST /v1/channel`
-
-+ Request (application/json)
-
-    + Attributes (InsertChannelParam)
-
-    + Headers
-
-            Authorization: Jwt apiKey (string, optional)
-
-    + Body
-
-+ Response 201 (application/json)
 
     + Attributes (Result)
 
@@ -1118,9 +1179,11 @@ rbac-controller
 
 ## ChannelExtraDto (object)
 
-+ is_subscribed (number, required) - channel subscriber users count
++ subscribers (number, required) - channel subscriber count
     (format: int32)
-+ is_subscribed (boolean, required) - this channel is subscribed by the authorized user
++ videos (number, required) - channel video count
+    (format: int32)
++ is_subscribed (boolean, required) - is subscribing this channel
 
 ## RbacRuleDto (object)
 
@@ -1161,13 +1224,14 @@ rbac-controller
     (format: int32)
 + followers (number, required) - user follower count
     (format: int32)
-+ is_following (boolean, required) - authorized user is following this user
-+ is_followed (boolean, required) - authorized user is followed by this user
-+ is_blocking (boolean, required) - authorized user is blocking this user
-+ videos (number, required) - user video count
++ channels (number, required) - user channel count
+    (format: int32)
++ subscribings (number, required) - user subscribing count
     (format: int32)
 + favorites (number, required) - user favorite count
     (format: int32)
++ is_following (boolean, required) - is following this user
++ is_followed (boolean, required) - is followed by this user
 
 ## LoginDto (object)
 
@@ -1182,18 +1246,18 @@ rbac-controller
 + description (string, required) - video description
 + video_url (string, required) - video source url
 + cover_url (string, required) - video cover url
-+ author_uid (number, required) - video author id
++ channel_cid (number, required) - video channel id
     (format: int64)
-+ author (UserDto, required) - video author
++ channel (UserDto, required) - video channel
 + upload_time (string, required) - video upload time
     (format: date-time)
 + extra (VideoExtraDto, required) - video extra information
 
 ## VideoExtraDto (object)
 
-+ favoreds (number, required) - video favored user count
++ favoreds (number, required) - video favored count
     (format: int32)
-+ is_favorite (boolean, required) - this video is favored by the authorized user
++ is_favorite (boolean, required) - is favoring this video
 
 ## RegisterParam (object)
 

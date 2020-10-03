@@ -159,7 +159,7 @@ func (f *FavoriteService) CheckFavorite(uid uint64, vids []uint64) ([]bool, erro
 	return out, nil
 }
 
-func (f *FavoriteService) QueryFavoredCount(uids []uint64) ([]int32, error) {
+func (f *FavoriteService) QueryFavoriteCount(uids []uint64) ([]int32, error) {
 	if len(uids) == 0 {
 		return []int32{}, nil
 	}
@@ -185,7 +185,7 @@ func (f *FavoriteService) QueryFavoredCount(uids []uint64) ([]int32, error) {
 	return out, nil
 }
 
-func (f *FavoriteService) QueryFavoriteCount(vids []uint64) ([]int32, error) {
+func (f *FavoriteService) QueryFavoredCount(vids []uint64) ([]int32, error) {
 	if len(vids) == 0 {
 		return []int32{}, nil
 	}
