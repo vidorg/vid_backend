@@ -8,6 +8,7 @@ const (
 	// common
 	SConfig xdi.ServiceName = "config" // *config.Config
 	SLogger xdi.ServiceName = "logger" // *logrus.Logger
+	SAmqp   xdi.ServiceName = "amqp"   // *amqp.Connection
 
 	// databases
 	SGorm     xdi.ServiceName = "gorm"            // *gorm.DB

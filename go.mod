@@ -16,6 +16,7 @@ require (
 	github.com/gomodule/redigo/redis v0.0.0-20200429221454-e14091dffc1b
 	github.com/google/uuid v1.1.2
 	github.com/sirupsen/logrus v1.6.0
+	github.com/streadway/amqp v1.0.0
 	github.com/swaggo/gin-swagger v1.2.0
 	github.com/swaggo/swag v1.6.7
 	gopkg.in/alexcesaro/quotedprintable.v3 v3.0.0-20150716171945-2caba252f4dc // indirect

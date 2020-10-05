@@ -40,6 +40,13 @@ type RedisConfig struct {
 	IdleTimeout    int32  `yaml:"idle-timeout"`
 }
 
+type AmqpConfig struct {
+	Host     string `yaml:"host"`
+	Port     int32  `yaml:"port"`
+	Username string `yaml:"username"`
+	Password string `yaml:"password"`
+}
+
 type EmailConfig struct {
 	Name     string `yaml:"name"`
 	SmtpHost string `yaml:"smtp-host"`
@@ -63,6 +70,7 @@ type Config struct {
 	Meta   *MetaConfig   `yaml:"meta"`
 	MySQL  *MySQLConfig  `yaml:"mysql"`
 	Redis  *RedisConfig  `yaml:"redis"`
+	Amqp   *AmqpConfig   `yaml:"amqp"`
 	Email  *EmailConfig  `yaml:"email"`
 	Jwt    *JwtConfig    `yaml:"jwt"`
 	Casbin *CasbinConfig `yaml:"casbin"`

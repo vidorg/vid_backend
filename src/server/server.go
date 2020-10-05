@@ -57,6 +57,7 @@ func NewServer() *Server {
 	engine.Use(middleware.LoggerMiddleware())
 	engine.Use(middleware.RecoveryMiddleware())
 	engine.Use(middleware.CorsMiddleware())
+	engine.Use(middleware.FaviconMiddleware())
 
 	// route
 	if cfg.Meta.RunMode == "debug" {

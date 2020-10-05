@@ -30,6 +30,12 @@ redis:
   max-lifetime: 3600 # second
   idle-timeout: 300 # second
 
+amqp:
+  host: 127.0.0.1
+  port: 5672
+  username: guest
+  password: xxx
+
 email:
   name: xxx@yyy.zzz
   smtp-host: smtp.yyy.zzz
