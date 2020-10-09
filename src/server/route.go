@@ -75,7 +75,6 @@ func initRoute(engine *gin.Engine) {
 		userGroup.DELETE("", authMw, j(userCtrl.Delete))
 
 		userGroup.GET(":uid/channel", j(channelCtrl.QueryChannelsByUid))
-		userGroup.GET(":uid/video", j(videoCtrl.QueryVideosByUid))
 
 		userGroup.GET(":uid/follower", j(followCtrl.QueryFollowers))
 		userGroup.GET(":uid/following", j(followCtrl.QueryFollowings))
@@ -97,7 +96,10 @@ func initRoute(engine *gin.Engine) {
 		channelGroup.GET(":cid", j(channelCtrl.QueryChannelByCid))
 		channelGroup.POST("", authMw, j(channelCtrl.InsertChannel))
 		channelGroup.PUT(":cid", authMw, j(channelCtrl.UpdateChannel))
+		channelGroup.PUT(":cid/video/channel/:cid2", authMw, j(videoCtrl.MoveAllVideosToChannel))
 		channelGroup.DELETE(":cid", authMw, j(channelCtrl.DeleteChannel))
+
+		channelGroup.GET(":cid/video", j(videoCtrl.QueryVideosByCid))
 
 		channelGroup.GET(":cid/subscriber", j(subscribeCtrl.QuerySubscribers))
 	}
@@ -108,6 +110,7 @@ func initRoute(engine *gin.Engine) {
 		videoGroup.GET(":vid", j(videoCtrl.QueryVideoByVid))
 		videoGroup.POST("", authMw, j(videoCtrl.InsertVideo))
 		videoGroup.PUT(":vid", authMw, j(videoCtrl.UpdateVideo))
+		videoGroup.PUT(":vid/channel/:cid", authMw, j(videoCtrl.MoveVideoToChannel))
 		videoGroup.DELETE(":vid", authMw, j(videoCtrl.DeleteVideo))
 
 		videoGroup.GET(":vid/favored", j(favoriteCtrl.QueryFavoreds))

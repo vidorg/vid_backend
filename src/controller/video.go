@@ -28,10 +28,10 @@ func init() {
 			).
 			Responses(goapidoc.NewResponse(200, "_Result<_Page<VideoDto>>")),
 
-		goapidoc.NewRoutePath("GET", "/v1/user/{uid}/video", "query videos from user").
+		goapidoc.NewRoutePath("GET", "/v1/channel/{cid}/video", "query videos from user").
 			Tags("Video").
 			Params(
-				goapidoc.NewPathParam("uid", "integer#int64", true, "user id"),
+				goapidoc.NewPathParam("cid", "integer#int64", true, "channel id"),
 				param.ADPage, param.ADLimit, param.ADOrder,
 				_adNeedVideoChannel, _adNeedFavoredCount, _adNeedIsFavorite,
 				_adNeedChannelAuthor, _adNeedSubscriberCount, _adNeedVideoCount, _adNeedIsSubscribed,
@@ -61,6 +61,24 @@ func init() {
 			Params(
 				goapidoc.NewPathParam("vid", "integer#int64", true, "video id"),
 				goapidoc.NewBodyParam("param", "UpdateVideoParam", true, "update video parameter"),
+			).
+			Responses(goapidoc.NewResponse(200, "Result")),
+
+		goapidoc.NewRoutePath("PUT", "/v1/video/{vid}/channel/{cid}", "update a video's channel").
+			Tags("Video").
+			Securities("Jwt").
+			Params(
+				goapidoc.NewPathParam("vid", "integer#int64", true, "video id"),
+				goapidoc.NewPathParam("cid", "integer#int64", true, "channel id"),
+			).
+			Responses(goapidoc.NewResponse(200, "Result")),
+
+		goapidoc.NewRoutePath("PUT", "/v1/channel/{cid}/video/channel/{cid2}", "update all video from a channel to another channel").
+			Tags("Video").
+			Securities("Jwt").
+			Params(
+				goapidoc.NewPathParam("cid", "integer#int64", true, "from channel id"),
+				goapidoc.NewPathParam("cid2", "integer#int64", true, "to channel id"),
 			).
 			Responses(goapidoc.NewResponse(200, "Result")),
 
@@ -106,15 +124,15 @@ func (v *VideoController) QueryAllVideos(c *gin.Context) *result.Result {
 	return result.Ok().SetPage(pp.Page, pp.Limit, total, res)
 }
 
-// GET /v1/user/:uid/video
-func (v *VideoController) QueryVideosByUid(c *gin.Context) *result.Result {
-	uid, err := param.BindRouteId(c, "uid")
+// GET /v1/channel/:cid/video
+func (v *VideoController) QueryVideosByCid(c *gin.Context) *result.Result {
+	cid, err := param.BindRouteId(c, "cid")
 	if err != nil {
 		return result.Error(exception.RequestParamError).SetError(err, c)
 	}
 	pp := param.BindPageOrder(c, v.config)
 
-	videos, total, err := v.videoService.QueryByCid(uid, pp)
+	videos, total, err := v.videoService.QueryByCid(cid, pp)
 	if err != nil {
 		return result.Error(exception.QueryVideoError).SetError(err, c)
 	} else if videos == nil {
@@ -199,6 +217,90 @@ func (v *VideoController) UpdateVideo(c *gin.Context) *result.Result {
 		return result.Error(exception.VideoNotFoundError)
 	} else if status == xstatus.DbFailed {
 		return result.Error(exception.UpdateVideoError).SetError(err, c)
+	}
+
+	return result.Ok()
+}
+
+// PUT /v1/video/:vid/channel/:cid
+func (v *VideoController) MoveVideoToChannel(c *gin.Context) *result.Result {
+	user := v.jwtService.GetContextUser(c)
+	vid, err := param.BindRouteId(c, "vid")
+	if err != nil {
+		return result.Error(exception.RequestParamError).SetError(err, c)
+	}
+	cid, err := param.BindRouteId(c, "cid")
+	if err != nil {
+		return result.Error(exception.RequestParamError).SetError(err, c)
+	}
+
+	video, err := v.videoService.QueryByVid(vid)
+	if err != nil {
+		return result.Error(exception.UpdateVideoChannelError).SetError(err, c)
+	} else if video == nil {
+		return result.Error(exception.VideoNotFoundError)
+	}
+	channel, err := v.channelService.QueryByCid(video.ChannelCid)
+	if err != nil {
+		return result.Error(exception.UpdateVideoChannelError).SetError(err, c)
+	} else if channel == nil {
+		return result.Error(exception.VideoNotFoundError)
+	} else if channel.AuthorUid != user.Uid {
+		return result.Error(exception.VideoPermissionError)
+	}
+	channel, err = v.channelService.QueryByCid(cid)
+	if err != nil {
+		return result.Error(exception.UpdateVideoChannelError).SetError(err, c)
+	} else if channel == nil {
+		return result.Error(exception.ChannelNotFoundError)
+	} else if channel.AuthorUid != user.Uid {
+		return result.Error(exception.ChannelPermissionError)
+	}
+
+	status, err := v.videoService.UpdateChannel(vid, cid)
+	if status == xstatus.DbNotFound {
+		return result.Error(exception.VideoNotFoundError)
+	} else if status == xstatus.DbFailed {
+		return result.Error(exception.UpdateVideoChannelError).SetError(err, c)
+	}
+
+	return result.Ok()
+}
+
+// PUT /v1/channel/:cid/video/channel/:cid2
+func (v *VideoController) MoveAllVideosToChannel(c *gin.Context) *result.Result {
+	user := v.jwtService.GetContextUser(c)
+	cid1, err := param.BindRouteId(c, "cid")
+	if err != nil {
+		return result.Error(exception.RequestParamError).SetError(err, c)
+	}
+	cid2, err := param.BindRouteId(c, "cid2")
+	if err != nil {
+		return result.Error(exception.RequestParamError).SetError(err, c)
+	}
+
+	channel1, err := v.channelService.QueryByCid(cid1)
+	if err != nil {
+		return result.Error(exception.UpdateVideoChannelError).SetError(err, c)
+	} else if channel1 == nil {
+		return result.Error(exception.ChannelNotFoundError)
+	} else if channel1.AuthorUid != user.Uid {
+		return result.Error(exception.ChannelPermissionError)
+	}
+	channel2, err := v.channelService.QueryByCid(cid2)
+	if err != nil {
+		return result.Error(exception.UpdateVideoChannelError).SetError(err, c)
+	} else if channel2 == nil {
+		return result.Error(exception.ChannelNotFoundError)
+	} else if channel2.AuthorUid != user.Uid {
+		return result.Error(exception.ChannelPermissionError)
+	}
+
+	status, err := v.videoService.UpdateAllToChannel(cid1, cid2)
+	if status == xstatus.DbNotFound {
+		return result.Error(exception.ChannelHasNoVideoError)
+	} else if status == xstatus.DbFailed {
+		return result.Error(exception.UpdateVideoChannelError).SetError(err, c)
 	}
 
 	return result.Ok()

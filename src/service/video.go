@@ -125,6 +125,16 @@ func (v *VideoService) Update(vid uint64, video *param.UpdateVideoParam) (xstatu
 	return xgorm.UpdateErr(rdb)
 }
 
+func (v *VideoService) UpdateChannel(vid, cid uint64) (xstatus.DbStatus, error) {
+	rdb := v.db.Model(&po.Video{}).Where("vid = ?", vid).Update("channel_cid", cid)
+	return xgorm.UpdateErr(rdb)
+}
+
+func (v *VideoService) UpdateAllToChannel(cid1, cid2 uint64) (xstatus.DbStatus, error) {
+	rdb := v.db.Model(&po.Video{}).Where("channel_cid = ?", cid1).Update("channel_cid", cid2)
+	return xgorm.UpdateErr(rdb)
+}
+
 func (v *VideoService) Delete(vid uint64) (xstatus.DbStatus, error) {
 	rdb := v.db.Model(&po.Video{}).Where("vid = ?", vid).Delete(&po.Video{})
 	return xgorm.DeleteErr(rdb)

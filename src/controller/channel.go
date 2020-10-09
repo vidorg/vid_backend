@@ -74,6 +74,7 @@ type ChannelController struct {
 	common         *CommonController
 	jwtService     *service.JwtService
 	channelService *service.ChannelService
+	videoService   *service.VideoService
 }
 
 func NewChannelController() *ChannelController {
@@ -82,6 +83,7 @@ func NewChannelController() *ChannelController {
 		common:         xdi.GetByNameForce(sn.SCommonController).(*CommonController),
 		jwtService:     xdi.GetByNameForce(sn.SJwtService).(*service.JwtService),
 		channelService: xdi.GetByNameForce(sn.SChannelService).(*service.ChannelService),
+		videoService:   xdi.GetByNameForce(sn.SVideoService).(*service.VideoService),
 	}
 }
 
@@ -210,6 +212,12 @@ func (ch *ChannelController) DeleteChannel(c *gin.Context) *result.Result {
 		return result.Error(exception.ChannelNotFoundError)
 	} else if channel.AuthorUid != user.Uid {
 		return result.Error(exception.ChannelPermissionError)
+	}
+	counts, err := ch.videoService.QueryCountByCids([]uint64{cid})
+	if err != nil {
+		return result.Error(exception.DeleteChannelError).SetError(err, c)
+	} else if counts[0] > 0 {
+		return result.Error(exception.ChannelHasVideoError)
 	}
 
 	status, err := ch.channelService.Delete(cid)

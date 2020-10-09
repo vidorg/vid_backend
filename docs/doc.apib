@@ -822,15 +822,15 @@ video-controller
 
     + Body
 
-## query videos from user [/v1/user/{uid}/video{?page,limit,order,need_video_channel,need_favored_count,need_is_favorite,need_channel_author,need_subscriber_count,need_video_count,need_is_subscribed,need_follow_count,need_channel_count,need_subscribing_count,need_favorite_count,need_is_follow}]
+## query videos from user [/v1/channel/{cid}/video{?page,limit,order,need_video_channel,need_favored_count,need_is_favorite,need_channel_author,need_subscriber_count,need_video_count,need_is_subscribed,need_follow_count,need_channel_count,need_subscribing_count,need_favorite_count,need_is_follow}]
 
 ### query videos from user [GET]
 
-`GET /v1/user/{uid}/video`
+`GET /v1/channel/{cid}/video`
 
 + Parameters
 
-    + uid (number, required) - user id
+    + cid (number, required) - channel id
         (format: int64)
     + page (number, optional) - current page
         (format: int32)
@@ -965,6 +965,68 @@ video-controller
 + Parameters
 
     + vid (number, required) - video id
+        (format: int64)
+
++ Request (application/json)
+
+    + Attributes
+
+    + Headers
+
+            Authorization: Jwt apiKey (string, optional)
+
+    + Body
+
++ Response 200 (application/json)
+
+    + Attributes (Result)
+
+    + Headers
+
+    + Body
+
+## update a video's channel [/v1/video/{vid}/channel/{cid}]
+
+### update a video's channel [PUT]
+
+`PUT /v1/video/{vid}/channel/{cid}`
+
++ Parameters
+
+    + vid (number, required) - video id
+        (format: int64)
+    + cid (number, required) - channel id
+        (format: int64)
+
++ Request (application/json)
+
+    + Attributes
+
+    + Headers
+
+            Authorization: Jwt apiKey (string, optional)
+
+    + Body
+
++ Response 200 (application/json)
+
+    + Attributes (Result)
+
+    + Headers
+
+    + Body
+
+## update all video from a channel to another channel [/v1/channel/{cid}/video/channel/{cid2}]
+
+### update all video from a channel to another channel [PUT]
+
+`PUT /v1/channel/{cid}/video/channel/{cid2}`
+
++ Parameters
+
+    + cid (number, required) - from channel id
+        (format: int64)
+    + cid2 (number, required) - to channel id
         (format: int64)
 
 + Request (application/json)
