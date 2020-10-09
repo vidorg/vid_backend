@@ -24,21 +24,26 @@ func Setup() (*logrus.Logger, error) {
 		ForceColor: true,
 	})
 
-	// logger.AddHook(xlogrus.NewRotateLogHook(&xlogrus.RotateLogConfig{
-	// 	MaxAge:       15 * 24 * time.Hour,
-	// 	RotationTime: 24 * time.Hour,
-	// 	Filepath:     c.Meta.LogPath,
-	// 	Filename:     c.Meta.LogName,
-	// 	Level:        logLevel,
-	// 	Formatter:    &logrus.JSONFormatter{TimestampFormat: time.RFC3339},
-	// }))
-	mqHook, err := NewMQLogHook(&MQLogHookConfig{
-		Formatter: &logrus.JSONFormatter{TimestampFormat: time.RFC3339}, // TODO
-	})
-	if err != nil {
-		return nil, err
+	if c.Meta.LogRotate {
+		rotateHook := xlogrus.NewRotateLogHook(&xlogrus.RotateLogConfig{
+			MaxAge:       15 * 24 * time.Hour,
+			RotationTime: 24 * time.Hour,
+			Filepath:     c.Meta.LogPath,
+			Filename:     c.Meta.LogName,
+			Level:        logLevel,
+			Formatter:    &logrus.JSONFormatter{TimestampFormat: time.RFC3339},
+		})
+		logger.AddHook(rotateHook)
 	}
-	logger.AddHook(mqHook)
+	if c.Meta.LogMq {
+		mqHook, err := NewMQLogHook(&MQLogHookConfig{
+			Formatter: &logrus.JSONFormatter{TimestampFormat: time.RFC3339},
+		})
+		if err != nil {
+			return nil, err
+		}
+		logger.AddHook(mqHook)
+	}
 
 	return logger, nil
 }

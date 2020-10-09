@@ -10,6 +10,8 @@ type MetaConfig struct {
 	Port        int32  `yaml:"port"`
 	LogPath     string `yaml:"log-path"`
 	LogName     string `yaml:"log-name"`
+	LogRotate   bool   `yaml:"log-rotate"`
+	LogMq       bool   `yaml:"log-mq"`
 	DefPageSize int32  `yaml:"def-page-size"`
 	MaxPageSize int32  `yaml:"max-page-size"`
 }
