@@ -3,6 +3,7 @@ package provide
 import (
 	"github.com/Aoi-hosizora/ahlib/xdi"
 	"github.com/vidorg/vid_backend/src/common/logger"
+	"github.com/vidorg/vid_backend/src/common/mq"
 	"github.com/vidorg/vid_backend/src/config"
 	"github.com/vidorg/vid_backend/src/controller"
 	"github.com/vidorg/vid_backend/src/database"
@@ -25,6 +26,13 @@ func Provide(configPath string) error {
 		log.Fatalln("Failed to setup logger:", err)
 	}
 	xdi.ProvideName(sn.SLogger, lgr)
+
+	// *amqp.Connection
+	amqp, err := mq.NewAmqpConn()
+	if err != nil {
+		log.Fatalln("Failed to load amqp:", err)
+	}
+	xdi.ProvideName(sn.SAmqp, amqp)
 
 	// *gorm.DB
 	mysql, err := database.NewMySQLDB()
