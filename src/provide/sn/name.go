@@ -21,12 +21,14 @@ const (
 	SAccountService   xdi.ServiceName = "account-service"   // *service.AccountService
 	STokenService     xdi.ServiceName = "token-service"     // *service.TokenService
 	SUserService      xdi.ServiceName = "user-service"      // *service.UserService
+	SJwtService       xdi.ServiceName = "jwt-service"       // *service.JwtService
+	SCasbinService    xdi.ServiceName = "casbin-service"    // *service.CasbinService
 	SEmailService     xdi.ServiceName = "email-service"     // *service.EmailService
+	SFollowService    xdi.ServiceName = "follow-service"    // *service.FollowService
+	SChannelService   xdi.ServiceName = "channel-service"   // *service.ChannelService
 	SSubscribeService xdi.ServiceName = "subscribe-service" // *service.SubscribeService
 	SVideoService     xdi.ServiceName = "video-service"     // *service.VideoService
 	SFavoriteService  xdi.ServiceName = "favorite-service"  // *service.FavoriteService
-	SJwtService       xdi.ServiceName = "jwt-service"       // *service.JwtService
-	SCasbinService    xdi.ServiceName = "casbin-service"    // *service.CasbinService
 
 	// controllers
 	SCommonController xdi.ServiceName = "common-controller" // *controller.CommonController

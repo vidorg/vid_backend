@@ -21,29 +21,31 @@ func init() {
 			Params(
 				goapidoc.NewPathParam("uid", "integer#int64", true, "user id"),
 				param.ADPage, param.ADLimit, param.ADOrder,
-				_adNeedAuthor, _adNeedFavoredCount, _adNeedIsFavorite, _adNeedSubscribeCount, _adNeedIsSubscribe, _adNeedVideoCount, _adNeedFavoriteCount,
+				_adNeedVideoChannel, _adNeedFavoredCount, _adNeedIsFavorite,
+				_adNeedChannelAuthor, _adNeedSubscriberCount, _adNeedVideoCount, _adNeedIsSubscribed,
+				_adNeedFollowCount, _adNeedChannelCount, _adNeedSubscribingCount, _adNeedFavoriteCount, _adNeedIsFollow,
 			).
 			Responses(goapidoc.NewResponse(200, "_Result<_Page<VideoDto>>")),
 
 		goapidoc.NewRoutePath("GET", "/v1/video/{vid}/favored", "query video favored users").
 			Tags("Favorite").
 			Params(
-				goapidoc.NewPathParam("vid", "integer#int64", true, "vid id"),
+				goapidoc.NewPathParam("vid", "integer#int64", true, "video id"),
 				param.ADPage, param.ADLimit, param.ADOrder,
-				_adNeedSubscribeCount, _adNeedIsSubscribe, _adNeedVideoCount, _adNeedFavoriteCount,
+				_adNeedFollowCount, _adNeedChannelCount, _adNeedSubscribingCount, _adNeedFavoriteCount, _adNeedIsFollow,
 			).
 			Responses(goapidoc.NewResponse(200, "_Result<_Page<UserDto>>")),
 
 		goapidoc.NewRoutePath("POST", "/v1/user/favorite/{vid}", "add video to favorite").
 			Tags("Favorite").
 			Securities("Jwt").
-			Params(goapidoc.NewPathParam("vid", "integer#int64", true, "vid id")).
+			Params(goapidoc.NewPathParam("vid", "integer#int64", true, "video id")).
 			Responses(goapidoc.NewResponse(200, "Result")),
 
 		goapidoc.NewRoutePath("DELETE", "/v1/user/favorite/{vid}", "remove video from favorite").
 			Tags("Favorite").
 			Securities("Jwt").
-			Params(goapidoc.NewPathParam("vid", "integer#int64", true, "vid id")).
+			Params(goapidoc.NewPathParam("vid", "integer#int64", true, "video id")).
 			Responses(goapidoc.NewResponse(200, "Result")),
 	)
 }
@@ -64,7 +66,7 @@ func NewFavoriteController() *FavoriteController {
 	}
 }
 
-// /v1/user/:uid/favorite
+// GET /v1/user/:uid/favorite
 func (f *FavoriteController) QueryFavorites(c *gin.Context) *result.Result {
 	uid, err := param.BindRouteId(c, "uid")
 	if err != nil {
@@ -79,28 +81,15 @@ func (f *FavoriteController) QueryFavorites(c *gin.Context) *result.Result {
 		return result.Error(exception.UserNotFoundError)
 	}
 
-	authUser := f.jwtService.GetContextUser(c)
-	authors, userExtras, err := f.common.getVideosAuthor(c, authUser, videos)
-	if err != nil {
-		return result.Error(exception.GetFavoriteListError).SetError(err, c)
-	}
-	videoExtras, err := f.common.getVideosExtra(c, authUser, videos)
-	if err != nil {
-		return result.Error(exception.GetFavoriteListError).SetError(err, c)
-	}
-
 	res := dto.BuildVideoDtos(videos)
-	for idx, video := range res {
-		video.Author = dto.BuildUserDto(authors[idx])
-		if video.Author != nil {
-			video.Author.Extra = userExtras[idx]
-		}
-		video.Extra = videoExtras[idx]
+	err = f.common.PreLoadVideos(c, f.jwtService.GetContextUser(c), videos, res)
+	if err != nil {
+		return result.Error(exception.GetFavoriteListError).SetError(err, c)
 	}
 	return result.Ok().SetPage(pp.Page, pp.Limit, total, res)
 }
 
-// /v1/video/:vid/favored
+// GET /v1/video/:vid/favored
 func (f *FavoriteController) QueryFavoreds(c *gin.Context) *result.Result {
 	vid, err := param.BindRouteId(c, "vid")
 	if err != nil {
@@ -115,15 +104,10 @@ func (f *FavoriteController) QueryFavoreds(c *gin.Context) *result.Result {
 		return result.Error(exception.VideoNotFoundError)
 	}
 
-	authUser := f.jwtService.GetContextUser(c)
-	extras, err := f.common.getUsersExtra(c, authUser, users)
+	res := dto.BuildUserDtos(users)
+	err = f.common.PreLoadUsers(c, f.jwtService.GetContextUser(c), users, res)
 	if err != nil {
 		return result.Error(exception.GetFavoredListError).SetError(err, c)
-	}
-
-	res := dto.BuildUserDtos(users)
-	for idx, user := range res {
-		user.Extra = extras[idx]
 	}
 	return result.Ok().SetPage(pp.Page, pp.Limit, total, res)
 }

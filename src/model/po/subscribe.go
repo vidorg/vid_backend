@@ -4,8 +4,9 @@ import (
 	"time"
 )
 
+// Subscribe: tbl_subscribe, po.User <-> po.Channel.
 type Subscribe struct {
-	FromUid   uint64
-	ToUid     uint64
+	Uid       uint64
+	Cid       uint64
 	CreatedAt time.Time
 }

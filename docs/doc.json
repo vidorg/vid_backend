@@ -26,6 +26,14 @@
       "description": "user-controller"
     },
     {
+      "name": "Follow",
+      "description": "follow-controller"
+    },
+    {
+      "name": "Channel",
+      "description": "channel-controller"
+    },
+    {
       "name": "Subscribe",
       "description": "subscribe-controller"
     },
@@ -233,6 +241,568 @@
             "schema": {
               "originRef": "_Result<UserDto>",
               "$ref": "#/definitions/_Result<UserDto>"
+            }
+          }
+        }
+      }
+    },
+    "/v1/channel": {
+      "get": {
+        "summary": "query all channels",
+        "operationId": "-v1-channel-get",
+        "tags": [
+          "Channel",
+          "Administration"
+        ],
+        "security": [
+          {
+            "Jwt": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "description": "current page",
+            "format": "int32"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "description": "page size",
+            "format": "int32"
+          },
+          {
+            "name": "order",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "description": "order string"
+          },
+          {
+            "name": "need_channel_author",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need channel author (channel)"
+          },
+          {
+            "name": "need_subscriber_count",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need subscriber count (channel)"
+          },
+          {
+            "name": "need_video_count",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need video count (channel)"
+          },
+          {
+            "name": "need_is_subscribed",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need is subscribed (channel)"
+          },
+          {
+            "name": "need_follow_count",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need follow count (user)"
+          },
+          {
+            "name": "need_channel_count",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need channel count (user)"
+          },
+          {
+            "name": "need_subscribing_count",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need subscribing count (user)"
+          },
+          {
+            "name": "need_favorite_count",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need favorite count (user)"
+          },
+          {
+            "name": "need_is_follow",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need is follow (user)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "originRef": "_Result<_Page<ChannelDto>>",
+              "$ref": "#/definitions/_Result<_Page<ChannelDto>>"
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "create a channel",
+        "operationId": "-v1-channel-post",
+        "tags": [
+          "Channel"
+        ],
+        "security": [
+          {
+            "Jwt": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "param",
+            "in": "body",
+            "required": true,
+            "description": "create channel parameter",
+            "schema": {
+              "originRef": "InsertChannelParam",
+              "$ref": "#/definitions/InsertChannelParam"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "schema": {
+              "originRef": "Result",
+              "$ref": "#/definitions/Result"
+            }
+          }
+        }
+      }
+    },
+    "/v1/channel/{cid}": {
+      "delete": {
+        "summary": "delete a channel",
+        "operationId": "-v1-channel-cid-delete",
+        "tags": [
+          "Channel"
+        ],
+        "security": [
+          {
+            "Jwt": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "cid",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "description": "channel id",
+            "format": "int64"
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "originRef": "Result",
+              "$ref": "#/definitions/Result"
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "query a channel",
+        "operationId": "-v1-channel-cid-get",
+        "tags": [
+          "Channel"
+        ],
+        "parameters": [
+          {
+            "name": "cid",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "description": "channel id",
+            "format": "int64"
+          },
+          {
+            "name": "need_channel_author",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need channel author (channel)"
+          },
+          {
+            "name": "need_subscriber_count",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need subscriber count (channel)"
+          },
+          {
+            "name": "need_video_count",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need video count (channel)"
+          },
+          {
+            "name": "need_is_subscribed",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need is subscribed (channel)"
+          },
+          {
+            "name": "need_follow_count",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need follow count (user)"
+          },
+          {
+            "name": "need_channel_count",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need channel count (user)"
+          },
+          {
+            "name": "need_subscribing_count",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need subscribing count (user)"
+          },
+          {
+            "name": "need_favorite_count",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need favorite count (user)"
+          },
+          {
+            "name": "need_is_follow",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need is follow (user)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "originRef": "_Result<ChannelDto>",
+              "$ref": "#/definitions/_Result<ChannelDto>"
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "update a channel",
+        "operationId": "-v1-channel-cid-put",
+        "tags": [
+          "Channel"
+        ],
+        "security": [
+          {
+            "Jwt": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "cid",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "description": "channel id",
+            "format": "int64"
+          },
+          {
+            "name": "param",
+            "in": "body",
+            "required": true,
+            "description": "update channel parameter",
+            "schema": {
+              "originRef": "UpdateChannelParam",
+              "$ref": "#/definitions/UpdateChannelParam"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "originRef": "Result",
+              "$ref": "#/definitions/Result"
+            }
+          }
+        }
+      }
+    },
+    "/v1/channel/{cid}/subscriber": {
+      "get": {
+        "summary": "query channel subscriber users",
+        "operationId": "-v1-channel-cid-subscriber-get",
+        "tags": [
+          "Subscribe"
+        ],
+        "parameters": [
+          {
+            "name": "cid",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "description": "channel id",
+            "format": "int64"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "description": "current page",
+            "format": "int32"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "description": "page size",
+            "format": "int32"
+          },
+          {
+            "name": "order",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "description": "order string"
+          },
+          {
+            "name": "need_follow_count",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need follow count (user)"
+          },
+          {
+            "name": "need_channel_count",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need channel count (user)"
+          },
+          {
+            "name": "need_subscribing_count",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need subscribing count (user)"
+          },
+          {
+            "name": "need_favorite_count",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need favorite count (user)"
+          },
+          {
+            "name": "need_is_follow",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need is follow (user)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "originRef": "_Result<_Page<UserDto>>",
+              "$ref": "#/definitions/_Result<_Page<UserDto>>"
+            }
+          }
+        }
+      }
+    },
+    "/v1/channel/{cid}/video": {
+      "get": {
+        "summary": "query videos from user",
+        "operationId": "-v1-channel-cid-video-get",
+        "tags": [
+          "Video"
+        ],
+        "parameters": [
+          {
+            "name": "cid",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "description": "channel id",
+            "format": "int64"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "description": "current page",
+            "format": "int32"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "description": "page size",
+            "format": "int32"
+          },
+          {
+            "name": "order",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "description": "order string"
+          },
+          {
+            "name": "need_video_channel",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need video channel (video)"
+          },
+          {
+            "name": "need_favored_count",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need favored user count (video)"
+          },
+          {
+            "name": "need_is_favorite",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need is favorite (video)"
+          },
+          {
+            "name": "need_channel_author",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need channel author (channel)"
+          },
+          {
+            "name": "need_subscriber_count",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need subscriber count (channel)"
+          },
+          {
+            "name": "need_video_count",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need video count (channel)"
+          },
+          {
+            "name": "need_is_subscribed",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need is subscribed (channel)"
+          },
+          {
+            "name": "need_follow_count",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need follow count (user)"
+          },
+          {
+            "name": "need_channel_count",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need channel count (user)"
+          },
+          {
+            "name": "need_subscribing_count",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need subscribing count (user)"
+          },
+          {
+            "name": "need_favorite_count",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need favorite count (user)"
+          },
+          {
+            "name": "need_is_follow",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need is follow (user)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "originRef": "_Result<_Page<VideoDto>>",
+              "$ref": "#/definitions/_Result<_Page<VideoDto>>"
+            }
+          }
+        }
+      }
+    },
+    "/v1/channel/{cid}/video/channel/{cid2}": {
+      "put": {
+        "summary": "update all video from a channel to another channel",
+        "operationId": "-v1-channel-cid-video-channel-cid2-put",
+        "tags": [
+          "Video"
+        ],
+        "security": [
+          {
+            "Jwt": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "cid",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "description": "from channel id",
+            "format": "int64"
+          },
+          {
+            "name": "cid2",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "description": "to channel id",
+            "format": "int64"
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "originRef": "Result",
+              "$ref": "#/definitions/Result"
             }
           }
         }
@@ -516,25 +1086,25 @@
             "description": "order string"
           },
           {
-            "name": "need_subscribe_count",
+            "name": "need_follow_count",
             "in": "query",
             "required": false,
             "type": "boolean",
-            "description": "need subscribe count (user)"
+            "description": "need follow count (user)"
           },
           {
-            "name": "need_is_subscribe",
+            "name": "need_channel_count",
             "in": "query",
             "required": false,
             "type": "boolean",
-            "description": "need is subscribe (user)"
+            "description": "need channel count (user)"
           },
           {
-            "name": "need_video_count",
+            "name": "need_subscribing_count",
             "in": "query",
             "required": false,
             "type": "boolean",
-            "description": "need video count (user)"
+            "description": "need subscribing count (user)"
           },
           {
             "name": "need_favorite_count",
@@ -542,6 +1112,13 @@
             "required": false,
             "type": "boolean",
             "description": "need favorite count (user)"
+          },
+          {
+            "name": "need_is_follow",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need is follow (user)"
           }
         ],
         "responses": {
@@ -604,7 +1181,7 @@
             "in": "path",
             "required": true,
             "type": "integer",
-            "description": "vid id",
+            "description": "video id",
             "format": "int64"
           }
         ],
@@ -634,7 +1211,7 @@
             "in": "path",
             "required": true,
             "type": "integer",
-            "description": "vid id",
+            "description": "video id",
             "format": "int64"
           }
         ],
@@ -648,12 +1225,12 @@
         }
       }
     },
-    "/v1/user/subscribing/{uid}": {
+    "/v1/user/following/{uid}": {
       "delete": {
-        "summary": "unsubscribe user",
-        "operationId": "-v1-user-subscribing-uid-delete",
+        "summary": "unfollow user",
+        "operationId": "-v1-user-following-uid-delete",
         "tags": [
-          "Subscribe"
+          "Follow"
         ],
         "security": [
           {
@@ -680,10 +1257,10 @@
         }
       },
       "post": {
-        "summary": "subscribe user",
-        "operationId": "-v1-user-subscribing-uid-post",
+        "summary": "follow user",
+        "operationId": "-v1-user-following-uid-post",
         "tags": [
-          "Subscribe"
+          "Follow"
         ],
         "security": [
           {
@@ -697,6 +1274,68 @@
             "required": true,
             "type": "integer",
             "description": "user id",
+            "format": "int64"
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "originRef": "Result",
+              "$ref": "#/definitions/Result"
+            }
+          }
+        }
+      }
+    },
+    "/v1/user/subscribe/{cid}": {
+      "delete": {
+        "summary": "unsubscribe channel",
+        "operationId": "-v1-user-subscribe-cid-delete",
+        "tags": [
+          "Subscribe"
+        ],
+        "security": [
+          {
+            "Jwt": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "cid",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "description": "channel id",
+            "format": "int64"
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "originRef": "Result",
+              "$ref": "#/definitions/Result"
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "subscribe channel",
+        "operationId": "-v1-user-subscribe-cid-post",
+        "tags": [
+          "Subscribe"
+        ],
+        "security": [
+          {
+            "Jwt": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "cid",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "description": "channel id",
             "format": "int64"
           }
         ],
@@ -727,25 +1366,25 @@
             "format": "int64"
           },
           {
-            "name": "need_subscribe_count",
+            "name": "need_follow_count",
             "in": "query",
             "required": false,
             "type": "boolean",
-            "description": "need subscribe count (user)"
+            "description": "need follow count (user)"
           },
           {
-            "name": "need_is_subscribe",
+            "name": "need_channel_count",
             "in": "query",
             "required": false,
             "type": "boolean",
-            "description": "need is subscribe (user)"
+            "description": "need channel count (user)"
           },
           {
-            "name": "need_video_count",
+            "name": "need_subscribing_count",
             "in": "query",
             "required": false,
             "type": "boolean",
-            "description": "need video count (user)"
+            "description": "need subscribing count (user)"
           },
           {
             "name": "need_favorite_count",
@@ -753,6 +1392,13 @@
             "required": false,
             "type": "boolean",
             "description": "need favorite count (user)"
+          },
+          {
+            "name": "need_is_follow",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need is follow (user)"
           }
         ],
         "responses": {
@@ -760,6 +1406,119 @@
             "schema": {
               "originRef": "_Result<UserDto>",
               "$ref": "#/definitions/_Result<UserDto>"
+            }
+          }
+        }
+      }
+    },
+    "/v1/user/{uid}/channel": {
+      "get": {
+        "summary": "query channels from user",
+        "operationId": "-v1-user-uid-channel-get",
+        "tags": [
+          "Channel"
+        ],
+        "parameters": [
+          {
+            "name": "uid",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "description": "user id",
+            "format": "int64"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "description": "current page",
+            "format": "int32"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "description": "page size",
+            "format": "int32"
+          },
+          {
+            "name": "order",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "description": "order string"
+          },
+          {
+            "name": "need_channel_author",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need channel author (channel)"
+          },
+          {
+            "name": "need_subscriber_count",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need subscriber count (channel)"
+          },
+          {
+            "name": "need_video_count",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need video count (channel)"
+          },
+          {
+            "name": "need_is_subscribed",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need is subscribed (channel)"
+          },
+          {
+            "name": "need_follow_count",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need follow count (user)"
+          },
+          {
+            "name": "need_channel_count",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need channel count (user)"
+          },
+          {
+            "name": "need_subscribing_count",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need subscribing count (user)"
+          },
+          {
+            "name": "need_favorite_count",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need favorite count (user)"
+          },
+          {
+            "name": "need_is_follow",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need is follow (user)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "originRef": "_Result<_Page<ChannelDto>>",
+              "$ref": "#/definitions/_Result<_Page<ChannelDto>>"
             }
           }
         }
@@ -805,11 +1564,11 @@
             "description": "order string"
           },
           {
-            "name": "need_author",
+            "name": "need_video_channel",
             "in": "query",
             "required": false,
             "type": "boolean",
-            "description": "need video author (video)"
+            "description": "need video channel (video)"
           },
           {
             "name": "need_favored_count",
@@ -826,25 +1585,53 @@
             "description": "need is favorite (video)"
           },
           {
-            "name": "need_subscribe_count",
+            "name": "need_channel_author",
             "in": "query",
             "required": false,
             "type": "boolean",
-            "description": "need subscribe count (user)"
+            "description": "need channel author (channel)"
           },
           {
-            "name": "need_is_subscribe",
+            "name": "need_subscriber_count",
             "in": "query",
             "required": false,
             "type": "boolean",
-            "description": "need is subscribe (user)"
+            "description": "need subscriber count (channel)"
           },
           {
             "name": "need_video_count",
             "in": "query",
             "required": false,
             "type": "boolean",
-            "description": "need video count (user)"
+            "description": "need video count (channel)"
+          },
+          {
+            "name": "need_is_subscribed",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need is subscribed (channel)"
+          },
+          {
+            "name": "need_follow_count",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need follow count (user)"
+          },
+          {
+            "name": "need_channel_count",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need channel count (user)"
+          },
+          {
+            "name": "need_subscribing_count",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need subscribing count (user)"
           },
           {
             "name": "need_favorite_count",
@@ -852,6 +1639,13 @@
             "required": false,
             "type": "boolean",
             "description": "need favorite count (user)"
+          },
+          {
+            "name": "need_is_follow",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need is follow (user)"
           }
         ],
         "responses": {
@@ -864,12 +1658,12 @@
         }
       }
     },
-    "/v1/user/{uid}/subscriber": {
+    "/v1/user/{uid}/follower": {
       "get": {
-        "summary": "query user subscribers",
-        "operationId": "-v1-user-uid-subscriber-get",
+        "summary": "query user followers",
+        "operationId": "-v1-user-uid-follower-get",
         "tags": [
-          "Subscribe"
+          "Follow"
         ],
         "parameters": [
           {
@@ -904,25 +1698,25 @@
             "description": "order string"
           },
           {
-            "name": "need_subscribe_count",
+            "name": "need_follow_count",
             "in": "query",
             "required": false,
             "type": "boolean",
-            "description": "need subscribe count (user)"
+            "description": "need follow count (user)"
           },
           {
-            "name": "need_is_subscribe",
+            "name": "need_channel_count",
             "in": "query",
             "required": false,
             "type": "boolean",
-            "description": "need is subscribe (user)"
+            "description": "need channel count (user)"
           },
           {
-            "name": "need_video_count",
+            "name": "need_subscribing_count",
             "in": "query",
             "required": false,
             "type": "boolean",
-            "description": "need video count (user)"
+            "description": "need subscribing count (user)"
           },
           {
             "name": "need_favorite_count",
@@ -930,6 +1724,98 @@
             "required": false,
             "type": "boolean",
             "description": "need favorite count (user)"
+          },
+          {
+            "name": "need_is_follow",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need is follow (user)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "originRef": "_Result<_Page<UserDto>>",
+              "$ref": "#/definitions/_Result<_Page<UserDto>>"
+            }
+          }
+        }
+      }
+    },
+    "/v1/user/{uid}/following": {
+      "get": {
+        "summary": "query user followings",
+        "operationId": "-v1-user-uid-following-get",
+        "tags": [
+          "Follow"
+        ],
+        "parameters": [
+          {
+            "name": "uid",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "description": "user id",
+            "format": "int64"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "description": "current page",
+            "format": "int32"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "description": "page size",
+            "format": "int32"
+          },
+          {
+            "name": "order",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "description": "order string"
+          },
+          {
+            "name": "need_follow_count",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need follow count (user)"
+          },
+          {
+            "name": "need_channel_count",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need channel count (user)"
+          },
+          {
+            "name": "need_subscribing_count",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need subscribing count (user)"
+          },
+          {
+            "name": "need_favorite_count",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need favorite count (user)"
+          },
+          {
+            "name": "need_is_follow",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need is follow (user)"
           }
         ],
         "responses": {
@@ -982,25 +1868,53 @@
             "description": "order string"
           },
           {
-            "name": "need_subscribe_count",
+            "name": "need_channel_author",
             "in": "query",
             "required": false,
             "type": "boolean",
-            "description": "need subscribe count (user)"
+            "description": "need channel author (channel)"
           },
           {
-            "name": "need_is_subscribe",
+            "name": "need_subscriber_count",
             "in": "query",
             "required": false,
             "type": "boolean",
-            "description": "need is subscribe (user)"
+            "description": "need subscriber count (channel)"
           },
           {
             "name": "need_video_count",
             "in": "query",
             "required": false,
             "type": "boolean",
-            "description": "need video count (user)"
+            "description": "need video count (channel)"
+          },
+          {
+            "name": "need_is_subscribed",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need is subscribed (channel)"
+          },
+          {
+            "name": "need_follow_count",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need follow count (user)"
+          },
+          {
+            "name": "need_channel_count",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need channel count (user)"
+          },
+          {
+            "name": "need_subscribing_count",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need subscribing count (user)"
           },
           {
             "name": "need_favorite_count",
@@ -1008,112 +1922,20 @@
             "required": false,
             "type": "boolean",
             "description": "need favorite count (user)"
+          },
+          {
+            "name": "need_is_follow",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need is follow (user)"
           }
         ],
         "responses": {
           "200": {
             "schema": {
-              "originRef": "_Result<_Page<UserDto>>",
-              "$ref": "#/definitions/_Result<_Page<UserDto>>"
-            }
-          }
-        }
-      }
-    },
-    "/v1/user/{uid}/video": {
-      "get": {
-        "summary": "query videos from user",
-        "operationId": "-v1-user-uid-video-get",
-        "tags": [
-          "Video"
-        ],
-        "parameters": [
-          {
-            "name": "uid",
-            "in": "path",
-            "required": true,
-            "type": "integer",
-            "description": "user id",
-            "format": "int64"
-          },
-          {
-            "name": "page",
-            "in": "query",
-            "required": false,
-            "type": "integer",
-            "description": "current page",
-            "format": "int32"
-          },
-          {
-            "name": "limit",
-            "in": "query",
-            "required": false,
-            "type": "integer",
-            "description": "page size",
-            "format": "int32"
-          },
-          {
-            "name": "order",
-            "in": "query",
-            "required": false,
-            "type": "string",
-            "description": "order string"
-          },
-          {
-            "name": "need_author",
-            "in": "query",
-            "required": false,
-            "type": "boolean",
-            "description": "need video author (video)"
-          },
-          {
-            "name": "need_favored_count",
-            "in": "query",
-            "required": false,
-            "type": "boolean",
-            "description": "need favored user count (video)"
-          },
-          {
-            "name": "need_is_favorite",
-            "in": "query",
-            "required": false,
-            "type": "boolean",
-            "description": "need is favorite (video)"
-          },
-          {
-            "name": "need_subscribe_count",
-            "in": "query",
-            "required": false,
-            "type": "boolean",
-            "description": "need subscribe count (user)"
-          },
-          {
-            "name": "need_is_subscribe",
-            "in": "query",
-            "required": false,
-            "type": "boolean",
-            "description": "need is subscribe (user)"
-          },
-          {
-            "name": "need_video_count",
-            "in": "query",
-            "required": false,
-            "type": "boolean",
-            "description": "need video count (user)"
-          },
-          {
-            "name": "need_favorite_count",
-            "in": "query",
-            "required": false,
-            "type": "boolean",
-            "description": "need favorite count (user)"
-          }
-        ],
-        "responses": {
-          "200": {
-            "schema": {
-              "originRef": "_Result<_Page<VideoDto>>",
-              "$ref": "#/definitions/_Result<_Page<VideoDto>>"
+              "originRef": "_Result<_Page<ChannelDto>>",
+              "$ref": "#/definitions/_Result<_Page<ChannelDto>>"
             }
           }
         }
@@ -1157,11 +1979,11 @@
             "description": "order string"
           },
           {
-            "name": "need_author",
+            "name": "need_video_channel",
             "in": "query",
             "required": false,
             "type": "boolean",
-            "description": "need video author (video)"
+            "description": "need video channel (video)"
           },
           {
             "name": "need_favored_count",
@@ -1178,25 +2000,53 @@
             "description": "need is favorite (video)"
           },
           {
-            "name": "need_subscribe_count",
+            "name": "need_channel_author",
             "in": "query",
             "required": false,
             "type": "boolean",
-            "description": "need subscribe count (user)"
+            "description": "need channel author (channel)"
           },
           {
-            "name": "need_is_subscribe",
+            "name": "need_subscriber_count",
             "in": "query",
             "required": false,
             "type": "boolean",
-            "description": "need is subscribe (user)"
+            "description": "need subscriber count (channel)"
           },
           {
             "name": "need_video_count",
             "in": "query",
             "required": false,
             "type": "boolean",
-            "description": "need video count (user)"
+            "description": "need video count (channel)"
+          },
+          {
+            "name": "need_is_subscribed",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need is subscribed (channel)"
+          },
+          {
+            "name": "need_follow_count",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need follow count (user)"
+          },
+          {
+            "name": "need_channel_count",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need channel count (user)"
+          },
+          {
+            "name": "need_subscribing_count",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need subscribing count (user)"
           },
           {
             "name": "need_favorite_count",
@@ -1204,6 +2054,13 @@
             "required": false,
             "type": "boolean",
             "description": "need favorite count (user)"
+          },
+          {
+            "name": "need_is_follow",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need is follow (user)"
           }
         ],
         "responses": {
@@ -1295,11 +2152,11 @@
             "format": "int64"
           },
           {
-            "name": "need_author",
+            "name": "need_video_channel",
             "in": "query",
             "required": false,
             "type": "boolean",
-            "description": "need video author (video)"
+            "description": "need video channel (video)"
           },
           {
             "name": "need_favored_count",
@@ -1316,25 +2173,53 @@
             "description": "need is favorite (video)"
           },
           {
-            "name": "need_subscribe_count",
+            "name": "need_channel_author",
             "in": "query",
             "required": false,
             "type": "boolean",
-            "description": "need subscribe count (user)"
+            "description": "need channel author (channel)"
           },
           {
-            "name": "need_is_subscribe",
+            "name": "need_subscriber_count",
             "in": "query",
             "required": false,
             "type": "boolean",
-            "description": "need is subscribe (user)"
+            "description": "need subscriber count (channel)"
           },
           {
             "name": "need_video_count",
             "in": "query",
             "required": false,
             "type": "boolean",
-            "description": "need video count (user)"
+            "description": "need video count (channel)"
+          },
+          {
+            "name": "need_is_subscribed",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need is subscribed (channel)"
+          },
+          {
+            "name": "need_follow_count",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need follow count (user)"
+          },
+          {
+            "name": "need_channel_count",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need channel count (user)"
+          },
+          {
+            "name": "need_subscribing_count",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need subscribing count (user)"
           },
           {
             "name": "need_favorite_count",
@@ -1342,6 +2227,13 @@
             "required": false,
             "type": "boolean",
             "description": "need favorite count (user)"
+          },
+          {
+            "name": "need_is_follow",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need is follow (user)"
           }
         ],
         "responses": {
@@ -1379,9 +2271,49 @@
             "required": true,
             "description": "update video parameter",
             "schema": {
-              "originRef": "InsertVideoParam",
-              "$ref": "#/definitions/InsertVideoParam"
+              "originRef": "UpdateVideoParam",
+              "$ref": "#/definitions/UpdateVideoParam"
             }
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "originRef": "Result",
+              "$ref": "#/definitions/Result"
+            }
+          }
+        }
+      }
+    },
+    "/v1/video/{vid}/channel/{cid}": {
+      "put": {
+        "summary": "update a video's channel",
+        "operationId": "-v1-video-vid-channel-cid-put",
+        "tags": [
+          "Video"
+        ],
+        "security": [
+          {
+            "Jwt": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "vid",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "description": "video id",
+            "format": "int64"
+          },
+          {
+            "name": "cid",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "description": "channel id",
+            "format": "int64"
           }
         ],
         "responses": {
@@ -1407,7 +2339,7 @@
             "in": "path",
             "required": true,
             "type": "integer",
-            "description": "vid id",
+            "description": "video id",
             "format": "int64"
           },
           {
@@ -1434,25 +2366,25 @@
             "description": "order string"
           },
           {
-            "name": "need_subscribe_count",
+            "name": "need_follow_count",
             "in": "query",
             "required": false,
             "type": "boolean",
-            "description": "need subscribe count (user)"
+            "description": "need follow count (user)"
           },
           {
-            "name": "need_is_subscribe",
+            "name": "need_channel_count",
             "in": "query",
             "required": false,
             "type": "boolean",
-            "description": "need is subscribe (user)"
+            "description": "need channel count (user)"
           },
           {
-            "name": "need_video_count",
+            "name": "need_subscribing_count",
             "in": "query",
             "required": false,
             "type": "boolean",
-            "description": "need video count (user)"
+            "description": "need subscribing count (user)"
           },
           {
             "name": "need_favorite_count",
@@ -1460,6 +2392,13 @@
             "required": false,
             "type": "boolean",
             "description": "need favorite count (user)"
+          },
+          {
+            "name": "need_is_follow",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "need is follow (user)"
           }
         ],
         "responses": {
@@ -1485,6 +2424,122 @@
           "type": "string",
           "required": true,
           "description": "new subject"
+        }
+      }
+    },
+    "ChannelDto": {
+      "type": "object",
+      "required": [
+        "cid",
+        "name",
+        "description",
+        "cover_url",
+        "author_uid",
+        "author",
+        "create_time",
+        "extra"
+      ],
+      "description": "video response",
+      "properties": {
+        "cid": {
+          "type": "integer",
+          "required": true,
+          "description": "channel id",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string",
+          "required": true,
+          "description": "channel name"
+        },
+        "description": {
+          "type": "string",
+          "required": true,
+          "description": "channel description"
+        },
+        "cover_url": {
+          "type": "string",
+          "required": true,
+          "description": "channel cover url"
+        },
+        "author_uid": {
+          "type": "integer",
+          "required": true,
+          "description": "channel author id",
+          "format": "int64"
+        },
+        "author": {
+          "required": true,
+          "description": "channel author",
+          "originRef": "UserDto",
+          "$ref": "#/definitions/UserDto"
+        },
+        "create_time": {
+          "type": "string",
+          "required": true,
+          "description": "channel upload time",
+          "format": "date-time"
+        },
+        "extra": {
+          "required": true,
+          "description": "channel extra information",
+          "originRef": "ChannelExtraDto",
+          "$ref": "#/definitions/ChannelExtraDto"
+        }
+      }
+    },
+    "ChannelExtraDto": {
+      "type": "object",
+      "required": [
+        "subscribers",
+        "videos",
+        "is_subscribed"
+      ],
+      "description": "channel extra response",
+      "properties": {
+        "subscribers": {
+          "type": "integer",
+          "required": true,
+          "description": "channel subscriber count",
+          "format": "int32"
+        },
+        "videos": {
+          "type": "integer",
+          "required": true,
+          "description": "channel video count",
+          "format": "int32"
+        },
+        "is_subscribed": {
+          "type": "boolean",
+          "required": true,
+          "description": "is subscribing this channel"
+        }
+      }
+    },
+    "InsertChannelParam": {
+      "type": "object",
+      "required": [
+        "name",
+        "description",
+        "cover_url"
+      ],
+      "description": "insert channel parameter",
+      "properties": {
+        "name": {
+          "type": "string",
+          "required": true,
+          "description": "channel name"
+        },
+        "description": {
+          "type": "string",
+          "required": true,
+          "description": "channel description"
+        },
+        "cover_url": {
+          "type": "string",
+          "required": true,
+          "description": "channel cover url",
+          "example": "https://aaa.bbb.ccc"
         }
       }
     },
@@ -1707,6 +2762,33 @@
         }
       }
     },
+    "UpdateChannelParam": {
+      "type": "object",
+      "required": [
+        "name",
+        "description",
+        "cover_url"
+      ],
+      "description": "update channel parameter",
+      "properties": {
+        "name": {
+          "type": "string",
+          "required": true,
+          "description": "channel name"
+        },
+        "description": {
+          "type": "string",
+          "required": true,
+          "description": "channel description"
+        },
+        "cover_url": {
+          "type": "string",
+          "required": true,
+          "description": "channel cover url",
+          "example": "https://aaa.bbb.ccc"
+        }
+      }
+    },
     "UpdatePasswordParam": {
       "type": "object",
       "required": [
@@ -1777,6 +2859,40 @@
           "type": "string",
           "required": true,
           "description": "user avatar",
+          "example": "https://aaa.bbb.ccc"
+        }
+      }
+    },
+    "UpdateVideoParam": {
+      "type": "object",
+      "required": [
+        "title",
+        "description",
+        "video_url",
+        "cover_url"
+      ],
+      "description": "update video parameter",
+      "properties": {
+        "title": {
+          "type": "string",
+          "required": true,
+          "description": "video title"
+        },
+        "description": {
+          "type": "string",
+          "required": true,
+          "description": "video description"
+        },
+        "video_url": {
+          "type": "string",
+          "required": true,
+          "description": "video source url",
+          "example": "https://aaa.bbb.ccc"
+        },
+        "cover_url": {
+          "type": "string",
+          "required": true,
+          "description": "video cover url",
           "example": "https://aaa.bbb.ccc"
         }
       }
@@ -1874,47 +2990,38 @@
     "UserExtraDto": {
       "type": "object",
       "required": [
+        "followings",
+        "followers",
+        "channels",
         "subscribings",
-        "subscribers",
-        "is_subscribing",
-        "is_subscribed",
-        "is_blocking",
-        "videos",
-        "favorites"
+        "favorites",
+        "is_following",
+        "is_followed"
       ],
       "description": "user extra response",
       "properties": {
+        "followings": {
+          "type": "integer",
+          "required": true,
+          "description": "user following count",
+          "format": "int32"
+        },
+        "followers": {
+          "type": "integer",
+          "required": true,
+          "description": "user follower count",
+          "format": "int32"
+        },
+        "channels": {
+          "type": "integer",
+          "required": true,
+          "description": "user channel count",
+          "format": "int32"
+        },
         "subscribings": {
           "type": "integer",
           "required": true,
           "description": "user subscribing count",
-          "format": "int32"
-        },
-        "subscribers": {
-          "type": "integer",
-          "required": true,
-          "description": "user subscriber count",
-          "format": "int32"
-        },
-        "is_subscribing": {
-          "type": "boolean",
-          "required": true,
-          "description": "authorized user is subscribing this user"
-        },
-        "is_subscribed": {
-          "type": "boolean",
-          "required": true,
-          "description": "authorized user is subscribed by this user"
-        },
-        "is_blocking": {
-          "type": "boolean",
-          "required": true,
-          "description": "authorized user is blocking this user"
-        },
-        "videos": {
-          "type": "integer",
-          "required": true,
-          "description": "user video count",
           "format": "int32"
         },
         "favorites": {
@@ -1922,6 +3029,16 @@
           "required": true,
           "description": "user favorite count",
           "format": "int32"
+        },
+        "is_following": {
+          "type": "boolean",
+          "required": true,
+          "description": "is following this user"
+        },
+        "is_followed": {
+          "type": "boolean",
+          "required": true,
+          "description": "is followed by this user"
         }
       }
     },
@@ -1933,8 +3050,9 @@
         "description",
         "video_url",
         "cover_url",
+        "channel_cid",
+        "channel",
         "upload_time",
-        "author",
         "extra"
       ],
       "description": "video response",
@@ -1965,17 +3083,23 @@
           "required": true,
           "description": "video cover url"
         },
+        "channel_cid": {
+          "type": "integer",
+          "required": true,
+          "description": "video channel id",
+          "format": "int64"
+        },
+        "channel": {
+          "required": true,
+          "description": "video channel",
+          "originRef": "UserDto",
+          "$ref": "#/definitions/UserDto"
+        },
         "upload_time": {
           "type": "string",
           "required": true,
           "description": "video upload time",
           "format": "date-time"
-        },
-        "author": {
-          "required": true,
-          "description": "video author",
-          "originRef": "UserDto",
-          "$ref": "#/definitions/UserDto"
         },
         "extra": {
           "required": true,
@@ -1996,13 +3120,52 @@
         "favoreds": {
           "type": "integer",
           "required": true,
-          "description": "video favored user count",
+          "description": "video favored count",
           "format": "int32"
         },
         "is_favorite": {
           "type": "boolean",
           "required": true,
-          "description": "this video is in authorized user favorite list"
+          "description": "is favoring this video"
+        }
+      }
+    },
+    "_Page<ChannelDto>": {
+      "type": "object",
+      "required": [
+        "page",
+        "limit",
+        "total",
+        "data"
+      ],
+      "description": "page response",
+      "properties": {
+        "page": {
+          "type": "integer",
+          "required": true,
+          "description": "current page",
+          "format": "int32"
+        },
+        "limit": {
+          "type": "integer",
+          "required": true,
+          "description": "page size",
+          "format": "int32"
+        },
+        "total": {
+          "type": "integer",
+          "required": true,
+          "description": "data count",
+          "format": "int32"
+        },
+        "data": {
+          "type": "array",
+          "required": true,
+          "description": "page data",
+          "items": {
+            "originRef": "ChannelDto",
+            "$ref": "#/definitions/ChannelDto"
+          }
         }
       }
     },
@@ -2123,6 +3286,34 @@
         }
       }
     },
+    "_Result<ChannelDto>": {
+      "type": "object",
+      "required": [
+        "code",
+        "message",
+        "data"
+      ],
+      "description": "global response",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "required": true,
+          "description": "status code",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string",
+          "required": true,
+          "description": "status message"
+        },
+        "data": {
+          "required": true,
+          "description": "response data",
+          "originRef": "ChannelDto",
+          "$ref": "#/definitions/ChannelDto"
+        }
+      }
+    },
     "_Result<LoginDto>": {
       "type": "object",
       "required": [
@@ -2204,6 +3395,34 @@
           "description": "response data",
           "originRef": "VideoDto",
           "$ref": "#/definitions/VideoDto"
+        }
+      }
+    },
+    "_Result<_Page<ChannelDto>>": {
+      "type": "object",
+      "required": [
+        "code",
+        "message",
+        "data"
+      ],
+      "description": "global response",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "required": true,
+          "description": "status code",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string",
+          "required": true,
+          "description": "status message"
+        },
+        "data": {
+          "required": true,
+          "description": "response data",
+          "originRef": "_Page\u003cChannelDto\u003e",
+          "$ref": "#/definitions/_Page\u003cChannelDto\u003e"
         }
       }
     },

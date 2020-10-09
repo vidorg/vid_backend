@@ -1,5 +1,6 @@
 package po
 
+// RbacRule: tbl_casbin_rule.
 type RbacRule struct {
 	PType string `gorm:"column:p_type"` //  p  |  g
 	V0    string `gorm:"column:v0"`     // sub | sub

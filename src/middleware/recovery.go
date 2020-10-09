@@ -26,6 +26,7 @@ func RecoveryMiddleware() gin.HandlerFunc {
 					r.Error.Others = map[string]interface{}{"request_id": rid}
 				}
 
+				// log.Println(2)
 				logger.WithFields(logrus.Fields{
 					"module":    "panic",
 					"error":     fmt.Sprintf("%v", err),

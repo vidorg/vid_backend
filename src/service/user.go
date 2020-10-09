@@ -41,18 +41,6 @@ func (u *UserService) QueryAll(pp *param.PageOrderParam) ([]*po.User, int32, err
 	return users, int32(total), nil
 }
 
-func (u *UserService) QueryByUid(uid uint64) (*po.User, error) {
-	user := &po.User{}
-	rdb := u.db.Model(&po.User{}).Where("uid = ?", uid).First(user)
-	if rdb.RowsAffected == 0 {
-		return nil, nil
-	} else if rdb.Error != nil {
-		return nil, rdb.Error
-	}
-
-	return user, nil
-}
-
 func (u *UserService) QueryByUids(uids []uint64) ([]*po.User, error) {
 	if len(uids) == 0 {
 		return []*po.User{}, nil
@@ -76,6 +64,18 @@ func (u *UserService) QueryByUids(uids []uint64) ([]*po.User, error) {
 		}
 	}
 	return out, nil
+}
+
+func (u *UserService) QueryByUid(uid uint64) (*po.User, error) {
+	user := &po.User{}
+	rdb := u.db.Model(&po.User{}).Where("uid = ?", uid).First(user)
+	if rdb.RowsAffected == 0 {
+		return nil, nil
+	} else if rdb.Error != nil {
+		return nil, rdb.Error
+	}
+
+	return user, nil
 }
 
 func (u *UserService) Existed(uid uint64) (bool, error) {

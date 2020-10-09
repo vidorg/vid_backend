@@ -28,6 +28,9 @@ func initRoute(engine *gin.Engine) {
 	engine.GET("", func(c *gin.Context) {
 		c.JSON(200, &gin.H{"message": "Welcome to vid API."})
 	})
+	engine.GET("panic", func(*gin.Context) {
+		panic("hhh")
+	})
 
 	// controller
 	v1 := engine.Group("v1")
@@ -35,6 +38,8 @@ func initRoute(engine *gin.Engine) {
 	var (
 		authCtrl      = controller.NewAuthController()
 		userCtrl      = controller.NewUserController()
+		followCtrl    = controller.NewFollowController()
+		channelCtrl   = controller.NewChannelController()
 		subscribeCtrl = controller.NewSubscribeController()
 		videoCtrl     = controller.NewVideoController()
 		favoriteCtrl  = controller.NewFavoriteController()
@@ -69,15 +74,34 @@ func initRoute(engine *gin.Engine) {
 		userGroup.PUT("", authMw, j(userCtrl.Update))
 		userGroup.DELETE("", authMw, j(userCtrl.Delete))
 
-		userGroup.GET(":uid/subscriber", j(subscribeCtrl.QuerySubscribers))
-		userGroup.GET(":uid/subscribing", j(subscribeCtrl.QuerySubscribings))
-		userGroup.POST("subscribing/:uid", authMw, j(subscribeCtrl.SubscribeUser))
-		userGroup.DELETE("subscribing/:uid", authMw, j(subscribeCtrl.UnSubscribeUser))
+		userGroup.GET(":uid/channel", j(channelCtrl.QueryChannelsByUid))
 
-		userGroup.GET(":uid/video", j(videoCtrl.QueryVideosByUid))
+		userGroup.GET(":uid/follower", j(followCtrl.QueryFollowers))
+		userGroup.GET(":uid/following", j(followCtrl.QueryFollowings))
+		userGroup.POST("following/:uid", authMw, j(followCtrl.FollowUser))
+		userGroup.DELETE("following/:uid", authMw, j(followCtrl.UnfollowUser))
+
+		userGroup.GET(":uid/subscribing", j(subscribeCtrl.QuerySubscribings))
+		userGroup.POST("subscribe/:cid", authMw, j(subscribeCtrl.SubscribeChannel))
+		userGroup.DELETE("subscribe/:cid", authMw, j(subscribeCtrl.UnsubscribeChannel))
+
 		userGroup.GET(":uid/favorite", j(favoriteCtrl.QueryFavorites))
 		userGroup.POST("favorite/:vid", authMw, j(favoriteCtrl.AddFavorite))
 		userGroup.DELETE("favorite/:vid", authMw, j(favoriteCtrl.RemoveFavorite))
+	}
+
+	channelGroup := v1.Group("channel")
+	{
+		channelGroup.GET("", authMw, j(channelCtrl.QueryAllChannels))
+		channelGroup.GET(":cid", j(channelCtrl.QueryChannelByCid))
+		channelGroup.POST("", authMw, j(channelCtrl.InsertChannel))
+		channelGroup.PUT(":cid", authMw, j(channelCtrl.UpdateChannel))
+		channelGroup.PUT(":cid/video/channel/:cid2", authMw, j(videoCtrl.MoveAllVideosToChannel))
+		channelGroup.DELETE(":cid", authMw, j(channelCtrl.DeleteChannel))
+
+		channelGroup.GET(":cid/video", j(videoCtrl.QueryVideosByCid))
+
+		channelGroup.GET(":cid/subscriber", j(subscribeCtrl.QuerySubscribers))
 	}
 
 	videoGroup := v1.Group("video")
@@ -86,6 +110,7 @@ func initRoute(engine *gin.Engine) {
 		videoGroup.GET(":vid", j(videoCtrl.QueryVideoByVid))
 		videoGroup.POST("", authMw, j(videoCtrl.InsertVideo))
 		videoGroup.PUT(":vid", authMw, j(videoCtrl.UpdateVideo))
+		videoGroup.PUT(":vid/channel/:cid", authMw, j(videoCtrl.MoveVideoToChannel))
 		videoGroup.DELETE(":vid", authMw, j(videoCtrl.DeleteVideo))
 
 		videoGroup.GET(":vid/favored", j(favoriteCtrl.QueryFavoreds))
@@ -101,4 +126,5 @@ func initRoute(engine *gin.Engine) {
 		rbacGroup.DELETE("subject", j(rbacCtrl.DeleteSubject))
 		rbacGroup.DELETE("policy", j(rbacCtrl.DeletePolicy))
 	}
+
 }

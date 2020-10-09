@@ -26,13 +26,13 @@ func init() {
 
 		goapidoc.NewDefinition("UserExtraDto", "user extra response").
 			Properties(
+				goapidoc.NewProperty("followings", "integer#int32", true, "user following count"),
+				goapidoc.NewProperty("followers", "integer#int32", true, "user follower count"),
+				goapidoc.NewProperty("channels", "integer#int32", true, "user channel count"),
 				goapidoc.NewProperty("subscribings", "integer#int32", true, "user subscribing count"),
-				goapidoc.NewProperty("subscribers", "integer#int32", true, "user subscriber count"),
-				goapidoc.NewProperty("is_subscribing", "boolean", true, "authorized user is subscribing this user"),
-				goapidoc.NewProperty("is_subscribed", "boolean", true, "authorized user is subscribed by this user"),
-				goapidoc.NewProperty("is_blocking", "boolean", true, "authorized user is blocking this user"),
-				goapidoc.NewProperty("videos", "integer#int32", true, "user video count"),
 				goapidoc.NewProperty("favorites", "integer#int32", true, "user favorite count"),
+				goapidoc.NewProperty("is_following", "boolean", true, "is following this user"),
+				goapidoc.NewProperty("is_followed", "boolean", true, "is followed by this user"),
 			),
 
 		goapidoc.NewDefinition("LoginDto", "login response").
@@ -87,12 +87,13 @@ func BuildUserDtos(users []*po.User) []*UserDto {
 }
 
 type UserExtraDto struct {
-	Subscribings  *int32 `json:"subscribings"`   // user subscribing count
-	Subscribers   *int32 `json:"subscribers"`    // user subscriber count
-	IsSubscribing *bool  `json:"is_subscribing"` // authorized user is subscribing this user
-	IsSubscribed  *bool  `json:"is_subscribed"`  // authorized user is subscribed by this user
-	Videos        *int32 `json:"videos"`         // user video count
-	Favorites     *int32 `json:"favorites"`      // user favorite count
+	Followings   *int32 `json:"followings"`   // user followings count
+	Followers    *int32 `json:"followers"`    // user followers count
+	Channels     *int32 `json:"channels"`     // user channel count
+	Subscribings *int32 `json:"subscribings"` // user subscribing count
+	Favorites    *int32 `json:"favorites"`    // user favorite count
+	IsFollowing  *bool  `json:"is_following"` // is following this user
+	IsFollowed   *bool  `json:"is_followed"`  // is followed by this user
 }
 
 type LoginDto struct {

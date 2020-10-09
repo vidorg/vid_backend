@@ -22,7 +22,7 @@ func init() {
 			Securities("Jwt").
 			Params(
 				param.ADPage, param.ADLimit, param.ADOrder,
-				_adNeedSubscribeCount, _adNeedIsSubscribe, _adNeedVideoCount, _adNeedFavoriteCount,
+				_adNeedFollowCount, _adNeedChannelCount, _adNeedSubscribingCount, _adNeedFavoriteCount, _adNeedIsFollow,
 			).
 			Responses(goapidoc.NewResponse(200, "_Result<_Page<UserDto>>")),
 
@@ -30,7 +30,7 @@ func init() {
 			Tags("User").
 			Params(
 				goapidoc.NewPathParam("uid", "integer#int64", true, "user id"),
-				_adNeedSubscribeCount, _adNeedIsSubscribe, _adNeedVideoCount, _adNeedFavoriteCount,
+				_adNeedFollowCount, _adNeedChannelCount, _adNeedSubscribingCount, _adNeedFavoriteCount, _adNeedIsFollow,
 			).
 			Responses(goapidoc.NewResponse(200, "_Result<UserDto>")),
 
@@ -48,46 +48,37 @@ func init() {
 }
 
 type UserController struct {
-	config           *config.Config
-	jwtService       *service.JwtService
-	userService      *service.UserService
-	subscribeService *service.SubscribeService
-	videoService     *service.VideoService
-	common           *CommonController
+	config        *config.Config
+	jwtService    *service.JwtService
+	userService   *service.UserService
+	followService *service.FollowService
+	videoService  *service.VideoService
+	common        *CommonController
 }
 
 func NewUserController() *UserController {
 	return &UserController{
-		config:           xdi.GetByNameForce(sn.SConfig).(*config.Config),
-		jwtService:       xdi.GetByNameForce(sn.SJwtService).(*service.JwtService),
-		userService:      xdi.GetByNameForce(sn.SUserService).(*service.UserService),
-		subscribeService: xdi.GetByNameForce(sn.SSubscribeService).(*service.SubscribeService),
-		videoService:     xdi.GetByNameForce(sn.SVideoService).(*service.VideoService),
-		common:           xdi.GetByNameForce(sn.SCommonController).(*CommonController),
+		config:        xdi.GetByNameForce(sn.SConfig).(*config.Config),
+		jwtService:    xdi.GetByNameForce(sn.SJwtService).(*service.JwtService),
+		userService:   xdi.GetByNameForce(sn.SUserService).(*service.UserService),
+		followService: xdi.GetByNameForce(sn.SFollowService).(*service.FollowService),
+		videoService:  xdi.GetByNameForce(sn.SVideoService).(*service.VideoService),
+		common:        xdi.GetByNameForce(sn.SCommonController).(*CommonController),
 	}
 }
 
 // GET /v1/user
 func (u *UserController) QueryAll(c *gin.Context) *result.Result {
-	user := u.jwtService.GetContextUser(c)
-	if user == nil {
-		return nil
-	}
-
 	pp := param.BindPageOrder(c, u.config)
 	users, total, err := u.userService.QueryAll(pp)
 	if err != nil {
 		return result.Error(exception.QueryUserError).SetError(err, c)
 	}
 
-	extras, err := u.common.getUsersExtra(c, user, users)
+	res := dto.BuildUserDtos(users)
+	err = u.common.PreLoadUsers(c, u.jwtService.GetContextUser(c), users, res)
 	if err != nil {
 		return result.Error(exception.QueryUserError).SetError(err, c)
-	}
-
-	res := dto.BuildUserDtos(users)
-	for idx, user := range res {
-		user.Extra = extras[idx]
 	}
 	return result.Ok().SetPage(pp.Page, pp.Limit, total, res)
 }
@@ -106,14 +97,11 @@ func (u *UserController) QueryByUid(c *gin.Context) *result.Result {
 		return result.Error(exception.UserNotFoundError)
 	}
 
-	authUser := u.jwtService.GetContextUser(c)
-	extras, err := u.common.getUsersExtra(c, authUser, []*po.User{user})
-	if err != nil {
-		return result.Error(exception.QueryUserError).SetError(err, c)
-	}
-
 	res := dto.BuildUserDto(user)
-	res.Extra = extras[0]
+	err = u.common.PreLoadUsers(c, u.jwtService.GetContextUser(c), []*po.User{user}, []*dto.UserDto{res})
+	if err != nil {
+		result.Error(exception.QueryUserError).SetError(err, c)
+	}
 	return result.Ok().SetData(res)
 }
 

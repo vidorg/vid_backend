@@ -29,6 +29,8 @@ func init() {
 	goapidoc.SetTags(
 		goapidoc.NewTag("Authorization", "auth-controller"),
 		goapidoc.NewTag("User", "user-controller"),
+		goapidoc.NewTag("Follow", "follow-controller"),
+		goapidoc.NewTag("Channel", "channel-controller"),
 		goapidoc.NewTag("Subscribe", "subscribe-controller"),
 		goapidoc.NewTag("Video", "video-controller"),
 		goapidoc.NewTag("Favorite", "favorite-controller"),

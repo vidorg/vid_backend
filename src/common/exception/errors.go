@@ -61,16 +61,40 @@ var (
 	DeleteUserError   = New(500, se(), "delete user failed")     // 删除用户失败
 )
 
+// follow exception
+var (
+	GetFollowerListError  = New(500, se(), "get follower list failed")  // 获取粉丝列表失败
+	GetFollowingListError = New(500, se(), "get following list failed") // 获取关注列表失败
+
+	FollowError           = New(500, se(), "follow failed")                  // 关注用户失败
+	FollowSelfError       = New(400, ce(), "could not follow self")          // 无法关注自己
+	AlreadyFollowingError = New(409, ce(), "user has been already followed") // 已经关注的用户
+	UnfollowError         = New(500, se(), "unfollow failed")                // 取消关注用户失败
+	NotFollowYetError     = New(404, ce(), "user has not been followed yet") // 还没有关注的用户
+)
+
+// channel exception
+var (
+	QueryChannelError    = New(500, se(), "query channel failed") // 查找频道错误
+	ChannelNotFoundError = New(404, ce(), "channel not found")    // 频道未找到
+
+	ChannelNameUsedError   = New(409, ce(), "channel name has been used")                // 频道名称已存在
+	InsertChannelError     = New(500, se(), "channel insert failed")                     // 插入频道失败
+	UpdateChannelError     = New(500, se(), "channel update failed")                     // 更新频道失败
+	ChannelPermissionError = New(400, ce(), "no permission with channel")                // 无权限操作频道
+	DeleteChannelError     = New(500, se(), "channel delete failed")                     // 删除频道失败
+	ChannelHasVideoError   = New(400, ce(), "could not delete a channel that has video") // 无法删除包含视频的频道
+)
+
 // subscribe exception
 var (
-	GetSubscriberListError  = New(500, se(), "get subscriber list failed")  // 获取粉丝列表失败
-	GetSubscribingListError = New(500, se(), "get subscribing list failed") // 获取关注列表失败
+	GetSubscribingListError = New(500, se(), "query user subscribing list failed")   // 获取用户订阅列表失败
+	GetSubscriberListError  = New(500, se(), "query channel subscriber list failed") // 获取频道被订阅列表失败
 
-	SubscribeError          = New(500, se(), "subscribe failed")               // 关注用户失败
-	SubscribeSelfError      = New(400, ce(), "could not subscribe self")       // 无法关注自己
-	AlreadySubscribingError = New(409, ce(), "user has been subscribed")       // 已经关注的用户
-	UnsubscribeError        = New(500, se(), "unsubscribe failed")             // 取消关注用户失败
-	NotSubscribeYetError    = New(404, ce(), "user has not been unsubscribed") // 还没有关注的用户
+	SubscribeChannelError   = New(500, se(), "subscribe channel failed")           // 订阅频道失败
+	AlreadySubscribedError  = New(409, ce(), "channel has been subscribe")         // 频道已经订阅
+	UnsubscribeChannelError = New(500, se(), "unsubscribe channel failed")         // 取消订阅频道失败
+	NotSubscribeYetError    = New(404, ce(), "channel has not been subscribe yet") // 频道还没有订阅
 )
 
 // video exception
@@ -78,10 +102,12 @@ var (
 	QueryVideoError    = New(500, se(), "query video failed") // 查找视频错误
 	VideoNotFoundError = New(404, ce(), "video not found")    // 视频未找到
 
-	InsertVideoError     = New(500, se(), "video insert failed")      // 插入视频失败
-	UpdateVideoError     = New(500, se(), "video update failed")      // 更新视频失败
-	VideoPermissionError = New(400, ce(), "no permission with video") // 无权限操作视频
-	DeleteVideoError     = New(500, se(), "video delete failed")      // 删除视频失败
+	InsertVideoError        = New(500, se(), "video insert failed")        // 插入视频失败
+	UpdateVideoError        = New(500, se(), "video update failed")        // 更新视频失败
+	VideoPermissionError    = New(400, ce(), "no permission with video")   // 无权限操作视频
+	UpdateVideoChannelError = New(500, se(), "video channel update field") // 更新视频频道失败
+	ChannelHasNoVideoError  = New(404, ce(), "channel has no video")       // 频道没有视频
+	DeleteVideoError        = New(500, se(), "video delete failed")        // 删除视频失败
 )
 
 // favorite exception

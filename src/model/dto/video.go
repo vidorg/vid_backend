@@ -15,15 +15,16 @@ func init() {
 				goapidoc.NewProperty("description", "string", true, "video description"),
 				goapidoc.NewProperty("video_url", "string", true, "video source url"),
 				goapidoc.NewProperty("cover_url", "string", true, "video cover url"),
+				goapidoc.NewProperty("channel_cid", "integer#int64", true, "video channel id"),
+				goapidoc.NewProperty("channel", "UserDto", true, "video channel"),
 				goapidoc.NewProperty("upload_time", "string#date-time", true, "video upload time"),
-				goapidoc.NewProperty("author", "UserDto", true, "video author"),
 				goapidoc.NewProperty("extra", "VideoExtraDto", true, "video extra information"),
 			),
 
 		goapidoc.NewDefinition("VideoExtraDto", "video extra response").
 			Properties(
-				goapidoc.NewProperty("favoreds", "integer#int32", true, "video favored user count"),
-				goapidoc.NewProperty("is_favorite", "boolean", true, "this video is in authorized user favorite list"),
+				goapidoc.NewProperty("favoreds", "integer#int32", true, "video favored count"),
+				goapidoc.NewProperty("is_favorite", "boolean", true, "is favoring this video"),
 			),
 	)
 }
@@ -34,8 +35,9 @@ type VideoDto struct {
 	Description string         `json:"description"` // video description
 	VideoUrl    string         `json:"video_url"`   // video source url (oss)
 	CoverUrl    string         `json:"cover_url"`   // video cover url (oss)
+	ChannelCid  uint64         `json:"channel_cid"` // video channel cid
+	Channel     *ChannelDto    `json:"channel"`     // video channel
 	UploadTime  string         `json:"upload_time"` // video upload time
-	Author      *UserDto       `json:"author"`      // video author
 	Extra       *VideoExtraDto `json:"extra"`       // video extra information
 }
 
@@ -49,8 +51,9 @@ func BuildVideoDto(video *po.Video) *VideoDto {
 		Description: video.Description,
 		VideoUrl:    video.VideoUrl,
 		CoverUrl:    video.CoverUrl,
+		ChannelCid:  video.ChannelCid,
+		Channel:     BuildChannelDto(video.Channel),
 		UploadTime:  xtime.NewJsonDateTime(video.CreatedAt).String(),
-		Author:      BuildUserDto(video.Author),
 		Extra:       &VideoExtraDto{},
 	}
 }
@@ -64,6 +67,6 @@ func BuildVideoDtos(videos []*po.Video) []*VideoDto {
 }
 
 type VideoExtraDto struct {
-	Favoreds   *int32 `json:"favoreds"`    // video favored user count
-	IsFavorite *bool  `json:"is_favorite"` // this video is in authorized user favorite list
+	Favoreds   *int32 `json:"favoreds"`    // video favored count
+	IsFavorite *bool  `json:"is_favorite"` // is favoring this video
 }
