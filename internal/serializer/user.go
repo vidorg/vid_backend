@@ -2,20 +2,18 @@ package serializer
 
 import (
 	"github.com/vidorg/vid_backend/internal/model"
-	"time"
 )
 
 // User 用户序列化器
 type User struct {
-	ID        int       `json:"id"`
-	UserName  string    `json:"username"`
-	Nickname  string    `json:"nickname"`
-	Status    string    `json:"status"`
-	Email     string    `json:"email"`
-	Avatar    string    `json:"avatar"`
-	Role      string    `json:"role"`
-	Amount    int       `json:"amount"`
-	CreatedAt time.Time `json:"created_at"`
+	ID        int64  `json:"id"`
+	UserName  string `json:"username"`
+	Nickname  string `json:"nickname"`
+	Status    string `json:"status"`
+	Email     string `json:"email"`
+	Avatar    string `json:"avatar"`
+	Role      string `json:"role"`
+	CreatedAt int64  `json:"created_at"`
 }
 
 // BuildUserResponse 序列化用户响应
@@ -28,12 +26,11 @@ func BuildUserResponse(user *model.User) *Response {
 		Avatar:    user.Avatar,
 		Email:     *user.Email,
 		Role:      user.Role,
-		Amount:    user.Amount,
-		CreatedAt: user.CreatedAt,
+		CreatedAt: user.Created,
 	}
 	return &Response{
 		Code: 200,
-		Msg:  "成功",
+		Msg:  "success",
 		Data: res,
 	}
 }
@@ -50,7 +47,7 @@ func BuildUsersResponse(users []*model.User) []*User {
 			Avatar:    user.Avatar,
 			Email:     *user.Email,
 			Role:      user.Role,
-			CreatedAt: user.CreatedAt,
+			CreatedAt: user.Created,
 		}
 	}
 	return res
@@ -73,7 +70,7 @@ func BuildLoginResponse(user *model.User, token string) *Response {
 			Avatar:    user.Avatar,
 			Email:     *user.Email,
 			Role:      user.Role,
-			CreatedAt: user.CreatedAt,
+			CreatedAt: user.Created,
 		},
 		Token: token,
 	}

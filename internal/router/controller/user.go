@@ -15,3 +15,23 @@ func UserLogin(c *gin.Context) {
 		c.JSON(200, res)
 	}
 }
+
+func UserRegister(c *gin.Context) {
+	service := &user.RegisterService{}
+	if err := c.ShouldBind(service); err != nil {
+		c.JSON(200, serializer.ParamErr("param err,", err))
+	} else {
+		res := service.Register()
+		c.JSON(200, res)
+	}
+}
+
+func AuthUser(c *gin.Context) {
+	service := &user.NoParamsService{}
+	if err := c.ShouldBind(service); err != nil {
+		c.JSON(200, serializer.ParamErr("param err,", err))
+	} else {
+		res := service.Auth(c)
+		c.JSON(200, res)
+	}
+}

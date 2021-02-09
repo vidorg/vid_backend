@@ -16,8 +16,8 @@ type LoginService struct {
 	Password string `form:"password" json:"password" binding:"required,min=3,max=20"`
 }
 
-// LogoutService 管理用户注销的服务
-type LogoutService struct{}
+// NoParamsService 无参数的服务
+type NoParamsService struct{}
 
 // QueryUsersService 用户分页查询的服务
 type QueryUsersService struct {
@@ -68,7 +68,7 @@ func (u *LoginService) Login() *serializer.Response {
 }
 
 // Logout 用户登出
-func (u *LogoutService) Logout(c *gin.Context) *serializer.Response {
+func (s *NoParamsService) Logout(c *gin.Context) *serializer.Response {
 
 	return &serializer.Response{
 		Code: 200,
@@ -76,14 +76,22 @@ func (u *LogoutService) Logout(c *gin.Context) *serializer.Response {
 	}
 }
 
+func (s *NoParamsService) Auth(c *gin.Context) *serializer.Response {
+	user, exists := c.Get("user")
+	if !exists {
+		return serializer.LoginExpiredErr()
+	}
+	return serializer.BuildUserResponse(user.(*model.User))
+}
+
 // Register 用户注册
 func (u *RegisterService) Register() *serializer.Response {
 	user := &model.User{
 		UserName: u.UserName,
 		Nickname: u.NickName,
-		Status:   model.Active,
+		Status:   model.UserActive,
 		Email:    &u.Email,
-		Role:     "user",
+		Role:     "normal",
 	}
 
 	// 表单验证

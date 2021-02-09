@@ -4,15 +4,13 @@ import (
 	"context"
 	"flag"
 	"fmt"
-	"github.com/pkg/errors"
-	conf "github.com/vidorg/vid_backend/internal/config"
+	"github.com/vidorg/vid_backend/internal/conf"
 	"github.com/vidorg/vid_backend/internal/middleware"
+	"github.com/vidorg/vid_backend/internal/model"
 	"github.com/vidorg/vid_backend/internal/router"
 	"github.com/vidorg/vid_backend/pkg/jwt"
 	"github.com/vidorg/vid_backend/pkg/logger"
 	"github.com/vidorg/vid_backend/pkg/orm"
-	"github.com/vidorg/vid_backend/pkg/redis"
-	"go.uber.org/zap"
 	"gorm.io/driver/mysql"
 	"net/http"
 	"os"
@@ -44,20 +42,21 @@ func run() {
 
 	jwt.SetMeta(conf.Config().Jwt.Secret, conf.Config().Jwt.Issuer)
 
-	err := redis.Init(conf.Config().Redis.Addr, conf.Config().Redis.Password, conf.Config().Redis.Db)
-	if err != nil {
-		logger.Logger().Error("redis initialize err", zap.Error(errors.Wrap(err, "redis initialize err")))
-	}
+	//err := redis.Init(conf.Config().Redis.Addr, conf.Config().Redis.Password, conf.Config().Redis.Db)
+	//if err != nil {
+	//	logger.Logger().Error("redis initialize err", zap.Error(errors.Wrap(err, "redis initialize err")))
+	//}
 
 	dbParams := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=%s&parseTime=True&loc=Local",
 		conf.Config().MySQL.User, conf.Config().MySQL.Password,
 		conf.Config().MySQL.Host, conf.Config().MySQL.Port,
 		conf.Config().MySQL.Name, conf.Config().MySQL.Charset,
 	)
-	if err = orm.Init(mysql.Open(dbParams)); err != nil {
+	if err := orm.Init(mysql.Open(dbParams)); err != nil {
 		panic(err)
 	}
 
+	orm.DB().AutoMigrate(&model.User{}, &model.Category{}, &model.Channel{}, &model.Video{})
 	engine := router.Init()
 	s := &http.Server{
 		Addr:           ":" + strconv.Itoa(conf.Config().Meta.Port),

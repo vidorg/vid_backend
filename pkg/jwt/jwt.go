@@ -18,11 +18,11 @@ func SetMeta(secret, publisher string) {
 
 // UserClaims ...
 type UserClaims struct {
-	UID int `json:"uid"`
+	UID int64 `json:"uid"`
 }
 
 // GenerateToken generate token by userID
-func GenerateToken(uid int, expire time.Duration) ([]byte, error) {
+func GenerateToken(uid int64, expire time.Duration) ([]byte, error) {
 	userClaims := UserClaims{
 		UID: uid,
 	}
@@ -42,7 +42,7 @@ func GenerateToken(uid int, expire time.Duration) ([]byte, error) {
 }
 
 // GenerateTokenWithoutExpire generate token by userID without expire time
-func GenerateTokenWithoutExpire(uid int) ([]byte, error) {
+func GenerateTokenWithoutExpire(uid int64) ([]byte, error) {
 	userClaims := UserClaims{
 		UID: uid,
 	}

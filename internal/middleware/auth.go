@@ -8,7 +8,7 @@ import (
 	"net/http"
 )
 
-// Auth
+// Auth 鉴权
 func Auth() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		//token,err := c.Cookie("token")

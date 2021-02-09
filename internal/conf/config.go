@@ -10,7 +10,7 @@ var config *AppConfig
 
 func Config() *AppConfig {
 	if config == nil {
-		panic("config not init")
+		panic("conf not init")
 	}
 	return config
 }
@@ -74,7 +74,7 @@ type JwtConfig struct {
 }
 
 type CasbinConfig struct {
-	ConfigPath string `yaml:"config-path"`
+	ConfigPath string `yaml:"conf-path"`
 }
 
 type AppConfig struct {
