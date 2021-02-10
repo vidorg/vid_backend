@@ -54,3 +54,13 @@ func Init(dialector gorm.Dialector) error {
 	s.SetConnMaxLifetime(30 * time.Second)
 	return nil
 }
+
+func Pagination(db *gorm.DB, page int, limit int) *gorm.DB {
+	if limit <= 0 {
+		limit = 10
+	}
+	if page <= 0 {
+		page = 1
+	}
+	return db.Limit(limit).Offset((page - 1) * limit)
+}

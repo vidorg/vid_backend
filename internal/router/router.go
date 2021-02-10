@@ -10,21 +10,25 @@ import (
 
 // Init init router
 func Init() *gin.Engine {
-	r := gin.New()
+	router := gin.New()
 
 	if !(conf.Config().Meta.RunMode == "debug") {
 		gin.SetMode(gin.ReleaseMode)
 	}
-
-	r.GET("/api/v1/ping", func(c *gin.Context) {
-		c.JSON(200, &serializer.Response{Code: 200, Msg: "pong"})
-	})
-	r.POST("/api/v1/UserLogin", controller.UserLogin)
-	r.POST("/api/v1/UserRegister", controller.UserRegister)
-	r.GET("/api/v1/GetCategories", controller.GetCategoryList)
-	auth := r.Group("/api/v1/auth").Use(middleware.Auth())
+	r := router.Group("/api/v1")
 	{
-		auth.GET("/UserAuth", controller.AuthUser)
+		r.GET("/ping", func(c *gin.Context) {
+			c.JSON(200, &serializer.Response{Code: 200, Msg: "pong"})
+		})
+		r.POST("/UserLogin", controller.UserLogin)
+		r.POST("/UserRegister", controller.UserRegister)
+		r.GET("/GetCategories", controller.GetCategoryList)
+		r.GET("/GetVideoList", controller.GetVideoList)
+		r.GET("/GetChannelList", controller.GetChannelList)
+		auth := r.Group("/auth").Use(middleware.Auth())
+		{
+			auth.GET("/UserAuth", controller.AuthUser)
+		}
 	}
-	return r
+	return router
 }
